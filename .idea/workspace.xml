@@ -4,31 +4,160 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Restructuration of the packages/classes&#10;Example 1 and 2 dones&#10;Functions package and class added&#10;Types classes added">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid133337.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid152100.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid172694.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid18489.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid204952.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid210021.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid212821.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid213253.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid214921.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid215477.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid224412.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid228248.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid236762.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid242898.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid316995.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid318066.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid321785.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid322595.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid332446.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid332960.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid354876.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid355428.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid359676.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid360304.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid370082.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid375669.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid375992.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid384109.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid396040.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid419352.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid52177.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid691572.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid692741.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid701623.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid77818.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid778870.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid780122.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid83929.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hs_err_pid886109.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/function/functions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutorials/Book.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutorials/aisinput.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutorials/hello_world.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutorials/reading.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/DataTypeHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBool.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBoolInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBoolInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBoolSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBoolSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tfloat/TFloat.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tfloat/TFloatInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tfloat/TFloatInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tfloat/TFloatSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tfloat/TFloatSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tint/TInt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tint/TIntInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tint/TIntInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tint/TIntSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tint/TIntSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/TPoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/TPointInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/TPointSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/TPointSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/helpers/SRIDParseResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/helpers/SRIDParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/helpers/TPointConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeog/TGeogPoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeog/TGeogPointInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeog/TGeogPointInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeog/TGeogPointSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeog/TGeogPointSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeom/TGeomPoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeom/TGeomPointInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeom/TGeomPointInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeom/TGeomPointSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/tpoint/tgeom/TGeomPointSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/ttext/TText.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/ttext/TTextInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/ttext/TTextInstSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/ttext/TTextSeq.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/basic/ttext/TTextSeqSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/boxes/Point.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/boxes/STBox.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/boxes/TBox.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/core/DataType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/core/DateTimeFormatHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/core/TypeName.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TInstant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TInstantSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TSequence.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TSequenceSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/Temporal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalDataType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalInstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalSequences.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/TemporalValue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/delegates/CompareValueFunction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/delegates/GetSingleTemporalValueFunction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/delegates/GetTemporalInstantFunction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/temporal/delegates/GetTemporalSequenceFunction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/time/Period.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/time/PeriodSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/types/time/TimestampSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="2PzNEgVCZ6Ug4FNBiu6jHu6KTaq" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pathVariables&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -37,7 +166,20 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1684455846774</updated>
-      <workItem from="1684455847970" duration="261000" />
+      <workItem from="1684455847970" duration="8831000" />
+      <workItem from="1684693895676" duration="19420000" />
+      <workItem from="1684762070245" duration="623000" />
+      <workItem from="1685375927606" duration="18843000" />
+      <workItem from="1685396473478" duration="3557000" />
+      <workItem from="1685400082072" duration="659000" />
+      <workItem from="1685400789094" duration="3060000" />
+      <workItem from="1685451473650" duration="1972000" />
+      <workItem from="1687360290022" duration="17179000" />
+      <workItem from="1687479717699" duration="9930000" />
+      <workItem from="1687491867622" duration="671000" />
+      <workItem from="1687509092881" duration="2353000" />
+      <workItem from="1687736759434" duration="6732000" />
+      <workItem from="1687777641614" duration="336000" />
     </task>
     <task id="LOCAL-00001" summary="Small changes">
       <created>1684455966290</created>
@@ -46,14 +188,32 @@
       <option name="project" value="LOCAL" />
       <updated>1684455966290</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Small changes">
+      <created>1684456233728</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1684456233728</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Small changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Small changes" />
+    <MESSAGE value="Restructuration of the packages/classes&#10;Example 1 and 2 dones&#10;Functions package and class added&#10;Types classes added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Restructuration of the packages/classes&#10;Example 1 and 2 dones&#10;Functions package and class added&#10;Types classes added" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/JMEOS$reading.ic" NAME="reading Coverage Results" MODIFIED="1687488201327" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>tutorials.*</FILTER>
+    </SUITE>
   </component>
 </project>
