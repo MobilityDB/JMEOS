@@ -26,7 +26,6 @@
             <version>6.2.2.Final</version>
         </dependency>
 
-
         <dependency>
             <groupId>com.github.marschall</groupId>
             <artifactId>threeten-jpa-zoned-hibernate</artifactId>
@@ -38,11 +37,5 @@
             <artifactId>postgis-jdbc</artifactId>
             <version>2021.1.0</version>
         </dependency>
-
-
-
-
-
     </dependencies>
-
 </project>
