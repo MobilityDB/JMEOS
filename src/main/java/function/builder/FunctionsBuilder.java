@@ -83,7 +83,7 @@ public class FunctionsBuilder {
 					
 				""");
 		readFileLines(FUNCTIONS_PATH, line -> {
-			String processedLine = "\t" + line + "\n";
+			String processedLine = "\t" + line + "\n\n";
 			interfaceBuilder.append(processedLine);
 		});
 		interfaceBuilder.append("}");
@@ -107,7 +107,7 @@ public class FunctionsBuilder {
 		readFileLines(FUNCTIONS_PATH, line -> {
 			String functionSignature = "\t" + "public static " + removeSemicolon(line) + " {\n";
 			classBuilder.append(functionSignature);
-			String functionBody = "\t" + "    " + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n\t}\n";
+			String functionBody = "\t" + "    " + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n\t}\n\n";
 			classBuilder.append(functionBody);
 		});
 		classBuilder.append("}");

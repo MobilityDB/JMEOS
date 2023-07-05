@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Ajout de l'extracteur de fonction">
-      <change afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/generatedFunctions.tmp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsExtractor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/function.tmp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/functions.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/functions_generated.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/HeaderBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/generatedClass.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/generatedInterface.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
