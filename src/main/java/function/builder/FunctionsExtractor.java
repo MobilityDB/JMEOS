@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class FunctionsExtractor {
     private static final String FILE_PATH = "src/main/java/function/builder/";
     private static final String INPUT_FILE_PATH = FILE_PATH + "meos.h";
-    private static final String OUTPUT_FILE_PATH = FILE_PATH + "function.tmp";
+    private static final String OUTPUT_FILE_PATH = FILE_PATH + "tmp/functions.h";
 
     /**
      * Modèle RegEx de reconnaissance d'une fonction dans le fichier meos.h
