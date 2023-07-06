@@ -1,5 +1,7 @@
 package function.builder;
 
+import jnr.ffi.Struct;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ public class FunctionsBuilder {
 	 */
 	private static HashMap<String, String> typesBuild() {
 		HashMap<String, String> typeChange = new HashMap<>();
+		typeChange.put("byte\\[\\]", "byte[]");
 		typeChange.put("\\*char", "String");
 		typeChange.put("\\*\\[\\]", "Pointer[]");
 		typeChange.put("\\*", "Pointer");
@@ -63,35 +66,12 @@ public class FunctionsBuilder {
 	 * @param args arguments
 	 */
 	public static void main(String[] args) {
-		/**
-		 * Génère le fichier des fonctions
-		 */
-		readFileLines(C_FUNCTIONS_PATH, line -> {
-			String processedLine = changeFunctionType(line) + "\n";
-			functionsBuilder.append(processedLine);
-		});
-		writeFile(FUNCTIONS_PATH, functionsBuilder);
-		System.out.println("Types non-supportés: " + unSupportedTypes);
-		
-		/**
-		 * Génère le fichier de l'interface
-		 */
-		interfaceBuilder.append("""
-				public interface MeosLibrary {
-					functions.MeosLibrary INSTANCE = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
-					functions.MeosLibrary meos = functions.MeosLibrary.INSTANCE;
-					
-				""");
-		readFileLines(FUNCTIONS_PATH, line -> {
-			String processedLine = "\t" + line + "\n\n";
-			interfaceBuilder.append(processedLine);
-		});
-		interfaceBuilder.append("}");
-		writeFile(INTERFACE_PATH, interfaceBuilder);
-		
-		/**
-		 * Génère le fichier de la classe
-		 */
+		generateFunctions();
+		generateInterface();
+		generateClass();
+	}
+	
+	private static void generateClass() {
 		classBuilder.append("""
 				package function.builder;
 				
@@ -100,20 +80,80 @@ public class FunctionsBuilder {
 				
 				public class functions {
 				""");
-		readFileLines(INTERFACE_PATH, line -> {
-			String processedLine = "\t" + line + "\n";
-			classBuilder.append(processedLine);
+//		readFileLines(INTERFACE_PATH, line -> {
+//			String processedLine = "\t" + line + "\n";
+//			classBuilder.append(processedLine);
+//		});
+//		readLines(interfaceBuilder, line -> {
+//			String processedLine = line + "\n";
+//			classBuilder.append(processedLine);
+//		});
+		appendBuilderWith(interfaceBuilder, classBuilder, "\t", "\n\n");
+//		readFileLines(FUNCTIONS_PATH, line -> {
+//			String functionSignature = "\t" + "public static " + removeSemicolon(line) + " {\n";
+//			classBuilder.append(functionSignature);
+//			String functionBody = "\t" + "    " + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n\t}\n\n";
+//			classBuilder.append(functionBody);
+//		});
+		StringBuilder functionBodyBuilder = new StringBuilder();
+		readBuilderLines(functionsBuilder, line -> {
+			if (!line.isBlank()) {
+				String functionSignature = "public static " + removeSemicolon(line) + " {\n";
+				functionBodyBuilder.append(functionSignature);
+				String functionBody = "\t" + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n";
+				functionBodyBuilder.append(functionBody);
+			}
 		});
-		readFileLines(FUNCTIONS_PATH, line -> {
-			String functionSignature = "\t" + "public static " + removeSemicolon(line) + " {\n";
-			classBuilder.append(functionSignature);
-			String functionBody = "\t" + "    " + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n\t}\n\n";
-			classBuilder.append(functionBody);
-		});
+		appendBuilderWith(functionBodyBuilder, classBuilder, "\t", "\n");
 		classBuilder.append("}");
 		writeFile(CLASS_PATH, classBuilder);
 	}
 	
+	
+	private static void generateInterface() {
+		interfaceBuilder.append("""
+				public interface MeosLibrary {
+					functions.MeosLibrary INSTANCE = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
+					functions.MeosLibrary meos = functions.MeosLibrary.INSTANCE;
+				""");
+//		readFileLines(FUNCTIONS_PATH, line -> {
+//			String processedLine = "\t" + line + "\n\n";
+//			interfaceBuilder.append(processedLine);
+//		});
+		appendBuilderWith(functionsBuilder, interfaceBuilder, "\t", "\n");
+		interfaceBuilder.append("}");
+//		writeFile(INTERFACE_PATH, interfaceBuilder);
+	}
+	
+	private static void generateFunctions() {
+		readFileLines(C_FUNCTIONS_PATH, line -> {
+			String processedLine = changeFunctionType(line) + "\n";
+			functionsBuilder.append(processedLine);
+		});
+//		writeFile(FUNCTIONS_PATH, functionsBuilder);
+		System.out.println("Types non-supportés: " + unSupportedTypes);
+	}
+	
+	public static void appendBuilderWith(StringBuilder sourceBuilder, StringBuilder targetBuilder, String startOfLine, String endOfLine) {
+		String[] lines = sourceBuilder.toString().split("\n");
+		for (String line : lines) {
+			targetBuilder.append(startOfLine).append(line).append(endOfLine);
+		}
+	}
+	
+	private static void readBuilderLines(StringBuilder builder, Consumer<String> process) {
+		String[] lines = builder.toString().split("\n");
+		for (String line : lines) {
+			process.accept(line);
+		}
+	}
+	
+	/**
+	 * Supprime le ; à la fin d'une ligne.
+	 *
+	 * @param input la chaîne de caractères de la ligne
+	 * @return la ligne sans le ;
+	 */
 	public static String removeSemicolon(String input) {
 		if (input.endsWith(";")) {
 			return input.substring(0, input.length() - 1);
@@ -121,6 +161,12 @@ public class FunctionsBuilder {
 		return input;
 	}
 	
+	/**
+	 * Permet de récupérer les valeurs d'une liste sans les [ ].
+	 *
+	 * @param list la liste comportant des chaînes de caractères
+	 * @return une chaîne de caractères des valeurs de la liste
+	 */
 	public static String getListWithoutBrackets(ArrayList<String> list) {
 		// Convertir l'ArrayList en une chaîne de caractères
 		String stringRepresentation = list.toString();
@@ -129,6 +175,12 @@ public class FunctionsBuilder {
 		return stringRepresentation.replace("[", "").replace("]", "");
 	}
 	
+	/**
+	 * Permet d'extraire le nom d'une fonction.
+	 *
+	 * @param signature signature de la fonction
+	 * @return le nom de la fonction
+	 */
 	public static String extractFunctionName(String signature) {
 		// Définir le motif regex pour extraire le nom de la fonction
 		String regex = "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*\\(";
@@ -146,6 +198,12 @@ public class FunctionsBuilder {
 		return "";
 	}
 	
+	/**
+	 * Permet d'extraire les noms des paramètres d'une fonction.
+	 *
+	 * @param signature signature de la fonction
+	 * @return la liste des noms de paramètres
+	 */
 	public static ArrayList<String> extractParamNames(String signature) {
 		ArrayList<String> paramNames = new ArrayList<>();
 		
@@ -159,10 +217,6 @@ public class FunctionsBuilder {
 		}
 		
 		return paramNames;
-	}
-	
-	private static void generateClass() {
-	
 	}
 	
 	/**
