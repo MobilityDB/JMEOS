@@ -1,7 +1,5 @@
 package function.builder;
 
-import jnr.ffi.Struct;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,17 +16,12 @@ import java.util.regex.Pattern;
  * @since 27/06/2023
  */
 public class FunctionsBuilder {
-	public static final HashMap<String, String> TYPES = typesBuild(); // Création du dictionnaire des types C et de son équivalent en Java
+	private static final HashMap<String, String> TYPES = typesBuild(); // Création du dictionnaire des types C et de son équivalent en Java
 	private static final String FILE_PATH = "src/main/java/function/builder/";
 	private static final String TMP_PATH = FILE_PATH + "tmp/"; // Dossier des fichiers temporaires
 	private static final String C_FUNCTIONS_PATH = TMP_PATH + "functions.h"; // Fichier généré par la classe FunctionsExtractor
-	private static final String FUNCTIONS_PATH = TMP_PATH + "generatedFunctions.tmp"; // Fichier généré par cette classe
-	private static final String INTERFACE_PATH = TMP_PATH + "generatedInterface.java"; // Fichier généré par cette classe
-	private static final String CLASS_PATH = FILE_PATH + "generatedClass.java"; // Fichier généré par cette classe
-	public static ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
-	public static StringBuilder functionsBuilder = new StringBuilder(); // Builder pour le fichier temporaire de fonctions
-	public static StringBuilder interfaceBuilder = new StringBuilder(); // Builder pour la partie interface de la classe
-	public static StringBuilder classBuilder = new StringBuilder(); // Builder de la classe
+	private static final String FUNCTIONS_CLASS_PATH = FILE_PATH + "generatedFunctionsClass.java"; // Classe functions générée
+	private static ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
 	
 	/**
 	 * Construit le tableau de modification des types.
@@ -66,13 +59,22 @@ public class FunctionsBuilder {
 	 * @param args arguments
 	 */
 	public static void main(String[] args) {
-		generateFunctions();
-		generateInterface();
-		generateClass();
+		StringBuilder functionsBuilder = generateFunctions(C_FUNCTIONS_PATH);
+		StringBuilder interfaceBuilder = generateInterface(functionsBuilder);
+		StringBuilder classBuilder = generateClass(functionsBuilder, interfaceBuilder);
+		writeFile(FUNCTIONS_CLASS_PATH, classBuilder);
 	}
 	
-	private static void generateClass() {
-		classBuilder.append("""
+	/**
+	 * Permet de générer la classe des fonctions.
+	 *
+	 * @param functionsBuilder builder des fonctions
+	 * @param interfaceBuilder builder de l'interface
+	 * @return le builder de la classe
+	 */
+	private static StringBuilder generateClass(StringBuilder functionsBuilder, StringBuilder interfaceBuilder) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("""
 				package function.builder;
 				
 				import jnr.ffi.LibraryLoader;
@@ -80,22 +82,9 @@ public class FunctionsBuilder {
 				
 				public class functions {
 				""");
-//		readFileLines(INTERFACE_PATH, line -> {
-//			String processedLine = "\t" + line + "\n";
-//			classBuilder.append(processedLine);
-//		});
-//		readLines(interfaceBuilder, line -> {
-//			String processedLine = line + "\n";
-//			classBuilder.append(processedLine);
-//		});
-		appendBuilderWith(interfaceBuilder, classBuilder, "\t", "\n\n");
-//		readFileLines(FUNCTIONS_PATH, line -> {
-//			String functionSignature = "\t" + "public static " + removeSemicolon(line) + " {\n";
-//			classBuilder.append(functionSignature);
-//			String functionBody = "\t" + "    " + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n\t}\n\n";
-//			classBuilder.append(functionBody);
-//		});
-		StringBuilder functionBodyBuilder = new StringBuilder();
+		appendBuilderWith(interfaceBuilder, builder, "\t", "\n\n"); // Ajout de l'interface
+		
+		StringBuilder functionBodyBuilder = new StringBuilder(); // Ajout des fonctions
 		readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
 				String functionSignature = "public static " + removeSemicolon(line) + " {\n";
@@ -104,36 +93,55 @@ public class FunctionsBuilder {
 				functionBodyBuilder.append(functionBody);
 			}
 		});
-		appendBuilderWith(functionBodyBuilder, classBuilder, "\t", "\n");
-		classBuilder.append("}");
-		writeFile(CLASS_PATH, classBuilder);
+		appendBuilderWith(functionBodyBuilder, builder, "\t", "\n");
+		builder.append("}");
+		return builder;
 	}
 	
-	
-	private static void generateInterface() {
-		interfaceBuilder.append("""
+	/**
+	 * Génération de l'interface.
+	 *
+	 * @param functionsBuilder builder des fonctions
+	 * @return le builder de l'interface
+	 */
+	private static StringBuilder generateInterface(StringBuilder functionsBuilder) {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("""
 				public interface MeosLibrary {
 					functions.MeosLibrary INSTANCE = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
 					functions.MeosLibrary meos = functions.MeosLibrary.INSTANCE;
 				""");
-//		readFileLines(FUNCTIONS_PATH, line -> {
-//			String processedLine = "\t" + line + "\n\n";
-//			interfaceBuilder.append(processedLine);
-//		});
-		appendBuilderWith(functionsBuilder, interfaceBuilder, "\t", "\n");
-		interfaceBuilder.append("}");
-//		writeFile(INTERFACE_PATH, interfaceBuilder);
+		appendBuilderWith(functionsBuilder, builder, "\t", "\n");
+		builder.append("}");
+		return builder;
 	}
 	
-	private static void generateFunctions() {
-		readFileLines(C_FUNCTIONS_PATH, line -> {
+	/**
+	 * Génération des fonctions avec leurs types modifiés.
+	 *
+	 * @param functions_path chemin des fonctions C
+	 * @return le builder des fonctions
+	 */
+	private static StringBuilder generateFunctions(String functions_path) {
+		StringBuilder builder = new StringBuilder();
+		
+		readFileLines(functions_path, line -> {
 			String processedLine = changeFunctionType(line) + "\n";
-			functionsBuilder.append(processedLine);
+			builder.append(processedLine);
 		});
-//		writeFile(FUNCTIONS_PATH, functionsBuilder);
 		System.out.println("Types non-supportés: " + unSupportedTypes);
+		return builder;
 	}
 	
+	/**
+	 * Ajout d'un builder dans un autre.
+	 *
+	 * @param sourceBuilder le builder à ajouter
+	 * @param targetBuilder le builder qui reçoit
+	 * @param startOfLine   chaque ligne commence par cette chaîne de caractères
+	 * @param endOfLine     chaque ligne finit par cette chaîne de caractères
+	 */
 	public static void appendBuilderWith(StringBuilder sourceBuilder, StringBuilder targetBuilder, String startOfLine, String endOfLine) {
 		String[] lines = sourceBuilder.toString().split("\n");
 		for (String line : lines) {
@@ -141,6 +149,12 @@ public class FunctionsBuilder {
 		}
 	}
 	
+	/**
+	 * Permet de lire les lignes itérativement depuis un builder.
+	 *
+	 * @param builder le builder en question
+	 * @param process l'expression lambda à lancer
+	 */
 	private static void readBuilderLines(StringBuilder builder, Consumer<String> process) {
 		String[] lines = builder.toString().split("\n");
 		for (String line : lines) {
@@ -168,11 +182,8 @@ public class FunctionsBuilder {
 	 * @return une chaîne de caractères des valeurs de la liste
 	 */
 	public static String getListWithoutBrackets(ArrayList<String> list) {
-		// Convertir l'ArrayList en une chaîne de caractères
-		String stringRepresentation = list.toString();
-		
-		// Supprimer les '[' et ']'
-		return stringRepresentation.replace("[", "").replace("]", "");
+		String stringRepresentation = list.toString(); // Convertir l'ArrayList en une chaîne de caractères
+		return stringRepresentation.replace("[", "").replace("]", ""); // Supprimer les '[' et ']'
 	}
 	
 	/**
@@ -217,23 +228,6 @@ public class FunctionsBuilder {
 		}
 		
 		return paramNames;
-	}
-	
-	/**
-	 * Permet de lire les lignes d'un fichier et d'effectuer des modifications sur celles-ci.
-	 *
-	 * @param filepath chemin du fichier
-	 * @param process  expression lambda
-	 */
-	private static void readFileLines(String filepath, Consumer<String> process) {
-		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				process.accept(line);
-			}
-		} catch (IOException e) {
-			System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
-		}
 	}
 	
 	/**
@@ -294,6 +288,23 @@ public class FunctionsBuilder {
 		}
 		
 		return typesList;
+	}
+	
+	/**
+	 * Permet de lire les lignes d'un fichier et d'effectuer des modifications sur celles-ci.
+	 *
+	 * @param filepath chemin du fichier
+	 * @param process  expression lambda
+	 */
+	private static void readFileLines(String filepath, Consumer<String> process) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				process.accept(line);
+			}
+		} catch (IOException e) {
+			System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
+		}
 	}
 	
 	/**
