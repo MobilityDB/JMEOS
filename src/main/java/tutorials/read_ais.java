@@ -1,20 +1,14 @@
 package tutorials;
 import jnr.ffi.Pointer;
-import jnr.ffi.Struct;
-import types.*;
-import types.boxes.Point;
-import types.time.TimestampSet;
 import function.functions;
-import jnr.ffi.Runtime;
 
 import java.io.*;
 
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
 import java.util.Scanner;
 
 
-public class reading {
+public class read_ais {
     public static final int MAX_LENGTH_HEADER=1024;
     public static final int MAX_LENGTH_POINT=64;
     public static final int MAX_LENGTH_TIMESTAMP=32;

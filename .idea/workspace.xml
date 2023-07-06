@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Ajout de l'extracteur de fonction">
+    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Third example added (not finished)&#10;Rename of second example">
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutorials/assemble_ais.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/generatedFunctions.tmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutorials/reading.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutorials/read_ais.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +26,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectCodeStyleSettingsMigration">
@@ -60,6 +66,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="tutorials" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.FunctionsBuilder">
     <configuration name="FunctionBuilder" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="function.builder.FunctionBuilder" />
@@ -175,7 +186,8 @@
     <MESSAGE value="Small changes" />
     <MESSAGE value="Restructuration of the packages/classes&#10;Example 1 and 2 dones&#10;Functions package and class added&#10;Types classes added" />
     <MESSAGE value="Ajout de l'extracteur de fonction" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ajout de l'extracteur de fonction" />
+    <MESSAGE value="Third example added (not finished)&#10;Rename of second example" />
+    <option name="LAST_COMMIT_MESSAGE" value="Third example added (not finished)&#10;Rename of second example" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
