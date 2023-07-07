@@ -1,12 +1,15 @@
 package types.basic.tbool;
 
+import jnr.ffi.Memory;
+import jnr.ffi.Runtime;
 import types.temporal.TemporalDataType;
 import types.temporal.TemporalType;
 import types.temporal.TemporalValue;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import types.temporal.Temporal;
-
+import function.builder.functions;
+import jnr.ffi.Pointer;
 import java.sql.SQLException;
 
 
@@ -88,4 +91,11 @@ public class TBool extends TemporalDataType<Boolean> {
     public static int compareValue(Boolean first, Boolean second) {
         return first.compareTo(second);
     }
+
+
+    public boolean start_value(){
+        Pointer a = Pointer.wrap(Runtime.getSystemRuntime(),this.hashCode());
+        return functions.tbool_start_value(a);
+    }
+
 }
