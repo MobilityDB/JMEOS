@@ -1,11 +1,14 @@
 package types.boxes;
 
+import jnr.ffi.Pointer;
 import types.core.DataType;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+
+import static function.builder.functions.stbox_from_hexwkb;
 
 /**
  * Class that represents the MobilityDB type TBox
@@ -70,6 +73,19 @@ public class TBox extends DataType {
         this.tmin = tmin;
         this.tmax = tmax;
     }
+
+
+    /**
+     * Function that produces an TBox from a string through MEOS.
+     * @param hexwkb
+     * @return a JNR-FFI pointer
+     */
+    public STBox from_hexwkb(String hexwkb){
+        Pointer result = stbox_from_hexwkb(hexwkb);
+        return new STBox(result);
+    }
+
+
 
 
     @Override

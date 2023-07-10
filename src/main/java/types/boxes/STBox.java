@@ -1,12 +1,22 @@
 package types.boxes;
 
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import types.basic.tpoint.TPoint;
 import types.core.DataType;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
+import net.postgis.jdbc.geometry.*;
+import types.time.Period;
+import types.time.PeriodSet;
+import types.time.TimestampSet;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+
+import static function.builder.functions.*;
 
 /**
  * Class that represents the MobilityDB type STBox
@@ -19,6 +29,9 @@ public class STBox extends DataType {
     private OffsetDateTime tMax = null;
     private boolean isGeodetic = false;
     private int srid = 0;
+    private Pointer _inner = null;
+    private boolean tmin_inc = true;
+    private boolean tmax_inc = true;
 
     /**
      * The default constructor
@@ -27,14 +40,36 @@ public class STBox extends DataType {
         super();
     }
 
+    public STBox(Pointer inner){
+        this(inner,true,true,false);
+    }
+
+    public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
+        super();
+        this._inner = inner;
+        this.tmin_inc = tmin_inc;
+        this.tmax_inc = tmax_inc;
+        this.isGeodetic = geodetic;
+    }
+
     /**
      * The string constructor
      * @param value - STBox value
      * @throws SQLException
      */
-    public STBox(final String value) throws SQLException {
+    public STBox(final String value, Pointer inner, boolean tmin_inc, boolean tmax_inc) throws SQLException {
         super();
         setValue(value);
+
+        this.tmin_inc = tmin_inc ;
+        this.tmax_inc = tmax_inc ;
+
+        if (inner != null) {
+            this._inner = inner;
+        }
+        else if (value != null){
+            this._inner = stbox_in(value);
+        }
     }
 
     /**
@@ -44,11 +79,14 @@ public class STBox extends DataType {
      * @param pMax - coordinates for maximum bound
      * @throws SQLException
      */
-    public STBox(Point pMin, Point pMax) throws SQLException {
+    public STBox(Point pMin, Point pMax, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -60,13 +98,16 @@ public class STBox extends DataType {
      * @param tMax - maximum time dimension
      * @throws SQLException
      */
-    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax) throws SQLException {
+    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
         this.tMin = tMin;
         this.tMax = tMax;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -76,11 +117,14 @@ public class STBox extends DataType {
      * @param tMax - maximum time dimension
      * @throws SQLException
      */
-    public STBox(OffsetDateTime tMin, OffsetDateTime tMax) throws SQLException {
+    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, Pointer inner) throws SQLException {
         super();
         this.tMin = tMin;
         this.tMax = tMax;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -91,12 +135,15 @@ public class STBox extends DataType {
      * @param isGeodetic - if the coordinates are spherical
      * @throws SQLException
      */
-    public STBox(Point pMin, Point pMax, boolean isGeodetic) throws SQLException {
+    public STBox(Point pMin, Point pMax, boolean isGeodetic, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
         this.isGeodetic = isGeodetic;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -109,7 +156,7 @@ public class STBox extends DataType {
      * @param isGeodetic - if the coordinates are spherical
      * @throws SQLException
      */
-    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic)
+    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, Pointer inner)
             throws SQLException {
         super();
         this.pMin = pMin;
@@ -118,6 +165,9 @@ public class STBox extends DataType {
         this.tMax = tMax;
         this.isGeodetic = isGeodetic;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -128,12 +178,15 @@ public class STBox extends DataType {
      * @param isGeodetic - if the coordinates are spherical
      * @throws SQLException
      */
-    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic) throws SQLException {
+    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, Pointer inner) throws SQLException {
         super();
         this.tMin = tMin;
         this.tMax = tMax;
         this.isGeodetic = isGeodetic;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -144,12 +197,15 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(Point pMin, Point pMax, int srid) throws SQLException {
+    public STBox(Point pMin, Point pMax, int srid, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -162,7 +218,7 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid) throws SQLException {
+    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
@@ -170,6 +226,9 @@ public class STBox extends DataType {
         this.tMax = tMax;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -180,12 +239,15 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid) throws SQLException {
+    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
         super();
         this.tMin = tMin;
         this.tMax = tMax;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -197,13 +259,16 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid) throws SQLException {
+    public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
         super();
         this.pMin = pMin;
         this.pMax = pMax;
         this.isGeodetic = isGeodetic;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -217,7 +282,7 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid)
+    public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner)
             throws SQLException {
         super();
         this.pMin = pMin;
@@ -227,6 +292,9 @@ public class STBox extends DataType {
         this.isGeodetic = isGeodetic;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
 
     /**
@@ -238,14 +306,154 @@ public class STBox extends DataType {
      * @param srid - spatial reference identifier
      * @throws SQLException
      */
-    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid) throws SQLException {
+    public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
         super();
         this.tMin = tMin;
         this.tMax = tMax;
         this.isGeodetic = isGeodetic;
         this.srid = srid;
         validate();
+        if (inner != null) {
+            this._inner = inner;
+        }
     }
+
+    /**
+     * Function that produces an STBox from a string through MEOS.
+     * @param hexwkb
+     * @return a JNR-FFI pointer
+     */
+    public STBox from_hexwkb(String hexwkb){
+        Pointer result = stbox_from_hexwkb(hexwkb);
+        return new STBox(result);
+    }
+
+    //To modify for pointer
+    public String as_hexwkb(){
+        return stbox_as_hexwkb(this._inner,-1,this._inner.size())[0];
+    }
+
+    public STBox from_geometry(Geometry geom){
+        Pointer gs = gserialized_in(geom.toString(),-1);
+        return new STBox(geo_to_stbox(gs));
+    }
+
+    public STBox from_space(Geometry value){
+        return from_geometry(value);
+    }
+
+    public STBox from_datetime(Pointer time){
+        Pointer result;
+        //Add the datetime_to_timestamptz function to the class
+        result = timestamp_to_stbox(datetime_to_timestamptz(time));
+        return new STBox(result);
+    }
+
+    public STBox from_timestampset(Pointer time){
+        Pointer result = timestampset_to_stbox(time);
+        return new STBox(result);
+    }
+
+    public STBox from_period(Pointer time){
+        Pointer result = period_to_stbox(time);
+        return new STBox(result);
+    }
+
+    public STBox from_periodset(Pointer time){
+        Pointer result = periodset_to_stbox(time);
+        return new STBox(result);
+    }
+
+    public STBox from_expanding_bounding_box_geom(Geometry value, float expansion){
+        Pointer gs = gserialized_in(value.toString(),-1);
+        Pointer result = geo_expand_spatial(gs,expansion);
+        return new STBox(result);
+    }
+
+    public STBox from_expanding_bounding_box_tpoint(TPoint value, float expansion){
+        Pointer result = tpoint_expand_spatial(value._inner, expansion);
+        return new STBox(result);
+    }
+
+    public STBox from_space_datetime(Geometry value, Pointer time){
+        return from_geometry_datetime(value,time);
+    }
+
+    public STBox from_space_period(Geometry value, Pointer time ){
+        return from_geometry_period(value,time);
+    }
+
+    public STBox from_geometry_datetime(Geometry geometry, Pointer datetime){
+        Pointer gs = gserialized_in(geometry.toString(),-1);
+        Pointer result = geo_timestamp_to_stbox(gs,datetime_to_timestamptz(datetime));
+        return new STBox(result);
+    }
+
+    public STBox from_geometry_period(Geometry geometry, Pointer period){
+        Pointer gs = gserialized_in(geometry.toString(),-1);
+        Pointer result = geo_period_to_stbox(gs,period._inner);
+        return new STBox(result);
+    }
+
+    public STBox from_tpoint(TPoint temporal){
+        return new STBox(tpoint_to_stbox(temporal._inner));
+    }
+
+    //Add the shapely package ?
+    public BaseGeometry to_geometry(int precision){
+        return gserialized_to_shapely_geometry(stbox_to_geo(this._inner),precision);
+    }
+
+    public Period to_period(){
+        return Period(stbox_to_period(this._inner));
+    }
+
+    public boolean has_xy(){
+        return stbox_hasx(this._inner);
+    }
+    public boolean has_z(){
+        return stbox_hasz(this._inner);
+    }
+    public boolean has_t(){
+        return stbox_hast(this._inner);
+    }
+
+    public boolean geodetic(){
+        return stbox_isgeodetic(this._inner);
+    }
+
+    //Check the following with pointer double
+    public boolean xmin(){
+        return stbox_xmin(this._inner);
+    }
+    public boolean ymin(){
+        return stbox_ymin(this._inner);
+    }
+    public boolean zmin(){
+        return stbox_zmin(this._inner);
+    }
+    public boolean tmin(){
+        return stbox_tmin(this._inner);
+    }
+    public boolean xmax(){
+        return stbox_xmax(this._inner);
+    }
+    public boolean ymax(){
+        return stbox_ymax(this._inner);
+    }
+    public boolean zmax(){
+        return stbox_zmax(this._inner);
+    }
+    public boolean tmax(){
+        return stbox_tmax(this._inner);
+    }
+
+
+
+
+
+
+
 
     @Override
     public String getValue() {
@@ -287,10 +495,10 @@ public class STBox extends DataType {
                 .replace("(", "")
                 .replace(")", "");
         String[] values = value.split(",");
-        int nonEmpty = (int) Arrays.stream(values).filter(x -> !x.isBlank()).count();
+        int nonEmpty = (int) Arrays.stream(values).filter(x -> !x.isEmpty()).count();
         if (nonEmpty == 2) {
             String[] removedNull = Arrays.stream(values)
-                    .filter(x -> !x.isBlank())
+                    .filter(x -> !x.isEmpty())
                     .toArray(String[]::new);
             this.tMin = DateTimeFormatHelper.getDateTimeFormat(removedNull[0].trim());
             this.tMax = DateTimeFormatHelper.getDateTimeFormat(removedNull[1].trim());
