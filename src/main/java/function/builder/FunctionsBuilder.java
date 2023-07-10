@@ -21,7 +21,7 @@ public class FunctionsBuilder {
 	private static final String TMP_PATH = FILE_PATH + "tmp/"; // Dossier des fichiers temporaires
 	private static final String C_FUNCTIONS_PATH = TMP_PATH + "functions.h"; // Fichier généré par la classe FunctionsExtractor
 	private static final String FUNCTIONS_CLASS_PATH = FILE_PATH + "generatedFunctionsClass.java"; // Classe functions générée
-	private static ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
+	private static final ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
 	
 	/**
 	 * Construit le tableau de modification des types.
@@ -34,21 +34,23 @@ public class FunctionsBuilder {
 	 */
 	private static HashMap<String, String> typesBuild() {
 		HashMap<String, String> typeChange = new HashMap<>();
+		typeChange.put("\\*", "Pointer");
+		typeChange.put("\\*\\[\\]", "Pointer[]");
 		typeChange.put("byte\\[\\]", "byte[]");
 		typeChange.put("\\*char", "String");
-		typeChange.put("\\*\\[\\]", "Pointer[]");
-		typeChange.put("\\*", "Pointer");
 		typeChange.put("void", "void");
 		typeChange.put("bool", "boolean");
 		typeChange.put("float", "float");
 		typeChange.put("double", "double");
-		typeChange.put("int32", "int");
-		typeChange.put("uint8_t", "int");
+		typeChange.put("int", "int");
+		typeChange.put("int32", "int32_t");
+		typeChange.put("uint8_t", "u_int8_t");
+		typeChange.put("uint32_t", "u_int32_t");
+		typeChange.put("uint64", "u_int64_t");
+		typeChange.put("size_t", "size_t");
 		typeChange.put("Timestamp", "int");
 		typeChange.put("TimestampTz", "int");
-		typeChange.put("size_t", "int");
 		typeChange.put("Datum", "int");
-		typeChange.put("int", "int");
 		
 		return typeChange;
 	}
@@ -79,6 +81,9 @@ public class FunctionsBuilder {
 				
 				import jnr.ffi.LibraryLoader;
 				import jnr.ffi.Pointer;
+				import jnr.ffi.types.int32_t;
+				import jnr.ffi.types.u_int64_t;
+				import jnr.ffi.types.u_int8_t;
 				
 				public class functions {
 				""");
@@ -90,6 +95,10 @@ public class FunctionsBuilder {
 				String functionSignature = "public static " + removeSemicolon(line) + " {\n";
 				functionBodyBuilder.append(functionSignature);
 				String functionBody = "\t" + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n";
+				
+				if (getFunctionTypes(line).get(0).equals("void"))
+					functionBody = "\t" + "MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n"; // Quand la fonction ne renvoie rien
+				
 				functionBodyBuilder.append(functionBody);
 			}
 		});
@@ -237,30 +246,33 @@ public class FunctionsBuilder {
 	 * @return la ligne traitée
 	 */
 	private static String changeFunctionType(String line) {
-		// Supprimer les mots clés "extern" et "const"
-		line = line.replace("extern ", "").replace("const ", "");
-		//        System.out.println(line);
-		
-		// Modification des types avec *
-		line = line.replaceAll("char\\s\\*", "*char ");
-		line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
-		line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
-		//		System.out.println(line);
-		
-		// Modification des types spéciaux
-		line = line.replaceAll("\\*char\\stz_str", "byte[] tz_str"); // Pour la fonction meos_initialize(const char *tz_str);
-		line = line.replaceAll("\\(void\\)", "()"); // Pour la fonction meos_finish(void);
-		
-		// Remplace les types depuis le dictionnaire de types
-		for (Map.Entry<String, String> entry : TYPES.entrySet()) {
-			String oldType = entry.getKey();
-			String newType = entry.getValue();
-			line = line.replaceAll(oldType + "\\s", newType + " ");
+		if (!line.isBlank()) {
+			// Supprimer les mots clés qui ne nous intéresse pas
+			line = line.replaceAll("extern ", "");
+			line = line.replaceAll("const ", "");
+			line = line.replaceAll("static inline ", "");
+			
+			// Modification des types avec *
+			line = line.replaceAll("char\\s\\*", "*char ");
+			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
+			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
+			
+			// Modification des types ou noms spéciaux
+			line = line.replaceAll("\\*char\\stz_str", "byte[] tz_str"); // Pour la fonction meos_initialize(const char *tz_str);
+			line = line.replaceAll("\\(void\\)", "()"); // Pour la fonction meos_finish(void);
+			line = line.replaceAll("synchronized", "synchronize"); // Pour la fonction temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
+			
+			// Remplace les types depuis le dictionnaire de types
+			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
+				String oldType = entry.getKey();
+				String newType = entry.getValue();
+				line = line.replaceAll(oldType + "\\s", newType + " ");
+			}
+			
+			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Récupération des types non-supportés pour la ligne
+			if (!typesNotSupported.isEmpty()) System.out.println(typesNotSupported);
+			unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Récupération des types non-supportés qui ne sont pas encore dans la liste globale
 		}
-		//		System.out.println(line);
-		
-		List<String> typesNotSupported = getTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Récupération des types non-supportés pour la ligne
-		unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Récupération des types non-supportés qui ne sont pas encore dans la liste globale
 		
 		return line;
 	}
@@ -271,8 +283,8 @@ public class FunctionsBuilder {
 	 * @param line ligne texte d'une fonction
 	 * @return liste des types
 	 */
-	private static ArrayList<String> getTypes(String line) {
-		Pattern pattern = Pattern.compile("\\b(\\w+)\\b\\s+(\\w+)\\s*\\(([^)]*)\\)");
+	private static ArrayList<String> getFunctionTypes(String line) {
+		Pattern pattern = Pattern.compile("(\\w+(?:\\[\\])?)\\s+(\\w+)\\s*\\(([^)]*)\\)");
 		Matcher matcher = pattern.matcher(line);
 		
 		ArrayList<String> typesList = new ArrayList<>();
@@ -283,8 +295,9 @@ public class FunctionsBuilder {
 			
 			String[] paramTypeArray = paramTypes.split("\\s\\w+,\\s|\\s\\w+");
 			
-			typesList.addAll(List.of(paramTypeArray));
 			typesList.add(returnType); // ajout du type de retour de la fonction
+			typesList.addAll(List.of(paramTypeArray));
+			
 		}
 		
 		return typesList;

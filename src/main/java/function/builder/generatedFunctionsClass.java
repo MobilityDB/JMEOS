@@ -2,6 +2,9 @@ package function.builder;
 
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
+import jnr.ffi.types.int32_t;
+import jnr.ffi.types.u_int64_t;
+import jnr.ffi.types.u_int8_t;
 
 public class functions {
 	public interface MeosLibrary {
@@ -16,7 +19,7 @@ public class functions {
 
 		Pointer gserialized_from_lwgeom(Pointer geom, Pointer size);
 
-		static inline Pointer lwgeom_as_lwpoint(Pointer lwgeom);
+		Pointer lwgeom_as_lwpoint(Pointer lwgeom);
 
 		int32_t lwgeom_get_srid(Pointer geom);
 
@@ -46,9 +49,9 @@ public class functions {
 
 		int pg_interval_cmp(Pointer interval1, Pointer interval2);
 
-		Pointer pg_interval_in(String str, int typmod);
+		Pointer pg_interval_in(String str, int32_t typmod);
 
-		Pointer pg_interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs);
+		Pointer pg_interval_make(int32_t years, int32_t months, int32_t weeks, int32_t days, int32_t hours, int32_t mins, double secs);
 
 		String pg_interval_out(Pointer span);
 
@@ -56,11 +59,11 @@ public class functions {
 
 		Pointer pg_interval_pl(Pointer span1, Pointer span2);
 
-		TimeADT pg_time_in(String str, int typmod);
+		TimeADT pg_time_in(String str, int32_t typmod);
 
 		String pg_time_out(TimeADT time);
 
-		int pg_timestamp_in(String str, int typmod);
+		int pg_timestamp_in(String str, int32_t typmod);
 
 		Pointer pg_timestamp_mi(int dt1, int dt2);
 
@@ -70,7 +73,7 @@ public class functions {
 
 		int pg_timestamp_pl_interval(int timestamp, Pointer span);
 
-		int pg_timestamptz_in(String str, int typmod);
+		int pg_timestamptz_in(String str, int32_t typmod);
 
 		String pg_timestamptz_out(int dt);
 
@@ -82,7 +85,7 @@ public class functions {
 
 		String gserialized_as_text(Pointer geom, int precision);
 
-		Pointer gserialized_from_ewkb(Pointer bytea_wkb, int srid);
+		Pointer gserialized_from_ewkb(Pointer bytea_wkb, int32_t srid);
 
 		Pointer gserialized_from_geojson(String geojson);
 
@@ -90,7 +93,7 @@ public class functions {
 
 		Pointer gserialized_from_text(String wkt, int srid);
 
-		Pointer gserialized_in(String input, int geom_typmod);
+		Pointer gserialized_in(String input, int32_t geom_typmod);
 
 		String gserialized_out(Pointer geom);
 
@@ -108,9 +111,9 @@ public class functions {
 
 		String period_out(Pointer s);
 
-		String periodset_as_hexwkb(Pointer ps, int variant, Pointer size_out);
+		String periodset_as_hexwkb(Pointer ps, u_int8_t variant, Pointer size_out);
 
-		Pointer periodset_as_wkb(Pointer ps, int variant, Pointer size_out);
+		Pointer periodset_as_wkb(Pointer ps, u_int8_t variant, Pointer size_out);
 
 		Pointer periodset_from_hexwkb(String hexwkb);
 
@@ -120,9 +123,9 @@ public class functions {
 
 		String periodset_out(Pointer ps);
 
-		String span_as_hexwkb(Pointer s, int variant, Pointer size_out);
+		String span_as_hexwkb(Pointer s, u_int8_t variant, Pointer size_out);
 
-		Pointer span_as_wkb(Pointer s, int variant, Pointer size_out);
+		Pointer span_as_wkb(Pointer s, u_int8_t variant, Pointer size_out);
 
 		Pointer span_from_hexwkb(String hexwkb);
 
@@ -130,9 +133,9 @@ public class functions {
 
 		String span_out(Pointer s, int arg);
 
-		String timestampset_as_hexwkb(Pointer ts, int variant, Pointer size_out);
+		String timestampset_as_hexwkb(Pointer ts, u_int8_t variant, Pointer size_out);
 
-		Pointer timestampset_as_wkb(Pointer ts, int variant, Pointer size_out);
+		Pointer timestampset_as_wkb(Pointer ts, u_int8_t variant, Pointer size_out);
 
 		Pointer timestampset_from_hexwkb(String hexwkb);
 
@@ -198,9 +201,9 @@ public class functions {
 
 		int periodset_end_timestamp(Pointer ps);
 
-		uint periodset_hash(Pointer ps);
+		uint32_t periodset_hash(Pointer ps);
 
-		uint64 periodset_hash_extended(Pointer ps, uint64 seed);
+		u_int64_t periodset_hash_extended(Pointer ps, u_int64_t seed);
 
 		int periodset_mem_size(Pointer ps);
 
@@ -220,9 +223,9 @@ public class functions {
 
 		Pointer periodset_timestamps(Pointer ps, Pointer count);
 
-		uint span_hash(Pointer s);
+		uint32_t span_hash(Pointer s);
 
-		uint64 span_hash_extended(Pointer s, uint64 seed);
+		u_int64_t span_hash_extended(Pointer s, u_int64_t seed);
 
 		boolean span_lower_inc(Pointer s);
 
@@ -232,9 +235,9 @@ public class functions {
 
 		int timestampset_end_timestamp(Pointer ss);
 
-		uint timestampset_hash(Pointer ss);
+		uint32_t timestampset_hash(Pointer ss);
 
-		uint64 timestampset_hash_extended(Pointer ss, uint64 seed);
+		u_int64_t timestampset_hash_extended(Pointer ss, u_int64_t seed);
 
 		int timestampset_mem_size(Pointer ss);
 
@@ -720,13 +723,13 @@ public class functions {
 
 		Pointer stbox_from_hexwkb(String hexwkb);
 
-		Pointer tbox_as_wkb(Pointer box, int variant, Pointer size_out);
+		Pointer tbox_as_wkb(Pointer box, u_int8_t variant, Pointer size_out);
 
-		String tbox_as_hexwkb(Pointer box, int variant, Pointer size);
+		String tbox_as_hexwkb(Pointer box, u_int8_t variant, Pointer size);
 
-		Pointer stbox_as_wkb(Pointer box, int variant, Pointer size_out);
+		Pointer stbox_as_wkb(Pointer box, u_int8_t variant, Pointer size_out);
 
-		String stbox_as_hexwkb(Pointer box, int variant, Pointer size);
+		String stbox_as_hexwkb(Pointer box, u_int8_t variant, Pointer size);
 
 		Pointer stbox_in(String str);
 
@@ -828,7 +831,7 @@ public class functions {
 
 		boolean stbox_tmax(Pointer box, Pointer result);
 
-		int stbox_srid(Pointer box);
+		int32_t stbox_srid(Pointer box);
 
 		void tbox_expand(Pointer box1, Pointer box2);
 
@@ -842,7 +845,7 @@ public class functions {
 
 		void stbox_shift_tscale(Pointer start, Pointer duration, Pointer box);
 
-		Pointer stbox_set_srid(Pointer box, int srid);
+		Pointer stbox_set_srid(Pointer box, int32_t srid);
 
 		Pointer stbox_expand_spatial(Pointer box, double d);
 
@@ -964,11 +967,11 @@ public class functions {
 
 		String tbool_out(Pointer temp);
 
-		String temporal_as_hexwkb(Pointer temp, int variant, Pointer size_out);
+		String temporal_as_hexwkb(Pointer temp, u_int8_t variant, Pointer size_out);
 
 		String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs);
 
-		Pointer temporal_as_wkb(Pointer temp, int variant, Pointer size_out);
+		Pointer temporal_as_wkb(Pointer temp, u_int8_t variant, Pointer size_out);
 
 		Pointer temporal_from_hexwkb(String hexwkb);
 
@@ -1116,7 +1119,7 @@ public class functions {
 
 		int temporal_end_timestamp(Pointer temp);
 
-		uint temporal_hash(Pointer temp);
+		uint32_t temporal_hash(Pointer temp);
 
 		String temporal_interpolation(Pointer temp);
 
@@ -1132,7 +1135,7 @@ public class functions {
 
 		Pointer[] temporal_sequences(Pointer temp, Pointer count);
 
-		int temporal_size(Pointer temp);
+		size_t temporal_size(Pointer temp);
 
 		Pointer temporal_start_sequence(Pointer temp);
 
@@ -2164,7 +2167,7 @@ public class functions {
 
 		Pointer[] tpoint_make_simple(Pointer temp, Pointer count);
 
-		Pointer tpoint_set_srid(Pointer temp, int srid);
+		Pointer tpoint_set_srid(Pointer temp, int32_t srid);
 
 		int contains_geo_tpoint(Pointer geo, Pointer temp);
 
@@ -2292,7 +2295,7 @@ public class functions {
 
 		Pointer geo_to_tpoint(Pointer geo);
 
-		Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronized);
+		Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronize);
 
 		boolean tpoint_to_geo_measure(Pointer tpoint, Pointer measure, boolean segmentize, Pointer[] result);
 
@@ -2310,7 +2313,7 @@ public class functions {
 		return MeosLibrary.meos.gserialized_from_lwgeom(geom, size);
 	}
 	
-	public static static inline Pointer lwgeom_as_lwpoint(Pointer lwgeom) {
+	public static Pointer lwgeom_as_lwpoint(Pointer lwgeom) {
 		return MeosLibrary.meos.lwgeom_as_lwpoint(lwgeom);
 	}
 	
@@ -2343,11 +2346,11 @@ public class functions {
 	}
 	
 	public static void meos_initialize(byte[] tz_str) {
-		return MeosLibrary.meos.meos_initialize(tz_str);
+		MeosLibrary.meos.meos_initialize(tz_str);
 	}
 	
 	public static void meos_finish() {
-		return MeosLibrary.meos.meos_finish();
+		MeosLibrary.meos.meos_finish();
 	}
 	
 	public static boolean bool_in(String in_str) {
@@ -2370,11 +2373,11 @@ public class functions {
 		return MeosLibrary.meos.pg_interval_cmp(interval1, interval2);
 	}
 	
-	public static Pointer pg_interval_in(String str, int typmod) {
+	public static Pointer pg_interval_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_interval_in(str, typmod);
 	}
 	
-	public static Pointer pg_interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs) {
+	public static Pointer pg_interval_make(int32_t years, int32_t months, int32_t weeks, int32_t days, int32_t hours, int32_t mins, double secs) {
 		return MeosLibrary.meos.pg_interval_make(years, months, weeks, days, hours, mins, secs);
 	}
 	
@@ -2390,7 +2393,7 @@ public class functions {
 		return MeosLibrary.meos.pg_interval_pl(span1, span2);
 	}
 	
-	public static TimeADT pg_time_in(String str, int typmod) {
+	public static TimeADT pg_time_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_time_in(str, typmod);
 	}
 	
@@ -2398,7 +2401,7 @@ public class functions {
 		return MeosLibrary.meos.pg_time_out(time);
 	}
 	
-	public static int pg_timestamp_in(String str, int typmod) {
+	public static int pg_timestamp_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_timestamp_in(str, typmod);
 	}
 	
@@ -2418,7 +2421,7 @@ public class functions {
 		return MeosLibrary.meos.pg_timestamp_pl_interval(timestamp, span);
 	}
 	
-	public static int pg_timestamptz_in(String str, int typmod) {
+	public static int pg_timestamptz_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_timestamptz_in(str, typmod);
 	}
 	
@@ -2442,7 +2445,7 @@ public class functions {
 		return MeosLibrary.meos.gserialized_as_text(geom, precision);
 	}
 	
-	public static Pointer gserialized_from_ewkb(Pointer bytea_wkb, int srid) {
+	public static Pointer gserialized_from_ewkb(Pointer bytea_wkb, int32_t srid) {
 		return MeosLibrary.meos.gserialized_from_ewkb(bytea_wkb, srid);
 	}
 	
@@ -2458,7 +2461,7 @@ public class functions {
 		return MeosLibrary.meos.gserialized_from_text(wkt, srid);
 	}
 	
-	public static Pointer gserialized_in(String input, int geom_typmod) {
+	public static Pointer gserialized_in(String input, int32_t geom_typmod) {
 		return MeosLibrary.meos.gserialized_in(input, geom_typmod);
 	}
 	
@@ -2494,11 +2497,11 @@ public class functions {
 		return MeosLibrary.meos.period_out(s);
 	}
 	
-	public static String periodset_as_hexwkb(Pointer ps, int variant, Pointer size_out) {
+	public static String periodset_as_hexwkb(Pointer ps, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.periodset_as_hexwkb(ps, variant, size_out);
 	}
 	
-	public static Pointer periodset_as_wkb(Pointer ps, int variant, Pointer size_out) {
+	public static Pointer periodset_as_wkb(Pointer ps, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.periodset_as_wkb(ps, variant, size_out);
 	}
 	
@@ -2518,11 +2521,11 @@ public class functions {
 		return MeosLibrary.meos.periodset_out(ps);
 	}
 	
-	public static String span_as_hexwkb(Pointer s, int variant, Pointer size_out) {
+	public static String span_as_hexwkb(Pointer s, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.span_as_hexwkb(s, variant, size_out);
 	}
 	
-	public static Pointer span_as_wkb(Pointer s, int variant, Pointer size_out) {
+	public static Pointer span_as_wkb(Pointer s, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.span_as_wkb(s, variant, size_out);
 	}
 	
@@ -2538,11 +2541,11 @@ public class functions {
 		return MeosLibrary.meos.span_out(s, arg);
 	}
 	
-	public static String timestampset_as_hexwkb(Pointer ts, int variant, Pointer size_out) {
+	public static String timestampset_as_hexwkb(Pointer ts, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.timestampset_as_hexwkb(ts, variant, size_out);
 	}
 	
-	public static Pointer timestampset_as_wkb(Pointer ts, int variant, Pointer size_out) {
+	public static Pointer timestampset_as_wkb(Pointer ts, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.timestampset_as_wkb(ts, variant, size_out);
 	}
 	
@@ -2674,11 +2677,11 @@ public class functions {
 		return MeosLibrary.meos.periodset_end_timestamp(ps);
 	}
 	
-	public static uint periodset_hash(Pointer ps) {
+	public static uint32_t periodset_hash(Pointer ps) {
 		return MeosLibrary.meos.periodset_hash(ps);
 	}
 	
-	public static uint64 periodset_hash_extended(Pointer ps, uint64 seed) {
+	public static u_int64_t periodset_hash_extended(Pointer ps, u_int64_t seed) {
 		return MeosLibrary.meos.periodset_hash_extended(ps, seed);
 	}
 	
@@ -2718,11 +2721,11 @@ public class functions {
 		return MeosLibrary.meos.periodset_timestamps(ps, count);
 	}
 	
-	public static uint span_hash(Pointer s) {
+	public static uint32_t span_hash(Pointer s) {
 		return MeosLibrary.meos.span_hash(s);
 	}
 	
-	public static uint64 span_hash_extended(Pointer s, uint64 seed) {
+	public static u_int64_t span_hash_extended(Pointer s, u_int64_t seed) {
 		return MeosLibrary.meos.span_hash_extended(s, seed);
 	}
 	
@@ -2742,11 +2745,11 @@ public class functions {
 		return MeosLibrary.meos.timestampset_end_timestamp(ss);
 	}
 	
-	public static uint timestampset_hash(Pointer ss) {
+	public static uint32_t timestampset_hash(Pointer ss) {
 		return MeosLibrary.meos.timestampset_hash(ss);
 	}
 	
-	public static uint64 timestampset_hash_extended(Pointer ss, uint64 seed) {
+	public static u_int64_t timestampset_hash_extended(Pointer ss, u_int64_t seed) {
 		return MeosLibrary.meos.timestampset_hash_extended(ss, seed);
 	}
 	
@@ -2779,11 +2782,11 @@ public class functions {
 	}
 	
 	public static void span_expand(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.span_expand(s1, s2);
+		MeosLibrary.meos.span_expand(s1, s2);
 	}
 	
 	public static void period_shift_tscale(Pointer start, Pointer duration, Pointer result) {
-		return MeosLibrary.meos.period_shift_tscale(start, duration, result);
+		MeosLibrary.meos.period_shift_tscale(start, duration, result);
 	}
 	
 	public static Pointer timestampset_shift_tscale(Pointer ss, Pointer start, Pointer duration) {
@@ -3718,19 +3721,19 @@ public class functions {
 		return MeosLibrary.meos.stbox_from_hexwkb(hexwkb);
 	}
 	
-	public static Pointer tbox_as_wkb(Pointer box, int variant, Pointer size_out) {
+	public static Pointer tbox_as_wkb(Pointer box, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.tbox_as_wkb(box, variant, size_out);
 	}
 	
-	public static String tbox_as_hexwkb(Pointer box, int variant, Pointer size) {
+	public static String tbox_as_hexwkb(Pointer box, u_int8_t variant, Pointer size) {
 		return MeosLibrary.meos.tbox_as_hexwkb(box, variant, size);
 	}
 	
-	public static Pointer stbox_as_wkb(Pointer box, int variant, Pointer size_out) {
+	public static Pointer stbox_as_wkb(Pointer box, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.stbox_as_wkb(box, variant, size_out);
 	}
 	
-	public static String stbox_as_hexwkb(Pointer box, int variant, Pointer size) {
+	public static String stbox_as_hexwkb(Pointer box, u_int8_t variant, Pointer size) {
 		return MeosLibrary.meos.stbox_as_hexwkb(box, variant, size);
 	}
 	
@@ -3747,7 +3750,7 @@ public class functions {
 	}
 	
 	public static void tbox_set(Pointer p, Pointer s, Pointer box) {
-		return MeosLibrary.meos.tbox_set(p, s, box);
+		MeosLibrary.meos.tbox_set(p, s, box);
 	}
 	
 	public static Pointer tbox_copy(Pointer box) {
@@ -3934,16 +3937,16 @@ public class functions {
 		return MeosLibrary.meos.stbox_tmax(box, result);
 	}
 	
-	public static int stbox_srid(Pointer box) {
+	public static int32_t stbox_srid(Pointer box) {
 		return MeosLibrary.meos.stbox_srid(box);
 	}
 	
 	public static void tbox_expand(Pointer box1, Pointer box2) {
-		return MeosLibrary.meos.tbox_expand(box1, box2);
+		MeosLibrary.meos.tbox_expand(box1, box2);
 	}
 	
 	public static void tbox_shift_tscale(Pointer start, Pointer duration, Pointer box) {
-		return MeosLibrary.meos.tbox_shift_tscale(start, duration, box);
+		MeosLibrary.meos.tbox_shift_tscale(start, duration, box);
 	}
 	
 	public static Pointer tbox_expand_value(Pointer box, double d) {
@@ -3955,14 +3958,14 @@ public class functions {
 	}
 	
 	public static void stbox_expand(Pointer box1, Pointer box2) {
-		return MeosLibrary.meos.stbox_expand(box1, box2);
+		MeosLibrary.meos.stbox_expand(box1, box2);
 	}
 	
 	public static void stbox_shift_tscale(Pointer start, Pointer duration, Pointer box) {
-		return MeosLibrary.meos.stbox_shift_tscale(start, duration, box);
+		MeosLibrary.meos.stbox_shift_tscale(start, duration, box);
 	}
 	
-	public static Pointer stbox_set_srid(Pointer box, int srid) {
+	public static Pointer stbox_set_srid(Pointer box, int32_t srid) {
 		return MeosLibrary.meos.stbox_set_srid(box, srid);
 	}
 	
@@ -4206,7 +4209,7 @@ public class functions {
 		return MeosLibrary.meos.tbool_out(temp);
 	}
 	
-	public static String temporal_as_hexwkb(Pointer temp, int variant, Pointer size_out) {
+	public static String temporal_as_hexwkb(Pointer temp, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.temporal_as_hexwkb(temp, variant, size_out);
 	}
 	
@@ -4214,7 +4217,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_as_mfjson(temp, with_bbox, flags, precision, srs);
 	}
 	
-	public static Pointer temporal_as_wkb(Pointer temp, int variant, Pointer size_out) {
+	public static Pointer temporal_as_wkb(Pointer temp, u_int8_t variant, Pointer size_out) {
 		return MeosLibrary.meos.temporal_as_wkb(temp, variant, size_out);
 	}
 	
@@ -4510,7 +4513,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_end_timestamp(temp);
 	}
 	
-	public static uint temporal_hash(Pointer temp) {
+	public static uint32_t temporal_hash(Pointer temp) {
 		return MeosLibrary.meos.temporal_hash(temp);
 	}
 	
@@ -4542,7 +4545,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_sequences(temp, count);
 	}
 	
-	public static int temporal_size(Pointer temp) {
+	public static size_t temporal_size(Pointer temp) {
 		return MeosLibrary.meos.temporal_size(temp);
 	}
 	
@@ -6606,7 +6609,7 @@ public class functions {
 		return MeosLibrary.meos.tpoint_make_simple(temp, count);
 	}
 	
-	public static Pointer tpoint_set_srid(Pointer temp, int srid) {
+	public static Pointer tpoint_set_srid(Pointer temp, int32_t srid) {
 		return MeosLibrary.meos.tpoint_set_srid(temp, srid);
 	}
 	
@@ -6719,7 +6722,7 @@ public class functions {
 	}
 	
 	public static void skiplist_free(Pointer list) {
-		return MeosLibrary.meos.skiplist_free(list);
+		MeosLibrary.meos.skiplist_free(list);
 	}
 	
 	public static Pointer temporal_extent_transfn(Pointer p, Pointer temp) {
@@ -6862,8 +6865,8 @@ public class functions {
 		return MeosLibrary.meos.geo_to_tpoint(geo);
 	}
 	
-	public static Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronized) {
-		return MeosLibrary.meos.temporal_simplify(temp, eps_dist, synchronized);
+	public static Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronize) {
+		return MeosLibrary.meos.temporal_simplify(temp, eps_dist, synchronize);
 	}
 	
 	public static boolean tpoint_to_geo_measure(Pointer tpoint, Pointer measure, boolean segmentize, Pointer[] result) {
