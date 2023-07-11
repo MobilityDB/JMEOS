@@ -11,16 +11,21 @@ import java.util.regex.Pattern;
 
 /**
  * Classe permettant de construire le fichier de fonctions.
+ * À exéctuer comme suit :
+ * <ul>
+ *     <li>cd src\main\java\function\builder</li>
+ *     <li>javac .\FunctionsBuilder.java</li>
+ *     <li>java .\FunctionsBuilder.java</li>
+ * </ul>
  *
  * @author Killian Monnier
  * @since 27/06/2023
  */
 public class FunctionsBuilder {
 	private static final HashMap<String, String> TYPES = typesBuild(); // Création du dictionnaire des types C et de son équivalent en Java
-	private static final String FILE_PATH = "src/main/java/function/builder/";
-	private static final String TMP_PATH = FILE_PATH + "tmp/"; // Dossier des fichiers temporaires
-	private static final String C_FUNCTIONS_PATH = TMP_PATH + "functions.h"; // Fichier généré par la classe FunctionsExtractor
-	private static final String FUNCTIONS_CLASS_PATH = FILE_PATH + "generatedFunctionsClass.java"; // Classe functions générée
+	private static final String FILE_PATH = "";
+	private static final String C_FUNCTIONS_PATH = FILE_PATH + "tmp/functions.h"; // Fichier généré par la classe FunctionsExtractor
+	private static final String FUNCTIONS_CLASS_PATH = FILE_PATH + "../functions.java"; // Classe functions générée
 	private static final ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
 	
 	/**
@@ -45,7 +50,7 @@ public class FunctionsBuilder {
 		typeChange.put("int", "int");
 		typeChange.put("int32", "int32_t");
 		typeChange.put("uint8_t", "u_int8_t");
-		typeChange.put("uint32_t", "u_int32_t");
+		typeChange.put("uint32", "u_int32_t");
 		typeChange.put("uint64", "u_int64_t");
 		typeChange.put("size_t", "size_t");
 		typeChange.put("Timestamp", "int");
@@ -77,7 +82,7 @@ public class FunctionsBuilder {
 	private static StringBuilder generateClass(StringBuilder functionsBuilder, StringBuilder interfaceBuilder) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("""
-				package function.builder;
+				package function;
 				
 				import jnr.ffi.LibraryLoader;
 				import jnr.ffi.Pointer;
@@ -266,11 +271,11 @@ public class FunctionsBuilder {
 			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
 				String oldType = entry.getKey();
 				String newType = entry.getValue();
-				line = line.replaceAll(oldType + "\\s", newType + " ");
+				line = line.replaceAll("(\\^?\\(?\\s?){1}" + oldType + "\\s", "$1" + newType + " ");
 			}
 			
 			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Récupération des types non-supportés pour la ligne
-			if (!typesNotSupported.isEmpty()) System.out.println(typesNotSupported);
+//			if (!typesNotSupported.isEmpty()) System.out.println(typesNotSupported);
 			unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Récupération des types non-supportés qui ne sont pas encore dans la liste globale
 		}
 		

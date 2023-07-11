@@ -1,13 +1,12 @@
 package tutorials;
 
-import function.functions;
+import function.functions_old;
 import jnr.ffi.Pointer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.time.Clock;
 
 
 public class assemble_ais {
@@ -23,7 +22,7 @@ public class assemble_ais {
 
         String timezone = "UTC";
         byte[] timezone_byte = timezone.getBytes(StandardCharsets.UTF_8);
-        functions.meos_initialize(timezone_byte);
+        functions_old.meos_initialize(timezone_byte);
 
         long t = System.nanoTime()/1000000;
 
@@ -72,7 +71,7 @@ public class assemble_ais {
                     rec.Longitude=Double.parseDouble(tokens[3].trim());
                     rec.SOG=Double.parseDouble(tokens[4].trim());
                     String temp = tokens[0];
-                    rec.T = functions.pg_timestamp_in(tokens[0],-1);
+                    rec.T = functions_old.pg_timestamp_in(tokens[0],-1);
 
                     if(tokens.length == 5){
                         no_records ++;
@@ -118,17 +117,17 @@ public class assemble_ais {
 
                     if (no_records%1000 == 0){
 
-                        String t_out = functions.pg_timestamp_out(temp);
+                        String t_out = functions_old.pg_timestamp_out(temp);
                         String str_pointbuffer;
                         str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude,t_out);
 
                         String test = "Point(4.617660 55.573682)@2004-06-15 07:13:32+00" ;
-                        Pointer inst1 = functions.tgeogpoint_in(test);
-                        String inst1_out = functions.tpoint_as_text(inst1,2);
+                        Pointer inst1 = functions_old.tgeogpoint_in(test);
+                        String inst1_out = functions_old.tpoint_as_text(inst1,2);
 
 
-                        Pointer inst2 = functions.tfloatinst_make((float)rec.SOG,rec.T);
-                        String inst2_out = functions.tfloat_out(inst2, 2);
+                        Pointer inst2 = functions_old.tfloatinst_make((float)rec.SOG,rec.T);
+                        String inst2_out = functions_old.tfloat_out(inst2, 2);
 
                         System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI,inst1_out,inst2_out);
 
@@ -142,7 +141,7 @@ public class assemble_ais {
 
         System.out.printf("\n%d no_records read.\n%d incomplete records ignored.\n", no_records,no_nulls);
 
-        functions.meos_finalize();
+        functions_old.meos_finalize();
 
     }
 

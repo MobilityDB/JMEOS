@@ -8,7 +8,7 @@ import types.core.TypeName;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
-import static function.builder.functions.stbox_from_hexwkb;
+import static function.functions.stbox_from_hexwkb;
 
 /**
  * Class that represents the MobilityDB type TBox

@@ -15,7 +15,7 @@ import net.postgis.jdbc.geometry.Point;
 import java.sql.SQLException;
 import java.nio.charset.StandardCharsets;
 
-import function.functions;
+import function.functions_old;
 
 public class hello_world {
 
@@ -27,12 +27,12 @@ public class hello_world {
         byte[] timezone_byte = timezone.getBytes(StandardCharsets.UTF_8);
 
         //Initialize meos
-        functions.meos_initialize(timezone_byte);
+        functions_old.meos_initialize(timezone_byte);
 
         //Test the int and float bucket function from meos
-        int int_result = functions.int_bucket(12,32,42);
+        int int_result = functions_old.int_bucket(12,32,42);
         System.out.println(int_result);
-        double double_result = functions.float_bucket(1.7f,1.93f,1.79f);
+        double double_result = functions_old.float_bucket(1.7f,1.93f,1.79f);
         System.out.println(double_result);
 
         //Test hello world example in JMEOS
@@ -50,18 +50,18 @@ public class hello_world {
                 + "[POINT(3 3)@2000-01-03, POINT(3 3)@2000-01-04]}";
 
 
-        Pointer inst = functions.tgeompoint_in(inst_wkt);
-        Pointer seq_disc = functions.tgeompoint_in(seq_disc_wkt);
-        Pointer seq_linear = functions.tgeompoint_in(seq_linear_wkt);
-        Pointer seq_step = functions.tgeompoint_in(seq_step_wkt);
-        Pointer ss_linear = functions.tgeompoint_in(ss_linear_wkt);
-        Pointer ss_step = functions.tgeompoint_in(ss_step_wkt);
+        Pointer inst = functions_old.tgeompoint_in(inst_wkt);
+        Pointer seq_disc = functions_old.tgeompoint_in(seq_disc_wkt);
+        Pointer seq_linear = functions_old.tgeompoint_in(seq_linear_wkt);
+        Pointer seq_step = functions_old.tgeompoint_in(seq_step_wkt);
+        Pointer ss_linear = functions_old.tgeompoint_in(ss_linear_wkt);
+        Pointer ss_step = functions_old.tgeompoint_in(ss_step_wkt);
 
         //runtime.getMemoryManager().free
         System.out.println("ICI2");
 
         /* Convert result to MF-JSON */
-        String inst_mfjson = functions.temporal_as_mfjson(inst, true, 3, 6, null);
+        String inst_mfjson = functions_old.temporal_as_mfjson(inst, true, 3, 6, null);
         System.out.printf("\n" +
                 "--------------------\n" +
                 "| Temporal Instant |\n" +
@@ -70,7 +70,7 @@ public class hello_world {
                 "----\n%s\n\n" +
                 "MF-JSON:\n" +
                 "--------\n%s\n", inst_wkt, inst_mfjson);
-        String seq_disc_mfjson = functions.temporal_as_mfjson(seq_disc, true, 3, 6, null);
+        String seq_disc_mfjson = functions_old.temporal_as_mfjson(seq_disc, true, 3, 6, null);
         System.out.printf("\n" +
                 "-------------------------------------------------\n" +
                 "| Temporal Sequence with Discrete Interpolation |\n" +
@@ -79,7 +79,7 @@ public class hello_world {
                 "----\n%s\n\n" +
                 "MF-JSON:\n" +
                 "--------\n%s\n", seq_disc_wkt, seq_disc_mfjson);
-        String seq_linear_mfjson = functions.temporal_as_mfjson(seq_linear, true, 3, 6, null);
+        String seq_linear_mfjson = functions_old.temporal_as_mfjson(seq_linear, true, 3, 6, null);
         System.out.printf("\n" +
                 "-----------------------------------------------\n" +
                 "| Temporal Sequence with Linear Interpolation |\n" +
@@ -88,7 +88,7 @@ public class hello_world {
                 "----\n%s\n\n" +
                 "MF-JSON:\n" +
                 "--------\n%s\n", seq_linear_wkt, seq_linear_mfjson);
-        String seq_step_mfjson = functions.temporal_as_mfjson(seq_step, true, 3, 6, null);
+        String seq_step_mfjson = functions_old.temporal_as_mfjson(seq_step, true, 3, 6, null);
         System.out.printf("\n" +
                 "--------------------------------------------\n" +
                 "| Temporal Sequence with Step Interpolation |\n" +
@@ -97,7 +97,7 @@ public class hello_world {
                 "----\n%s\n\n" +
                 "MF-JSON:\n" +
                 "--------\n%s\n", seq_step_wkt, seq_step_mfjson);
-        String ss_linear_mfjson = functions.temporal_as_mfjson(ss_linear, true, 3, 6, null);
+        String ss_linear_mfjson = functions_old.temporal_as_mfjson(ss_linear, true, 3, 6, null);
         System.out.printf("\n" +
                 "---------------------------------------------------\n" +
                 "| Temporal Sequence Set with Linear Interpolation |\n" +
@@ -106,7 +106,7 @@ public class hello_world {
                 "----\n%s\n\n" +
                 "MF-JSON:\n" +
                 "--------\n%s\n", ss_linear_wkt, ss_linear_mfjson);
-        String ss_step_mfjson = functions.temporal_as_mfjson(ss_step, true, 3, 6, null);
+        String ss_step_mfjson = functions_old.temporal_as_mfjson(ss_step, true, 3, 6, null);
         System.out.printf("\n" +
                 "------------------------------------------------\n" +
                 "| Temporal Sequence Set with Step Interpolation |\n" +
@@ -116,7 +116,7 @@ public class hello_world {
                 "MF-JSON:\n" +
                 "--------\n%s\n", ss_step_wkt, ss_step_mfjson);
 
-        functions.meos_finalize();
+        functions_old.meos_finalize();
 
 
         //var t1 = meos.tint_in("2@2000-01-02") ;

@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
-import static function.builder.functions.*;
+import static function.functions.*;
 
 /**
  * Class that represents the MobilityDB type STBox
