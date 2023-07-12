@@ -70,6 +70,7 @@ public class FunctionsBuilder {
 		StringBuilder interfaceBuilder = generateInterface(functionsBuilder);
 		StringBuilder classBuilder = generateClass(functionsBuilder, interfaceBuilder);
 		writeFile(FUNCTIONS_CLASS_PATH, classBuilder);
+		//		System.out.println(getFunctionTypes("void meos_finish();"));
 	}
 	
 	/**
@@ -268,16 +269,13 @@ public class FunctionsBuilder {
 			line = line.replaceAll("synchronized", "synchronize"); // Pour la fonction temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
 			
 			// Remplace les types depuis le dictionnaire de types
-			System.out.println("Avant: " + line);
 			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
 				String oldType = entry.getKey();
 				String newType = entry.getValue();
 				line = line.replaceAll("((^|\\(|\\s)+)" + oldType + "\\s", "$1" + newType + " ");
 			}
-			System.out.println("Après: " + line);
 			
 			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Récupération des types non-supportés pour la ligne
-//			if (!typesNotSupported.isEmpty()) System.out.println(typesNotSupported);
 			unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Récupération des types non-supportés qui ne sont pas encore dans la liste globale
 		}
 		
@@ -300,10 +298,12 @@ public class FunctionsBuilder {
 			String functionName = matcher.group(2);
 			String paramTypes = matcher.group(3);
 			
-			String[] paramTypeArray = paramTypes.split("\\s\\w+,\\s|\\s\\w+");
+			ArrayList<String> paramTypeArray = new ArrayList<>(List.of(paramTypes.split("\\s\\w+,\\s|\\s\\w+")));
 			
-			typesList.add(returnType); // ajout du type de retour de la fonction
-			typesList.addAll(List.of(paramTypeArray));
+			if (!returnType.isBlank()) typesList.add(returnType); // ajout du type de retour de la fonction
+			if (!paramTypeArray.isEmpty())
+				if (!paramTypeArray.get(0).isEmpty())
+					typesList.addAll(paramTypeArray);
 		}
 		
 		return typesList;
