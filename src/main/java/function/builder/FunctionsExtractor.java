@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Classe permettant d'extraire les fonctions de la librairie MEOS.
- * À exéctuer comme suit :
+ * À exécuter avec le dossier ./script ou alors comme suit :
  * <ul>
  *     <li>cd src\main\java\function\builder</li>
  *     <li>javac .\FunctionsExtractor.java</li>

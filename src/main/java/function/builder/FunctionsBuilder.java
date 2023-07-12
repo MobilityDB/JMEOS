@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * Classe permettant de construire le fichier de fonctions.
- * À exéctuer comme suit :
+ * À exécuter avec le dossier ./script ou alors comme suit :
  * <ul>
  *     <li>cd src\main\java\function\builder</li>
  *     <li>javac .\FunctionsBuilder.java</li>
