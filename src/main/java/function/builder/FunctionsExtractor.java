@@ -43,7 +43,7 @@ public class FunctionsExtractor {
 		ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
 		writeLinesToFile(functions, OUTPUT_FUNCTIONS_PATH);
 		System.out.println("Extraction des fonctions terminée. Les fonctions ont été écrites dans le fichier " + OUTPUT_FUNCTIONS_PATH + ".");
-		ArrayList<String> types = getTypesFromFile(INPUT_FILE_PATH, TYPES_PATTERN);
+		ArrayList<String> types = getTypesFromFile();
 		writeLinesToFile(types, OUTPUT_TYPES_PATH);
 		System.out.println("Extraction des types terminée. Les types ont été écrits dans le fichier " + OUTPUT_TYPES_PATH + ".");
 	}
@@ -51,13 +51,11 @@ public class FunctionsExtractor {
 	/**
 	 * Récupère les types depuis un fichier.
 	 *
-	 * @param inputFilePath le chemin du fichier
-	 * @param typesPattern  le pattern de la ligne du type
 	 * @return la liste des lignes
 	 */
-	private static ArrayList<String> getTypesFromFile(String inputFilePath, String typesPattern) {
-		ArrayList<String> rawTypes = extractPatternFromFile(inputFilePath, typesPattern);
-		ArrayList<String> structureNames = getStructureNames(inputFilePath);
+	private static ArrayList<String> getTypesFromFile() {
+		ArrayList<String> rawTypes = extractPatternFromFile(FunctionsExtractor.INPUT_FILE_PATH, FunctionsExtractor.TYPES_PATTERN);
+		ArrayList<String> structureNames = getStructureNames(FunctionsExtractor.INPUT_FILE_PATH);
 		ArrayList<String> filteredTypes = new ArrayList<>();
 		
 		for (String rawType : rawTypes) {
@@ -88,7 +86,7 @@ public class FunctionsExtractor {
 				content.append(line).append("\n");
 			}
 			
-			String regex = "typedef\\s+struct(\\s\\w+)?\\s*\\{[\\s\\S]*?\\}\\s*(\\w+)";
+			String regex = "typedef\\s+struct(\\s\\w+)?\\s*\\{[\\s\\S]*?}\\s*(\\w+)";
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(content.toString());
 			

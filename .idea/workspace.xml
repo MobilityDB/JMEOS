@@ -7,8 +7,9 @@
     <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Ajout de l'extracteur de fonction">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsExtractor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/functions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/functions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsExtractor.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsExtractor.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

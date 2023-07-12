@@ -66,15 +66,14 @@ public class FunctionsBuilder {
 				String rawType = matcher.group(1);
 				String typeDef = matcher.group(2);
 				
-				if (typeChange.containsKey(rawType)) rawType = typeChange.get(rawType);
+				if (typeChange.containsKey(rawType))
+					rawType = typeChange.get(rawType); // Changement des types avec les types compatibles Java
 				
 				typeChange.put(typeDef, rawType);
 			} else {
 				System.out.println("Extraction du type impossible pour la ligne: " + line);
 			}
 		});
-		
-		System.out.println(typeChange);
 		
 		return typeChange;
 	}
@@ -85,10 +84,10 @@ public class FunctionsBuilder {
 	 * @param args arguments
 	 */
 	public static void main(String[] args) {
-		StringBuilder functionsBuilder = generateFunctions(C_FUNCTIONS_PATH);
+		StringBuilder functionsBuilder = generateFunctions();
 		StringBuilder interfaceBuilder = generateInterface(functionsBuilder);
 		StringBuilder classBuilder = generateClass(functionsBuilder, interfaceBuilder);
-		writeFile(FUNCTIONS_CLASS_PATH, classBuilder);
+		writeClassFile(classBuilder);
 	}
 	
 	/**
@@ -158,13 +157,12 @@ public class FunctionsBuilder {
 	/**
 	 * Génération des fonctions avec leurs types modifiés.
 	 *
-	 * @param functions_path chemin des fonctions C
 	 * @return le builder des fonctions
 	 */
-	private static StringBuilder generateFunctions(String functions_path) {
+	private static StringBuilder generateFunctions() {
 		StringBuilder builder = new StringBuilder();
 		
-		readFileLines(functions_path, line -> {
+		readFileLines(FunctionsBuilder.C_FUNCTIONS_PATH, line -> {
 			String processedLine = changeFunctionType(line) + "\n";
 			builder.append(processedLine);
 		});
@@ -312,14 +310,13 @@ public class FunctionsBuilder {
 	 * @return liste des types
 	 */
 	private static ArrayList<String> getFunctionTypes(String line) {
-		Pattern pattern = Pattern.compile("(\\w+(?:\\[\\])?)\\s+(\\w+)\\s*\\(([^)]*)\\)");
+		Pattern pattern = Pattern.compile("(\\w+(?:\\[])?)\\s+\\w+\\s*\\(([^)]*)\\)");
 		Matcher matcher = pattern.matcher(line);
 		
 		ArrayList<String> typesList = new ArrayList<>();
 		while (matcher.find()) {
 			String returnType = matcher.group(1);
-			String functionName = matcher.group(2);
-			String paramTypes = matcher.group(3);
+			String paramTypes = matcher.group(2);
 			
 			ArrayList<String> paramTypeArray = new ArrayList<>(List.of(paramTypes.split("\\s\\w+,\\s|\\s\\w+")));
 			
@@ -352,15 +349,14 @@ public class FunctionsBuilder {
 	/**
 	 * Permet d'écrire un fichier avec un StringBuilder.
 	 *
-	 * @param filepath le chemin de création du fichier
-	 * @param builder  le builder
+	 * @param builder le builder
 	 */
-	private static void writeFile(String filepath, StringBuilder builder) {
-		try (PrintWriter writer = new PrintWriter(new FileWriter(filepath))) {
+	private static void writeClassFile(StringBuilder builder) {
+		try (PrintWriter writer = new PrintWriter(new FileWriter(FunctionsBuilder.FUNCTIONS_CLASS_PATH))) {
 			writer.write(builder.toString());
-			System.out.println("Le fichier " + filepath + " a été créé avec succès !");
+			System.out.println("Le fichier " + FunctionsBuilder.FUNCTIONS_CLASS_PATH + " a été créé avec succès !");
 		} catch (IOException e) {
-			System.out.println("Erreur lors de la création du fichier " + filepath + ": " + e.getMessage());
+			System.out.println("Erreur lors de la création du fichier " + FunctionsBuilder.FUNCTIONS_CLASS_PATH + ": " + e.getMessage());
 		}
 	}
 }
