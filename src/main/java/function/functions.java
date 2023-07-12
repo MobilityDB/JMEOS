@@ -3,8 +3,13 @@ package function;
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import jnr.ffi.types.int32_t;
-import jnr.ffi.types.u_int64_t;
+import jnr.ffi.types.int64_t;
 import jnr.ffi.types.u_int8_t;
+import jnr.ffi.types.u_int16_t;
+import jnr.ffi.types.u_int32_t;
+import jnr.ffi.types.u_int64_t;
+import jnr.ffi.types.uintptr_t;
+import jnr.ffi.types.size_t;
 
 public class functions {
 	public interface MeosLibrary {
@@ -43,9 +48,9 @@ public class functions {
 
 		String bool_out(boolean b);
 
-		DateADT pg_date_in(String str);
+		int32_t pg_date_in(String str);
 
-		String pg_date_out(DateADT date);
+		String pg_date_out(int32_t date);
 
 		int pg_interval_cmp(Pointer interval1, Pointer interval2);
 
@@ -59,23 +64,23 @@ public class functions {
 
 		Pointer pg_interval_pl(Pointer span1, Pointer span2);
 
-		TimeADT pg_time_in(String str, int32_t typmod);
+		int64_t pg_time_in(String str, int32_t typmod);
 
-		String pg_time_out(TimeADT time);
+		String pg_time_out(int64_t time);
 
-		int pg_timestamp_in(String str, int32_t typmod);
+		int64_t pg_timestamp_in(String str, int32_t typmod);
 
-		Pointer pg_timestamp_mi(int dt1, int dt2);
+		Pointer pg_timestamp_mi(int64_t dt1, int64_t dt2);
 
-		int pg_timestamp_mi_interval(int timestamp, Pointer span);
+		int64_t pg_timestamp_mi_interval(int64_t timestamp, Pointer span);
 
-		String pg_timestamp_out(int dt);
+		String pg_timestamp_out(int64_t dt);
 
-		int pg_timestamp_pl_interval(int timestamp, Pointer span);
+		int64_t pg_timestamp_pl_interval(int64_t timestamp, Pointer span);
 
-		int pg_timestamptz_in(String str, int32_t typmod);
+		int64_t pg_timestamptz_in(String str, int32_t typmod);
 
-		String pg_timestamptz_out(int dt);
+		String pg_timestamptz_out(int64_t dt);
 
 		Pointer gserialized_as_ewkb(Pointer geom, String type);
 
@@ -131,7 +136,7 @@ public class functions {
 
 		Pointer span_from_wkb(Pointer wkb, int size);
 
-		String span_out(Pointer s, int arg);
+		String span_out(Pointer s, uintptr_t arg);
 
 		String timestampset_as_hexwkb(Pointer ts, u_int8_t variant, Pointer size_out);
 
@@ -149,7 +154,7 @@ public class functions {
 
 		Pointer intspan_make(int lower, int upper, boolean lower_inc, boolean upper_inc);
 
-		Pointer period_make(int lower, int upper, boolean lower_inc, boolean upper_inc);
+		Pointer period_make(int64_t lower, int64_t upper, boolean lower_inc, boolean upper_inc);
 
 		Pointer periodset_copy(Pointer ps);
 
@@ -173,11 +178,11 @@ public class functions {
 
 		Pointer periodset_to_period(Pointer ps);
 
-		Pointer timestamp_to_period(int t);
+		Pointer timestamp_to_period(int64_t t);
 
-		Pointer timestamp_to_periodset(int t);
+		Pointer timestamp_to_periodset(int64_t t);
 
-		Pointer timestamp_to_timestampset(int t);
+		Pointer timestamp_to_timestampset(int64_t t);
 
 		Pointer timestampset_to_periodset(Pointer ts);
 
@@ -191,15 +196,15 @@ public class functions {
 
 		Pointer period_duration(Pointer s);
 
-		int period_lower(Pointer p);
+		int64_t period_lower(Pointer p);
 
-		int period_upper(Pointer p);
+		int64_t period_upper(Pointer p);
 
 		Pointer periodset_duration(Pointer ps);
 
 		Pointer periodset_end_period(Pointer ps);
 
-		int periodset_end_timestamp(Pointer ps);
+		int64_t periodset_end_timestamp(Pointer ps);
 
 		u_int32_t periodset_hash(Pointer ps);
 
@@ -215,7 +220,7 @@ public class functions {
 
 		Pointer periodset_start_period(Pointer ps);
 
-		int periodset_start_timestamp(Pointer ps);
+		int64_t periodset_start_timestamp(Pointer ps);
 
 		Pointer periodset_timespan(Pointer ps);
 
@@ -233,7 +238,7 @@ public class functions {
 
 		double span_width(Pointer s);
 
-		int timestampset_end_timestamp(Pointer ss);
+		int64_t timestampset_end_timestamp(Pointer ss);
 
 		u_int32_t timestampset_hash(Pointer ss);
 
@@ -243,7 +248,7 @@ public class functions {
 
 		int timestampset_num_timestamps(Pointer ss);
 
-		int timestampset_start_timestamp(Pointer ss);
+		int64_t timestampset_start_timestamp(Pointer ss);
 
 		Pointer timestampset_timespan(Pointer ss);
 
@@ -265,7 +270,7 @@ public class functions {
 
 		boolean adjacent_period_periodset(Pointer p, Pointer ps);
 
-		boolean adjacent_period_timestamp(Pointer p, int t);
+		boolean adjacent_period_timestamp(Pointer p, int64_t t);
 
 		boolean adjacent_period_timestampset(Pointer p, Pointer ts);
 
@@ -273,15 +278,15 @@ public class functions {
 
 		boolean adjacent_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean adjacent_periodset_timestamp(Pointer ps, int t);
+		boolean adjacent_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean adjacent_periodset_timestampset(Pointer ps, Pointer ts);
 
 		boolean adjacent_span_span(Pointer s1, Pointer s2);
 
-		boolean adjacent_timestamp_period(int t, Pointer p);
+		boolean adjacent_timestamp_period(int64_t t, Pointer p);
 
-		boolean adjacent_timestamp_periodset(int t, Pointer ps);
+		boolean adjacent_timestamp_periodset(int64_t t, Pointer ps);
 
 		boolean adjacent_timestampset_period(Pointer ts, Pointer p);
 
@@ -299,11 +304,11 @@ public class functions {
 
 		boolean contained_span_span(Pointer s1, Pointer s2);
 
-		boolean contained_timestamp_period(int t, Pointer p);
+		boolean contained_timestamp_period(int64_t t, Pointer p);
 
-		boolean contained_timestamp_periodset(int t, Pointer ps);
+		boolean contained_timestamp_periodset(int64_t t, Pointer ps);
 
-		boolean contained_timestamp_timestampset(int t, Pointer ts);
+		boolean contained_timestamp_timestampset(int64_t t, Pointer ts);
 
 		boolean contained_timestampset_period(Pointer ts, Pointer p);
 
@@ -317,7 +322,7 @@ public class functions {
 
 		boolean contains_period_periodset(Pointer p, Pointer ps);
 
-		boolean contains_period_timestamp(Pointer p, int t);
+		boolean contains_period_timestamp(Pointer p, int64_t t);
 
 		boolean contains_period_timestampset(Pointer p, Pointer ts);
 
@@ -325,13 +330,13 @@ public class functions {
 
 		boolean contains_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean contains_periodset_timestamp(Pointer ps, int t);
+		boolean contains_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean contains_periodset_timestampset(Pointer ps, Pointer ts);
 
 		boolean contains_span_span(Pointer s1, Pointer s2);
 
-		boolean contains_timestampset_timestamp(Pointer ts, int t);
+		boolean contains_timestampset_timestamp(Pointer ts, int64_t t);
 
 		boolean contains_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -355,7 +360,7 @@ public class functions {
 
 		boolean after_period_periodset(Pointer p, Pointer ps);
 
-		boolean after_period_timestamp(Pointer p, int t);
+		boolean after_period_timestamp(Pointer p, int64_t t);
 
 		boolean after_period_timestampset(Pointer p, Pointer ts);
 
@@ -363,27 +368,27 @@ public class functions {
 
 		boolean after_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean after_periodset_timestamp(Pointer ps, int t);
+		boolean after_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean after_periodset_timestampset(Pointer ps, Pointer ts);
 
-		boolean after_timestamp_period(int t, Pointer p);
+		boolean after_timestamp_period(int64_t t, Pointer p);
 
-		boolean after_timestamp_periodset(int t, Pointer ps);
+		boolean after_timestamp_periodset(int64_t t, Pointer ps);
 
-		boolean after_timestamp_timestampset(int t, Pointer ts);
+		boolean after_timestamp_timestampset(int64_t t, Pointer ts);
 
 		boolean after_timestampset_period(Pointer ts, Pointer p);
 
 		boolean after_timestampset_periodset(Pointer ts, Pointer ps);
 
-		boolean after_timestampset_timestamp(Pointer ts, int t);
+		boolean after_timestampset_timestamp(Pointer ts, int64_t t);
 
 		boolean after_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
 		boolean before_period_periodset(Pointer p, Pointer ps);
 
-		boolean before_period_timestamp(Pointer p, int t);
+		boolean before_period_timestamp(Pointer p, int64_t t);
 
 		boolean before_period_timestampset(Pointer p, Pointer ts);
 
@@ -391,21 +396,21 @@ public class functions {
 
 		boolean before_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean before_periodset_timestamp(Pointer ps, int t);
+		boolean before_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean before_periodset_timestampset(Pointer ps, Pointer ts);
 
-		boolean before_timestamp_period(int t, Pointer p);
+		boolean before_timestamp_period(int64_t t, Pointer p);
 
-		boolean before_timestamp_periodset(int t, Pointer ps);
+		boolean before_timestamp_periodset(int64_t t, Pointer ps);
 
-		boolean before_timestamp_timestampset(int t, Pointer ts);
+		boolean before_timestamp_timestampset(int64_t t, Pointer ts);
 
 		boolean before_timestampset_period(Pointer ts, Pointer p);
 
 		boolean before_timestampset_periodset(Pointer ts, Pointer ps);
 
-		boolean before_timestampset_timestamp(Pointer ts, int t);
+		boolean before_timestampset_timestamp(Pointer ts, int64_t t);
 
 		boolean before_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -421,7 +426,7 @@ public class functions {
 
 		boolean overafter_period_periodset(Pointer p, Pointer ps);
 
-		boolean overafter_period_timestamp(Pointer p, int t);
+		boolean overafter_period_timestamp(Pointer p, int64_t t);
 
 		boolean overafter_period_timestampset(Pointer p, Pointer ts);
 
@@ -429,27 +434,27 @@ public class functions {
 
 		boolean overafter_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean overafter_periodset_timestamp(Pointer ps, int t);
+		boolean overafter_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean overafter_periodset_timestampset(Pointer ps, Pointer ts);
 
-		boolean overafter_timestamp_period(int t, Pointer p);
+		boolean overafter_timestamp_period(int64_t t, Pointer p);
 
-		boolean overafter_timestamp_periodset(int t, Pointer ps);
+		boolean overafter_timestamp_periodset(int64_t t, Pointer ps);
 
-		boolean overafter_timestamp_timestampset(int t, Pointer ts);
+		boolean overafter_timestamp_timestampset(int64_t t, Pointer ts);
 
 		boolean overafter_timestampset_period(Pointer ts, Pointer p);
 
 		boolean overafter_timestampset_periodset(Pointer ts, Pointer ps);
 
-		boolean overafter_timestampset_timestamp(Pointer ts, int t);
+		boolean overafter_timestampset_timestamp(Pointer ts, int64_t t);
 
 		boolean overafter_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
 		boolean overbefore_period_periodset(Pointer p, Pointer ps);
 
-		boolean overbefore_period_timestamp(Pointer p, int t);
+		boolean overbefore_period_timestamp(Pointer p, int64_t t);
 
 		boolean overbefore_period_timestampset(Pointer p, Pointer ts);
 
@@ -457,21 +462,21 @@ public class functions {
 
 		boolean overbefore_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean overbefore_periodset_timestamp(Pointer ps, int t);
+		boolean overbefore_periodset_timestamp(Pointer ps, int64_t t);
 
 		boolean overbefore_periodset_timestampset(Pointer ps, Pointer ts);
 
-		boolean overbefore_timestamp_period(int t, Pointer p);
+		boolean overbefore_timestamp_period(int64_t t, Pointer p);
 
-		boolean overbefore_timestamp_periodset(int t, Pointer ps);
+		boolean overbefore_timestamp_periodset(int64_t t, Pointer ps);
 
-		boolean overbefore_timestamp_timestampset(int t, Pointer ts);
+		boolean overbefore_timestamp_timestampset(int64_t t, Pointer ts);
 
 		boolean overbefore_timestampset_period(Pointer ts, Pointer p);
 
 		boolean overbefore_timestampset_periodset(Pointer ts, Pointer ps);
 
-		boolean overbefore_timestampset_timestamp(Pointer ts, int t);
+		boolean overbefore_timestampset_timestamp(Pointer ts, int64_t t);
 
 		boolean overbefore_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -507,7 +512,7 @@ public class functions {
 
 		Pointer intersection_period_periodset(Pointer p, Pointer ps);
 
-		boolean intersection_period_timestamp(Pointer p, int t, Pointer result);
+		boolean intersection_period_timestamp(Pointer p, int64_t t, Pointer result);
 
 		Pointer intersection_period_timestampset(Pointer ps, Pointer ts);
 
@@ -515,25 +520,25 @@ public class functions {
 
 		Pointer intersection_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		boolean intersection_periodset_timestamp(Pointer ps, int t, Pointer result);
+		boolean intersection_periodset_timestamp(Pointer ps, int64_t t, Pointer result);
 
 		Pointer intersection_periodset_timestampset(Pointer ps, Pointer ts);
 
 		Pointer intersection_span_span(Pointer s1, Pointer s2);
 
-		boolean intersection_timestamp_period(int t, Pointer p, Pointer result);
+		boolean intersection_timestamp_period(int64_t t, Pointer p, Pointer result);
 
-		boolean intersection_timestamp_periodset(int t, Pointer ps, Pointer result);
+		boolean intersection_timestamp_periodset(int64_t t, Pointer ps, Pointer result);
 
-		boolean intersection_timestamp_timestamp(int t1, int t2, Pointer result);
+		boolean intersection_timestamp_timestamp(int64_t t1, int64_t t2, Pointer result);
 
-		boolean intersection_timestamp_timestampset(int t, Pointer ts, Pointer result);
+		boolean intersection_timestamp_timestampset(int64_t t, Pointer ts, Pointer result);
 
 		Pointer intersection_timestampset_period(Pointer ts, Pointer p);
 
 		Pointer intersection_timestampset_periodset(Pointer ts, Pointer ps);
 
-		boolean intersection_timestampset_timestamp(Pointer ts, int t, Pointer result);
+		boolean intersection_timestampset_timestamp(Pointer ts, int64_t t, Pointer result);
 
 		Pointer intersection_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -541,7 +546,7 @@ public class functions {
 
 		Pointer minus_period_periodset(Pointer p, Pointer ps);
 
-		Pointer minus_period_timestamp(Pointer p, int t);
+		Pointer minus_period_timestamp(Pointer p, int64_t t);
 
 		Pointer minus_period_timestampset(Pointer p, Pointer ts);
 
@@ -549,25 +554,25 @@ public class functions {
 
 		Pointer minus_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		Pointer minus_periodset_timestamp(Pointer ps, int t);
+		Pointer minus_periodset_timestamp(Pointer ps, int64_t t);
 
 		Pointer minus_periodset_timestampset(Pointer ps, Pointer ts);
 
 		Pointer minus_span_span(Pointer s1, Pointer s2);
 
-		boolean minus_timestamp_period(int t, Pointer p, Pointer result);
+		boolean minus_timestamp_period(int64_t t, Pointer p, Pointer result);
 
-		boolean minus_timestamp_periodset(int t, Pointer ps, Pointer result);
+		boolean minus_timestamp_periodset(int64_t t, Pointer ps, Pointer result);
 
-		boolean minus_timestamp_timestamp(int t1, int t2, Pointer result);
+		boolean minus_timestamp_timestamp(int64_t t1, int64_t t2, Pointer result);
 
-		boolean minus_timestamp_timestampset(int t, Pointer ts, Pointer result);
+		boolean minus_timestamp_timestampset(int64_t t, Pointer ts, Pointer result);
 
 		Pointer minus_timestampset_period(Pointer ts, Pointer p);
 
 		Pointer minus_timestampset_periodset(Pointer ts, Pointer ps);
 
-		Pointer minus_timestampset_timestamp(Pointer ts, int t);
+		Pointer minus_timestampset_timestamp(Pointer ts, int64_t t);
 
 		Pointer minus_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -575,7 +580,7 @@ public class functions {
 
 		Pointer union_period_periodset(Pointer p, Pointer ps);
 
-		Pointer union_period_timestamp(Pointer p, int t);
+		Pointer union_period_timestamp(Pointer p, int64_t t);
 
 		Pointer union_period_timestampset(Pointer p, Pointer ts);
 
@@ -583,25 +588,25 @@ public class functions {
 
 		Pointer union_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		Pointer union_periodset_timestamp(Pointer ps, int t);
+		Pointer union_periodset_timestamp(Pointer ps, int64_t t);
 
 		Pointer union_periodset_timestampset(Pointer ps, Pointer ts);
 
 		Pointer union_span_span(Pointer s1, Pointer s2, boolean strict);
 
-		Pointer union_timestamp_period(int t, Pointer p);
+		Pointer union_timestamp_period(int64_t t, Pointer p);
 
-		Pointer union_timestamp_periodset(int t, Pointer ps);
+		Pointer union_timestamp_periodset(int64_t t, Pointer ps);
 
-		Pointer union_timestamp_timestamp(int t1, int t2);
+		Pointer union_timestamp_timestamp(int64_t t1, int64_t t2);
 
-		Pointer union_timestamp_timestampset(int t, Pointer ts);
+		Pointer union_timestamp_timestampset(int64_t t, Pointer ts);
 
 		Pointer union_timestampset_period(Pointer ts, Pointer p);
 
 		Pointer union_timestampset_periodset(Pointer ts, Pointer ps);
 
-		Pointer union_timestampset_timestamp(Pointer ts, int t);
+		Pointer union_timestampset_timestamp(Pointer ts, int64_t t);
 
 		Pointer union_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
@@ -611,7 +616,7 @@ public class functions {
 
 		double distance_period_periodset(Pointer p, Pointer ps);
 
-		double distance_period_timestamp(Pointer p, int t);
+		double distance_period_timestamp(Pointer p, int64_t t);
 
 		double distance_period_timestampset(Pointer p, Pointer ts);
 
@@ -619,29 +624,29 @@ public class functions {
 
 		double distance_periodset_periodset(Pointer ps1, Pointer ps2);
 
-		double distance_periodset_timestamp(Pointer ps, int t);
+		double distance_periodset_timestamp(Pointer ps, int64_t t);
 
 		double distance_periodset_timestampset(Pointer ps, Pointer ts);
 
 		double distance_span_span(Pointer s1, Pointer s2);
 
-		double distance_timestamp_period(int t, Pointer p);
+		double distance_timestamp_period(int64_t t, Pointer p);
 
-		double distance_timestamp_periodset(int t, Pointer ps);
+		double distance_timestamp_periodset(int64_t t, Pointer ps);
 
-		double distance_timestamp_timestamp(int t1, int t2);
+		double distance_timestamp_timestamp(int64_t t1, int64_t t2);
 
-		double distance_timestamp_timestampset(int t, Pointer ts);
+		double distance_timestamp_timestampset(int64_t t, Pointer ts);
 
 		double distance_timestampset_period(Pointer ts, Pointer p);
 
 		double distance_timestampset_periodset(Pointer ts, Pointer ps);
 
-		double distance_timestampset_timestamp(Pointer ts, int t);
+		double distance_timestampset_timestamp(Pointer ts, int64_t t);
 
 		double distance_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
-		Pointer timestamp_extent_transfn(Pointer p, int t);
+		Pointer timestamp_extent_transfn(Pointer p, int64_t t);
 
 		Pointer timestampset_extent_transfn(Pointer p, Pointer ts);
 
@@ -649,7 +654,7 @@ public class functions {
 
 		Pointer periodset_extent_transfn(Pointer p, Pointer ps);
 
-		Pointer timestamp_tunion_transfn(Pointer state, int t);
+		Pointer timestamp_tunion_transfn(Pointer state, int64_t t);
 
 		Pointer timestampset_tunion_transfn(Pointer state, Pointer ts);
 
@@ -661,13 +666,13 @@ public class functions {
 
 		Pointer period_tunion_finalfn(Pointer state);
 
-		Pointer timestamp_tcount_transfn(Pointer state, int t, Pointer interval, int origin);
+		Pointer timestamp_tcount_transfn(Pointer state, int64_t t, Pointer interval, int64_t origin);
 
-		Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, int origin);
+		Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, int64_t origin);
 
-		Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, int origin);
+		Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, int64_t origin);
 
-		Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, int origin);
+		Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, int64_t origin);
 
 		boolean periodset_eq(Pointer ps1, Pointer ps2);
 
@@ -749,7 +754,7 @@ public class functions {
 
 		Pointer span_to_tbox(Pointer span);
 
-		Pointer timestamp_to_tbox(int t);
+		Pointer timestamp_to_tbox(int64_t t);
 
 		Pointer timestampset_to_tbox(Pointer ss);
 
@@ -757,15 +762,15 @@ public class functions {
 
 		Pointer periodset_to_tbox(Pointer ps);
 
-		Pointer int_timestamp_to_tbox(int i, int t);
+		Pointer int_timestamp_to_tbox(int i, int64_t t);
 
-		Pointer float_timestamp_to_tbox(double d, int t);
+		Pointer float_timestamp_to_tbox(double d, int64_t t);
 
 		Pointer int_period_to_tbox(int i, Pointer p);
 
 		Pointer float_period_to_tbox(double d, Pointer p);
 
-		Pointer span_timestamp_to_tbox(Pointer span, int t);
+		Pointer span_timestamp_to_tbox(Pointer span, int64_t t);
 
 		Pointer span_period_to_tbox(Pointer span, Pointer p);
 
@@ -783,7 +788,7 @@ public class functions {
 
 		Pointer geo_to_stbox(Pointer gs);
 
-		Pointer timestamp_to_stbox(int t);
+		Pointer timestamp_to_stbox(int64_t t);
 
 		Pointer timestampset_to_stbox(Pointer ts);
 
@@ -791,7 +796,7 @@ public class functions {
 
 		Pointer periodset_to_stbox(Pointer ps);
 
-		Pointer geo_timestamp_to_stbox(Pointer gs, int t);
+		Pointer geo_timestamp_to_stbox(Pointer gs, int64_t t);
 
 		Pointer geo_period_to_stbox(Pointer gs, Pointer p);
 
@@ -1003,7 +1008,7 @@ public class functions {
 
 		Pointer tbool_from_base(boolean b, Pointer temp);
 
-		Pointer tboolinst_make(boolean b, int t);
+		Pointer tboolinst_make(boolean b, int64_t t);
 
 		Pointer tbooldiscseq_from_base_time(boolean b, Pointer ts);
 
@@ -1017,51 +1022,51 @@ public class functions {
 
 		Pointer temporal_copy(Pointer temp);
 
-		Pointer tfloat_from_base(double d, Pointer temp, interpType interp);
+		Pointer tfloat_from_base(double d, Pointer temp, int interp);
 
-		Pointer tfloatinst_make(double d, int t);
+		Pointer tfloatinst_make(double d, int64_t t);
 
 		Pointer tfloatdiscseq_from_base_time(double d, Pointer ts);
 
-		Pointer tfloatseq_from_base(double d, Pointer seq, interpType interp);
+		Pointer tfloatseq_from_base(double d, Pointer seq, int interp);
 
-		Pointer tfloatseq_from_base_time(double d, Pointer p, interpType interp);
+		Pointer tfloatseq_from_base_time(double d, Pointer p, int interp);
 
-		Pointer tfloatseqset_from_base(double d, Pointer ss, interpType interp);
+		Pointer tfloatseqset_from_base(double d, Pointer ss, int interp);
 
-		Pointer tfloatseqset_from_base_time(double d, Pointer ps, interpType interp);
+		Pointer tfloatseqset_from_base_time(double d, Pointer ps, int interp);
 
-		Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, interpType interp);
+		Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, int interp);
 
-		Pointer tgeogpointinst_make(Pointer gs, int t);
+		Pointer tgeogpointinst_make(Pointer gs, int64_t t);
 
 		Pointer tgeogpointdiscseq_from_base_time(Pointer gs, Pointer ts);
 
-		Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, interpType interp);
+		Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, int interp);
 
-		Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, interpType interp);
+		Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, int interp);
 
-		Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, interpType interp);
+		Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, int interp);
 
-		Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, interpType interp);
+		Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, int interp);
 
-		Pointer tgeompoint_from_base(Pointer gs, Pointer temp, interpType interp);
+		Pointer tgeompoint_from_base(Pointer gs, Pointer temp, int interp);
 
-		Pointer tgeompointinst_make(Pointer gs, int t);
+		Pointer tgeompointinst_make(Pointer gs, int64_t t);
 
 		Pointer tgeompointdiscseq_from_base_time(Pointer gs, Pointer ts);
 
-		Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, interpType interp);
+		Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, int interp);
 
-		Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, interpType interp);
+		Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, int interp);
 
-		Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, interpType interp);
+		Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, int interp);
 
-		Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, interpType interp);
+		Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, int interp);
 
 		Pointer tint_from_base(int i, Pointer temp);
 
-		Pointer tintinst_make(int i, int t);
+		Pointer tintinst_make(int i, int64_t t);
 
 		Pointer tintdiscseq_from_base_time(int i, Pointer ts);
 
@@ -1073,21 +1078,21 @@ public class functions {
 
 		Pointer tintseqset_from_base_time(int i, Pointer ps);
 
-		Pointer tsequence_make(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize);
+		Pointer tsequence_make(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
 
-		Pointer tsequence_make_exp(Pointer[] instants, int count, int maxcount, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize);
+		Pointer tsequence_make_exp(Pointer[] instants, int count, int maxcount, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
 
-		Pointer tsequence_make_free(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize);
+		Pointer tsequence_make_free(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
 
 		Pointer tsequenceset_make(Pointer[] sequences, int count, boolean normalize);
 
 		Pointer tsequenceset_make_free(Pointer[] sequences, int count, boolean normalize);
 
-		Pointer tsequenceset_make_gaps(Pointer[] instants, int count, interpType interp, float maxdist, Pointer maxt);
+		Pointer tsequenceset_make_gaps(Pointer[] instants, int count, int interp, float maxdist, Pointer maxt);
 
 		Pointer ttext_from_base(Pointer txt, Pointer temp);
 
-		Pointer ttextinst_make(Pointer txt, int t);
+		Pointer ttextinst_make(Pointer txt, int64_t t);
 
 		Pointer ttextdiscseq_from_base_time(Pointer txt, Pointer ts);
 
@@ -1117,7 +1122,7 @@ public class functions {
 
 		Pointer temporal_end_sequence(Pointer temp);
 
-		int temporal_end_timestamp(Pointer temp);
+		int64_t temporal_end_timestamp(Pointer temp);
 
 		u_int32_t temporal_hash(Pointer temp);
 
@@ -1139,7 +1144,7 @@ public class functions {
 
 		Pointer temporal_start_sequence(Pointer temp);
 
-		int temporal_start_timestamp(Pointer temp);
+		int64_t temporal_start_timestamp(Pointer temp);
 
 		String temporal_subtype(Pointer temp);
 
@@ -1217,7 +1222,7 @@ public class functions {
 
 		Pointer tbool_minus_value(Pointer temp, boolean b);
 
-		boolean tbool_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value);
+		boolean tbool_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value);
 
 		Pointer temporal_at_max(Pointer temp);
 
@@ -1227,7 +1232,7 @@ public class functions {
 
 		Pointer temporal_at_periodset(Pointer temp, Pointer ps);
 
-		Pointer temporal_at_timestamp(Pointer temp, int t);
+		Pointer temporal_at_timestamp(Pointer temp, int64_t t);
 
 		Pointer temporal_at_timestampset(Pointer temp, Pointer ts);
 
@@ -1239,7 +1244,7 @@ public class functions {
 
 		Pointer temporal_minus_periodset(Pointer temp, Pointer ps);
 
-		Pointer temporal_minus_timestamp(Pointer temp, int t);
+		Pointer temporal_minus_timestamp(Pointer temp, int64_t t);
 
 		Pointer temporal_minus_timestampset(Pointer temp, Pointer ts);
 
@@ -1251,7 +1256,7 @@ public class functions {
 
 		Pointer tfloat_minus_values(Pointer temp, Pointer values, int count);
 
-		boolean tfloat_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value);
+		boolean tfloat_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value);
 
 		Pointer tint_at_value(Pointer temp, int i);
 
@@ -1261,7 +1266,7 @@ public class functions {
 
 		Pointer tint_minus_values(Pointer temp, Pointer values, int count);
 
-		boolean tint_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value);
+		boolean tint_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value);
 
 		Pointer tnumber_at_span(Pointer temp, Pointer span);
 
@@ -1291,7 +1296,7 @@ public class functions {
 
 		Pointer tpoint_minus_values(Pointer temp, Pointer[] values, int count);
 
-		boolean tpoint_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer[] value);
+		boolean tpoint_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer[] value);
 
 		Pointer ttext_at_value(Pointer temp, Pointer txt);
 
@@ -1301,7 +1306,7 @@ public class functions {
 
 		Pointer ttext_minus_values(Pointer temp, Pointer[] values, int count);
 
-		boolean ttext_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer[] value);
+		boolean ttext_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer[] value);
 
 		Pointer tand_bool_tbool(boolean b, Pointer temp);
 
@@ -1397,13 +1402,13 @@ public class functions {
 
 		boolean adjacent_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean adjacent_temporal_timestamp(Pointer temp, int t);
+		boolean adjacent_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean adjacent_temporal_timestampset(Pointer temp, Pointer ts);
 
 		boolean adjacent_tfloat_float(Pointer tnumber, double d);
 
-		boolean adjacent_timestamp_temporal(int t, Pointer temp);
+		boolean adjacent_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean adjacent_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1443,13 +1448,13 @@ public class functions {
 
 		boolean contained_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean contained_temporal_timestamp(Pointer temp, int t);
+		boolean contained_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean contained_temporal_timestampset(Pointer temp, Pointer ts);
 
 		boolean contained_tfloat_float(Pointer tnumber, double d);
 
-		boolean contained_timestamp_temporal(int t, Pointer temp);
+		boolean contained_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean contained_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1489,13 +1494,13 @@ public class functions {
 
 		boolean contains_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean contains_temporal_timestamp(Pointer temp, int t);
+		boolean contains_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean contains_temporal_timestampset(Pointer temp, Pointer ts);
 
 		boolean contains_tfloat_float(Pointer tnumber, double d);
 
-		boolean contains_timestamp_temporal(int t, Pointer temp);
+		boolean contains_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean contains_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1543,13 +1548,13 @@ public class functions {
 
 		boolean overlaps_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean overlaps_temporal_timestamp(Pointer temp, int t);
+		boolean overlaps_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean overlaps_temporal_timestampset(Pointer temp, Pointer ts);
 
 		boolean overlaps_tfloat_float(Pointer tnumber, double d);
 
-		boolean overlaps_timestamp_temporal(int t, Pointer temp);
+		boolean overlaps_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean overlaps_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1613,13 +1618,13 @@ public class functions {
 
 		boolean same_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean same_temporal_timestamp(Pointer temp, int t);
+		boolean same_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean same_temporal_timestampset(Pointer temp, Pointer ts);
 
 		boolean same_tfloat_float(Pointer tnumber, double d);
 
-		boolean same_timestamp_temporal(int t, Pointer temp);
+		boolean same_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean same_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1661,11 +1666,11 @@ public class functions {
 
 		boolean after_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean after_temporal_timestamp(Pointer temp, int t);
+		boolean after_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean after_temporal_timestampset(Pointer temp, Pointer ts);
 
-		boolean after_timestamp_temporal(int t, Pointer temp);
+		boolean after_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean after_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1701,11 +1706,11 @@ public class functions {
 
 		boolean before_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean before_temporal_timestamp(Pointer temp, int t);
+		boolean before_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean before_temporal_timestampset(Pointer temp, Pointer ts);
 
-		boolean before_timestamp_temporal(int t, Pointer temp);
+		boolean before_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean before_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1781,11 +1786,11 @@ public class functions {
 
 		boolean overafter_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean overafter_temporal_timestamp(Pointer temp, int t);
+		boolean overafter_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean overafter_temporal_timestampset(Pointer temp, Pointer ts);
 
-		boolean overafter_timestamp_temporal(int t, Pointer temp);
+		boolean overafter_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean overafter_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -1821,11 +1826,11 @@ public class functions {
 
 		boolean overbefore_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean overbefore_temporal_timestamp(Pointer temp, int t);
+		boolean overbefore_temporal_timestamp(Pointer temp, int64_t t);
 
 		boolean overbefore_temporal_timestampset(Pointer temp, Pointer ts);
 
-		boolean overbefore_timestamp_temporal(int t, Pointer temp);
+		boolean overbefore_timestamp_temporal(int64_t t, Pointer temp);
 
 		boolean overbefore_timestampset_temporal(Pointer ts, Pointer temp);
 
@@ -2201,7 +2206,7 @@ public class functions {
 
 		Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect);
 
-		Pointer temporal_delete_timestamp(Pointer temp, int t, boolean connect);
+		Pointer temporal_delete_timestamp(Pointer temp, int64_t t, boolean connect);
 
 		Pointer temporal_delete_timestampset(Pointer temp, Pointer ts, boolean connect);
 
@@ -2213,7 +2218,7 @@ public class functions {
 
 		boolean temporal_intersects_periodset(Pointer temp, Pointer ps);
 
-		boolean temporal_intersects_timestamp(Pointer temp, int t);
+		boolean temporal_intersects_timestamp(Pointer temp, int64_t t);
 
 		boolean temporal_intersects_timestampset(Pointer temp, Pointer ss);
 
@@ -2231,7 +2236,7 @@ public class functions {
 
 		Pointer tpoint_extent_transfn(Pointer box, Pointer temp);
 
-		Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, int origin);
+		Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, int64_t origin);
 
 		Pointer tbool_tand_transfn(Pointer state, Pointer temp);
 
@@ -2263,27 +2268,27 @@ public class functions {
 
 		double float_bucket(double value, double size, double origin);
 
-		int timestamptz_bucket(int timestamp, Pointer duration, int origin);
+		int64_t timestamptz_bucket(int64_t timestamp, Pointer duration, int64_t origin);
 
 		Pointer intspan_bucket_list(Pointer bounds, int size, int origin, Pointer newcount);
 
 		Pointer floatspan_bucket_list(Pointer bounds, double size, double origin, Pointer newcount);
 
-		Pointer period_bucket_list(Pointer bounds, Pointer duration, int origin, Pointer newcount);
+		Pointer period_bucket_list(Pointer bounds, Pointer duration, int64_t origin, Pointer newcount);
 
-		Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, int torigin, Pointer rows, Pointer columns);
+		Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, int64_t torigin, Pointer rows, Pointer columns);
 
 		Pointer[] tint_value_split(Pointer temp, int size, int origin, Pointer newcount);
 
 		Pointer[] tfloat_value_split(Pointer temp, double size, double origin, Pointer newcount);
 
-		Pointer[] temporal_time_split(Pointer temp, Pointer duration, int torigin, Pointer newcount);
+		Pointer[] temporal_time_split(Pointer temp, Pointer duration, int64_t torigin, Pointer newcount);
 
-		Pointer[] tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, int torigin, Pointer newcount);
+		Pointer[] tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, int64_t torigin, Pointer newcount);
 
-		Pointer[] tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, int torigin, Pointer newcount);
+		Pointer[] tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, int64_t torigin, Pointer newcount);
 
-		Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, int torigin, Pointer[] cellcount);
+		Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, int64_t torigin, Pointer[] cellcount);
 
 		double temporal_frechet_distance(Pointer temp1, Pointer temp2);
 
@@ -2361,11 +2366,11 @@ public class functions {
 		return MeosLibrary.meos.bool_out(b);
 	}
 	
-	public static DateADT pg_date_in(String str) {
+	public static int32_t pg_date_in(String str) {
 		return MeosLibrary.meos.pg_date_in(str);
 	}
 	
-	public static String pg_date_out(DateADT date) {
+	public static String pg_date_out(int32_t date) {
 		return MeosLibrary.meos.pg_date_out(date);
 	}
 	
@@ -2393,39 +2398,39 @@ public class functions {
 		return MeosLibrary.meos.pg_interval_pl(span1, span2);
 	}
 	
-	public static TimeADT pg_time_in(String str, int32_t typmod) {
+	public static int64_t pg_time_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_time_in(str, typmod);
 	}
 	
-	public static String pg_time_out(TimeADT time) {
+	public static String pg_time_out(int64_t time) {
 		return MeosLibrary.meos.pg_time_out(time);
 	}
 	
-	public static int pg_timestamp_in(String str, int32_t typmod) {
+	public static int64_t pg_timestamp_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_timestamp_in(str, typmod);
 	}
 	
-	public static Pointer pg_timestamp_mi(int dt1, int dt2) {
+	public static Pointer pg_timestamp_mi(int64_t dt1, int64_t dt2) {
 		return MeosLibrary.meos.pg_timestamp_mi(dt1, dt2);
 	}
 	
-	public static int pg_timestamp_mi_interval(int timestamp, Pointer span) {
+	public static int64_t pg_timestamp_mi_interval(int64_t timestamp, Pointer span) {
 		return MeosLibrary.meos.pg_timestamp_mi_interval(timestamp, span);
 	}
 	
-	public static String pg_timestamp_out(int dt) {
+	public static String pg_timestamp_out(int64_t dt) {
 		return MeosLibrary.meos.pg_timestamp_out(dt);
 	}
 	
-	public static int pg_timestamp_pl_interval(int timestamp, Pointer span) {
+	public static int64_t pg_timestamp_pl_interval(int64_t timestamp, Pointer span) {
 		return MeosLibrary.meos.pg_timestamp_pl_interval(timestamp, span);
 	}
 	
-	public static int pg_timestamptz_in(String str, int32_t typmod) {
+	public static int64_t pg_timestamptz_in(String str, int32_t typmod) {
 		return MeosLibrary.meos.pg_timestamptz_in(str, typmod);
 	}
 	
-	public static String pg_timestamptz_out(int dt) {
+	public static String pg_timestamptz_out(int64_t dt) {
 		return MeosLibrary.meos.pg_timestamptz_out(dt);
 	}
 	
@@ -2537,7 +2542,7 @@ public class functions {
 		return MeosLibrary.meos.span_from_wkb(wkb, size);
 	}
 	
-	public static String span_out(Pointer s, int arg) {
+	public static String span_out(Pointer s, uintptr_t arg) {
 		return MeosLibrary.meos.span_out(s, arg);
 	}
 	
@@ -2573,7 +2578,7 @@ public class functions {
 		return MeosLibrary.meos.intspan_make(lower, upper, lower_inc, upper_inc);
 	}
 	
-	public static Pointer period_make(int lower, int upper, boolean lower_inc, boolean upper_inc) {
+	public static Pointer period_make(int64_t lower, int64_t upper, boolean lower_inc, boolean upper_inc) {
 		return MeosLibrary.meos.period_make(lower, upper, lower_inc, upper_inc);
 	}
 	
@@ -2621,15 +2626,15 @@ public class functions {
 		return MeosLibrary.meos.periodset_to_period(ps);
 	}
 	
-	public static Pointer timestamp_to_period(int t) {
+	public static Pointer timestamp_to_period(int64_t t) {
 		return MeosLibrary.meos.timestamp_to_period(t);
 	}
 	
-	public static Pointer timestamp_to_periodset(int t) {
+	public static Pointer timestamp_to_periodset(int64_t t) {
 		return MeosLibrary.meos.timestamp_to_periodset(t);
 	}
 	
-	public static Pointer timestamp_to_timestampset(int t) {
+	public static Pointer timestamp_to_timestampset(int64_t t) {
 		return MeosLibrary.meos.timestamp_to_timestampset(t);
 	}
 	
@@ -2657,11 +2662,11 @@ public class functions {
 		return MeosLibrary.meos.period_duration(s);
 	}
 	
-	public static int period_lower(Pointer p) {
+	public static int64_t period_lower(Pointer p) {
 		return MeosLibrary.meos.period_lower(p);
 	}
 	
-	public static int period_upper(Pointer p) {
+	public static int64_t period_upper(Pointer p) {
 		return MeosLibrary.meos.period_upper(p);
 	}
 	
@@ -2673,7 +2678,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_end_period(ps);
 	}
 	
-	public static int periodset_end_timestamp(Pointer ps) {
+	public static int64_t periodset_end_timestamp(Pointer ps) {
 		return MeosLibrary.meos.periodset_end_timestamp(ps);
 	}
 	
@@ -2705,7 +2710,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_start_period(ps);
 	}
 	
-	public static int periodset_start_timestamp(Pointer ps) {
+	public static int64_t periodset_start_timestamp(Pointer ps) {
 		return MeosLibrary.meos.periodset_start_timestamp(ps);
 	}
 	
@@ -2741,7 +2746,7 @@ public class functions {
 		return MeosLibrary.meos.span_width(s);
 	}
 	
-	public static int timestampset_end_timestamp(Pointer ss) {
+	public static int64_t timestampset_end_timestamp(Pointer ss) {
 		return MeosLibrary.meos.timestampset_end_timestamp(ss);
 	}
 	
@@ -2761,7 +2766,7 @@ public class functions {
 		return MeosLibrary.meos.timestampset_num_timestamps(ss);
 	}
 	
-	public static int timestampset_start_timestamp(Pointer ss) {
+	public static int64_t timestampset_start_timestamp(Pointer ss) {
 		return MeosLibrary.meos.timestampset_start_timestamp(ss);
 	}
 	
@@ -2805,7 +2810,7 @@ public class functions {
 		return MeosLibrary.meos.adjacent_period_periodset(p, ps);
 	}
 	
-	public static boolean adjacent_period_timestamp(Pointer p, int t) {
+	public static boolean adjacent_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.adjacent_period_timestamp(p, t);
 	}
 	
@@ -2821,7 +2826,7 @@ public class functions {
 		return MeosLibrary.meos.adjacent_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean adjacent_periodset_timestamp(Pointer ps, int t) {
+	public static boolean adjacent_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.adjacent_periodset_timestamp(ps, t);
 	}
 	
@@ -2833,11 +2838,11 @@ public class functions {
 		return MeosLibrary.meos.adjacent_span_span(s1, s2);
 	}
 	
-	public static boolean adjacent_timestamp_period(int t, Pointer p) {
+	public static boolean adjacent_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.adjacent_timestamp_period(t, p);
 	}
 	
-	public static boolean adjacent_timestamp_periodset(int t, Pointer ps) {
+	public static boolean adjacent_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.adjacent_timestamp_periodset(t, ps);
 	}
 	
@@ -2873,15 +2878,15 @@ public class functions {
 		return MeosLibrary.meos.contained_span_span(s1, s2);
 	}
 	
-	public static boolean contained_timestamp_period(int t, Pointer p) {
+	public static boolean contained_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.contained_timestamp_period(t, p);
 	}
 	
-	public static boolean contained_timestamp_periodset(int t, Pointer ps) {
+	public static boolean contained_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.contained_timestamp_periodset(t, ps);
 	}
 	
-	public static boolean contained_timestamp_timestampset(int t, Pointer ts) {
+	public static boolean contained_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.contained_timestamp_timestampset(t, ts);
 	}
 	
@@ -2909,7 +2914,7 @@ public class functions {
 		return MeosLibrary.meos.contains_period_periodset(p, ps);
 	}
 	
-	public static boolean contains_period_timestamp(Pointer p, int t) {
+	public static boolean contains_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.contains_period_timestamp(p, t);
 	}
 	
@@ -2925,7 +2930,7 @@ public class functions {
 		return MeosLibrary.meos.contains_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean contains_periodset_timestamp(Pointer ps, int t) {
+	public static boolean contains_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.contains_periodset_timestamp(ps, t);
 	}
 	
@@ -2937,7 +2942,7 @@ public class functions {
 		return MeosLibrary.meos.contains_span_span(s1, s2);
 	}
 	
-	public static boolean contains_timestampset_timestamp(Pointer ts, int t) {
+	public static boolean contains_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.contains_timestampset_timestamp(ts, t);
 	}
 	
@@ -2985,7 +2990,7 @@ public class functions {
 		return MeosLibrary.meos.after_period_periodset(p, ps);
 	}
 	
-	public static boolean after_period_timestamp(Pointer p, int t) {
+	public static boolean after_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.after_period_timestamp(p, t);
 	}
 	
@@ -3001,7 +3006,7 @@ public class functions {
 		return MeosLibrary.meos.after_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean after_periodset_timestamp(Pointer ps, int t) {
+	public static boolean after_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.after_periodset_timestamp(ps, t);
 	}
 	
@@ -3009,15 +3014,15 @@ public class functions {
 		return MeosLibrary.meos.after_periodset_timestampset(ps, ts);
 	}
 	
-	public static boolean after_timestamp_period(int t, Pointer p) {
+	public static boolean after_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.after_timestamp_period(t, p);
 	}
 	
-	public static boolean after_timestamp_periodset(int t, Pointer ps) {
+	public static boolean after_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.after_timestamp_periodset(t, ps);
 	}
 	
-	public static boolean after_timestamp_timestampset(int t, Pointer ts) {
+	public static boolean after_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.after_timestamp_timestampset(t, ts);
 	}
 	
@@ -3029,7 +3034,7 @@ public class functions {
 		return MeosLibrary.meos.after_timestampset_periodset(ts, ps);
 	}
 	
-	public static boolean after_timestampset_timestamp(Pointer ts, int t) {
+	public static boolean after_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.after_timestampset_timestamp(ts, t);
 	}
 	
@@ -3041,7 +3046,7 @@ public class functions {
 		return MeosLibrary.meos.before_period_periodset(p, ps);
 	}
 	
-	public static boolean before_period_timestamp(Pointer p, int t) {
+	public static boolean before_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.before_period_timestamp(p, t);
 	}
 	
@@ -3057,7 +3062,7 @@ public class functions {
 		return MeosLibrary.meos.before_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean before_periodset_timestamp(Pointer ps, int t) {
+	public static boolean before_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.before_periodset_timestamp(ps, t);
 	}
 	
@@ -3065,15 +3070,15 @@ public class functions {
 		return MeosLibrary.meos.before_periodset_timestampset(ps, ts);
 	}
 	
-	public static boolean before_timestamp_period(int t, Pointer p) {
+	public static boolean before_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.before_timestamp_period(t, p);
 	}
 	
-	public static boolean before_timestamp_periodset(int t, Pointer ps) {
+	public static boolean before_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.before_timestamp_periodset(t, ps);
 	}
 	
-	public static boolean before_timestamp_timestampset(int t, Pointer ts) {
+	public static boolean before_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.before_timestamp_timestampset(t, ts);
 	}
 	
@@ -3085,7 +3090,7 @@ public class functions {
 		return MeosLibrary.meos.before_timestampset_periodset(ts, ps);
 	}
 	
-	public static boolean before_timestampset_timestamp(Pointer ts, int t) {
+	public static boolean before_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.before_timestampset_timestamp(ts, t);
 	}
 	
@@ -3117,7 +3122,7 @@ public class functions {
 		return MeosLibrary.meos.overafter_period_periodset(p, ps);
 	}
 	
-	public static boolean overafter_period_timestamp(Pointer p, int t) {
+	public static boolean overafter_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.overafter_period_timestamp(p, t);
 	}
 	
@@ -3133,7 +3138,7 @@ public class functions {
 		return MeosLibrary.meos.overafter_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean overafter_periodset_timestamp(Pointer ps, int t) {
+	public static boolean overafter_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.overafter_periodset_timestamp(ps, t);
 	}
 	
@@ -3141,15 +3146,15 @@ public class functions {
 		return MeosLibrary.meos.overafter_periodset_timestampset(ps, ts);
 	}
 	
-	public static boolean overafter_timestamp_period(int t, Pointer p) {
+	public static boolean overafter_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.overafter_timestamp_period(t, p);
 	}
 	
-	public static boolean overafter_timestamp_periodset(int t, Pointer ps) {
+	public static boolean overafter_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.overafter_timestamp_periodset(t, ps);
 	}
 	
-	public static boolean overafter_timestamp_timestampset(int t, Pointer ts) {
+	public static boolean overafter_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.overafter_timestamp_timestampset(t, ts);
 	}
 	
@@ -3161,7 +3166,7 @@ public class functions {
 		return MeosLibrary.meos.overafter_timestampset_periodset(ts, ps);
 	}
 	
-	public static boolean overafter_timestampset_timestamp(Pointer ts, int t) {
+	public static boolean overafter_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.overafter_timestampset_timestamp(ts, t);
 	}
 	
@@ -3173,7 +3178,7 @@ public class functions {
 		return MeosLibrary.meos.overbefore_period_periodset(p, ps);
 	}
 	
-	public static boolean overbefore_period_timestamp(Pointer p, int t) {
+	public static boolean overbefore_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.overbefore_period_timestamp(p, t);
 	}
 	
@@ -3189,7 +3194,7 @@ public class functions {
 		return MeosLibrary.meos.overbefore_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean overbefore_periodset_timestamp(Pointer ps, int t) {
+	public static boolean overbefore_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.overbefore_periodset_timestamp(ps, t);
 	}
 	
@@ -3197,15 +3202,15 @@ public class functions {
 		return MeosLibrary.meos.overbefore_periodset_timestampset(ps, ts);
 	}
 	
-	public static boolean overbefore_timestamp_period(int t, Pointer p) {
+	public static boolean overbefore_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.overbefore_timestamp_period(t, p);
 	}
 	
-	public static boolean overbefore_timestamp_periodset(int t, Pointer ps) {
+	public static boolean overbefore_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.overbefore_timestamp_periodset(t, ps);
 	}
 	
-	public static boolean overbefore_timestamp_timestampset(int t, Pointer ts) {
+	public static boolean overbefore_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.overbefore_timestamp_timestampset(t, ts);
 	}
 	
@@ -3217,7 +3222,7 @@ public class functions {
 		return MeosLibrary.meos.overbefore_timestampset_periodset(ts, ps);
 	}
 	
-	public static boolean overbefore_timestampset_timestamp(Pointer ts, int t) {
+	public static boolean overbefore_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.overbefore_timestampset_timestamp(ts, t);
 	}
 	
@@ -3289,7 +3294,7 @@ public class functions {
 		return MeosLibrary.meos.intersection_period_periodset(p, ps);
 	}
 	
-	public static boolean intersection_period_timestamp(Pointer p, int t, Pointer result) {
+	public static boolean intersection_period_timestamp(Pointer p, int64_t t, Pointer result) {
 		return MeosLibrary.meos.intersection_period_timestamp(p, t, result);
 	}
 	
@@ -3305,7 +3310,7 @@ public class functions {
 		return MeosLibrary.meos.intersection_periodset_periodset(ps1, ps2);
 	}
 	
-	public static boolean intersection_periodset_timestamp(Pointer ps, int t, Pointer result) {
+	public static boolean intersection_periodset_timestamp(Pointer ps, int64_t t, Pointer result) {
 		return MeosLibrary.meos.intersection_periodset_timestamp(ps, t, result);
 	}
 	
@@ -3317,19 +3322,19 @@ public class functions {
 		return MeosLibrary.meos.intersection_span_span(s1, s2);
 	}
 	
-	public static boolean intersection_timestamp_period(int t, Pointer p, Pointer result) {
+	public static boolean intersection_timestamp_period(int64_t t, Pointer p, Pointer result) {
 		return MeosLibrary.meos.intersection_timestamp_period(t, p, result);
 	}
 	
-	public static boolean intersection_timestamp_periodset(int t, Pointer ps, Pointer result) {
+	public static boolean intersection_timestamp_periodset(int64_t t, Pointer ps, Pointer result) {
 		return MeosLibrary.meos.intersection_timestamp_periodset(t, ps, result);
 	}
 	
-	public static boolean intersection_timestamp_timestamp(int t1, int t2, Pointer result) {
+	public static boolean intersection_timestamp_timestamp(int64_t t1, int64_t t2, Pointer result) {
 		return MeosLibrary.meos.intersection_timestamp_timestamp(t1, t2, result);
 	}
 	
-	public static boolean intersection_timestamp_timestampset(int t, Pointer ts, Pointer result) {
+	public static boolean intersection_timestamp_timestampset(int64_t t, Pointer ts, Pointer result) {
 		return MeosLibrary.meos.intersection_timestamp_timestampset(t, ts, result);
 	}
 	
@@ -3341,7 +3346,7 @@ public class functions {
 		return MeosLibrary.meos.intersection_timestampset_periodset(ts, ps);
 	}
 	
-	public static boolean intersection_timestampset_timestamp(Pointer ts, int t, Pointer result) {
+	public static boolean intersection_timestampset_timestamp(Pointer ts, int64_t t, Pointer result) {
 		return MeosLibrary.meos.intersection_timestampset_timestamp(ts, t, result);
 	}
 	
@@ -3357,7 +3362,7 @@ public class functions {
 		return MeosLibrary.meos.minus_period_periodset(p, ps);
 	}
 	
-	public static Pointer minus_period_timestamp(Pointer p, int t) {
+	public static Pointer minus_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.minus_period_timestamp(p, t);
 	}
 	
@@ -3373,7 +3378,7 @@ public class functions {
 		return MeosLibrary.meos.minus_periodset_periodset(ps1, ps2);
 	}
 	
-	public static Pointer minus_periodset_timestamp(Pointer ps, int t) {
+	public static Pointer minus_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.minus_periodset_timestamp(ps, t);
 	}
 	
@@ -3385,19 +3390,19 @@ public class functions {
 		return MeosLibrary.meos.minus_span_span(s1, s2);
 	}
 	
-	public static boolean minus_timestamp_period(int t, Pointer p, Pointer result) {
+	public static boolean minus_timestamp_period(int64_t t, Pointer p, Pointer result) {
 		return MeosLibrary.meos.minus_timestamp_period(t, p, result);
 	}
 	
-	public static boolean minus_timestamp_periodset(int t, Pointer ps, Pointer result) {
+	public static boolean minus_timestamp_periodset(int64_t t, Pointer ps, Pointer result) {
 		return MeosLibrary.meos.minus_timestamp_periodset(t, ps, result);
 	}
 	
-	public static boolean minus_timestamp_timestamp(int t1, int t2, Pointer result) {
+	public static boolean minus_timestamp_timestamp(int64_t t1, int64_t t2, Pointer result) {
 		return MeosLibrary.meos.minus_timestamp_timestamp(t1, t2, result);
 	}
 	
-	public static boolean minus_timestamp_timestampset(int t, Pointer ts, Pointer result) {
+	public static boolean minus_timestamp_timestampset(int64_t t, Pointer ts, Pointer result) {
 		return MeosLibrary.meos.minus_timestamp_timestampset(t, ts, result);
 	}
 	
@@ -3409,7 +3414,7 @@ public class functions {
 		return MeosLibrary.meos.minus_timestampset_periodset(ts, ps);
 	}
 	
-	public static Pointer minus_timestampset_timestamp(Pointer ts, int t) {
+	public static Pointer minus_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.minus_timestampset_timestamp(ts, t);
 	}
 	
@@ -3425,7 +3430,7 @@ public class functions {
 		return MeosLibrary.meos.union_period_periodset(p, ps);
 	}
 	
-	public static Pointer union_period_timestamp(Pointer p, int t) {
+	public static Pointer union_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.union_period_timestamp(p, t);
 	}
 	
@@ -3441,7 +3446,7 @@ public class functions {
 		return MeosLibrary.meos.union_periodset_periodset(ps1, ps2);
 	}
 	
-	public static Pointer union_periodset_timestamp(Pointer ps, int t) {
+	public static Pointer union_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.union_periodset_timestamp(ps, t);
 	}
 	
@@ -3453,19 +3458,19 @@ public class functions {
 		return MeosLibrary.meos.union_span_span(s1, s2, strict);
 	}
 	
-	public static Pointer union_timestamp_period(int t, Pointer p) {
+	public static Pointer union_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.union_timestamp_period(t, p);
 	}
 	
-	public static Pointer union_timestamp_periodset(int t, Pointer ps) {
+	public static Pointer union_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.union_timestamp_periodset(t, ps);
 	}
 	
-	public static Pointer union_timestamp_timestamp(int t1, int t2) {
+	public static Pointer union_timestamp_timestamp(int64_t t1, int64_t t2) {
 		return MeosLibrary.meos.union_timestamp_timestamp(t1, t2);
 	}
 	
-	public static Pointer union_timestamp_timestampset(int t, Pointer ts) {
+	public static Pointer union_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.union_timestamp_timestampset(t, ts);
 	}
 	
@@ -3477,7 +3482,7 @@ public class functions {
 		return MeosLibrary.meos.union_timestampset_periodset(ts, ps);
 	}
 	
-	public static Pointer union_timestampset_timestamp(Pointer ts, int t) {
+	public static Pointer union_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.union_timestampset_timestamp(ts, t);
 	}
 	
@@ -3497,7 +3502,7 @@ public class functions {
 		return MeosLibrary.meos.distance_period_periodset(p, ps);
 	}
 	
-	public static double distance_period_timestamp(Pointer p, int t) {
+	public static double distance_period_timestamp(Pointer p, int64_t t) {
 		return MeosLibrary.meos.distance_period_timestamp(p, t);
 	}
 	
@@ -3513,7 +3518,7 @@ public class functions {
 		return MeosLibrary.meos.distance_periodset_periodset(ps1, ps2);
 	}
 	
-	public static double distance_periodset_timestamp(Pointer ps, int t) {
+	public static double distance_periodset_timestamp(Pointer ps, int64_t t) {
 		return MeosLibrary.meos.distance_periodset_timestamp(ps, t);
 	}
 	
@@ -3525,19 +3530,19 @@ public class functions {
 		return MeosLibrary.meos.distance_span_span(s1, s2);
 	}
 	
-	public static double distance_timestamp_period(int t, Pointer p) {
+	public static double distance_timestamp_period(int64_t t, Pointer p) {
 		return MeosLibrary.meos.distance_timestamp_period(t, p);
 	}
 	
-	public static double distance_timestamp_periodset(int t, Pointer ps) {
+	public static double distance_timestamp_periodset(int64_t t, Pointer ps) {
 		return MeosLibrary.meos.distance_timestamp_periodset(t, ps);
 	}
 	
-	public static double distance_timestamp_timestamp(int t1, int t2) {
+	public static double distance_timestamp_timestamp(int64_t t1, int64_t t2) {
 		return MeosLibrary.meos.distance_timestamp_timestamp(t1, t2);
 	}
 	
-	public static double distance_timestamp_timestampset(int t, Pointer ts) {
+	public static double distance_timestamp_timestampset(int64_t t, Pointer ts) {
 		return MeosLibrary.meos.distance_timestamp_timestampset(t, ts);
 	}
 	
@@ -3549,7 +3554,7 @@ public class functions {
 		return MeosLibrary.meos.distance_timestampset_periodset(ts, ps);
 	}
 	
-	public static double distance_timestampset_timestamp(Pointer ts, int t) {
+	public static double distance_timestampset_timestamp(Pointer ts, int64_t t) {
 		return MeosLibrary.meos.distance_timestampset_timestamp(ts, t);
 	}
 	
@@ -3557,7 +3562,7 @@ public class functions {
 		return MeosLibrary.meos.distance_timestampset_timestampset(ts1, ts2);
 	}
 	
-	public static Pointer timestamp_extent_transfn(Pointer p, int t) {
+	public static Pointer timestamp_extent_transfn(Pointer p, int64_t t) {
 		return MeosLibrary.meos.timestamp_extent_transfn(p, t);
 	}
 	
@@ -3573,7 +3578,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_extent_transfn(p, ps);
 	}
 	
-	public static Pointer timestamp_tunion_transfn(Pointer state, int t) {
+	public static Pointer timestamp_tunion_transfn(Pointer state, int64_t t) {
 		return MeosLibrary.meos.timestamp_tunion_transfn(state, t);
 	}
 	
@@ -3597,19 +3602,19 @@ public class functions {
 		return MeosLibrary.meos.period_tunion_finalfn(state);
 	}
 	
-	public static Pointer timestamp_tcount_transfn(Pointer state, int t, Pointer interval, int origin) {
+	public static Pointer timestamp_tcount_transfn(Pointer state, int64_t t, Pointer interval, int64_t origin) {
 		return MeosLibrary.meos.timestamp_tcount_transfn(state, t, interval, origin);
 	}
 	
-	public static Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, int origin) {
+	public static Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, int64_t origin) {
 		return MeosLibrary.meos.timestampset_tcount_transfn(state, ts, interval, origin);
 	}
 	
-	public static Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, int origin) {
+	public static Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, int64_t origin) {
 		return MeosLibrary.meos.period_tcount_transfn(state, p, interval, origin);
 	}
 	
-	public static Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, int origin) {
+	public static Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, int64_t origin) {
 		return MeosLibrary.meos.periodset_tcount_transfn(state, ps, interval, origin);
 	}
 	
@@ -3773,7 +3778,7 @@ public class functions {
 		return MeosLibrary.meos.span_to_tbox(span);
 	}
 	
-	public static Pointer timestamp_to_tbox(int t) {
+	public static Pointer timestamp_to_tbox(int64_t t) {
 		return MeosLibrary.meos.timestamp_to_tbox(t);
 	}
 	
@@ -3789,11 +3794,11 @@ public class functions {
 		return MeosLibrary.meos.periodset_to_tbox(ps);
 	}
 	
-	public static Pointer int_timestamp_to_tbox(int i, int t) {
+	public static Pointer int_timestamp_to_tbox(int i, int64_t t) {
 		return MeosLibrary.meos.int_timestamp_to_tbox(i, t);
 	}
 	
-	public static Pointer float_timestamp_to_tbox(double d, int t) {
+	public static Pointer float_timestamp_to_tbox(double d, int64_t t) {
 		return MeosLibrary.meos.float_timestamp_to_tbox(d, t);
 	}
 	
@@ -3805,7 +3810,7 @@ public class functions {
 		return MeosLibrary.meos.float_period_to_tbox(d, p);
 	}
 	
-	public static Pointer span_timestamp_to_tbox(Pointer span, int t) {
+	public static Pointer span_timestamp_to_tbox(Pointer span, int64_t t) {
 		return MeosLibrary.meos.span_timestamp_to_tbox(span, t);
 	}
 	
@@ -3841,7 +3846,7 @@ public class functions {
 		return MeosLibrary.meos.geo_to_stbox(gs);
 	}
 	
-	public static Pointer timestamp_to_stbox(int t) {
+	public static Pointer timestamp_to_stbox(int64_t t) {
 		return MeosLibrary.meos.timestamp_to_stbox(t);
 	}
 	
@@ -3857,7 +3862,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_to_stbox(ps);
 	}
 	
-	public static Pointer geo_timestamp_to_stbox(Pointer gs, int t) {
+	public static Pointer geo_timestamp_to_stbox(Pointer gs, int64_t t) {
 		return MeosLibrary.meos.geo_timestamp_to_stbox(gs, t);
 	}
 	
@@ -4281,7 +4286,7 @@ public class functions {
 		return MeosLibrary.meos.tbool_from_base(b, temp);
 	}
 	
-	public static Pointer tboolinst_make(boolean b, int t) {
+	public static Pointer tboolinst_make(boolean b, int64_t t) {
 		return MeosLibrary.meos.tboolinst_make(b, t);
 	}
 	
@@ -4309,11 +4314,11 @@ public class functions {
 		return MeosLibrary.meos.temporal_copy(temp);
 	}
 	
-	public static Pointer tfloat_from_base(double d, Pointer temp, interpType interp) {
+	public static Pointer tfloat_from_base(double d, Pointer temp, int interp) {
 		return MeosLibrary.meos.tfloat_from_base(d, temp, interp);
 	}
 	
-	public static Pointer tfloatinst_make(double d, int t) {
+	public static Pointer tfloatinst_make(double d, int64_t t) {
 		return MeosLibrary.meos.tfloatinst_make(d, t);
 	}
 	
@@ -4321,27 +4326,27 @@ public class functions {
 		return MeosLibrary.meos.tfloatdiscseq_from_base_time(d, ts);
 	}
 	
-	public static Pointer tfloatseq_from_base(double d, Pointer seq, interpType interp) {
+	public static Pointer tfloatseq_from_base(double d, Pointer seq, int interp) {
 		return MeosLibrary.meos.tfloatseq_from_base(d, seq, interp);
 	}
 	
-	public static Pointer tfloatseq_from_base_time(double d, Pointer p, interpType interp) {
+	public static Pointer tfloatseq_from_base_time(double d, Pointer p, int interp) {
 		return MeosLibrary.meos.tfloatseq_from_base_time(d, p, interp);
 	}
 	
-	public static Pointer tfloatseqset_from_base(double d, Pointer ss, interpType interp) {
+	public static Pointer tfloatseqset_from_base(double d, Pointer ss, int interp) {
 		return MeosLibrary.meos.tfloatseqset_from_base(d, ss, interp);
 	}
 	
-	public static Pointer tfloatseqset_from_base_time(double d, Pointer ps, interpType interp) {
+	public static Pointer tfloatseqset_from_base_time(double d, Pointer ps, int interp) {
 		return MeosLibrary.meos.tfloatseqset_from_base_time(d, ps, interp);
 	}
 	
-	public static Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, interpType interp) {
+	public static Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, int interp) {
 		return MeosLibrary.meos.tgeogpoint_from_base(gs, temp, interp);
 	}
 	
-	public static Pointer tgeogpointinst_make(Pointer gs, int t) {
+	public static Pointer tgeogpointinst_make(Pointer gs, int64_t t) {
 		return MeosLibrary.meos.tgeogpointinst_make(gs, t);
 	}
 	
@@ -4349,27 +4354,27 @@ public class functions {
 		return MeosLibrary.meos.tgeogpointdiscseq_from_base_time(gs, ts);
 	}
 	
-	public static Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, interpType interp) {
+	public static Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, int interp) {
 		return MeosLibrary.meos.tgeogpointseq_from_base(gs, seq, interp);
 	}
 	
-	public static Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, interpType interp) {
+	public static Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, int interp) {
 		return MeosLibrary.meos.tgeogpointseq_from_base_time(gs, p, interp);
 	}
 	
-	public static Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, interpType interp) {
+	public static Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, int interp) {
 		return MeosLibrary.meos.tgeogpointseqset_from_base(gs, ss, interp);
 	}
 	
-	public static Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, interpType interp) {
+	public static Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, int interp) {
 		return MeosLibrary.meos.tgeogpointseqset_from_base_time(gs, ps, interp);
 	}
 	
-	public static Pointer tgeompoint_from_base(Pointer gs, Pointer temp, interpType interp) {
+	public static Pointer tgeompoint_from_base(Pointer gs, Pointer temp, int interp) {
 		return MeosLibrary.meos.tgeompoint_from_base(gs, temp, interp);
 	}
 	
-	public static Pointer tgeompointinst_make(Pointer gs, int t) {
+	public static Pointer tgeompointinst_make(Pointer gs, int64_t t) {
 		return MeosLibrary.meos.tgeompointinst_make(gs, t);
 	}
 	
@@ -4377,19 +4382,19 @@ public class functions {
 		return MeosLibrary.meos.tgeompointdiscseq_from_base_time(gs, ts);
 	}
 	
-	public static Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, interpType interp) {
+	public static Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, int interp) {
 		return MeosLibrary.meos.tgeompointseq_from_base(gs, seq, interp);
 	}
 	
-	public static Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, interpType interp) {
+	public static Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, int interp) {
 		return MeosLibrary.meos.tgeompointseq_from_base_time(gs, p, interp);
 	}
 	
-	public static Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, interpType interp) {
+	public static Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, int interp) {
 		return MeosLibrary.meos.tgeompointseqset_from_base(gs, ss, interp);
 	}
 	
-	public static Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, interpType interp) {
+	public static Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, int interp) {
 		return MeosLibrary.meos.tgeompointseqset_from_base_time(gs, ps, interp);
 	}
 	
@@ -4397,7 +4402,7 @@ public class functions {
 		return MeosLibrary.meos.tint_from_base(i, temp);
 	}
 	
-	public static Pointer tintinst_make(int i, int t) {
+	public static Pointer tintinst_make(int i, int64_t t) {
 		return MeosLibrary.meos.tintinst_make(i, t);
 	}
 	
@@ -4421,15 +4426,15 @@ public class functions {
 		return MeosLibrary.meos.tintseqset_from_base_time(i, ps);
 	}
 	
-	public static Pointer tsequence_make(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize) {
+	public static Pointer tsequence_make(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize) {
 		return MeosLibrary.meos.tsequence_make(instants, count, lower_inc, upper_inc, interp, normalize);
 	}
 	
-	public static Pointer tsequence_make_exp(Pointer[] instants, int count, int maxcount, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize) {
+	public static Pointer tsequence_make_exp(Pointer[] instants, int count, int maxcount, boolean lower_inc, boolean upper_inc, int interp, boolean normalize) {
 		return MeosLibrary.meos.tsequence_make_exp(instants, count, maxcount, lower_inc, upper_inc, interp, normalize);
 	}
 	
-	public static Pointer tsequence_make_free(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, interpType interp, boolean normalize) {
+	public static Pointer tsequence_make_free(Pointer[] instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize) {
 		return MeosLibrary.meos.tsequence_make_free(instants, count, lower_inc, upper_inc, interp, normalize);
 	}
 	
@@ -4441,7 +4446,7 @@ public class functions {
 		return MeosLibrary.meos.tsequenceset_make_free(sequences, count, normalize);
 	}
 	
-	public static Pointer tsequenceset_make_gaps(Pointer[] instants, int count, interpType interp, float maxdist, Pointer maxt) {
+	public static Pointer tsequenceset_make_gaps(Pointer[] instants, int count, int interp, float maxdist, Pointer maxt) {
 		return MeosLibrary.meos.tsequenceset_make_gaps(instants, count, interp, maxdist, maxt);
 	}
 	
@@ -4449,7 +4454,7 @@ public class functions {
 		return MeosLibrary.meos.ttext_from_base(txt, temp);
 	}
 	
-	public static Pointer ttextinst_make(Pointer txt, int t) {
+	public static Pointer ttextinst_make(Pointer txt, int64_t t) {
 		return MeosLibrary.meos.ttextinst_make(txt, t);
 	}
 	
@@ -4509,7 +4514,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_end_sequence(temp);
 	}
 	
-	public static int temporal_end_timestamp(Pointer temp) {
+	public static int64_t temporal_end_timestamp(Pointer temp) {
 		return MeosLibrary.meos.temporal_end_timestamp(temp);
 	}
 	
@@ -4553,7 +4558,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_start_sequence(temp);
 	}
 	
-	public static int temporal_start_timestamp(Pointer temp) {
+	public static int64_t temporal_start_timestamp(Pointer temp) {
 		return MeosLibrary.meos.temporal_start_timestamp(temp);
 	}
 	
@@ -4709,7 +4714,7 @@ public class functions {
 		return MeosLibrary.meos.tbool_minus_value(temp, b);
 	}
 	
-	public static boolean tbool_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value) {
+	public static boolean tbool_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value) {
 		return MeosLibrary.meos.tbool_value_at_timestamp(temp, t, strict, value);
 	}
 	
@@ -4729,7 +4734,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_at_periodset(temp, ps);
 	}
 	
-	public static Pointer temporal_at_timestamp(Pointer temp, int t) {
+	public static Pointer temporal_at_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.temporal_at_timestamp(temp, t);
 	}
 	
@@ -4753,7 +4758,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_minus_periodset(temp, ps);
 	}
 	
-	public static Pointer temporal_minus_timestamp(Pointer temp, int t) {
+	public static Pointer temporal_minus_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.temporal_minus_timestamp(temp, t);
 	}
 	
@@ -4777,7 +4782,7 @@ public class functions {
 		return MeosLibrary.meos.tfloat_minus_values(temp, values, count);
 	}
 	
-	public static boolean tfloat_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value) {
+	public static boolean tfloat_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value) {
 		return MeosLibrary.meos.tfloat_value_at_timestamp(temp, t, strict, value);
 	}
 	
@@ -4797,7 +4802,7 @@ public class functions {
 		return MeosLibrary.meos.tint_minus_values(temp, values, count);
 	}
 	
-	public static boolean tint_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer value) {
+	public static boolean tint_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer value) {
 		return MeosLibrary.meos.tint_value_at_timestamp(temp, t, strict, value);
 	}
 	
@@ -4857,7 +4862,7 @@ public class functions {
 		return MeosLibrary.meos.tpoint_minus_values(temp, values, count);
 	}
 	
-	public static boolean tpoint_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer[] value) {
+	public static boolean tpoint_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer[] value) {
 		return MeosLibrary.meos.tpoint_value_at_timestamp(temp, t, strict, value);
 	}
 	
@@ -4877,7 +4882,7 @@ public class functions {
 		return MeosLibrary.meos.ttext_minus_values(temp, values, count);
 	}
 	
-	public static boolean ttext_value_at_timestamp(Pointer temp, int t, boolean strict, Pointer[] value) {
+	public static boolean ttext_value_at_timestamp(Pointer temp, int64_t t, boolean strict, Pointer[] value) {
 		return MeosLibrary.meos.ttext_value_at_timestamp(temp, t, strict, value);
 	}
 	
@@ -5069,7 +5074,7 @@ public class functions {
 		return MeosLibrary.meos.adjacent_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean adjacent_temporal_timestamp(Pointer temp, int t) {
+	public static boolean adjacent_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.adjacent_temporal_timestamp(temp, t);
 	}
 	
@@ -5081,7 +5086,7 @@ public class functions {
 		return MeosLibrary.meos.adjacent_tfloat_float(tnumber, d);
 	}
 	
-	public static boolean adjacent_timestamp_temporal(int t, Pointer temp) {
+	public static boolean adjacent_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.adjacent_timestamp_temporal(t, temp);
 	}
 	
@@ -5161,7 +5166,7 @@ public class functions {
 		return MeosLibrary.meos.contained_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean contained_temporal_timestamp(Pointer temp, int t) {
+	public static boolean contained_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.contained_temporal_timestamp(temp, t);
 	}
 	
@@ -5173,7 +5178,7 @@ public class functions {
 		return MeosLibrary.meos.contained_tfloat_float(tnumber, d);
 	}
 	
-	public static boolean contained_timestamp_temporal(int t, Pointer temp) {
+	public static boolean contained_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.contained_timestamp_temporal(t, temp);
 	}
 	
@@ -5253,7 +5258,7 @@ public class functions {
 		return MeosLibrary.meos.contains_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean contains_temporal_timestamp(Pointer temp, int t) {
+	public static boolean contains_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.contains_temporal_timestamp(temp, t);
 	}
 	
@@ -5265,7 +5270,7 @@ public class functions {
 		return MeosLibrary.meos.contains_tfloat_float(tnumber, d);
 	}
 	
-	public static boolean contains_timestamp_temporal(int t, Pointer temp) {
+	public static boolean contains_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.contains_timestamp_temporal(t, temp);
 	}
 	
@@ -5361,7 +5366,7 @@ public class functions {
 		return MeosLibrary.meos.overlaps_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean overlaps_temporal_timestamp(Pointer temp, int t) {
+	public static boolean overlaps_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.overlaps_temporal_timestamp(temp, t);
 	}
 	
@@ -5373,7 +5378,7 @@ public class functions {
 		return MeosLibrary.meos.overlaps_tfloat_float(tnumber, d);
 	}
 	
-	public static boolean overlaps_timestamp_temporal(int t, Pointer temp) {
+	public static boolean overlaps_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.overlaps_timestamp_temporal(t, temp);
 	}
 	
@@ -5501,7 +5506,7 @@ public class functions {
 		return MeosLibrary.meos.same_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean same_temporal_timestamp(Pointer temp, int t) {
+	public static boolean same_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.same_temporal_timestamp(temp, t);
 	}
 	
@@ -5513,7 +5518,7 @@ public class functions {
 		return MeosLibrary.meos.same_tfloat_float(tnumber, d);
 	}
 	
-	public static boolean same_timestamp_temporal(int t, Pointer temp) {
+	public static boolean same_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.same_timestamp_temporal(t, temp);
 	}
 	
@@ -5597,7 +5602,7 @@ public class functions {
 		return MeosLibrary.meos.after_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean after_temporal_timestamp(Pointer temp, int t) {
+	public static boolean after_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.after_temporal_timestamp(temp, t);
 	}
 	
@@ -5605,7 +5610,7 @@ public class functions {
 		return MeosLibrary.meos.after_temporal_timestampset(temp, ts);
 	}
 	
-	public static boolean after_timestamp_temporal(int t, Pointer temp) {
+	public static boolean after_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.after_timestamp_temporal(t, temp);
 	}
 	
@@ -5677,7 +5682,7 @@ public class functions {
 		return MeosLibrary.meos.before_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean before_temporal_timestamp(Pointer temp, int t) {
+	public static boolean before_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.before_temporal_timestamp(temp, t);
 	}
 	
@@ -5685,7 +5690,7 @@ public class functions {
 		return MeosLibrary.meos.before_temporal_timestampset(temp, ts);
 	}
 	
-	public static boolean before_timestamp_temporal(int t, Pointer temp) {
+	public static boolean before_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.before_timestamp_temporal(t, temp);
 	}
 	
@@ -5837,7 +5842,7 @@ public class functions {
 		return MeosLibrary.meos.overafter_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean overafter_temporal_timestamp(Pointer temp, int t) {
+	public static boolean overafter_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.overafter_temporal_timestamp(temp, t);
 	}
 	
@@ -5845,7 +5850,7 @@ public class functions {
 		return MeosLibrary.meos.overafter_temporal_timestampset(temp, ts);
 	}
 	
-	public static boolean overafter_timestamp_temporal(int t, Pointer temp) {
+	public static boolean overafter_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.overafter_timestamp_temporal(t, temp);
 	}
 	
@@ -5917,7 +5922,7 @@ public class functions {
 		return MeosLibrary.meos.overbefore_temporal_temporal(temp1, temp2);
 	}
 	
-	public static boolean overbefore_temporal_timestamp(Pointer temp, int t) {
+	public static boolean overbefore_temporal_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.overbefore_temporal_timestamp(temp, t);
 	}
 	
@@ -5925,7 +5930,7 @@ public class functions {
 		return MeosLibrary.meos.overbefore_temporal_timestampset(temp, ts);
 	}
 	
-	public static boolean overbefore_timestamp_temporal(int t, Pointer temp) {
+	public static boolean overbefore_timestamp_temporal(int64_t t, Pointer temp) {
 		return MeosLibrary.meos.overbefore_timestamp_temporal(t, temp);
 	}
 	
@@ -6677,7 +6682,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_update(temp1, temp2, connect);
 	}
 	
-	public static Pointer temporal_delete_timestamp(Pointer temp, int t, boolean connect) {
+	public static Pointer temporal_delete_timestamp(Pointer temp, int64_t t, boolean connect) {
 		return MeosLibrary.meos.temporal_delete_timestamp(temp, t, connect);
 	}
 	
@@ -6701,7 +6706,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_intersects_periodset(temp, ps);
 	}
 	
-	public static boolean temporal_intersects_timestamp(Pointer temp, int t) {
+	public static boolean temporal_intersects_timestamp(Pointer temp, int64_t t) {
 		return MeosLibrary.meos.temporal_intersects_timestamp(temp, t);
 	}
 	
@@ -6737,7 +6742,7 @@ public class functions {
 		return MeosLibrary.meos.tpoint_extent_transfn(box, temp);
 	}
 	
-	public static Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, int origin) {
+	public static Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, int64_t origin) {
 		return MeosLibrary.meos.temporal_tcount_transfn(state, temp, interval, origin);
 	}
 	
@@ -6801,7 +6806,7 @@ public class functions {
 		return MeosLibrary.meos.float_bucket(value, size, origin);
 	}
 	
-	public static int timestamptz_bucket(int timestamp, Pointer duration, int origin) {
+	public static int64_t timestamptz_bucket(int64_t timestamp, Pointer duration, int64_t origin) {
 		return MeosLibrary.meos.timestamptz_bucket(timestamp, duration, origin);
 	}
 	
@@ -6813,11 +6818,11 @@ public class functions {
 		return MeosLibrary.meos.floatspan_bucket_list(bounds, size, origin, newcount);
 	}
 	
-	public static Pointer period_bucket_list(Pointer bounds, Pointer duration, int origin, Pointer newcount) {
+	public static Pointer period_bucket_list(Pointer bounds, Pointer duration, int64_t origin, Pointer newcount) {
 		return MeosLibrary.meos.period_bucket_list(bounds, duration, origin, newcount);
 	}
 	
-	public static Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, int torigin, Pointer rows, Pointer columns) {
+	public static Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, int64_t torigin, Pointer rows, Pointer columns) {
 		return MeosLibrary.meos.tbox_tile_list(bounds, xsize, duration, xorigin, torigin, rows, columns);
 	}
 	
@@ -6829,19 +6834,19 @@ public class functions {
 		return MeosLibrary.meos.tfloat_value_split(temp, size, origin, newcount);
 	}
 	
-	public static Pointer[] temporal_time_split(Pointer temp, Pointer duration, int torigin, Pointer newcount) {
+	public static Pointer[] temporal_time_split(Pointer temp, Pointer duration, int64_t torigin, Pointer newcount) {
 		return MeosLibrary.meos.temporal_time_split(temp, duration, torigin, newcount);
 	}
 	
-	public static Pointer[] tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, int torigin, Pointer newcount) {
+	public static Pointer[] tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, int64_t torigin, Pointer newcount) {
 		return MeosLibrary.meos.tint_value_time_split(temp, size, vorigin, duration, torigin, newcount);
 	}
 	
-	public static Pointer[] tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, int torigin, Pointer newcount) {
+	public static Pointer[] tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, int64_t torigin, Pointer newcount) {
 		return MeosLibrary.meos.tfloat_value_time_split(temp, size, vorigin, duration, torigin, newcount);
 	}
 	
-	public static Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, int torigin, Pointer[] cellcount) {
+	public static Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, int64_t torigin, Pointer[] cellcount) {
 		return MeosLibrary.meos.stbox_tile_list(bounds, size, duration, sorigin, torigin, cellcount);
 	}
 	

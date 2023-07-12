@@ -22,9 +22,10 @@ import java.util.regex.Pattern;
  * @since 27/06/2023
  */
 public class FunctionsBuilder {
-	private static final HashMap<String, String> TYPES = typesBuild(); // Création du dictionnaire des types C et de son équivalent en Java
 	private static final String FILE_PATH = "";
 	private static final String C_FUNCTIONS_PATH = FILE_PATH + "tmp/functions.h"; // Fichier généré par la classe FunctionsExtractor
+	private static final String C_TYPES_PATH = FILE_PATH + "tmp/types.h"; // Fichier généré par la classe FunctionsExtractor
+	private static final HashMap<String, String> TYPES = typesBuild(); // Création du dictionnaire des types C et de son équivalent en Java
 	private static final String FUNCTIONS_CLASS_PATH = FILE_PATH + "../functions.java"; // Classe functions générée
 	private static final ArrayList<String> unSupportedTypes = new ArrayList<>(); // Liste des types non-supportés
 	
@@ -49,13 +50,31 @@ public class FunctionsBuilder {
 		typeChange.put("double", "double");
 		typeChange.put("int", "int");
 		typeChange.put("int32", "int32_t");
+		typeChange.put("int64", "int64_t");
 		typeChange.put("uint8_t", "u_int8_t");
+		typeChange.put("uint16_t", "u_int16_t");
 		typeChange.put("uint32", "u_int32_t");
 		typeChange.put("uint64", "u_int64_t");
+		typeChange.put("uintptr_t", "uintptr_t");
 		typeChange.put("size_t", "size_t");
-		typeChange.put("Timestamp", "int");
-		typeChange.put("TimestampTz", "int");
-		typeChange.put("Datum", "int");
+		typeChange.put("interpType", "int"); // enum en C
+		
+		readFileLines(C_TYPES_PATH, line -> { // Ajout des typedef extraits du fichier C
+			Pattern pattern = Pattern.compile("^typedef\\s(\\w+)\\s(\\w+);");
+			Matcher matcher = pattern.matcher(line);
+			if (matcher.find()) {
+				String rawType = matcher.group(1);
+				String typeDef = matcher.group(2);
+				
+				if (typeChange.containsKey(rawType)) rawType = typeChange.get(rawType);
+				
+				typeChange.put(typeDef, rawType);
+			} else {
+				System.out.println("Extraction du type impossible pour la ligne: " + line);
+			}
+		});
+		
+		System.out.println(typeChange);
 		
 		return typeChange;
 	}
@@ -87,9 +106,14 @@ public class FunctionsBuilder {
 				import jnr.ffi.LibraryLoader;
 				import jnr.ffi.Pointer;
 				import jnr.ffi.types.int32_t;
-				import jnr.ffi.types.u_int64_t;
+				import jnr.ffi.types.int64_t;
 				import jnr.ffi.types.u_int8_t;
-				
+				import jnr.ffi.types.u_int16_t;
+				import jnr.ffi.types.u_int32_t;
+				import jnr.ffi.types.u_int64_t;
+				import jnr.ffi.types.uintptr_t;
+				import jnr.ffi.types.size_t;
+						
 				public class functions {
 				""");
 		appendBuilderWith(interfaceBuilder, builder, "\t", "\n\n"); // Ajout de l'interface
