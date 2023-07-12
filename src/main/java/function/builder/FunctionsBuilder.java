@@ -70,7 +70,6 @@ public class FunctionsBuilder {
 		StringBuilder interfaceBuilder = generateInterface(functionsBuilder);
 		StringBuilder classBuilder = generateClass(functionsBuilder, interfaceBuilder);
 		writeFile(FUNCTIONS_CLASS_PATH, classBuilder);
-		//		System.out.println(getFunctionTypes("void meos_finish();"));
 	}
 	
 	/**
