@@ -268,11 +268,13 @@ public class FunctionsBuilder {
 			line = line.replaceAll("synchronized", "synchronize"); // Pour la fonction temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
 			
 			// Remplace les types depuis le dictionnaire de types
+			System.out.println("Avant: " + line);
 			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
 				String oldType = entry.getKey();
 				String newType = entry.getValue();
-				line = line.replaceAll("(\\^?\\(?\\s?){1}" + oldType + "\\s", "$1" + newType + " ");
+				line = line.replaceAll("((^|\\(|\\s)+)" + oldType + "\\s", "$1" + newType + " ");
 			}
+			System.out.println("Après: " + line);
 			
 			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Récupération des types non-supportés pour la ligne
 //			if (!typesNotSupported.isEmpty()) System.out.println(typesNotSupported);
@@ -302,7 +304,6 @@ public class FunctionsBuilder {
 			
 			typesList.add(returnType); // ajout du type de retour de la fonction
 			typesList.addAll(List.of(paramTypeArray));
-			
 		}
 		
 		return typesList;

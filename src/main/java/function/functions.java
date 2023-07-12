@@ -201,7 +201,7 @@ public class functions {
 
 		int periodset_end_timestamp(Pointer ps);
 
-		uint32_t periodset_hash(Pointer ps);
+		u_int32_t periodset_hash(Pointer ps);
 
 		u_int64_t periodset_hash_extended(Pointer ps, u_int64_t seed);
 
@@ -223,7 +223,7 @@ public class functions {
 
 		Pointer periodset_timestamps(Pointer ps, Pointer count);
 
-		uint32_t span_hash(Pointer s);
+		u_int32_t span_hash(Pointer s);
 
 		u_int64_t span_hash_extended(Pointer s, u_int64_t seed);
 
@@ -235,7 +235,7 @@ public class functions {
 
 		int timestampset_end_timestamp(Pointer ss);
 
-		uint32_t timestampset_hash(Pointer ss);
+		u_int32_t timestampset_hash(Pointer ss);
 
 		u_int64_t timestampset_hash_extended(Pointer ss, u_int64_t seed);
 
@@ -1119,7 +1119,7 @@ public class functions {
 
 		int temporal_end_timestamp(Pointer temp);
 
-		uint32_t temporal_hash(Pointer temp);
+		u_int32_t temporal_hash(Pointer temp);
 
 		String temporal_interpolation(Pointer temp);
 
@@ -2677,7 +2677,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_end_timestamp(ps);
 	}
 	
-	public static uint32_t periodset_hash(Pointer ps) {
+	public static u_int32_t periodset_hash(Pointer ps) {
 		return MeosLibrary.meos.periodset_hash(ps);
 	}
 	
@@ -2721,7 +2721,7 @@ public class functions {
 		return MeosLibrary.meos.periodset_timestamps(ps, count);
 	}
 	
-	public static uint32_t span_hash(Pointer s) {
+	public static u_int32_t span_hash(Pointer s) {
 		return MeosLibrary.meos.span_hash(s);
 	}
 	
@@ -2745,7 +2745,7 @@ public class functions {
 		return MeosLibrary.meos.timestampset_end_timestamp(ss);
 	}
 	
-	public static uint32_t timestampset_hash(Pointer ss) {
+	public static u_int32_t timestampset_hash(Pointer ss) {
 		return MeosLibrary.meos.timestampset_hash(ss);
 	}
 	
@@ -4513,7 +4513,7 @@ public class functions {
 		return MeosLibrary.meos.temporal_end_timestamp(temp);
 	}
 	
-	public static uint32_t temporal_hash(Pointer temp) {
+	public static u_int32_t temporal_hash(Pointer temp) {
 		return MeosLibrary.meos.temporal_hash(temp);
 	}
 	
