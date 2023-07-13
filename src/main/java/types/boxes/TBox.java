@@ -8,7 +8,7 @@ import types.core.TypeName;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
-import static function.functions.stbox_from_hexwkb;
+//import static function.functions.stbox_from_hexwkb;
 
 /**
  * Class that represents the MobilityDB type TBox
@@ -80,10 +80,13 @@ public class TBox extends DataType {
      * @param hexwkb
      * @return a JNR-FFI pointer
      */
+    /*
     public STBox from_hexwkb(String hexwkb){
         Pointer result = stbox_from_hexwkb(hexwkb);
         return new STBox(result);
     }
+
+     */
 
 
 

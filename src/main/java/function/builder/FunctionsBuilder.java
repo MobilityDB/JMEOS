@@ -41,7 +41,7 @@ public class FunctionsBuilder {
 	private static HashMap<String, String> typesBuild() {
 		HashMap<String, String> typeChange = new HashMap<>();
 		typeChange.put("\\*", "Pointer");
-		typeChange.put("\\*\\[\\]", "Pointer[]");
+		typeChange.put("\\*\\[\\]", "Pointer");
 		typeChange.put("byte\\[\\]", "byte[]");
 		typeChange.put("\\*char", "String");
 		typeChange.put("void", "void");
@@ -49,14 +49,15 @@ public class FunctionsBuilder {
 		typeChange.put("float", "float");
 		typeChange.put("double", "double");
 		typeChange.put("int", "int");
-		typeChange.put("int32", "int32_t");
-		typeChange.put("int64", "int64_t");
-		typeChange.put("uint8_t", "u_int8_t");
-		typeChange.put("uint16_t", "u_int16_t");
-		typeChange.put("uint32", "u_int32_t");
-		typeChange.put("uint64", "u_int64_t");
-		typeChange.put("uintptr_t", "uintptr_t");
-		typeChange.put("size_t", "size_t");
+		typeChange.put("int32_t", "int");
+		typeChange.put("int32", "int");
+		typeChange.put("int64", "long");
+		typeChange.put("uint8_t", "short");
+		typeChange.put("uint16_t", "short");
+		typeChange.put("uint32", "int");
+		typeChange.put("uint64", "long");
+		typeChange.put("uintptr_t", "long");
+		typeChange.put("size_t", "long");
 		typeChange.put("interpType", "int"); // enum en C
 		
 		readFileLines(C_TYPES_PATH, line -> { // Ajout des typedef extraits du fichier C

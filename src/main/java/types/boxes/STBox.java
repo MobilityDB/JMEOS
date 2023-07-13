@@ -1,6 +1,7 @@
 package types.boxes;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.types.int32_t;
 import jnr.ffi.Runtime;
 import jnr.ffi.Memory;
 import types.basic.tpoint.TPoint;
@@ -57,6 +58,7 @@ public class STBox extends DataType {
      * @param value - STBox value
      * @throws SQLException
      */
+
     public STBox(final String value, Pointer inner, boolean tmin_inc, boolean tmax_inc) throws SQLException {
         super();
         setValue(value);
@@ -68,7 +70,7 @@ public class STBox extends DataType {
             this._inner = inner;
         }
         else if (value != null){
-            this._inner = stbox_in(value);
+            //this._inner = stbox_in(value);
         }
     }
 
@@ -323,25 +325,42 @@ public class STBox extends DataType {
      * @param hexwkb
      * @return a JNR-FFI pointer
      */
+    /*
     public STBox from_hexwkb(String hexwkb){
         Pointer result = stbox_from_hexwkb(hexwkb);
         return new STBox(result);
     }
 
+     */
+
+
+
     //To modify for pointer
+    /*
     public String as_hexwkb(){
         return stbox_as_hexwkb(this._inner,-1,this._inner.size())[0];
     }
+   */
 
+    /*
     public STBox from_geometry(Geometry geom){
-        Pointer gs = gserialized_in(geom.toString(),-1);
+        int32_t tmp_val = int32_t.class.cast(-1);
+        Pointer gs = gserialized_in(geom.toString(),tmp_val);
         return new STBox(geo_to_stbox(gs));
     }
 
+     */
+
+    /*
     public STBox from_space(Geometry value){
         return from_geometry(value);
     }
 
+     */
+
+
+    /*
+    //Add the datetime_to_timestamptz function to the class
     public STBox from_datetime(Pointer time){
         Pointer result;
         //Add the datetime_to_timestamptz function to the class
@@ -349,6 +368,10 @@ public class STBox extends DataType {
         return new STBox(result);
     }
 
+     */
+
+
+    /*
     public STBox from_timestampset(Pointer time){
         Pointer result = timestampset_to_stbox(time);
         return new STBox(result);
@@ -364,17 +387,29 @@ public class STBox extends DataType {
         return new STBox(result);
     }
 
+     */
+
+    /*
     public STBox from_expanding_bounding_box_geom(Geometry value, float expansion){
-        Pointer gs = gserialized_in(value.toString(),-1);
+        int32_t tmp_val = int32_t.class.cast(-1);
+        Pointer gs = gserialized_in(value.toString(),tmp_val);
         Pointer result = geo_expand_spatial(gs,expansion);
         return new STBox(result);
     }
 
+     */
+
+
+    /* Modify Tpoint type
     public STBox from_expanding_bounding_box_tpoint(TPoint value, float expansion){
         Pointer result = tpoint_expand_spatial(value._inner, expansion);
         return new STBox(result);
     }
 
+     */
+
+    /*
+    //Modify the from geometry datetime function
     public STBox from_space_datetime(Geometry value, Pointer time){
         return from_geometry_datetime(value,time);
     }
@@ -383,6 +418,11 @@ public class STBox extends DataType {
         return from_geometry_period(value,time);
     }
 
+     */
+
+
+    /*
+    //Modify Period type
     public STBox from_geometry_datetime(Geometry geometry, Pointer datetime){
         Pointer gs = gserialized_in(geometry.toString(),-1);
         Pointer result = geo_timestamp_to_stbox(gs,datetime_to_timestamptz(datetime));
@@ -399,15 +439,26 @@ public class STBox extends DataType {
         return new STBox(tpoint_to_stbox(temporal._inner));
     }
 
+     */
+
+
     //Add the shapely package ?
+    /*
     public BaseGeometry to_geometry(int precision){
         return gserialized_to_shapely_geometry(stbox_to_geo(this._inner),precision);
     }
 
+     */
+
+    /*
+    // A Rajouter sur la classe period
     public Period to_period(){
-        return Period(stbox_to_period(this._inner));
+        Pointer result = stbox_to_period(this._inner);
+        return new Period(result);
     }
 
+     */
+    /*
     public boolean has_xy(){
         return stbox_hasx(this._inner);
     }
@@ -422,6 +473,10 @@ public class STBox extends DataType {
         return stbox_isgeodetic(this._inner);
     }
 
+     */
+
+
+    /*
     //Check the following with pointer double
     public boolean xmin(){
         return stbox_xmin(this._inner);
@@ -447,6 +502,10 @@ public class STBox extends DataType {
     public boolean tmax(){
         return stbox_tmax(this._inner);
     }
+
+     */
+
+
 
 
 
