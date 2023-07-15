@@ -12,6 +12,7 @@ import net.postgis.jdbc.geometry.*;
 import types.time.Period;
 import types.time.PeriodSet;
 import types.time.TimestampSet;
+import java.time.Duration;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -70,7 +71,7 @@ public class STBox extends DataType {
             this._inner = inner;
         }
         else if (value != null){
-            //this._inner = stbox_in(value);
+            this._inner = stbox_in(value);
         }
     }
 
@@ -325,13 +326,13 @@ public class STBox extends DataType {
      * @param hexwkb
      * @return a JNR-FFI pointer
      */
-    /*
+
     public STBox from_hexwkb(String hexwkb){
         Pointer result = stbox_from_hexwkb(hexwkb);
         return new STBox(result);
     }
 
-     */
+
 
 
 
@@ -342,21 +343,18 @@ public class STBox extends DataType {
     }
    */
 
-    /*
+
     public STBox from_geometry(Geometry geom){
-        int32_t tmp_val = int32_t.class.cast(-1);
-        Pointer gs = gserialized_in(geom.toString(),tmp_val);
+        Pointer gs = gserialized_in(geom.toString(),-1);
         return new STBox(geo_to_stbox(gs));
     }
 
-     */
 
-    /*
+
+
     public STBox from_space(Geometry value){
         return from_geometry(value);
     }
-
-     */
 
 
     /*
@@ -371,7 +369,7 @@ public class STBox extends DataType {
      */
 
 
-    /*
+
     public STBox from_timestampset(Pointer time){
         Pointer result = timestampset_to_stbox(time);
         return new STBox(result);
@@ -387,17 +385,12 @@ public class STBox extends DataType {
         return new STBox(result);
     }
 
-     */
 
-    /*
     public STBox from_expanding_bounding_box_geom(Geometry value, float expansion){
-        int32_t tmp_val = int32_t.class.cast(-1);
-        Pointer gs = gserialized_in(value.toString(),tmp_val);
+        Pointer gs = gserialized_in(value.toString(),-1);
         Pointer result = geo_expand_spatial(gs,expansion);
         return new STBox(result);
     }
-
-     */
 
 
     /* Modify Tpoint type
@@ -458,7 +451,7 @@ public class STBox extends DataType {
     }
 
      */
-    /*
+
     public boolean has_xy(){
         return stbox_hasx(this._inner);
     }
@@ -473,7 +466,7 @@ public class STBox extends DataType {
         return stbox_isgeodetic(this._inner);
     }
 
-     */
+
 
 
     /*
@@ -507,6 +500,313 @@ public class STBox extends DataType {
 
 
 
+
+    public STBox expand_stbox(STBox stbox, STBox other){
+        Pointer result = stbox_copy(this._inner);
+        stbox_expand(other._inner,result);
+        return new STBox(result);
+    }
+
+    public STBox expand_float(STBox stbox, float other){
+        Pointer result = stbox_expand_spatial(this._inner,other);
+        return new STBox(result);
+    }
+
+    /*
+    //Add the timedelta function
+    public STBox expand_timedelta(STBox stbox, Duration duration){
+        Pointer result = stbox_expand_temporal(this._inner, timedelta_to_interval(duration));
+        return new STBox(result);
+    }
+
+     */
+
+    public STBox union(STBox other, boolean bool){
+        return new STBox(union_stbox_stbox(this._inner,other._inner,bool));
+    }
+
+    public boolean is_adjacent_stbox(STBox other){
+        return adjacent_stbox_stbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tpoint
+    public boolean is_adjacent_tpoint(TPoint other){
+        return adjacent_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_contained_in_stbox(STBox other){
+        return contained_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_contained_in_tpoint(TPoint other){
+        return contained_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean contains_stbox(STBox other){
+        return contained_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean contains_tpoint(TPoint other){
+        return contained_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean overlaps_stbox(STBox other){
+        return overlaps_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean overlaps_tpoint(TPoint other){
+        return overlaps_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean is_same_stbox(STBox other){
+        return same_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_same_tpoint(TPoint other){
+        return same_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_left_stbox(STBox other){
+        return left_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_left_tpoint(TPoint other){
+        return left_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean isover_or_left_stbox(STBox other){
+        return overleft_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_left_tpoint(TPoint other){
+        return overleft_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_right_stbox(STBox other){
+        return right_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_right_tpoint(TPoint other){
+        return right_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_right_stbox(STBox other){
+        return overright_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_right_tpoint(TPoint other){
+        return overright_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_below_stbox(STBox other){
+        return below_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_below_tpoint(TPoint other){
+        return below_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_below_stbox(STBox other){
+        return overbelow_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_below_tpoint(TPoint other){
+        return overbelow_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_above_stbox(STBox other){
+        return above_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_above_tpoint(TPoint other){
+        return above_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_above_stbox(STBox other){
+        return overabove_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_above_tpoint(TPoint other){
+        return overabove_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_front_stbox(STBox other){
+        return front_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_front_tpoint(TPoint other){
+        return front_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean isover_or_front_stbox(STBox other){
+        return overfront_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_front_tpoint(TPoint other){
+        return overfront_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_back_stbox(STBox other){
+        return back_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_back_tpoint(TPoint other){
+        return back_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_back_stbox(STBox other){
+        return overback_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_back_tpoint(TPoint other){
+        return overback_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_before_stbox(STBox other){
+        return before_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_before_tpoint(TPoint other){
+        return before_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_before_stbox(STBox other){
+        return overbefore_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean isover_or_before_tpoint(TPoint other){
+        return overbefore_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_after_stbox(STBox other){
+        return after_stbox_stbox(this._inner, other._inner);
+    }
+
+
+    /*
+    //Add for tpoint
+    public boolean is_after_tpoint(TPoint other){
+        return after_stbox_tpoint(this._inner, other._inner);
+    }
+
+     */
+
+
+    public float nearest_approach_distance_geom(Geometry other){
+        Pointer gs = gserialized_in(other.toString(),-1);
+        return (float)nad_stbox_geo(this._inner,gs);
+    }
+    public float nearest_approach_distance_stbox(STBox other){
+        return (float)nad_stbox_stbox(this._inner, other._inner);
+    }
 
 
 

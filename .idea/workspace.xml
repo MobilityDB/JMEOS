@@ -4,20 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="Added multiple functions for STBox and TBox">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/FunctionsBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/script/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/script/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/script/run_builder.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/script/run_builder.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/script/run_extractor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/script/run_extractor.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsExtractor.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/builder/tmp/classes/function/builder/FunctionsExtractor.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/function/functions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/function/functions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tutorials/hello_world.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutorials/hello_world.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/types/basic/tbool/TBool.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/types/boxes/STBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/types/boxes/STBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/types/boxes/TBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/types/boxes/TBox.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,28 +45,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "develop",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/projects/ULB/MobilityDB-JMEOS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.328341",
-    "settings.editor.selected.configurable": "MavenSettings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/projects/ULB/MobilityDB-JMEOS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.328341&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="tutorials" />
@@ -139,6 +128,7 @@
       <workItem from="1687509092881" duration="2353000" />
       <workItem from="1687736759434" duration="6732000" />
       <workItem from="1687777641614" duration="336000" />
+      <workItem from="1689441372578" duration="4393000" />
     </task>
     <task id="LOCAL-00001" summary="Small changes">
       <created>1684455966290</created>
@@ -162,7 +152,15 @@
       <option name="project" value="LOCAL" />
       <updated>1687792439973</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Modification of uint type not more supported by JNRFFI&#10;Modification of meos finalize&#10;Modification of other functions&#10;Replacement of Pointer[] by Pointer">
+      <option name="closed" value="true" />
+      <created>1689218436815</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1689218436815</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,7 +183,8 @@
     <MESSAGE value="Restructuration of the packages/classes&#10;Example 1 and 2 dones&#10;Functions package and class added&#10;Types classes added" />
     <MESSAGE value="Ajout de l'extracteur de fonction" />
     <MESSAGE value="Third example added (not finished)&#10;Rename of second example" />
-    <option name="LAST_COMMIT_MESSAGE" value="Third example added (not finished)&#10;Rename of second example" />
+    <MESSAGE value="Modification of uint type not more supported by JNRFFI&#10;Modification of meos finalize&#10;Modification of other functions&#10;Replacement of Pointer[] by Pointer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modification of uint type not more supported by JNRFFI&#10;Modification of meos finalize&#10;Modification of other functions&#10;Replacement of Pointer[] by Pointer" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
