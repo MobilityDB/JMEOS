@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d43a9bc1-a4dd-44ea-96af-494aeb37bf62" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/types/boxes/STBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/types/boxes/STBox.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/types/boxes/TBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/types/boxes/TBox.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +127,7 @@
       <workItem from="1687509092881" duration="2353000" />
       <workItem from="1687736759434" duration="6732000" />
       <workItem from="1687777641614" duration="336000" />
-      <workItem from="1689441372578" duration="4393000" />
+      <workItem from="1689441372578" duration="8262000" />
     </task>
     <task id="LOCAL-00001" summary="Small changes">
       <created>1684455966290</created>
@@ -160,7 +159,15 @@
       <option name="project" value="LOCAL" />
       <updated>1689218436815</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added most STBox functions&#10;Correction of some types errors">
+      <option name="closed" value="true" />
+      <created>1689445816666</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1689445816666</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -184,7 +191,8 @@
     <MESSAGE value="Ajout de l'extracteur de fonction" />
     <MESSAGE value="Third example added (not finished)&#10;Rename of second example" />
     <MESSAGE value="Modification of uint type not more supported by JNRFFI&#10;Modification of meos finalize&#10;Modification of other functions&#10;Replacement of Pointer[] by Pointer" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modification of uint type not more supported by JNRFFI&#10;Modification of meos finalize&#10;Modification of other functions&#10;Replacement of Pointer[] by Pointer" />
+    <MESSAGE value="Added most STBox functions&#10;Correction of some types errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added most STBox functions&#10;Correction of some types errors" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

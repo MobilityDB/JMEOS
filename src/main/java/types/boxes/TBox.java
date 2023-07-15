@@ -8,6 +8,8 @@ import types.core.TypeName;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
+import static function.functions.*;
+
 //import static function.functions.stbox_from_hexwkb;
 
 /**
@@ -19,6 +21,12 @@ public class TBox extends DataType {
     private double xmax = 0.0f;
     private OffsetDateTime tmin;
     private OffsetDateTime tmax;
+    private boolean xmin_inc = true;
+    private boolean xmax_inc = true;
+    private boolean tmin_inc = true;
+    private boolean tmax_inc = true;
+    private Pointer _inner = null;
+
 
     /**
      * The default constructor
@@ -27,14 +35,35 @@ public class TBox extends DataType {
         super();
     }
 
+
+    public TBox(Pointer inner){
+        this(inner,true,true,true,true);
+    }
+
+    public TBox(Pointer inner, boolean xmin_inc, boolean xmax_inc, boolean tmax_inc, boolean
+                tmin_inc){
+        super();
+        this._inner = inner;
+        this.xmin_inc = xmin_inc;
+        this.xmax_inc = xmax_inc;
+        this.tmin_inc = tmin_inc;
+        this.tmax_inc = tmax_inc;
+    }
+
     /**
      * The string constructor
      * @param value - the string with the TBox value
      * @throws SQLException
      */
-    public TBox(final String value) throws SQLException {
+    public TBox(final String value, Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean xmax_inc, boolean xmin_inc ) throws SQLException {
         super();
         setValue(value);
+
+        this.tmin_inc = tmin_inc;
+        this.tmax_inc = tmax_inc;
+        this.xmin_inc = xmin_inc;
+        this.xmax_inc = xmax_inc;
+        this._inner = inner;
     }
 
     /**
@@ -80,13 +109,217 @@ public class TBox extends DataType {
      * @param hexwkb
      * @return a JNR-FFI pointer
      */
+
+    public TBox from_hexwkb(String hexwkb){
+        Pointer result = tbox_from_hexwkb(hexwkb);
+        return new TBox(result);
+    }
+
+
+
+    public TBox expand_stbox(TBox stbox, TBox other){
+        Pointer result = tbox_copy(this._inner);
+        tbox_expand(other._inner,result);
+        return new TBox(result);
+    }
+
+    public TBox expand_float(STBox stbox, float other){
+        Pointer result = tbox_expand_value(this._inner,other);
+        return new TBox(result);
+    }
+
     /*
-    public STBox from_hexwkb(String hexwkb){
-        Pointer result = stbox_from_hexwkb(hexwkb);
-        return new STBox(result);
+    //Add the timedelta function
+    public STBox expand_timedelta(STBox stbox, Duration duration){
+        Pointer result = tbox_expand_temporal(this._inner, timedelta_to_interval(duration));
+        return new TBox(result);
     }
 
      */
+
+
+    public TBox union(TBox other){
+        return new TBox(union_tbox_tbox(this._inner,other._inner));
+    }
+
+    public boolean is_adjacent_tbox(TBox other){
+        return adjacent_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_adjacent_tnumber(TNumber other){
+        return adjacent_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean is_contained_in_tbox(TBox other){
+        return contained_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_contained_in_tnumber(TNumber other){
+        return contained_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean contains_in_tbox(TBox other){
+        return contains_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean contains_in_tnumber(TNumber other){
+        return contains_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean overlaps_in_tbox(TBox other){
+        return overlaps_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean overlaps_in_tnumber(TNumber other){
+        return overlaps_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_same_tbox(TBox other){
+        return same_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_same_tnumber(TNumber other){
+        return same_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean is_left_tbox(TBox other){
+        return left_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_left_tnumber(TNumber other){
+        return left_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_left_tbox(TBox other){
+        return overleft_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean isover_or_left_tnumber(TNumber other){
+        return overleft_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean is_right_tbox(TBox other){
+        return right_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_right_tnumber(TNumber other){
+        return right_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_right_tbox(TBox other){
+        return overright_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean isover_or_right_tnumber(TNumber other){
+        return overright_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_before_tbox(TBox other){
+        return before_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_before_tnumber(TNumber other){
+        return before_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean isover_or_before_tbox(TBox other){
+        return overbefore_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean isover_or_before_tnumber(TNumber other){
+        return overbefore_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public boolean is_after_tbox(TBox other){
+        return after_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean is_after_tnumber(TNumber other){
+        return after_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+    public boolean isover_or_after_tbox(TBox other){
+        return overafter_tbox_tbox(this._inner, other._inner);
+    }
+
+    /*
+    //Add for tnumber
+    public boolean isover_or_after_tnumber(TNumber other){
+        return overafter_tbox_tnumber(this._inner, other._inner);
+    }
+
+     */
+
+
+    public float nearest_approach_distance(TBox other){
+        return (float)nad_tbox_tbox(this._inner, other._inner);
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 
