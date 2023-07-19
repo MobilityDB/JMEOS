@@ -1,6 +1,7 @@
 package tutorials;
 import jnr.ffi.Pointer;
 import function.functions_old;
+import org.hibernate.dialect.SybaseSqlAstTranslator;
 
 import java.io.*;
 
@@ -56,9 +57,9 @@ public class read_ais {
                     rec.MMSI = Integer.parseInt(tokens[1]);
                     rec.Latitude=Double.parseDouble(tokens[2].trim());
                     rec.Longitude=Double.parseDouble(tokens[3].trim());
-                    rec.SOG=Double.parseDouble(tokens[4].trim());
+                    rec.SOG=Float.parseFloat(tokens[4].trim());
                     String temp = tokens[0];
-                    rec.T = functions_old.pg_timestamp_in(tokens[0],-1);
+                    rec.T = functions_old.pg_timestamp_in(tokens[0].trim(),-1);
 
                     if(tokens.length == 5){
                         no_records ++;
@@ -69,16 +70,18 @@ public class read_ais {
                     }
                     if (no_records%1000 == 0){
 
-                        String t_out = functions_old.pg_timestamp_out(temp);
+                        String t_out = functions_old.pg_timestamp_out(rec.T);
+                        System.out.println(t_out);
                         String str_pointbuffer;
                         str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude,t_out);
+                        str_pointbuffer = str_pointbuffer.replaceAll(",",".");
 
-                        String test = "Point(4.617660 55.573682)@2004-06-15 07:13:32+00" ;
-                        Pointer inst1 = functions_old.tgeogpoint_in(test);
+                        Pointer inst1 = functions_old.tgeogpoint_in(str_pointbuffer);
                         String inst1_out = functions_old.tpoint_as_text(inst1,2);
 
+                        float rec_tmp  = (float) rec.SOG;
 
-                        Pointer inst2 = functions_old.tfloatinst_make((float)rec.SOG,rec.T);
+                        Pointer inst2 = functions_old.tfloatinst_make(rec_tmp,rec.T);
                         String inst2_out = functions_old.tfloat_out(inst2, 2);
 
                         System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI,inst1_out,inst2_out);
@@ -98,7 +101,7 @@ public class read_ais {
     }
 
     public static class AIS_record{
-        public Integer T;
+        public Pointer T;
         public long MMSI;
         public double Latitude;
         public double Longitude;
@@ -107,3 +110,5 @@ public class read_ais {
     }
 
 }
+
+

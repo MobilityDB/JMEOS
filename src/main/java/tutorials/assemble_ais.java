@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Scanner;
 
-
+/*
 public class assemble_ais {
     public static final int MAX_INSTANTS=50000;
     public static final int NO_INSTANTS_BATCH=1000;
@@ -165,3 +165,5 @@ public class assemble_ais {
     }
 
 }
+
+ */

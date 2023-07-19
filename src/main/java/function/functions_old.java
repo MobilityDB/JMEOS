@@ -2,6 +2,8 @@ package function;
 
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
+import java.sql.Timestamp;
+import java.time.temporal.TemporalAccessor;
 
 public class functions_old {
     public interface MeosLibrary {
@@ -36,13 +38,13 @@ public class functions_old {
 
         String temporal_as_mfjson(Pointer temp, boolean bool, int flags, int precision, String srs);
 
-        Integer pg_timestamp_in(String str, Integer typmod);
+        Pointer pg_timestamp_in(String str, Integer typmod);
 
-        String pg_timestamp_out(String dt);
+        String pg_timestamp_out(Pointer dt);
 
         String tpoint_as_text(Pointer temp, Integer maxdd);
 
-        Pointer tfloatinst_make(float d, Integer t);
+        Pointer tfloatinst_make(float d, Pointer t);
 
         String tfloat_out(Pointer temp, Integer maxdd);
 
@@ -115,11 +117,11 @@ public class functions_old {
         return MeosLibrary.meos.temporal_as_mfjson(temp, bool, flags, precision, srs);
     }
 
-    public static Integer pg_timestamp_in(String str, Integer typmod) {
+    public static Pointer pg_timestamp_in(String str, Integer typmod) {
         return MeosLibrary.meos.pg_timestamp_in(str, typmod);
     }
 
-    public static String pg_timestamp_out(String dt) {
+    public static String pg_timestamp_out(Pointer dt) {
         return MeosLibrary.meos.pg_timestamp_out(dt);
     }
 
@@ -127,7 +129,7 @@ public class functions_old {
         return MeosLibrary.meos.tpoint_as_text(temp, maxdd);
     }
 
-    public static Pointer tfloatinst_make(float d, Integer t) {
+    public static Pointer tfloatinst_make(float d, Pointer t) {
         return MeosLibrary.meos.tfloatinst_make(d, t);
     }
 

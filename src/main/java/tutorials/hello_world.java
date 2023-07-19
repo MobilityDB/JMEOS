@@ -1,16 +1,21 @@
 package tutorials;
 
-//import function.functions_old;
+import function.functions_old;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import java.time.LocalDateTime;
 //import org.example.Book;
 
 import jnr.ffi.Runtime;
+import jnr.ffi.byref.PointerByReference;
 import types.basic.tpoint.*;
 import types.temporal.TemporalValue;
 import net.postgis.jdbc.geometry.Point;
 import java.sql.SQLException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 
 import static function.functions.*;
 
@@ -65,7 +70,11 @@ public class hello_world {
         Pointer ss_step = tgeompoint_in(ss_step_wkt);
 
         //runtime.getMemoryManager().free
-        System.out.println("ICI2");
+
+        Pointer tmstp = functions_old.pg_timestamp_in("2020-01-08 00:00:00",-1);
+        String output = functions_old.pg_timestamp_out(tmstp);
+        System.out.println(output);
+
 
         /* Convert result to MF-JSON */
         String inst_mfjson = temporal_as_mfjson(inst, true, 3, 6, null);
