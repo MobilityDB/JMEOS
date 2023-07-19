@@ -1,10 +1,10 @@
 @echo off
 
-echo Extraction des informations du fichier "meos.h".
+echo Extracting information from the "meos.h" file...
 start /B /wait cmd /c .\run_extractor.bat
 
-echo Generation du fichier "functions".
+echo Generating the "functions" file...
 start /B /wait cmd /c .\run_builder.bat
 
-echo Scripts termines.
+echo Scripts completed.
 pause

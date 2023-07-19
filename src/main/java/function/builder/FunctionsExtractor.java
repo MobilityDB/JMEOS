@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Classe permettant d'extraire les fonctions de la librairie MEOS.
- * À exécuter avec le dossier ./script ou alors comme suit :
+ * Class used to extract the functions from the MEOS library.
+ * Run with ./script folder or as follows:
  * <ul>
  *     <li>cd src\main\java\function\builder</li>
  *     <li>javac .\FunctionsExtractor.java</li>
@@ -25,39 +25,40 @@ public class FunctionsExtractor {
 	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/types.h";
 	
 	/**
-	 * Modèle RegEx de reconnaissance d'une fonction dans le fichier meos.h
+	 * RegEx model for recognizing a function in the meos.h file
 	 */
 	private static final String FUNCTION_PATTERN = "extern (static inline )?[a-zA-Z0-9_]+ [a-zA-Z0-9_*]+\\([a-zA-Z0-9_* ,]+\\);";
 	
 	/**
-	 * Modèle RegEx de reconnaissance d'un type dans le fichier meos.h
+	 * Type recognition RegEx pattern in meos.h file
 	 */
 	private static final String TYPES_PATTERN = "typedef\\s(?!struct|enum)\\w+\\s\\w+;";
 	
 	/**
-	 * Fonction de lancement du script.
+	 * Script launch function.
 	 *
 	 * @param args arguments
 	 */
 	public static void main(String[] args) {
 		ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
 		writeLinesToFile(functions, OUTPUT_FUNCTIONS_PATH);
-		System.out.println("Extraction des fonctions terminée. Les fonctions ont été écrites dans le fichier " + OUTPUT_FUNCTIONS_PATH + ".");
+		System.out.println("Feature extraction completed. The functions have been written to the file " + OUTPUT_FUNCTIONS_PATH + ".");
 		ArrayList<String> types = getTypesFromFile();
 		writeLinesToFile(types, OUTPUT_TYPES_PATH);
-		System.out.println("Extraction des types terminée. Les types ont été écrits dans le fichier " + OUTPUT_TYPES_PATH + ".");
+		System.out.println("Extraction of types completed. The types have been written to the file " + OUTPUT_TYPES_PATH + ".");
 	}
 	
 	/**
-	 * Récupère les types depuis un fichier.
+	 * Get types from a file.
 	 *
-	 * @return la liste des lignes
+	 * @return the list of lines
 	 */
 	private static ArrayList<String> getTypesFromFile() {
 		ArrayList<String> rawTypes = extractPatternFromFile(FunctionsExtractor.INPUT_FILE_PATH, FunctionsExtractor.TYPES_PATTERN);
 		ArrayList<String> structureNames = getStructureNames(FunctionsExtractor.INPUT_FILE_PATH);
 		ArrayList<String> filteredTypes = new ArrayList<>();
 		
+		// Add typedefs if they are not structure type.
 		for (String rawType : rawTypes) {
 			String[] words = rawType.trim().split("\\s+");
 			if (words.length >= 2) {
@@ -72,10 +73,10 @@ public class FunctionsExtractor {
 	}
 	
 	/**
-	 * Récupère les noms des structures dans le fichier.
+	 * Retrieves structure names from file.
 	 *
-	 * @param filePath chemin du fichier
-	 * @return la liste des noms des structures
+	 * @param filePath file path
+	 * @return list of structure names
 	 */
 	public static ArrayList<String> getStructureNames(String filePath) {
 		List<String> structureNames = new ArrayList<>();
@@ -101,9 +102,9 @@ public class FunctionsExtractor {
 	}
 	
 	/**
-	 * Extrait les lignes correspondent à un certain pattern depuis le fichier.
+	 * Extract lines matching a certain pattern from the file.
 	 *
-	 * @param filePath      chemin du fichier
+	 * @param filePath      file path
 	 * @param regex_pattern le pattern de récupération
 	 * @return liste des lignes extraites
 	 */
