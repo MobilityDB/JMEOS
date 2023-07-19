@@ -113,6 +113,7 @@ public class FunctionsBuilder {
 		StringBuilder functionBodyBuilder = new StringBuilder(); // Addition of functions
 		readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
+				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n"); // Allows us to suppress unnecessary warnings
 				String functionSignature = "public static " + removeSemicolon(line) + " {\n";
 				functionBodyBuilder.append(functionSignature);
 				String functionBody = "\t" + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n";
