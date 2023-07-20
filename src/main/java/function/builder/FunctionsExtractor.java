@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public class FunctionsExtractor {
 	private static final String FILE_PATH = "";
 	private static final String INPUT_FILE_PATH = FILE_PATH + "meos.h";
-	private static final String OUTPUT_FUNCTIONS_PATH = FILE_PATH + "tmp/functions.h";
-	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/types.h";
+	private static final String OUTPUT_FUNCTIONS_PATH = FILE_PATH + "tmp/meos_functions.h";
+	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/meos_types.h";
 	
 	/**
 	 * RegEx model for recognizing a function in the meos.h file
