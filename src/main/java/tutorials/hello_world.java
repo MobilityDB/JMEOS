@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import static function.functions.*;
+import static function.functions_old.meos_finalize;
 
 public class hello_world {
 	
@@ -126,7 +127,7 @@ public class hello_world {
 				"MF-JSON:\n" +
 				"--------\n%s\n", ss_step_wkt, ss_step_mfjson);
 		
-		meos_finish();
+		meos_finalize();
 		
 		
 		//var t1 = meos.tint_in("2@2000-01-02") ;
