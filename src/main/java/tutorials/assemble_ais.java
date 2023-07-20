@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Scanner;
 
-/*
+
 public class assemble_ais {
     public static final int MAX_INSTANTS=50000;
     public static final int NO_INSTANTS_BATCH=1000;
@@ -117,7 +117,7 @@ public class assemble_ais {
 
                     if (no_records%1000 == 0){
 
-                        String t_out = functions_old.pg_timestamp_out(temp);
+                        String t_out = functions_old.pg_timestamp_out(rec.T);
                         String str_pointbuffer;
                         str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude,t_out);
 
@@ -146,7 +146,7 @@ public class assemble_ais {
     }
 
     public static class AIS_record{
-        public Integer T;
+        public Pointer T;
         public long MMSI;
         public double Latitude;
         public double Longitude;
@@ -166,4 +166,4 @@ public class assemble_ais {
 
 }
 
- */
+

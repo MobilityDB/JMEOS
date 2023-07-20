@@ -48,6 +48,10 @@ public class functions_old {
 
         String tfloat_out(Pointer temp, Integer maxdd);
 
+        Pointer pg_date_in(String str);
+
+        Pointer temporal_from_hexwkb(String hexwkb);
+
         void meos_initialize(byte[] str);
 
         void meos_finalize();
@@ -127,6 +131,14 @@ public class functions_old {
 
     public static String tpoint_as_text(Pointer temp, Integer maxdd) {
         return MeosLibrary.meos.tpoint_as_text(temp, maxdd);
+    }
+
+    public  static Pointer pg_date_in(String str){
+        return MeosLibrary.meos.pg_date_in(str);
+    }
+
+    public static Pointer temporal_from_hexwkb(String hexwkb){
+        return MeosLibrary.meos.temporal_from_hexwkb(hexwkb);
     }
 
     public static Pointer tfloatinst_make(float d, Pointer t) {
