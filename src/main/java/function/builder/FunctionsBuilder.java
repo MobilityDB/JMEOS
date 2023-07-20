@@ -41,21 +41,30 @@ public class FunctionsBuilder {
 	private static HashMap<String, String> typesBuild() {
 		HashMap<String, String> typeChange = new HashMap<>();
 		typeChange.put("\\*", "Pointer");
-		typeChange.put("\\*\\[\\]", "Pointer");
-		typeChange.put("byte\\[\\]", "byte[]");
 		typeChange.put("\\*char", "String");
-		typeChange.put("void", "void");
 		typeChange.put("bool", "boolean");
 		typeChange.put("float", "float");
 		typeChange.put("double", "double");
+		typeChange.put("void", "void");
 		typeChange.put("int", "int");
-		typeChange.put("int32_t", "int");
+		typeChange.put("short", "short");
+		typeChange.put("long", "long");
+		typeChange.put("int8", "byte");
+		typeChange.put("int16", "short");
 		typeChange.put("int32", "int");
 		typeChange.put("int64", "long");
-		typeChange.put("uint8_t", "short");
-		typeChange.put("uint16_t", "short");
+		typeChange.put("int8_t", "byte");
+		typeChange.put("int16_t", "short");
+		typeChange.put("int32_t", "int");
+		typeChange.put("int64_t", "long");
+		typeChange.put("uint8", "byte");
+		typeChange.put("uint16", "short");
 		typeChange.put("uint32", "int");
 		typeChange.put("uint64", "long");
+		typeChange.put("uint8_t", "byte");
+		typeChange.put("uint16_t", "short");
+		typeChange.put("uint32_t", "int");
+		typeChange.put("uint64_t", "long");
 		typeChange.put("uintptr_t", "long");
 		typeChange.put("size_t", "long");
 		typeChange.put("interpType", "int"); // enum in C
@@ -279,16 +288,18 @@ public class FunctionsBuilder {
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
 			
 			// Changing special types or names
-			line = line.replaceAll("\\*char\\stz_str", "byte[] tz_str"); // For the function meos_initialize(const char *tz_str);
+			line = line.replaceAll("\\*char\\stz_str", "byte[] tz_str"); // For the function meos_initialize(const char *tz_str); //FIXME à supprimer
 			line = line.replaceAll("\\(void\\)", "()"); // For the function meos_finish(void);
 			line = line.replaceAll("synchronized", "synchronize"); // For the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
 			
+			//			System.out.println("before: " + line);
 			// Replaces types from type dictionary
 			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
 				String oldType = entry.getKey();
 				String newType = entry.getValue();
-				line = line.replaceAll("((^|\\(|\\s)+)" + oldType + "\\s", "$1" + newType + " ");
+				line = line.replaceAll("(^|\\(|\\s)" + oldType + "(\\s|\\[\\])", "$1" + newType + "$2");
 			}
+			//			System.out.println("after: " + line);
 			
 			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Retrieving unsupported types for the line
 			unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Fetch unsupported types that are not yet in the global list
@@ -319,6 +330,12 @@ public class FunctionsBuilder {
 				if (!paramTypeArray.get(0).isEmpty())
 					typesList.addAll(paramTypeArray);
 		}
+		
+		// Remove Array Types from the list then change it to normal type
+		List<String> arrayTypesList = typesList.stream().filter(type -> type.contains("[]")).toList();
+		typesList.removeAll(arrayTypesList);
+		List<String> newTypesList = arrayTypesList.stream().map(arrayType -> arrayType.replace("[]", "")).toList();
+		typesList.addAll(newTypesList);
 		
 		return typesList;
 	}
