@@ -1,5 +1,5 @@
 # Readme to generate the jar file and integrate it in an other directory - IntelliJ IDE 2023.1
-## A. Generation
+## A. Generation (Already done for you)
 ### 1. Libmeos.so
   Add libmeos.so file, containing the basic meos library, into the libs directory. For simplicity, it was already done in this project.
 ### 2. Pom.xml
