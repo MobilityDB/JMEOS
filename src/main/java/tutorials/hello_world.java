@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import static function.functions.*;
+import static function.functions_old.meos_finalize;
 
 public class hello_world {
 	

@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public class FunctionsExtractor {
 	private static final String FILE_PATH = "";
 	private static final String INPUT_FILE_PATH = FILE_PATH + "meos.h";
-	private static final String OUTPUT_FUNCTIONS_PATH = FILE_PATH + "tmp/functions.h";
-	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/types.h";
+	private static final String OUTPUT_FUNCTIONS_PATH = FILE_PATH + "tmp/meos_functions.h";
+	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/meos_types.h";
 	
 	/**
 	 * RegEx model for recognizing a function in the meos.h file
@@ -105,8 +105,8 @@ public class FunctionsExtractor {
 	 * Extract lines matching a certain pattern from the file.
 	 *
 	 * @param filePath      file path
-	 * @param regex_pattern le pattern de récupération
-	 * @return liste des lignes extraites
+	 * @param regex_pattern the recovery pattern
+	 * @return list of rows extracted
 	 */
 	public static ArrayList<String> extractPatternFromFile(String filePath, String regex_pattern) {
 		List<String> lines = new ArrayList<>();
@@ -129,10 +129,10 @@ public class FunctionsExtractor {
 	}
 	
 	/**
-	 * Écrit les lignes dans un fichier.
+	 * Writes lines to a file.
 	 *
-	 * @param lines    la liste des lignes extraites
-	 * @param filePath le chemin du fichier
+	 * @param lines    the list of extracted rows
+	 * @param filePath the file path
 	 */
 	public static void writeLinesToFile(ArrayList<String> lines, String filePath) {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
