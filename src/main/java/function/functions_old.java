@@ -52,7 +52,7 @@ public class functions_old {
 
         Pointer temporal_from_hexwkb(String hexwkb);
 
-        void meos_initialize(byte[] str);
+        void meos_initialize(String str);
 
         void meos_finalize();
     }
@@ -109,7 +109,7 @@ public class functions_old {
         return MeosLibrary.meos.distance_timestamp_timestamp(t1, t2);
     }
 
-    public static void meos_initialize(byte[] str) {
+    public static void meos_initialize(String str) {
         MeosLibrary.meos.meos_initialize(str);
     }
 

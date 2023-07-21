@@ -279,7 +279,7 @@ public class FunctionsBuilder {
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
 			
 			// Changing special types or names
-			line = line.replaceAll("\\*char\\stz_str", "byte[] tz_str"); // For the function meos_initialize(const char *tz_str);
+			line = line.replaceAll("\\*char\\stz_str", "String tz_str"); // For the function meos_initialize(const char *tz_str);
 			line = line.replaceAll("\\(void\\)", "()"); // For the function meos_finish(void);
 			line = line.replaceAll("synchronized", "synchronize"); // For the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
 			

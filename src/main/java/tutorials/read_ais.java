@@ -1,7 +1,7 @@
 package tutorials;
 import jnr.ffi.Pointer;
 import function.functions_old;
-import org.hibernate.dialect.SybaseSqlAstTranslator;
+import static function.functions.*;
 
 import java.io.*;
 
@@ -17,12 +17,12 @@ public class read_ais {
 
     public static void main(String[] args){
 
-        String timezone = "UTC";
-        byte[] timezone_byte = timezone.getBytes(StandardCharsets.UTF_8);
-        functions_old.meos_initialize(timezone_byte);
+        meos_initialize("UTC");
 
+        String workingdir = System.getProperty("user.dir");
+        System.out.println(workingdir);
         //Reading the file
-        String file_path = "/home/nidhal/IdeaProjects/JMEOS/src/main/java/tutorials/aisinput.csv";
+        String file_path = workingdir+"/src/main/java/tutorials/aisinput.csv";
         try (BufferedReader reader = new BufferedReader(new FileReader(file_path))){
         }
         catch (IOException e){
@@ -96,7 +96,7 @@ public class read_ais {
 
         System.out.printf("\n%d no_records read.\n%d incomplete records ignored.\n", no_records,no_nulls);
 
-        functions_old.meos_finalize();
+        meos_finalize();
 
     }
 

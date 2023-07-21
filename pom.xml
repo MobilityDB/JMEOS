@@ -4,9 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>org.jmeos</groupId>
     <artifactId>JMEOS</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <description> JMEOS is a Java library allowing MobilityDB users
+    to perform MEOS native operations on MobilityDB data types. </description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -21,21 +23,36 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.2.2.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.marschall</groupId>
-            <artifactId>threeten-jpa-zoned-hibernate</artifactId>
-            <version>1.12</version>
-        </dependency>
-
-        <dependency>
             <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
             <version>2021.1.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>install-meos</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/src/libs/libmeos.so</file>
+                            <groupId>org.jmeos</groupId>
+                            <artifactId>meos</artifactId>
+                            <version>1.0</version>
+                            <packaging>so</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

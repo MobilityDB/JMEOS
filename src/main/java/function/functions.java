@@ -32,9 +32,9 @@ public class functions {
 
 		int lwgeom_has_m(Pointer geom);
 
-		void meos_initialize(byte[] tz_str);
+		void meos_initialize(String tz_str);
 
-		void meos_finish();
+		void meos_finalize();
 
 		boolean bool_in(String in_str);
 
@@ -2354,13 +2354,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void meos_initialize(byte[] tz_str) {
+	public static void meos_initialize(String tz_str) {
 		MeosLibrary.meos.meos_initialize(tz_str);
 	}
 	
 	@SuppressWarnings("unused")
-	public static void meos_finish() {
-		MeosLibrary.meos.meos_finish();
+	public static void meos_finalize() {
+		MeosLibrary.meos.meos_finalize();
 	}
 	
 	@SuppressWarnings("unused")

@@ -1,8 +1,6 @@
 package tutorials;
 
 import java.time.LocalDate;
-//import jakarta.persistence.*;
-//import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
 /*

@@ -17,13 +17,9 @@ public class hello_world {
 	
 	
 	public static void main(String[] args) throws SQLException {
-		
-		// First Example for CFFI, initialize the UTC timezone
-		String timezone = "UTC";
-		byte[] timezone_byte = timezone.getBytes(StandardCharsets.UTF_8);
-		
+
 		//Initialize meos
-		meos_initialize(timezone_byte);
+		meos_initialize("UTC");
 		
 		System.out.println("ICI2");
 		
@@ -126,7 +122,7 @@ public class hello_world {
 				"MF-JSON:\n" +
 				"--------\n%s\n", ss_step_wkt, ss_step_mfjson);
 		
-		meos_finish();
+		meos_finalize();
 		
 		
 		//var t1 = meos.tint_in("2@2000-01-02") ;

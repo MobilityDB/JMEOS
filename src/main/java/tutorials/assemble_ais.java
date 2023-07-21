@@ -20,9 +20,7 @@ public class assemble_ais {
 
     public static void main(String[] args){
 
-        String timezone = "UTC";
-        byte[] timezone_byte = timezone.getBytes(StandardCharsets.UTF_8);
-        functions_old.meos_initialize(timezone_byte);
+        functions_old.meos_initialize("UTC");
 
         long t = System.nanoTime()/1000000;
 
