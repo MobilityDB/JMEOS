@@ -1,5 +1,6 @@
 package types.time;
 
+import jnr.ffi.Pointer;
 import types.core.DataType;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
@@ -17,6 +18,7 @@ public class Period extends DataType {
     private OffsetDateTime upper;
     private boolean lowerInclusive;
     private boolean upperInclusive;
+    private Pointer _inner;
 
     private static final String LOWER_INCLUSIVE = "[";
     private static final String LOWER_EXCLUSIVE = "(";
