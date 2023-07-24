@@ -19,7 +19,7 @@ public class hello_world {
 	
 	public static void main(String[] args) throws SQLException {
 
-		//Initialize meos
+		//Initialize meos hash table
 		meos_initialize("UTC");
 		
 		System.out.println("ICI2");
