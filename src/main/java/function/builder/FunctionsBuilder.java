@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  *     <li>javac .\FunctionsBuilder.java</li>
  *     <li>java .\FunctionsBuilder.java</li>
  * </ul>
- *
+ * <p>
  * TODO: Ajouter un process d'ajout de code dans le body des fonctions. do function(function name, Runnable
  *
  * @author Killian Monnier
@@ -124,15 +124,15 @@ public class FunctionsBuilder {
 		StringBuilder functionBodyBuilder = new StringBuilder(); // Addition of functions
 		readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
-				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n"); // Allows us to suppress unnecessary warnings
 				String functionSignature = "public static " + removeSemicolon(line) + " {\n";
-				functionBodyBuilder.append(functionSignature);
 				String functionBody = "\t" + "return MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n";
 				
 				if (getFunctionTypes(line).get(0).equals("void"))
 					functionBody = "\t" + "MeosLibrary.meos." + extractFunctionName(line) + "(" + getListWithoutBrackets(extractParamNames(line)) + ");\n}\n\n"; // When the function returns nothing
 				
-				functionBodyBuilder.append(functionBody);
+				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n") // Allows us to suppress unnecessary warnings
+						.append(functionSignature)
+						.append(functionBody);
 			}
 		});
 		appendBuilderWith(functionBodyBuilder, builder, "\t", "\n");
@@ -290,19 +290,16 @@ public class FunctionsBuilder {
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
 			
 			// Changing special types or names
-			line = line.replaceAll("\\*char\\stz_str", "String tz_str"); // For the function meos_initialize(const char *tz_str);
-			line = line.replaceAll("\\(void\\)", "()"); // For the function meos_finish(void);
-			line = line.replaceAll("synchronized", "synchronize"); // For the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized);
+			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void))
+			line = line.replaceAll("synchronized", "synchronize"); // Change the keyword used by Java (for the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized))
 			
-			//			System.out.println("before: " + line);
 			// Replaces types from type dictionary
 			for (Map.Entry<String, String> entry : TYPES.entrySet()) {
 				String oldType = entry.getKey();
 				String newType = entry.getValue();
 				line = line.replaceAll("(^|\\(|\\s)" + oldType + "(\\s|\\[\\])", "$1" + newType + "$2");
 			}
-			//			System.out.println("after: " + line);
-
+			
 			List<String> typesNotSupported = getFunctionTypes(line).stream().filter(type -> !TYPES.containsValue(type)).toList(); // Retrieving unsupported types for the line
 			unSupportedTypes.addAll(typesNotSupported.stream().filter(type -> !unSupportedTypes.contains(type)).toList()); // Fetch unsupported types that are not yet in the global list
 		}
@@ -338,7 +335,7 @@ public class FunctionsBuilder {
 		typesList.removeAll(arrayTypesList);
 		List<String> newTypesList = arrayTypesList.stream().map(arrayType -> arrayType.replace("[]", "")).toList();
 		typesList.addAll(newTypesList);
-
+		
 		return typesList;
 	}
 	

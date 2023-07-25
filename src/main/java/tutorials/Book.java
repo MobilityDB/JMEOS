@@ -1,8 +1,5 @@
 package tutorials;
 
-import java.time.LocalDate;
-
-import java.math.BigDecimal;
 /*
 @Entity(name="Book")
 @Table(name="book")
