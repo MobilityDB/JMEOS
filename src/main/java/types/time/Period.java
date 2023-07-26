@@ -4,10 +4,21 @@ import jnr.ffi.Pointer;
 import types.core.DataType;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
+import types.temporal.Temporal;
 
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+
+import static function.functions.*;
+
+/*
+Add datetime in constructor
+Modify the SQLException
+Modify the timestampTZ
+ */
+
+
 
 /**
  * Class that represents the MobilityDB type Period
@@ -16,9 +27,9 @@ import java.time.OffsetDateTime;
 public class Period extends DataType {
     private OffsetDateTime lower;
     private OffsetDateTime upper;
-    private boolean lowerInclusive;
-    private boolean upperInclusive;
-    private Pointer _inner;
+    private boolean lowerInclusive = true;
+    private boolean upperInclusive = false;
+    private Pointer _inner = null;
 
     private static final String LOWER_INCLUSIVE = "[";
     private static final String LOWER_EXCLUSIVE = "(";
@@ -32,6 +43,21 @@ public class Period extends DataType {
         super();
     }
 
+
+    /**
+     * Constructor through Meos (C) inner object
+     * @param _inner Pointer to C object
+     * @throws SQLException
+     */
+    public Period(Pointer _inner) throws SQLException {
+        super();
+        this._inner = _inner;
+        String str = period_out(this._inner);
+        setValue(str);
+
+    }
+
+
     /**
      * The string constructor
      * @param value - a string with a Period value
@@ -40,6 +66,7 @@ public class Period extends DataType {
     public Period(final String value) throws SQLException {
         super();
         setValue(value);
+        this._inner = period_in(value);
     }
 
     /**
@@ -54,7 +81,11 @@ public class Period extends DataType {
         this.upper = upper;
         this.lowerInclusive = true;
         this.upperInclusive = false;
+        long lower_ts = pg_timestamptz_in(this.lower.toString(),-1);
+        long upper_ts = pg_timestamptz_in(this.upper.toString(),-1);
+        this._inner = period_make(lower_ts,upper_ts,this.lowerInclusive,this.upperInclusive);
         validate();
+
     }
 
     /**
@@ -72,8 +103,111 @@ public class Period extends DataType {
         this.upper = upper;
         this.lowerInclusive = lowerInclusive;
         this.upperInclusive = upperInclusive;
+        long lower_ts = pg_timestamptz_in(this.lower.toString(),-1);
+        long upper_ts = pg_timestamptz_in(this.upper.toString(),-1);
+        this._inner = period_make(lower_ts,upper_ts,this.lowerInclusive,this.upperInclusive);
         validate();
     }
+
+
+    public Period from_hexwkb(String str) throws SQLException {
+        Pointer result = span_from_hexwkb(str);
+        return new Period(result);
+    }
+
+    public float width(){
+        return (float)span_width(this._inner);
+    }
+
+
+    public Period expand(Period other) throws SQLException {
+        Pointer copy = span_copy(this._inner);
+        span_expand(other._inner,copy);
+        return new Period(copy);
+    }
+    /*
+    public PeriodSet to_periodset(){
+        return new PeriodSet(period_to_periodset(this._inner));
+    }
+
+     */
+
+    public boolean is_adjacent_Period(Period other){
+        return adjacent_span_span(this._inner,other._inner);
+    }
+    /*
+    public boolean is_adjacent_Periodset(PeriodSet other){
+        return adjacent_period_periodset(this._inner,other._inner);
+    }
+     */
+
+    /*
+    public boolean is_adjacent_datetime(OffsetDateTime other){
+        return adjacent_period_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean is_adjacent_timestampset(TimestampSet other){
+        return adjacent_period_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean is_adjacent_temporal(Temporal other){
+        return adjacent_period_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+    public boolean is_contained_in_Period(Period other){
+        return contained_span_span(this._inner,other._inner);
+    }
+    /*
+    public boolean is_contained_in_Periodset(PeriodSet other){
+        return contained_period_periodset(this._inner,other._inner);
+    }
+
+
+    public boolean is_contained_in_temporal(Temporal other){
+        return contained_period_temporal(this._inner,other._inner);
+    }
+     */
+
+    public boolean contains_Period(Period other){
+        return contains_span_span(this._inner,other._inner);
+    }
+    /*
+    public boolean contains_Periodset(PeriodSet other){
+        return contains_period_periodset(this._inner,other._inner);
+    }
+     */
+
+    /*
+    public boolean contains_datetime(OffsetDateTime other){
+        return contains_period_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean contains_timestampset(TimestampSet other){
+        return contains_period_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean contains_temporal(Temporal other){
+        return contains_period_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
 
     /** {@inheritDoc} */
     @Override
