@@ -1,13 +1,13 @@
 package tutorials;
 
-import function.functions_old;
+import jmeos.functions.functions_old;
 import jnr.ffi.Pointer;
 
 import java.io.*;
 import java.util.Scanner;
 
-import static function.functions.meos_finalize;
-import static function.functions.meos_initialize;
+import static jmeos.functions.functions.meos_finalize;
+import static jmeos.functions.functions.meos_initialize;
 
 
 public class read_ais {

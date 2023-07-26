@@ -1,6 +1,6 @@
 package tutorials;
 
-import function.functions_old;
+import jmeos.functions.functions_old;
 import jnr.ffi.Pointer;
 
 import java.io.*;
