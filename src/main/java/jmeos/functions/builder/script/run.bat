@@ -5,6 +5,3 @@ start /B /wait cmd /c .\run_extractor.bat
 
 echo Generating the "functions" file...
 start /B /wait cmd /c .\run_builder.bat
-
-echo Scripts completed.
-pause

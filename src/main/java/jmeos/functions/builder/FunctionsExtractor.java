@@ -1,18 +1,23 @@
 package jmeos.functions.builder;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static jmeos.functions.builder.BuilderLibrary.extractPatternFromFile;
+import static jmeos.functions.builder.BuilderLibrary.writeFileFromArray;
+
 /**
  * Class used to extract the functions from the MEOS library.
  * Run with ./script folder or as follows:
  * <ul>
- *     <li>cd src\main\java\function\builder</li>
- *     <li>javac .\FunctionsExtractor.java</li>
- *     <li>java .\FunctionsExtractor.java</li>
+ *     <li>cd src/main/java/jmeos/functions/builder</li>
+ *     <li>javac ./FunctionsExtractor.java</li>
+ *     <li>java ./FunctionsExtractor.java</li>
  * </ul>
  *
  * @author Killian Monnier
@@ -41,10 +46,10 @@ public class FunctionsExtractor {
 	 */
 	public static void main(String[] args) {
 		ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
-		writeLinesToFile(functions, OUTPUT_FUNCTIONS_PATH);
+		writeFileFromArray(functions, OUTPUT_FUNCTIONS_PATH);
 		System.out.println("Feature extraction completed. The functions have been written to the file " + OUTPUT_FUNCTIONS_PATH + ".");
 		ArrayList<String> types = getTypesFromFile();
-		writeLinesToFile(types, OUTPUT_TYPES_PATH);
+		writeFileFromArray(types, OUTPUT_TYPES_PATH);
 		System.out.println("Extraction of types completed. The types have been written to the file " + OUTPUT_TYPES_PATH + ".");
 	}
 	
@@ -99,49 +104,5 @@ public class FunctionsExtractor {
 			e.printStackTrace();
 		}
 		return new ArrayList<>(structureNames);
-	}
-	
-	/**
-	 * Extract lines matching a certain pattern from the file.
-	 *
-	 * @param filePath      file path
-	 * @param regex_pattern the recovery pattern
-	 * @return list of rows extracted
-	 */
-	public static ArrayList<String> extractPatternFromFile(String filePath, String regex_pattern) {
-		List<String> lines = new ArrayList<>();
-		
-		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-			Pattern pattern = Pattern.compile(regex_pattern);
-			
-			String line;
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = pattern.matcher(line);
-				if (matcher.find()) {
-					lines.add(matcher.group());
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return new ArrayList<>(lines);
-	}
-	
-	/**
-	 * Writes lines to a file.
-	 *
-	 * @param lines    the list of extracted rows
-	 * @param filePath the file path
-	 */
-	public static void writeLinesToFile(ArrayList<String> lines, String filePath) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-			for (String line : lines) {
-				writer.write(line);
-				writer.newLine();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }
