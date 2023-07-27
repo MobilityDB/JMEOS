@@ -176,6 +176,7 @@ public class Period extends DataType {
      */
 
     public boolean contains_Period(Period other){
+
         return contains_span_span(this._inner,other._inner);
     }
     /*
