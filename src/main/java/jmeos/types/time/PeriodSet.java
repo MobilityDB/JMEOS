@@ -2,6 +2,7 @@ package jmeos.types.time;
 
 import jmeos.types.core.DataType;
 import jmeos.types.core.TypeName;
+import jnr.ffi.Pointer;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -14,12 +15,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static jmeos.functions.functions.*;
+
+
+/*
+TO DO:
+Add the last constructor
+ */
+
+
+
 /**
  * Class that represents the MobilityDB type PeriodSet
  */
 @TypeName(name = "periodset")
 public class PeriodSet extends DataType {
 	private final List<Period> periodList;
+	private Pointer _inner = null;
 	
 	/**
 	 * The default constructor
@@ -27,6 +39,14 @@ public class PeriodSet extends DataType {
 	public PeriodSet() {
 		super();
 		periodList = new ArrayList<>();
+	}
+
+
+	public PeriodSet(Pointer _inner){
+		this();
+		this._inner = _inner;
+
+
 	}
 	
 	/**
@@ -38,6 +58,7 @@ public class PeriodSet extends DataType {
 	public PeriodSet(String value) throws SQLException {
 		this();
 		setValue(value);
+		this._inner = periodset_in(value);
 	}
 	
 	/**
@@ -51,6 +72,58 @@ public class PeriodSet extends DataType {
 		Collections.addAll(periodList, periods);
 		validate();
 	}
+
+
+
+	public PeriodSet from_hexwkb(String str) throws SQLException {
+		Pointer result = periodset_from_hexwkb(str);
+		return new PeriodSet(result);
+	}
+
+
+
+	public boolean is_adjacent_Period(Period other){
+
+		return adjacent_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean is_adjacent_Periodset(PeriodSet other){
+        return adjacent_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public boolean is_adjacent_datetime(OffsetDateTime other){
+        return adjacent_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+
+    /*
+    public boolean is_adjacent_timestampset(TimestampSet other){
+        return adjacent_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean is_adjacent_temporal(Temporal other){
+        return adjacent_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+
+
+
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
+
 	
 	@Override
 	public String getValue() {
