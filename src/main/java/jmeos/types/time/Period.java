@@ -518,7 +518,9 @@ public class Period extends DataType {
         return upperInclusive;
     }
 
-    public Pointer get_inner(){return this._inner;}
+    public Pointer get_inner(){
+        return this._inner;
+    }
 
     /** {@inheritDoc} */
     @Override
