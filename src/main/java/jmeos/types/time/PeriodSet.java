@@ -45,8 +45,6 @@ public class PeriodSet extends DataType {
 	public PeriodSet(Pointer _inner){
 		this();
 		this._inner = _inner;
-
-
 	}
 	
 	/**
@@ -113,6 +111,329 @@ public class PeriodSet extends DataType {
 
      */
 
+
+
+
+
+	public boolean is_contained_Period(Period other){
+
+		return contained_periodset_period(this._inner,other.get_inner());
+	}
+
+	public boolean is_contained_Periodset(PeriodSet other){
+		return contained_periodset_periodset(this._inner,other.get_inner());
+	}
+
+    /*
+    public boolean is_contained_temporal(Temporal other){
+        return contained_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+	public boolean contains_Period(Period other){
+
+		return contains_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean contains_Periodset(PeriodSet other){
+        return contains_periodset_periodset(this._inner,other.get_inner());
+    }
+
+    /*
+    public boolean contains_datetime(OffsetDateTime other){
+        return contains_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean contains_timestampset(TimestampSet other){
+        return contains_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean contains_temporal(Temporal other){
+        return contains_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+	public boolean overlaps_Period(Period other){
+
+		return overlaps_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean overlaps_Periodset(PeriodSet other){
+        return overlaps_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public boolean overlaps_timestampset(TimestampSet other){
+        return overlaps_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean overlaps_temporal(Temporal other){
+        return overlaps_periodset_temporal(this._inner,other._inner);
+    }
+     */
+
+
+
+
+
+	public boolean isafter_Period(Period other){
+
+		return after_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean isafter_Periodset(PeriodSet other){
+        return after_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public boolean isafter_datetime(OffsetDateTime other){
+        return after_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean isafter_timestampset(TimestampSet other){
+        return after_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean isafter_temporal(Temporal other){
+        return after_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+
+
+	public boolean isbefore_Period(Period other){
+
+		return before_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean isbefore_Periodset(PeriodSet other){
+        return before_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public boolean isbefore_datetime(OffsetDateTime other){
+        return before_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean isbefore_timestampset(TimestampSet other){
+        return before_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean isbefore_temporal(Temporal other){
+        return before_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+
+
+	public boolean isover_or_after_Period(Period other){
+
+		return overafter_periodset_period(this._inner,other.get_inner());
+	}
+    /*
+    public boolean isover_or_after_Periodset(PeriodSet other){
+        return overafter_periodset_periodset(this._inner,other.get_inner());
+    }
+     */
+
+    /*
+    public boolean isover_or_after_datetime(OffsetDateTime other){
+        return overafter_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean isover_or_after_timestampset(TimestampSet other){
+        return overafter_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean isover_or_after_temporal(Temporal other){
+        return overafter_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+
+	public boolean isover_or_before_Period(Period other){
+
+		return overbefore_periodset_period(this._inner,other.get_inner());
+	}
+
+    public boolean isover_or_before_Periodset(PeriodSet other){
+        return overbefore_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public boolean isover_or_before_datetime(OffsetDateTime other){
+        return overbefore_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public boolean isover_or_before_timestampset(TimestampSet other){
+        return overbefore_periodset_timestampset(this._inner, other._inner);
+    }
+
+     */
+    /*
+    public boolean isover_or_before_temporal(Temporal other){
+        return overbefore_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+    /*
+    public boolean is_same(Temporal other){
+        return same_periodset_temporal(this._inner,other._inner);
+    }
+
+     */
+
+
+
+
+
+	public float distance_Period(Period other){
+
+		return (float)distance_periodset_period(this._inner,other.get_inner());
+	}
+
+    public float distance_Periodset(PeriodSet other){
+        return (float)distance_periodset_periodset(this._inner,other.get_inner());
+    }
+
+
+    /*
+    public float distance_datetime(OffsetDateTime other){
+        return (float)distance_periodset_timestamp(this._inner,other);
+    }
+
+     */
+
+    /*
+    public float distance_timestampset(TimestampSet other){
+        return (float)distance_periodset_timestampset(this._inner, other._inner);
+    }
+     */
+
+
+
+
+
+	public PeriodSet intersection_Period(Period other) throws SQLException {
+
+		return new PeriodSet(intersection_periodset_period(this._inner, other.get_inner()));
+	}
+
+    public PeriodSet intersection_Periodset(PeriodSet other){
+        return new PeriodSet(intersection_periodset_periodset(this._inner,other._inner));
+    }
+
+
+
+
+    /*
+    public OffsetDateTime intersection_datetime(OffsetDateTime other){
+        return timestamptz_to_datetime(intersection_periodset_timestamp(this._inner,datetime_to_timestamptz(other)));
+    }
+
+     */
+
+    /*
+    public TimestampSet intersection_timestampset(TimestampSet other){
+        return new TimestampSet(intersection_periodset_timestampset(this._inner,other._inner));
+    }
+     */
+
+
+
+
+
+    public PeriodSet minus_Period(Period other){
+        return new PeriodSet(minus_periodset_period(this._inner,other.get_inner()));
+    }
+
+    public PeriodSet minus_PeriodSet(PeriodSet other){
+        return new PeriodSet(minus_periodset_periodset(this._inner,other.get_inner()));
+    }
+    /*
+    public PeriodSet minus_datetime(OffsetDateTime other){
+        return new PeriodSet(minus_periodset_timestamp(this._inner,other));
+    }
+     */
+    /*
+    public PeriodSet minus_timestampset(TimestampSet other){
+        return new PeriodSet(minus_period_timestampset(this._inner,other));
+    }
+     */
+
+
+
+
+    public PeriodSet union_Period(Period other){
+        return new PeriodSet(union_periodset_period(this._inner,other.get_inner()));
+    }
+
+    public PeriodSet union_PeriodSet(PeriodSet other){
+        return new PeriodSet(union_periodset_periodset(this._inner,other.get_inner()));
+    }
+
+
+    /*
+    public PeriodSet union_datetime(OffsetDateTime other){
+        return new PeriodSet(union_periodset_timestamp(this._inner,other));
+    }
+     */
+
+    /*
+    public PeriodSet union_timestampset(TimestampSet other){
+        return new PeriodSet(union_periodset_timestampset(this._inner,other._inner));
+    }
+     */
 
 
 

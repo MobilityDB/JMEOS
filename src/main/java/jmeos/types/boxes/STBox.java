@@ -53,18 +53,11 @@ public class STBox extends DataType {
 	 * @throws SQLException
 	 */
 	
-	public STBox(final String value, Pointer inner, boolean tmin_inc, boolean tmax_inc) throws SQLException {
+	public STBox(final String value) throws SQLException {
 		super();
 		setValue(value);
-		
-		this.tmin_inc = tmin_inc;
-		this.tmax_inc = tmax_inc;
-		
-		if (inner != null) {
-			this._inner = inner;
-		} else if (value != null) {
-			this._inner = stbox_in(value);
-		}
+		this._inner = stbox_in(value);
+
 	}
 	
 	/**

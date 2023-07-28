@@ -3,6 +3,7 @@ package jmeos.types.time;
 import jmeos.types.core.DataType;
 import jmeos.types.core.DateTimeFormatHelper;
 import jmeos.types.core.TypeName;
+import jnr.ffi.Pointer;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -12,12 +13,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static jmeos.functions.functions.*;
+
+
 /**
  * Class that represents the MobilityDB type TimestampSet
  */
 @TypeName(name = "timestampset")
 public class TimestampSet extends DataType {
 	private final List<OffsetDateTime> dateTimeList;
+	private Pointer _inner = null;
 	
 	/**
 	 * The default constructor
@@ -26,6 +31,12 @@ public class TimestampSet extends DataType {
 		super();
 		dateTimeList = new ArrayList<>();
 	}
+
+	public TimestampSet(Pointer _inner){
+		this();
+		this._inner = _inner;
+	}
+
 	
 	/**
 	 * The string constructor
@@ -36,6 +47,7 @@ public class TimestampSet extends DataType {
 	public TimestampSet(String value) throws SQLException {
 		this();
 		setValue(value);
+		this._inner = timestampset_in(value);
 	}
 	
 	/**
@@ -48,6 +60,41 @@ public class TimestampSet extends DataType {
 		this();
 		Collections.addAll(dateTimeList, dateTimes);
 		validate();
+	}
+
+
+	public TimestampSet from_hexwkb(String hexwkb){
+		Pointer result = timestampset_from_hexwkb(hexwkb);
+		return new TimestampSet(result);
+	}
+
+	public PeriodSet to_periodset(){
+		return new PeriodSet(timestampset_to_periodset(this._inner));
+	}
+
+
+	public boolean is_adjacent_Period(Period other){
+
+		return adjacent_timestampset_period(this._inner,other.get_inner());
+	}
+
+	public boolean is_adjacent_Periodset(PeriodSet other){
+		return adjacent_timestampset_periodset(this._inner,other.get_inner());
+	}
+
+	/*
+    public boolean is_adjacent_temporal(Temporal other){
+        return adjacent_timestampset_temporal(this._inner,other._inner);
+    }
+     */
+
+
+
+
+
+
+	public Pointer get_inner(){
+		return this._inner;
 	}
 	
 	@Override
