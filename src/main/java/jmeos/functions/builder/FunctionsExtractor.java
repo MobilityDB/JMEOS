@@ -13,12 +13,7 @@ import static jmeos.utils.BuilderLibrary.writeFileFromArray;
 
 /**
  * Class used to extract the functions from the MEOS library.
- * Run with ./script folder or as follows:
- * <ul>
- *     <li>cd src/main/java/jmeos/functions/builder</li>
- *     <li>javac ./FunctionsExtractor.java</li>
- *     <li>java ./FunctionsExtractor.java</li>
- * </ul>
+ * Run with ./script folder
  *
  * @author Killian Monnier
  * @since 27/06/2023
@@ -51,6 +46,13 @@ public class FunctionsExtractor {
 		// Check if environment variable exists
 		if (jmeosHome != null) {
 			System.out.println("JMEOS_HOME: " + jmeosHome);
+			
+			// Set the current working directory
+			System.setProperty("user.dir", jmeosHome);
+			
+			// Check if the current working directory has been updated
+			String currentWorkingDir = System.getProperty("user.dir");
+			System.out.println("Current working directory: " + currentWorkingDir);
 			
 			ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
 			writeFileFromArray(functions, OUTPUT_FUNCTIONS_PATH);

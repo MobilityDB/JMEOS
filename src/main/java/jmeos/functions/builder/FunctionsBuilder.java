@@ -11,13 +11,7 @@ import static jmeos.utils.BuilderLibrary.*;
 
 /**
  * Class used to extract the functions from the MEOS library.
- * Run with ./script folder or as follows:
- * <ul>
- *     <li>cd src/main/java/jmeos/functions/builder</li>
- *     <li>javac ./FunctionsBuilder.java</li>
- *     <li>java ./FunctionsBuilder.java</li>
- * </ul>
- * <p>
+ * Run with ./script folder
  * TODO: Ajouter un process d'ajout de code dans le body des fonctions. do function(function name, Runnable
  *
  * @author Killian Monnier
@@ -103,6 +97,13 @@ public class FunctionsBuilder {
 		// Check if environment variable exists
 		if (jmeosHome != null) {
 			System.out.println("JMEOS_HOME: " + jmeosHome);
+			
+			// Set the current working directory
+			System.setProperty("user.dir", jmeosHome);
+			
+			// Check if the current working directory has been updated
+			String currentWorkingDir = System.getProperty("user.dir");
+			System.out.println("Current working directory: " + currentWorkingDir);
 			
 			StringBuilder functionsBuilder = generateFunctions();
 			StringBuilder interfaceBuilder = generateInterface(functionsBuilder);

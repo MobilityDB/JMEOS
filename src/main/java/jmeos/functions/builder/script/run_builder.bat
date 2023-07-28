@@ -26,4 +26,5 @@ if %errorlevel% neq 0 (
 )
 
 REM End of script
-pause "End of build."
+echo End of build.
+pause

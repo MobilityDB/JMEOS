@@ -26,4 +26,5 @@ if %errorlevel% neq 0 (
 )
 
 REM End of script
-pause "End of extraction."
+echo End of extraction.
+pause
