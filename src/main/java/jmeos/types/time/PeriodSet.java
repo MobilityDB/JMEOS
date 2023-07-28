@@ -45,8 +45,6 @@ public class PeriodSet extends DataType {
 	public PeriodSet(Pointer _inner){
 		this();
 		this._inner = _inner;
-
-
 	}
 	
 	/**
