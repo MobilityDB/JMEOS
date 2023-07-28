@@ -1,6 +1,9 @@
-package jmeos.functions.builder;
+package jmeos.utils;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -14,6 +17,21 @@ import java.util.regex.Pattern;
  * @since 27/07/2023
  */
 public class BuilderLibrary {
+	
+	public static String getFilePath(Class<?> className) {
+		// Obtenir l'URL de la classe en cours (MyClass dans cet exemple)
+		URL url = className.getProtectionDomain().getCodeSource().getLocation();
+		
+		// Convertir l'URL en chemin de fichier
+		File classFile = new File(url.getFile());
+		
+		// Récupérer le répertoire parent (répertoire du package)
+		Path currRelativePath = Paths.get("");
+		String currAbsolutePathString = currRelativePath.toAbsolutePath().toString();
+		System.out.println("Current absolute path is - " + currAbsolutePathString);
+		
+		return classFile.getParent();
+	}
 	
 	/**
 	 * Writes lines to a file.
@@ -139,6 +157,28 @@ public class BuilderLibrary {
 		
 		// If no function name is found, return an empty string or handle the error as needed
 		return "";
+	}
+	
+	/**
+	 * Allows to extract the types and names of the parameters of a function in order of appearance.
+	 *
+	 * @param signature function signature
+	 * @return the list of parameter types and names in order of appearance
+	 */
+	public static ArrayList<Pair<String, String>> extractParamTypesAndNames(String signature) {
+		ArrayList<Pair<String, String>> paramTypesAndNames = new ArrayList<>();
+		
+		// Using a regular expression to extract parameter types and names
+		Pattern pattern = Pattern.compile("(\\w+(?:\\[])?)\\s+(\\w+)\\b(?=\\s*,|\\s*\\))");
+		Matcher matcher = pattern.matcher(signature);
+		
+		while (matcher.find()) {
+			String paramType = matcher.group(1);
+			String paramName = matcher.group(2);
+			paramTypesAndNames.add(new Pair<>(paramType, paramName));
+		}
+		
+		return paramTypesAndNames;
 	}
 	
 	/**

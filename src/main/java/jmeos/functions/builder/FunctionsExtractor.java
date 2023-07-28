@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static jmeos.functions.builder.BuilderLibrary.extractPatternFromFile;
-import static jmeos.functions.builder.BuilderLibrary.writeFileFromArray;
+import static jmeos.utils.BuilderLibrary.extractPatternFromFile;
+import static jmeos.utils.BuilderLibrary.writeFileFromArray;
 
 /**
  * Class used to extract the functions from the MEOS library.
@@ -24,10 +24,10 @@ import static jmeos.functions.builder.BuilderLibrary.writeFileFromArray;
  * @since 27/06/2023
  */
 public class FunctionsExtractor {
-	private static final String FILE_PATH = "";
-	private static final String INPUT_FILE_PATH = FILE_PATH + "meos.h";
-	private static final String OUTPUT_FUNCTIONS_PATH = FILE_PATH + "tmp/meos_functions.h";
-	private static final String OUTPUT_TYPES_PATH = FILE_PATH + "tmp/meos_types.h";
+	private static final String JMEOS_PATH = "src/main/java/jmeos/";
+	private static final String INPUT_FILE_PATH = "src/libs/meos.h";
+	private static final String OUTPUT_FUNCTIONS_PATH = JMEOS_PATH + "functions/builder/tmp/meos_functions.h";
+	private static final String OUTPUT_TYPES_PATH = JMEOS_PATH + "functions/builder/tmp/meos_types.h";
 	
 	/**
 	 * RegEx model for recognizing a function in the meos.h file
@@ -45,12 +45,22 @@ public class FunctionsExtractor {
 	 * @param args arguments
 	 */
 	public static void main(String[] args) {
-		ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
-		writeFileFromArray(functions, OUTPUT_FUNCTIONS_PATH);
-		System.out.println("Feature extraction completed. The functions have been written to the file " + OUTPUT_FUNCTIONS_PATH + ".");
-		ArrayList<String> types = getTypesFromFile();
-		writeFileFromArray(types, OUTPUT_TYPES_PATH);
-		System.out.println("Extraction of types completed. The types have been written to the file " + OUTPUT_TYPES_PATH + ".");
+		// Retrieve the value of the JMEOS_PATH environment variable
+		String jmeosHome = System.getenv("JMEOS_HOME");
+		
+		// Check if environment variable exists
+		if (jmeosHome != null) {
+			System.out.println("JMEOS_HOME: " + jmeosHome);
+			
+			ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
+			writeFileFromArray(functions, OUTPUT_FUNCTIONS_PATH);
+			System.out.println("Feature extraction completed. The functions have been written to the file " + OUTPUT_FUNCTIONS_PATH);
+			ArrayList<String> types = getTypesFromFile();
+			writeFileFromArray(types, OUTPUT_TYPES_PATH);
+			System.out.println("Extraction of types completed. The types have been written to the file " + OUTPUT_TYPES_PATH);
+		} else {
+			System.err.println("The JMEOS_HOME environment variable is not set.\nCancellation of extraction.");
+		}
 	}
 	
 	/**
