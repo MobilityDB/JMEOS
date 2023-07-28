@@ -56,15 +56,11 @@ public class TBox extends DataType {
 	 * @param value - the string with the TBox value
 	 * @throws SQLException
 	 */
-	public TBox(final String value, Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean xmax_inc, boolean xmin_inc) throws SQLException {
+	public TBox(final String value) throws SQLException {
 		super();
 		setValue(value);
 		
-		this.tmin_inc = tmin_inc;
-		this.tmax_inc = tmax_inc;
-		this.xmin_inc = xmin_inc;
-		this.xmax_inc = xmax_inc;
-		this._inner = inner;
+		this._inner = tbox_in(value);
 	}
 	
 	/**
