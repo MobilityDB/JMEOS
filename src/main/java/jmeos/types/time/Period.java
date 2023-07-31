@@ -28,7 +28,7 @@ public class Period extends DataType {
     private OffsetDateTime upper;
     private boolean lowerInclusive = true;
     private boolean upperInclusive = false;
-    private Pointer _inner = null;
+    private Pointer _inner;
 
     private static final String LOWER_INCLUSIVE = "[";
     private static final String LOWER_EXCLUSIVE = "(";
@@ -64,7 +64,7 @@ public class Period extends DataType {
      */
     public Period(final String value) throws SQLException {
         super();
-        setValue(value);
+        this.setValue(value);
         this._inner = period_in(value);
     }
 
