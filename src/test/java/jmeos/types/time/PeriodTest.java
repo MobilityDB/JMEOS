@@ -13,11 +13,17 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
+import static jmeos.functions.functions.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class PeriodTest {
+    private Period period = new Period("(2019-09-08 00:00:00+00, 2019-09-10 00:00:00+00)");
+
+    PeriodTest() throws SQLException {
+    }
+
     static Stream<Arguments> periodInclusiveProvider() {
         return Stream.of(
             arguments("[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01]", true, true),
@@ -52,6 +58,36 @@ class PeriodTest {
                         "[2021-09-08 00:00:00+01, 2021-09-14 00:00:00+01]")
         );
     }
+
+    void assert_period_equality(Period period, OffsetDateTime lower, OffsetDateTime upper, boolean lower_inc, boolean upper_inc){
+        if(lower != null){
+            assertTrue(period.getLower().isEqual(lower));
+        }
+        if(upper != null){
+            assertTrue(period.getUpper().isEqual(upper));
+        }
+        assertTrue(period.getUpper_inc() == upper_inc);
+        assertTrue(period.getLower_inc() == lower_inc);
+    }
+
+
+    @Test
+    void testHexwkbConstructor() throws SQLException{
+        meos_initialize("UTC");
+        String source = "012100000040021FFE3402000000B15A26350200";
+        Period period = Period.from_hexwkb(source);
+        meos_finalize();
+        assert_period_equality(period,OffsetDateTime.of(2019,9,8,0,0,0,0,ZoneOffset.UTC),OffsetDateTime.of(2019,9,10,0,0,0,0,ZoneOffset.UTC),false,false);
+    }
+
+    @Test
+    void testCopyConstructor() throws SQLException{
+        meos_initialize("UTC");
+        Period other = new Period(this.period);
+        assertTrue(other.get_inner().equals(this.period.get_inner()));
+        meos_finalize();
+    }
+
 
     @Test
     void testConstructor() throws SQLException {

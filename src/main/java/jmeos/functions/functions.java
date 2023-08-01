@@ -108,9 +108,9 @@ public class functions {
 
 		String period_out(Pointer s);
 
-		String periodset_as_hexwkb(Pointer ps, short variant, Pointer size_out);
+		String periodset_as_hexwkb(Pointer ps, byte variant, Pointer size_out);
 
-		Pointer periodset_as_wkb(Pointer ps, short variant, Pointer size_out);
+		Pointer periodset_as_wkb(Pointer ps, byte variant, Pointer size_out);
 
 		Pointer periodset_from_hexwkb(String hexwkb);
 
@@ -120,9 +120,9 @@ public class functions {
 
 		String periodset_out(Pointer ps);
 
-		String span_as_hexwkb(Pointer s, short variant, Pointer size_out);
+		String span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
 
-		Pointer span_as_wkb(Pointer s, short variant, Pointer size_out);
+		Pointer span_as_wkb(Pointer s, byte variant, Pointer size_out);
 
 		Pointer span_from_hexwkb(String hexwkb);
 
@@ -130,9 +130,9 @@ public class functions {
 
 		String span_out(Pointer s, long arg);
 
-		String timestampset_as_hexwkb(Pointer ts, short variant, Pointer size_out);
+		String timestampset_as_hexwkb(Pointer ts, byte variant, Pointer size_out);
 
-		Pointer timestampset_as_wkb(Pointer ts, short variant, Pointer size_out);
+		Pointer timestampset_as_wkb(Pointer ts, byte variant, Pointer size_out);
 
 		Pointer timestampset_from_hexwkb(String hexwkb);
 
@@ -720,13 +720,13 @@ public class functions {
 
 		Pointer stbox_from_hexwkb(String hexwkb);
 
-		Pointer tbox_as_wkb(Pointer box, short variant, Pointer size_out);
+		Pointer tbox_as_wkb(Pointer box, byte variant, Pointer size_out);
 
-		String tbox_as_hexwkb(Pointer box, short variant, Pointer size);
+		String tbox_as_hexwkb(Pointer box, byte variant, Pointer size);
 
-		Pointer stbox_as_wkb(Pointer box, short variant, Pointer size_out);
+		Pointer stbox_as_wkb(Pointer box, byte variant, Pointer size_out);
 
-		String stbox_as_hexwkb(Pointer box, short variant, Pointer size);
+		String stbox_as_hexwkb(Pointer box, byte variant, Pointer size);
 
 		Pointer stbox_in(String str);
 
@@ -964,11 +964,11 @@ public class functions {
 
 		String tbool_out(Pointer temp);
 
-		String temporal_as_hexwkb(Pointer temp, short variant, Pointer size_out);
+		String temporal_as_hexwkb(Pointer temp, byte variant, Pointer size_out);
 
 		String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs);
 
-		Pointer temporal_as_wkb(Pointer temp, short variant, Pointer size_out);
+		Pointer temporal_as_wkb(Pointer temp, byte variant, Pointer size_out);
 
 		Pointer temporal_from_hexwkb(String hexwkb);
 
@@ -2544,12 +2544,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String periodset_as_hexwkb(Pointer ps, short variant, Pointer size_out) {
+	public static String periodset_as_hexwkb(Pointer ps, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.periodset_as_hexwkb(ps, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_as_wkb(Pointer ps, short variant, Pointer size_out) {
+	public static Pointer periodset_as_wkb(Pointer ps, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.periodset_as_wkb(ps, variant, size_out);
 	}
 	
@@ -2574,12 +2574,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String span_as_hexwkb(Pointer s, short variant, Pointer size_out) {
+	public static String span_as_hexwkb(Pointer s, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.span_as_hexwkb(s, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer span_as_wkb(Pointer s, short variant, Pointer size_out) {
+	public static Pointer span_as_wkb(Pointer s, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.span_as_wkb(s, variant, size_out);
 	}
 	
@@ -2599,12 +2599,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String timestampset_as_hexwkb(Pointer ts, short variant, Pointer size_out) {
+	public static String timestampset_as_hexwkb(Pointer ts, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.timestampset_as_hexwkb(ts, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_as_wkb(Pointer ts, short variant, Pointer size_out) {
+	public static Pointer timestampset_as_wkb(Pointer ts, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.timestampset_as_wkb(ts, variant, size_out);
 	}
 	
@@ -4074,22 +4074,22 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbox_as_wkb(Pointer box, short variant, Pointer size_out) {
+	public static Pointer tbox_as_wkb(Pointer box, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.tbox_as_wkb(box, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String tbox_as_hexwkb(Pointer box, short variant, Pointer size) {
+	public static String tbox_as_hexwkb(Pointer box, byte variant, Pointer size) {
 		return MeosLibrary.meos.tbox_as_hexwkb(box, variant, size);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer stbox_as_wkb(Pointer box, short variant, Pointer size_out) {
+	public static Pointer stbox_as_wkb(Pointer box, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.stbox_as_wkb(box, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String stbox_as_hexwkb(Pointer box, short variant, Pointer size) {
+	public static String stbox_as_hexwkb(Pointer box, byte variant, Pointer size) {
 		return MeosLibrary.meos.stbox_as_hexwkb(box, variant, size);
 	}
 	
@@ -4684,7 +4684,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String temporal_as_hexwkb(Pointer temp, short variant, Pointer size_out) {
+	public static String temporal_as_hexwkb(Pointer temp, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.temporal_as_hexwkb(temp, variant, size_out);
 	}
 	
@@ -4694,7 +4694,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_as_wkb(Pointer temp, short variant, Pointer size_out) {
+	public static Pointer temporal_as_wkb(Pointer temp, byte variant, Pointer size_out) {
 		return MeosLibrary.meos.temporal_as_wkb(temp, variant, size_out);
 	}
 	

@@ -42,6 +42,15 @@ public class Period extends DataType {
         super();
     }
 
+    /**
+     * Constructor by copy
+     * @param other period instace
+     * @throws SQLException
+     */
+    public Period(Period other) throws SQLException {
+        this(other.get_inner());
+    }
+
 
     /**
      * Constructor through Meos (C) inner object
@@ -109,7 +118,7 @@ public class Period extends DataType {
     }
 
 
-    public Period from_hexwkb(String str) throws SQLException {
+    public static Period from_hexwkb(String str) throws SQLException {
         Pointer result = span_from_hexwkb(str);
         return new Period(result);
     }
@@ -124,21 +133,21 @@ public class Period extends DataType {
         span_expand(other._inner,copy);
         return new Period(copy);
     }
-    /*
+
     public PeriodSet to_periodset(){
         return new PeriodSet(period_to_periodset(this._inner));
     }
 
-     */
+
 
     public boolean is_adjacent_Period(Period other){
         return adjacent_span_span(this._inner,other._inner);
     }
-    /*
+
     public boolean is_adjacent_Periodset(PeriodSet other){
-        return adjacent_period_periodset(this._inner,other._inner);
+        return adjacent_period_periodset(this._inner,other.get_inner());
     }
-     */
+
 
     /*
     public boolean is_adjacent_datetime(OffsetDateTime other){
@@ -164,12 +173,12 @@ public class Period extends DataType {
     public boolean is_contained_in_Period(Period other){
         return contained_span_span(this._inner,other._inner);
     }
-    /*
+
     public boolean is_contained_in_Periodset(PeriodSet other){
-        return contained_period_periodset(this._inner,other._inner);
+        return contained_period_periodset(this._inner,other.get_inner());
     }
 
-
+    /*
     public boolean is_contained_in_temporal(Temporal other){
         return contained_period_temporal(this._inner,other._inner);
     }
@@ -179,11 +188,11 @@ public class Period extends DataType {
 
         return contains_span_span(this._inner,other._inner);
     }
-    /*
+
     public boolean contains_Periodset(PeriodSet other){
-        return contains_period_periodset(this._inner,other._inner);
+        return contains_period_periodset(this._inner,other.get_inner());
     }
-     */
+
 
     /*
     public boolean contains_datetime(OffsetDateTime other){
@@ -212,18 +221,18 @@ public class Period extends DataType {
 
         return overlaps_span_span(this._inner,other._inner);
     }
-    /*
+
     public boolean overlaps_Periodset(PeriodSet other){
-        return overlaps_period_periodset(this._inner,other._inner);
+        return overlaps_period_periodset(this._inner,other.get_inner());
     }
-     */
 
-    /*
+
+
     public boolean overlaps_timestampset(TimestampSet other){
-        return overlaps_period_timestampset(this._inner, other._inner);
+        return overlaps_period_timestampset(this._inner, other.get_inner());
     }
 
-     */
+
     /*
     public boolean overlaps_temporal(Temporal other){
         return overlaps_period_temporal(this._inner,other._inner);
@@ -234,11 +243,11 @@ public class Period extends DataType {
 
         return right_span_span(this._inner,other._inner);
     }
-    /*
+
     public boolean isafter_Periodset(PeriodSet other){
-        return after_period_periodset(this._inner,other._inner);
+        return after_period_periodset(this._inner,other.get_inner());
     }
-     */
+
 
     /*
     public boolean isafter_datetime(OffsetDateTime other){
@@ -247,12 +256,12 @@ public class Period extends DataType {
 
      */
 
-    /*
+
     public boolean isafter_timestampset(TimestampSet other){
-        return after_period_timestampset(this._inner, other._inner);
+        return after_period_timestampset(this._inner, other.get_inner());
     }
 
-     */
+
     /*
     public boolean isafter_temporal(Temporal other){
         return after_period_temporal(this._inner,other._inner);
@@ -509,6 +518,14 @@ public class Period extends DataType {
 
     public OffsetDateTime getUpper() {
         return upper;
+    }
+
+    public boolean getUpper_inc(){
+        return upperInclusive;
+    }
+
+    public boolean getLower_inc(){
+        return lowerInclusive;
     }
 
     public boolean isLowerInclusive() {

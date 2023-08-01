@@ -38,8 +38,8 @@ public class FunctionsBuilder {
 		HashMap<String, String> typeChange = new HashMap<>();
 		typeChange.put("\\*", "Pointer");
 		typeChange.put("\\*char", "String");
-		//Ce changement fait crash le programme ??
-		//typeChange.put("Pointer[]", "Pointer");
+		//Keep this line, otherwise operand error in JNR-FFI
+		typeChange.put("Pointer\\[\\]","Pointer");
 		typeChange.put("bool", "boolean");
 		typeChange.put("float", "float");
 		typeChange.put("double", "double");
@@ -47,19 +47,19 @@ public class FunctionsBuilder {
 		typeChange.put("int", "int");
 		typeChange.put("short", "short");
 		typeChange.put("long", "long");
-		typeChange.put("int8", "short");
+		typeChange.put("int8", "byte");
 		typeChange.put("int16", "short");
 		typeChange.put("int32", "int");
 		typeChange.put("int64", "long");
-		typeChange.put("int8_t", "short");
+		typeChange.put("int8_t", "byte");
 		typeChange.put("int16_t", "short");
 		typeChange.put("int32_t", "int");
 		typeChange.put("int64_t", "long");
-		typeChange.put("uint8", "short");
+		typeChange.put("uint8", "byte");
 		typeChange.put("uint16", "short");
 		typeChange.put("uint32", "int");
 		typeChange.put("uint64", "long");
-		typeChange.put("uint8_t", "short");
+		typeChange.put("uint8_t", "byte");
 		typeChange.put("uint16_t", "short");
 		typeChange.put("uint32_t", "int");
 		typeChange.put("uint64_t", "long");
@@ -221,7 +221,7 @@ public class FunctionsBuilder {
 			line = line.replaceAll("char\\s\\*", "*char ");
 			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
-			
+
 			// Changing special types or names
 			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void))
 			line = line.replaceAll("synchronized", "synchronize"); // Change the keyword used by Java (for the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized))
