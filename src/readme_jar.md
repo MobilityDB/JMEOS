@@ -45,5 +45,5 @@
 
 As JMEOS uses other dependencies *you should normally* add them but for simplicity **the dependencies have been added** with the JAR.
 
-You just need to refresh Maven with the ***"Reload all Maven Projects"*** button and you should see all the dependencies appear in the ***"External Libraries"*** of your project.
+You just need to refresh Maven with the ***"Reload all Maven Projects"*** button, and you should see all the dependencies appear in the ***"External Libraries"*** of your project.
   
