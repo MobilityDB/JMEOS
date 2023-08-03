@@ -1,8 +1,8 @@
 package tutorials;
 
-import jmeos.functions.functions_old;
-import jmeos.types.basic.tpoint.TPoint;
-import jmeos.types.temporal.TemporalValue;
+import functions.functions_old;
+import types.basic.tpoint.TPoint;
+import types.temporal.TemporalValue;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
@@ -10,8 +10,8 @@ import net.postgis.jdbc.geometry.Point;
 
 import java.sql.SQLException;
 
-import static jmeos.functions.functions.*;
-import static jmeos.functions.functions_old.meos_finalize;
+import static functions.functions.*;
+import static functions.functions_old.meos_finalize;
 
 public class hello_world {
 	

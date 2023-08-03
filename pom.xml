@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jmeos</groupId>
-    <artifactId>JMEOS</artifactId>
+    <artifactId>jmeos</artifactId>
     <version>1.0-SNAPSHOT</version>
     <description>JMEOS is a Java library allowing MobilityDB users
         to perform MEOS native operations on MobilityDB data types.
@@ -16,6 +16,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.github.jnr</groupId>
@@ -28,6 +29,7 @@
             <artifactId>postgis-jdbc</artifactId>
             <version>2021.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -39,9 +41,17 @@
     <build>
         <plugins>
             <plugin>
+                <!-- https://maven.apache.org/surefire/maven-surefire-plugin/ -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+            </plugin>
+
+            <plugin>
+                <!-- install as an artifact in your local Maven repository -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <id>install-meos</id>
@@ -60,15 +70,61 @@
                 </executions>
             </plugin>
 
-
             <plugin>
+                <!-- https://maven.apache.org/plugins/maven-shade-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <minimizeJar>true</minimizeJar>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>shaded</shadedClassifierName>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <dependencyReducedPomLocation>${project.basedir}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <relocations>
+                        <!-- Relocate classes to jmeos package -->
+                        <relocation>
+                            <pattern>functions</pattern>
+                            <shadedPattern>jmeos.functions</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>types</pattern>
+                            <shadedPattern>jmeos.types</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>utils</pattern>
+                            <shadedPattern>jmeos.utils</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <artifactSet>
+                        <includes>
+                            <!-- Include only the jmeos files -->
+                            <include>org.jmeos:jmeos</include>
+                        </includes>
+                    </artifactSet>
+                    <filters>
+                        <filter>
+                            <artifact>org.jmeos:jmeos</artifact>
+                            <!-- Exclude specific directory -->
+                            <excludes>
+                                <exclude>tutorials/**</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>JMEOS</finalName>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
-
         </plugins>
     </build>
-
 </project>

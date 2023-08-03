@@ -4,7 +4,7 @@ target/
 !**/src/test/**/target/
 
 # Build process temporary files
-src/main/java/jmeos/functions/builder/tmp/
+src/main/java/functions/builder/tmp/
 
 ### IntelliJ IDEA ###
 # https://gitignore.io

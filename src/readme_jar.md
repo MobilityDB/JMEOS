@@ -20,15 +20,15 @@
 ## B. Integration
 
 ### 1. Copy of the Jar
-  Copy the generated **.jar** file into the new project repository you desire. It is recommended to put it into a specific directory.
+  Copy the generated **src/jar/JMEOS.jar** file into the new project repository you desire. It is recommended to put it into a specific directory (ex: src/jar).
 
 ### 2. Add dependency
   Open the **pom.xml** file (if using Maven) or a the **build.gradle** (if using Gradle) and add the **jmeos** dependency. For Maven: 
   ```
   <dependency>
     <groupId>org.jmeos</groupId>
-    <artifactId>meos</artifactId>
-    <version>1.0</version>
+    <artifactId>jmeos</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </dependency>
   ```
 
@@ -36,18 +36,14 @@
 
   Install the dependency into your system by opening the terminal and execute the following command line:
   ```console
-  example@john:~$ mvn install:install-file -Dfile=$path_to_jar_file DgroupId=org.jmeos -DartifactId=meos -Dversion=1.0 -Dpackaging=jar
+  example@john:~$ mvn install:install-file -Dfile="$path_to_jar_file/JMEOS.jar" -DgroupId="org.jmeos" -DartifactId=jmeos -Dversion="1.0-SNAPSHOT" -Dpackaging=jar
+
   ```
   where **$path_to_jar_file** is the absolute path to the **.jar** file previously generated and placed.
 
 ### 4. Add other dependencies
 
-  Since JMEOS has some dependecies, you also need to add them into the associated file (pom.xml for Maven). Example for **JNR-FFI:**
-  ```
-  <dependency>
-    <groupId>com.github.jnr</groupId>
-    <artifactId>jnr-ffi</artifactId>
-    <version>2.2.11</version>
-  </dependency>
-  ```
+As JMEOS uses other dependencies *you should normally* add them but for simplicity **the dependencies have been added** with the JAR.
+
+You just need to refresh Maven with the ***"Reload all Maven Projects"*** button and you should see all the dependencies appear in the ***"External Libraries"*** of your project.
   
