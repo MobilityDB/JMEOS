@@ -18,10 +18,11 @@
     </properties>
 
     <dependencies>
+        <!-- For the version of the dependencies, see https://mvnrepository.com/ -->
         <dependency>
             <groupId>com.github.jnr</groupId>
             <artifactId>jnr-ffi</artifactId>
-            <version>2.2.11</version>
+            <version>2.2.14</version>
         </dependency>
 
         <dependency>
@@ -33,18 +34,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- For the version of the plugins, see https://mvnrepository.com/ -->
             <plugin>
                 <!-- https://maven.apache.org/surefire/maven-surefire-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.1.2</version>
             </plugin>
 
             <plugin>
@@ -98,8 +100,9 @@
                     </relocations>
                     <artifactSet>
                         <includes>
-                            <!-- Include only the jmeos files -->
-                            <include>org.jmeos:jmeos</include>
+                            <!-- Include only jmeos artifacts -->
+                            <include>org.jmeos:*</include>
+                            <include>org.jmeos:meos</include>
                         </includes>
                     </artifactSet>
                     <filters>

@@ -35,10 +35,17 @@
 ### 3. Install the dependency
 
   Install the dependency into your system by opening the terminal and execute the following command line:
-  ```console
-  example@john:~$ mvn install:install-file -Dfile="$path_to_jar_file/JMEOS.jar" -DgroupId="org.jmeos" -DartifactId=jmeos -Dversion="1.0-SNAPSHOT" -Dpackaging=jar
 
+_Linux_:
+  ```console
+  example@john:~$ mvn install:install-file -Dfile=$path_to_jar_file/JMEOS.jar -DgroupId=org.jmeos -DartifactId=jmeos -Dversion=1.0-SNAPSHOT -Dpackaging=jar
   ```
+
+_Windows_:
+  ```cmd
+  example@john:~$ mvn install:install-file -Dfile="$path_to_jar_file/JMEOS.jar" -DgroupId="org.jmeos" -DartifactId=jmeos -Dversion="1.0-SNAPSHOT" -Dpackaging=jar
+  ```
+
   where **$path_to_jar_file** is the absolute path to the **.jar** file previously generated and placed.
 
 ### 4. Add other dependencies

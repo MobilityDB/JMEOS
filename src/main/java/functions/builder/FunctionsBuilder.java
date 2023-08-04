@@ -139,7 +139,7 @@ public class FunctionsBuilder {
 				import java.time.LocalDateTime;
 				import java.time.ZonedDateTime;
 				""";
-		String className = "public class functions {";
+		String className = "public class functions_new {";
 		builder.append(definePackage).append("\n").append(imports).append("\n").append(className).append("\n");
 		
 		/* Added interface */
@@ -222,10 +222,10 @@ public class FunctionsBuilder {
 				
 				switch (typeValue) {
 					case "LocalDateTime":
-						lines.add("long " + typeName + " = " + typeName + ".toEpochSecond(java.time.ZoneOffset.UTC);");
+						lines.add(typeName + " = " + typeName + ".toEpochSecond(java.time.ZoneOffset.UTC);");
 						break;
 					case "ZonedDateTime":
-						lines.add("long " + typeName + " = " + typeName + ".toEpochSecond();");
+						lines.add(typeName + " = " + typeName + ".toEpochSecond();");
 						break;
 					default:
 						throw new TypeNotPresentException(typeValue, new Throwable("Type not supported by the builder conversion process"));
