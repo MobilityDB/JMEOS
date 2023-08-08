@@ -19,6 +19,12 @@
 
     <dependencies>
         <!-- For the version of the dependencies, see https://mvnrepository.com/ -->
+<!--        <dependency>-->
+<!--            <groupId>org.jmeos</groupId>-->
+<!--            <artifactId>meos</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.github.jnr</groupId>
             <artifactId>jnr-ffi</artifactId>
@@ -50,23 +56,27 @@
             </plugin>
 
             <plugin>
-                <!-- install as an artifact in your local Maven repository -->
+                <!-- Copy the libmeos.so to target/classes/jmeos/lib -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.1</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
-                        <id>install-meos</id>
-                        <phase>install</phase>
+                        <id>copy-native-resources</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>install-file</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/src/libs/libmeos.so</file>
-                            <groupId>org.jmeos</groupId>
-                            <artifactId>meos</artifactId>
-                            <version>1.0</version>
-                            <packaging>so</packaging>
+                            <outputDirectory>${project.build.directory}/classes/jmeos/lib</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/lib</directory>
+                                    <includes>
+                                        <include>libmeos.so</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -102,7 +112,6 @@
                         <includes>
                             <!-- Include only jmeos artifacts -->
                             <include>org.jmeos:*</include>
-                            <include>org.jmeos:meos</include>
                         </includes>
                     </artifactSet>
                     <filters>
@@ -114,6 +123,13 @@
                             </excludes>
                         </filter>
                     </filters>
+                    <transformers>
+                        <!-- Inclure le fichier libmeos.so dans le dossier lib du jar -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                            <resource>src/lib/libmeos.so</resource>
+                            <file>lib/libmeos.so</file>
+                        </transformer>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>

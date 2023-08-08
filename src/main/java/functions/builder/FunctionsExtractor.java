@@ -20,7 +20,7 @@ import static utils.BuilderLibrary.writeFileFromArray;
  */
 public class FunctionsExtractor {
 	private static final String JMEOS_PATH = "src/main/java/";
-	private static final String INPUT_FILE_PATH = "src/libs/meos.h";
+	private static final String INPUT_FILE_PATH = "src/lib/meos.h";
 	private static final String OUTPUT_FUNCTIONS_PATH = JMEOS_PATH + "functions/builder/tmp/meos_functions.h";
 	private static final String OUTPUT_TYPES_PATH = JMEOS_PATH + "functions/builder/tmp/meos_types.h";
 	

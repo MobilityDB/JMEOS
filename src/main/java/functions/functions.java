@@ -2,13 +2,16 @@ package functions;
 
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
+import utils.JarLibraryLoader;
+
+import java.io.File;
 
 public class functions {
+	
 	public interface MeosLibrary {
-
-		functions.MeosLibrary INSTANCE = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
-
-		functions.MeosLibrary meos = functions.MeosLibrary.INSTANCE;
+		JarLibraryLoader<MeosLibrary> jarLibraryLoader = new JarLibraryLoader<>(MeosLibrary.class, "meos", "libmeos.so", "/jmeos/lib");
+		MeosLibrary INSTANCE = jarLibraryLoader.getLibraryInstance();
+		MeosLibrary meos = MeosLibrary.INSTANCE;
 
 		Pointer lwpoint_make(int srid, int hasz, int hasm, Pointer p);
 
