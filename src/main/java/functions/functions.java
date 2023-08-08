@@ -9,7 +9,7 @@ import java.io.File;
 public class functions {
 	
 	public interface MeosLibrary {
-		JarLibraryLoader<MeosLibrary> jarLibraryLoader = new JarLibraryLoader<>(MeosLibrary.class, "meos", "libmeos.so", "/jmeos/lib");
+		JarLibraryLoader<MeosLibrary> jarLibraryLoader = new JarLibraryLoader<>(MeosLibrary.class, "meos");
 		MeosLibrary INSTANCE = jarLibraryLoader.getLibraryInstance();
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
