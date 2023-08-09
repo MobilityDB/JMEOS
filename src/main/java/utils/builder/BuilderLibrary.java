@@ -1,8 +1,9 @@
-package utils;
+package utils.builder;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -289,5 +290,21 @@ public class BuilderLibrary {
 	 */
 	public static String formattingLine(String line, String beginOfLine, String endOfLine) {
 		return beginOfLine + line + endOfLine;
+	}
+	
+	/**
+	 * Replaces occurrences of types from the provided dictionary in the given line.
+	 *
+	 * @param typesReplacement A dictionary where keys are old types and values are new types.
+	 * @param line The input line of text containing type declarations.
+	 * @return The line with replaced type occurrences.
+	 */
+	public static String replaceTypes(Map<String, String> typesReplacement, String line) {
+		for (Map.Entry<String, String> entry : typesReplacement.entrySet()) {
+			String oldType = entry.getKey();
+			String newType = entry.getValue();
+			line = line.replaceAll("(^|\\(|\\s)" + oldType + "(\\s|\\[\\])", "$1" + newType + "$2");
+		}
+		return line;
 	}
 }

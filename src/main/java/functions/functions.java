@@ -1,16 +1,16 @@
 package functions;
 
-import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import utils.JarLibraryLoader;
 
-import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class functions {
-	
 	public interface MeosLibrary {
-		JarLibraryLoader<MeosLibrary> jarLibraryLoader = new JarLibraryLoader<>(MeosLibrary.class, "meos");
-		MeosLibrary INSTANCE = jarLibraryLoader.getLibraryInstance();
+
+		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, "meos").getLibraryInstance();
+
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
 		Pointer lwpoint_make(int srid, int hasz, int hasm, Pointer p);
@@ -18,8 +18,6 @@ public class functions {
 		Pointer lwgeom_from_gserialized(Pointer g);
 
 		Pointer gserialized_from_lwgeom(Pointer geom, Pointer size);
-
-		Pointer lwgeom_as_lwpoint(Pointer lwgeom);
 
 		int lwgeom_get_srid(Pointer geom);
 
@@ -43,6 +41,8 @@ public class functions {
 
 		String bool_out(boolean b);
 
+		Pointer cstring2text(String cstring);
+
 		int pg_date_in(String str);
 
 		String pg_date_out(int date);
@@ -53,9 +53,9 @@ public class functions {
 
 		Pointer pg_interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs);
 
-		String pg_interval_out(Pointer span);
-
 		Pointer pg_interval_mul(Pointer span, double factor);
+
+		String pg_interval_out(Pointer span);
 
 		Pointer pg_interval_pl(Pointer span1, Pointer span2);
 
@@ -77,7 +77,21 @@ public class functions {
 
 		String pg_timestamptz_out(long dt);
 
+		String text2cstring(Pointer textptr);
+
+		Pointer pg_timestamp_to_char(long dt, Pointer fmt);
+
+		Pointer pg_timestamptz_to_char(long dt, Pointer fmt);
+
+		Pointer pg_interval_to_char(Pointer it, Pointer fmt);
+
+		long pg_to_timestamp(Pointer date_txt, Pointer fmt);
+
+		int pg_to_date(Pointer date_txt, Pointer fmt);
+
 		Pointer gserialized_as_ewkb(Pointer geom, String type);
+
+		String gserialized_as_ewkt(Pointer geom, int precision);
 
 		String gserialized_as_geojson(Pointer geom, int option, int precision, String srs);
 
@@ -97,97 +111,213 @@ public class functions {
 
 		String gserialized_out(Pointer geom);
 
-		boolean gserialized_same(Pointer geom1, Pointer geom2);
+		boolean pgis_gserialized_same(Pointer geom1, Pointer geom2);
+
+		Pointer bigintset_in(String str);
+
+		String bigintset_out(Pointer set);
+
+		Pointer bigintspan_in(String str);
+
+		String bigintspan_out(Pointer s);
+
+		Pointer bigintspanset_in(String str);
+
+		String bigintspanset_out(Pointer ss);
+
+		Pointer floatset_in(String str);
+
+		String floatset_out(Pointer set, int maxdd);
 
 		Pointer floatspan_in(String str);
 
 		String floatspan_out(Pointer s, int maxdd);
 
+		Pointer floatspanset_in(String str);
+
+		String floatspanset_out(Pointer ss, int maxdd);
+
+		Pointer geogset_in(String str);
+
+		String geogset_out(Pointer set, int maxdd);
+
+		Pointer geomset_in(String str);
+
+		String geomset_out(Pointer set, int maxdd);
+
+		String geoset_as_ewkt(Pointer set, int maxdd);
+
+		String geoset_as_text(Pointer set, int maxdd);
+
+		Pointer intset_in(String str);
+
+		String intset_out(Pointer set);
+
 		Pointer intspan_in(String str);
 
 		String intspan_out(Pointer s);
+
+		Pointer intspanset_in(String str);
+
+		String intspanset_out(Pointer ss);
 
 		Pointer period_in(String str);
 
 		String period_out(Pointer s);
 
-		String periodset_as_hexwkb(Pointer ps, byte variant, Pointer size_out);
-
-		Pointer periodset_as_wkb(Pointer ps, byte variant, Pointer size_out);
-
-		Pointer periodset_from_hexwkb(String hexwkb);
-
-		Pointer periodset_from_wkb(Pointer wkb, int size);
-
 		Pointer periodset_in(String str);
 
-		String periodset_out(Pointer ps);
+		String periodset_out(Pointer ss);
 
-		String span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+		String set_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+
+		Pointer set_as_wkb(Pointer s, byte variant, Pointer size_out);
+
+		Pointer set_from_hexwkb(String hexwkb);
+
+		Pointer set_from_wkb(Pointer wkb, long size);
+
+		String set_out(Pointer s, int maxdd);
 
 		Pointer span_as_wkb(Pointer s, byte variant, Pointer size_out);
 
+		String span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+
 		Pointer span_from_hexwkb(String hexwkb);
 
-		Pointer span_from_wkb(Pointer wkb, int size);
+		Pointer span_from_wkb(Pointer wkb, long size);
 
-		String span_out(Pointer s, long arg);
+		String span_out(Pointer s, int maxdd);
 
-		String timestampset_as_hexwkb(Pointer ts, byte variant, Pointer size_out);
+		Pointer spanset_as_wkb(Pointer ss, byte variant, Pointer size_out);
 
-		Pointer timestampset_as_wkb(Pointer ts, byte variant, Pointer size_out);
+		String spanset_as_hexwkb(Pointer ss, byte variant, Pointer size_out);
 
-		Pointer timestampset_from_hexwkb(String hexwkb);
+		Pointer spanset_from_hexwkb(String hexwkb);
 
-		Pointer timestampset_from_wkb(Pointer wkb, int size);
+		Pointer spanset_from_wkb(Pointer wkb, long size);
+
+		String spanset_out(Pointer ss, int maxdd);
+
+		Pointer textset_in(String str);
+
+		String textset_out(Pointer set);
 
 		Pointer timestampset_in(String str);
 
-		String timestampset_out(Pointer ts);
+		String timestampset_out(Pointer set);
+
+		Pointer bigintset_make(Pointer values, int count);
+
+		Pointer bigintspan_make(long lower, long upper, boolean lower_inc, boolean upper_inc);
+
+		Pointer floatset_make(Pointer values, int count);
 
 		Pointer floatspan_make(double lower, double upper, boolean lower_inc, boolean upper_inc);
+
+		Pointer geogset_make(Pointer values, int count);
+
+		Pointer geomset_make(Pointer values, int count);
+
+		Pointer intset_make(Pointer values, int count);
 
 		Pointer intspan_make(int lower, int upper, boolean lower_inc, boolean upper_inc);
 
 		Pointer period_make(long lower, long upper, boolean lower_inc, boolean upper_inc);
 
-		Pointer periodset_copy(Pointer ps);
-
-		Pointer periodset_make(Pointer periods, int count, boolean normalize);
-
-		Pointer periodset_make_free(Pointer periods, int count, boolean normalize);
+		Pointer set_copy(Pointer s);
 
 		Pointer span_copy(Pointer s);
 
-		Pointer timestampset_copy(Pointer ts);
+		Pointer spanset_copy(Pointer ps);
 
-		Pointer timestampset_make(Pointer times, int count);
+		Pointer spanset_make(Pointer spans, int count, boolean normalize);
 
-		Pointer timestampset_make_free(Pointer times, int count);
+		Pointer spanset_make_exp(Pointer spans, int count, int maxcount, boolean normalize, boolean ordered);
 
-		Pointer float_to_floaspan(double d);
+		Pointer spanset_make_free(Pointer spans, int count, boolean normalize);
+
+		Pointer textset_make(Pointer values, int count);
+
+		Pointer timestampset_make(Pointer values, int count);
+
+		Pointer bigint_to_bigintset(long i);
+
+		Pointer bigint_to_bigintspan(int i);
+
+		Pointer bigint_to_bigintspanset(int i);
+
+		Pointer float_to_floatset(double d);
+
+		Pointer float_to_floatspan(double d);
+
+		Pointer float_to_floatspanset(double d);
+
+		Pointer int_to_intset(int i);
 
 		Pointer int_to_intspan(int i);
 
-		Pointer period_to_periodset(Pointer period);
+		Pointer int_to_intspanset(int i);
 
-		Pointer periodset_to_period(Pointer ps);
+		Pointer set_to_spanset(Pointer s);
+
+		Pointer span_to_spanset(Pointer s);
 
 		Pointer timestamp_to_period(long t);
 
 		Pointer timestamp_to_periodset(long t);
 
-		Pointer timestamp_to_timestampset(long t);
+		Pointer timestamp_to_tstzset(long t);
 
-		Pointer timestampset_to_periodset(Pointer ts);
+		long bigintset_end_value(Pointer s);
+
+		long bigintset_start_value(Pointer s);
+
+		boolean bigintset_value_n(Pointer s, int n, Pointer result);
+
+		Pointer bigintset_values(Pointer s);
+
+		int bigintspan_lower(Pointer s);
+
+		int bigintspan_upper(Pointer s);
+
+		int bigintspanset_lower(Pointer ss);
+
+		int bigintspanset_upper(Pointer ss);
+
+		double floatset_end_value(Pointer s);
+
+		double floatset_start_value(Pointer s);
+
+		boolean floatset_value_n(Pointer s, int n, Pointer result);
+
+		Pointer floatset_values(Pointer s);
 
 		double floatspan_lower(Pointer s);
 
 		double floatspan_upper(Pointer s);
 
+		double floatspanset_lower(Pointer ss);
+
+		double floatspanset_upper(Pointer ss);
+
+		int geoset_srid(Pointer set);
+
+		int intset_end_value(Pointer s);
+
+		int intset_start_value(Pointer s);
+
+		boolean intset_value_n(Pointer s, int n, Pointer result);
+
+		Pointer intset_values(Pointer s);
+
 		int intspan_lower(Pointer s);
 
 		int intspan_upper(Pointer s);
+
+		int intspanset_lower(Pointer ss);
+
+		int intspanset_upper(Pointer ss);
 
 		Pointer period_duration(Pointer s);
 
@@ -195,33 +325,31 @@ public class functions {
 
 		long period_upper(Pointer p);
 
-		Pointer periodset_duration(Pointer ps);
-
-		Pointer periodset_end_period(Pointer ps);
+		Pointer periodset_duration(Pointer ps, boolean boundspan);
 
 		long periodset_end_timestamp(Pointer ps);
 
-		int periodset_hash(Pointer ps);
-
-		long periodset_hash_extended(Pointer ps, long seed);
-
-		int periodset_mem_size(Pointer ps);
-
-		int periodset_num_periods(Pointer ps);
+		long periodset_lower(Pointer ps);
 
 		int periodset_num_timestamps(Pointer ps);
 
-		Pointer periodset_period_n(Pointer ps, int i);
-
-		Pointer periodset_start_period(Pointer ps);
-
 		long periodset_start_timestamp(Pointer ps);
-
-		Pointer periodset_timespan(Pointer ps);
 
 		boolean periodset_timestamp_n(Pointer ps, int n, Pointer result);
 
 		Pointer periodset_timestamps(Pointer ps, Pointer count);
+
+		long periodset_upper(Pointer ps);
+
+		int set_hash(Pointer s);
+
+		long set_hash_extended(Pointer s, long seed);
+
+		int set_mem_size(Pointer s);
+
+		int set_num_values(Pointer s);
+
+		Pointer set_span(Pointer s);
 
 		int span_hash(Pointer s);
 
@@ -233,181 +361,151 @@ public class functions {
 
 		double span_width(Pointer s);
 
-		long timestampset_end_timestamp(Pointer ss);
+		Pointer spanset_end_span(Pointer ss);
 
-		int timestampset_hash(Pointer ss);
+		int spanset_hash(Pointer ps);
 
-		long timestampset_hash_extended(Pointer ss, long seed);
+		long spanset_hash_extended(Pointer ps, long seed);
 
-		int timestampset_mem_size(Pointer ss);
+		boolean spanset_lower_inc(Pointer ss);
 
-		int timestampset_num_timestamps(Pointer ss);
+		int spanset_mem_size(Pointer ss);
 
-		long timestampset_start_timestamp(Pointer ss);
+		int spanset_num_spans(Pointer ss);
 
-		Pointer timestampset_timespan(Pointer ss);
+		Pointer spanset_span(Pointer ss);
 
-		boolean timestampset_timestamp_n(Pointer ss, int n, Pointer result);
+		Pointer spanset_span_n(Pointer ss, int i);
 
-		Pointer timestampset_timestamps(Pointer ss);
+		Pointer spanset_start_span(Pointer ss);
 
-		Pointer periodset_shift_tscale(Pointer ps, Pointer start, Pointer duration);
+		boolean spanset_upper_inc(Pointer ss);
+
+		double spanset_width(Pointer ss);
+
+		Pointer spatialset_stbox(Pointer s);
+
+		long timestampset_end_timestamp(Pointer ts);
+
+		long timestampset_start_timestamp(Pointer ts);
+
+		boolean timestampset_timestamp_n(Pointer ts, int n, Pointer result);
+
+		Pointer timestampset_values(Pointer ts);
+
+		Pointer floatset_round(Pointer s, int maxdd);
+
+		Pointer floatspan_round(Pointer s, int maxdd);
+
+		Pointer floatspanset_round(Pointer ss, int maxdd);
+
+		void floatspan_set_intspan(Pointer s1, Pointer s2);
+
+		Pointer geoset_round(Pointer s, int maxdd);
+
+		void intspan_set_floatspan(Pointer s1, Pointer s2);
+
+		void numspan_set_floatspan(Pointer s1, Pointer s2);
+
+		Pointer period_tprecision(Pointer s, Pointer duration, long torigin);
+
+		Pointer periodset_tprecision(Pointer ss, Pointer duration, long torigin);
+
+		Pointer period_shift_tscale(Pointer p, Pointer shift, Pointer duration);
+
+		Pointer periodset_shift_tscale(Pointer ps, Pointer shift, Pointer duration);
+
+		Pointer set_shift(Pointer s, long shift);
 
 		void span_expand(Pointer s1, Pointer s2);
 
-		void period_shift_tscale(Pointer start, Pointer duration, Pointer result);
+		long timestamp_tprecision(long t, Pointer duration, long torigin);
 
-		Pointer timestampset_shift_tscale(Pointer ss, Pointer start, Pointer duration);
+		Pointer timestampset_shift_tscale(Pointer ts, Pointer shift, Pointer duration);
+
+		boolean adjacent_bigintspan_bigint(Pointer s, long i);
+
+		boolean adjacent_bigintspanset_bigint(Pointer ss, long i);
 
 		boolean adjacent_floatspan_float(Pointer s, double d);
 
 		boolean adjacent_intspan_int(Pointer s, int i);
 
-		boolean adjacent_period_periodset(Pointer p, Pointer ps);
-
 		boolean adjacent_period_timestamp(Pointer p, long t);
-
-		boolean adjacent_period_timestampset(Pointer p, Pointer ts);
-
-		boolean adjacent_periodset_period(Pointer ps, Pointer p);
-
-		boolean adjacent_periodset_periodset(Pointer ps1, Pointer ps2);
 
 		boolean adjacent_periodset_timestamp(Pointer ps, long t);
 
-		boolean adjacent_periodset_timestampset(Pointer ps, Pointer ts);
-
 		boolean adjacent_span_span(Pointer s1, Pointer s2);
 
-		boolean adjacent_timestamp_period(long t, Pointer p);
+		boolean adjacent_spanset_span(Pointer ss, Pointer s);
 
-		boolean adjacent_timestamp_periodset(long t, Pointer ps);
+		boolean adjacent_spanset_spanset(Pointer ss1, Pointer ss2);
 
-		boolean adjacent_timestampset_period(Pointer ts, Pointer p);
+		boolean contained_bigint_bigintset(long i, Pointer s);
 
-		boolean adjacent_timestampset_periodset(Pointer ts, Pointer ps);
+		boolean contained_bigint_bigintspan(long i, Pointer s);
+
+		boolean contained_bigint_bigintspanset(long i, Pointer ss);
+
+		boolean contained_float_floatset(double d, Pointer s);
 
 		boolean contained_float_floatspan(double d, Pointer s);
 
+		boolean contained_float_floatspanset(double d, Pointer ss);
+
+		boolean contained_int_intset(int i, Pointer s);
+
 		boolean contained_int_intspan(int i, Pointer s);
 
-		boolean contained_period_periodset(Pointer p, Pointer ps);
-
-		boolean contained_periodset_period(Pointer ps, Pointer p);
-
-		boolean contained_periodset_periodset(Pointer ps1, Pointer ps2);
+		boolean contained_set_set(Pointer s1, Pointer s2);
 
 		boolean contained_span_span(Pointer s1, Pointer s2);
 
-		boolean contained_timestamp_period(long t, Pointer p);
+		boolean contained_span_spanset(Pointer s, Pointer ss);
 
-		boolean contained_timestamp_periodset(long t, Pointer ps);
+		boolean contained_spanset_span(Pointer ss, Pointer s);
+
+		boolean contained_spanset_spanset(Pointer ss1, Pointer ss2);
+
+		boolean contained_timestamp_period(long t, Pointer p);
 
 		boolean contained_timestamp_timestampset(long t, Pointer ts);
 
-		boolean contained_timestampset_period(Pointer ts, Pointer p);
-
-		boolean contained_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean contained_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
 		boolean contains_floatspan_float(Pointer s, double d);
+
+		boolean contains_floatspanset_float(Pointer ss, double d);
 
 		boolean contains_intspan_int(Pointer s, int i);
 
-		boolean contains_period_periodset(Pointer p, Pointer ps);
+		boolean contains_set_set(Pointer s1, Pointer s2);
 
 		boolean contains_period_timestamp(Pointer p, long t);
 
-		boolean contains_period_timestampset(Pointer p, Pointer ts);
-
-		boolean contains_periodset_period(Pointer ps, Pointer p);
-
-		boolean contains_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		boolean contains_periodset_timestamp(Pointer ps, long t);
-
-		boolean contains_periodset_timestampset(Pointer ps, Pointer ts);
 
 		boolean contains_span_span(Pointer s1, Pointer s2);
 
+		boolean contains_span_spanset(Pointer s, Pointer ss);
+
+		boolean contains_spanset_span(Pointer ss, Pointer s);
+
+		boolean contains_spanset_spanset(Pointer ss1, Pointer ss2);
+
 		boolean contains_timestampset_timestamp(Pointer ts, long t);
 
-		boolean contains_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		boolean overlaps_period_periodset(Pointer p, Pointer ps);
-
-		boolean overlaps_period_timestampset(Pointer p, Pointer ts);
-
-		boolean overlaps_periodset_period(Pointer ps, Pointer p);
-
-		boolean overlaps_periodset_periodset(Pointer ps1, Pointer ps2);
-
-		boolean overlaps_periodset_timestampset(Pointer ps, Pointer ts);
+		boolean overlaps_set_set(Pointer s1, Pointer s2);
 
 		boolean overlaps_span_span(Pointer s1, Pointer s2);
 
-		boolean overlaps_timestampset_period(Pointer ts, Pointer p);
+		boolean overlaps_spanset_span(Pointer ss, Pointer s);
 
-		boolean overlaps_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean overlaps_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		boolean after_period_periodset(Pointer p, Pointer ps);
-
-		boolean after_period_timestamp(Pointer p, long t);
-
-		boolean after_period_timestampset(Pointer p, Pointer ts);
-
-		boolean after_periodset_period(Pointer ps, Pointer p);
-
-		boolean after_periodset_periodset(Pointer ps1, Pointer ps2);
-
-		boolean after_periodset_timestamp(Pointer ps, long t);
-
-		boolean after_periodset_timestampset(Pointer ps, Pointer ts);
-
-		boolean after_timestamp_period(long t, Pointer p);
-
-		boolean after_timestamp_periodset(long t, Pointer ps);
+		boolean overlaps_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean after_timestamp_timestampset(long t, Pointer ts);
 
-		boolean after_timestampset_period(Pointer ts, Pointer p);
-
-		boolean after_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean after_timestampset_timestamp(Pointer ts, long t);
-
-		boolean after_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		boolean before_period_periodset(Pointer p, Pointer ps);
-
-		boolean before_period_timestamp(Pointer p, long t);
-
-		boolean before_period_timestampset(Pointer p, Pointer ts);
-
-		boolean before_periodset_period(Pointer ps, Pointer p);
-
-		boolean before_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		boolean before_periodset_timestamp(Pointer ps, long t);
 
-		boolean before_periodset_timestampset(Pointer ps, Pointer ts);
-
-		boolean before_timestamp_period(long t, Pointer p);
-
-		boolean before_timestamp_periodset(long t, Pointer ps);
-
 		boolean before_timestamp_timestampset(long t, Pointer ts);
-
-		boolean before_timestampset_period(Pointer ts, Pointer p);
-
-		boolean before_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean before_timestampset_timestamp(Pointer ts, long t);
-
-		boolean before_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
 		boolean left_float_floatspan(double d, Pointer s);
 
@@ -417,21 +515,19 @@ public class functions {
 
 		boolean left_intspan_int(Pointer s, int i);
 
+		boolean left_set_set(Pointer s1, Pointer s2);
+
 		boolean left_span_span(Pointer s1, Pointer s2);
 
-		boolean overafter_period_periodset(Pointer p, Pointer ps);
+		boolean left_span_spanset(Pointer s, Pointer ss);
+
+		boolean left_spanset_span(Pointer ss, Pointer s);
+
+		boolean left_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean overafter_period_timestamp(Pointer p, long t);
 
-		boolean overafter_period_timestampset(Pointer p, Pointer ts);
-
-		boolean overafter_periodset_period(Pointer ps, Pointer p);
-
-		boolean overafter_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		boolean overafter_periodset_timestamp(Pointer ps, long t);
-
-		boolean overafter_periodset_timestampset(Pointer ps, Pointer ts);
 
 		boolean overafter_timestamp_period(long t, Pointer p);
 
@@ -439,41 +535,15 @@ public class functions {
 
 		boolean overafter_timestamp_timestampset(long t, Pointer ts);
 
-		boolean overafter_timestampset_period(Pointer ts, Pointer p);
-
-		boolean overafter_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean overafter_timestampset_timestamp(Pointer ts, long t);
-
-		boolean overafter_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		boolean overbefore_period_periodset(Pointer p, Pointer ps);
-
 		boolean overbefore_period_timestamp(Pointer p, long t);
 
-		boolean overbefore_period_timestampset(Pointer p, Pointer ts);
-
-		boolean overbefore_periodset_period(Pointer ps, Pointer p);
-
-		boolean overbefore_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		boolean overbefore_periodset_timestamp(Pointer ps, long t);
-
-		boolean overbefore_periodset_timestampset(Pointer ps, Pointer ts);
 
 		boolean overbefore_timestamp_period(long t, Pointer p);
 
 		boolean overbefore_timestamp_periodset(long t, Pointer ps);
 
 		boolean overbefore_timestamp_timestampset(long t, Pointer ts);
-
-		boolean overbefore_timestampset_period(Pointer ts, Pointer p);
-
-		boolean overbefore_timestampset_periodset(Pointer ts, Pointer ps);
-
-		boolean overbefore_timestampset_timestamp(Pointer ts, long t);
-
-		boolean overbefore_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
 		boolean overleft_float_floatspan(double d, Pointer s);
 
@@ -483,7 +553,15 @@ public class functions {
 
 		boolean overleft_intspan_int(Pointer s, int i);
 
+		boolean overleft_set_set(Pointer s1, Pointer s2);
+
 		boolean overleft_span_span(Pointer s1, Pointer s2);
+
+		boolean overleft_span_spanset(Pointer s, Pointer ss);
+
+		boolean overleft_spanset_span(Pointer ss, Pointer s);
+
+		boolean overleft_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean overright_float_floatspan(double d, Pointer s);
 
@@ -493,7 +571,15 @@ public class functions {
 
 		boolean overright_intspan_int(Pointer s, int i);
 
+		boolean overright_set_set(Pointer s1, Pointer s2);
+
 		boolean overright_span_span(Pointer s1, Pointer s2);
+
+		boolean overright_span_spanset(Pointer s, Pointer ss);
+
+		boolean overright_spanset_span(Pointer ss, Pointer s);
+
+		boolean overright_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean right_float_floatspan(double d, Pointer s);
 
@@ -503,223 +589,177 @@ public class functions {
 
 		boolean right_intspan_int(Pointer s, int i);
 
+		boolean right_set_set(Pointer s1, Pointer s2);
+
 		boolean right_span_span(Pointer s1, Pointer s2);
 
-		Pointer intersection_period_periodset(Pointer p, Pointer ps);
+		boolean right_span_spanset(Pointer s, Pointer ss);
+
+		boolean right_spanset_span(Pointer ss, Pointer s);
+
+		boolean right_spanset_spanset(Pointer ss1, Pointer ss2);
+
+		void bbox_union_span_span(Pointer s1, Pointer s2, Pointer result);
+
+		Pointer intersection_set_set(Pointer s1, Pointer s2);
 
 		boolean intersection_period_timestamp(Pointer p, long t, Pointer result);
 
-		Pointer intersection_period_timestampset(Pointer ps, Pointer ts);
-
-		Pointer intersection_periodset_period(Pointer ps, Pointer p);
-
-		Pointer intersection_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		boolean intersection_periodset_timestamp(Pointer ps, long t, Pointer result);
-
-		Pointer intersection_periodset_timestampset(Pointer ps, Pointer ts);
 
 		Pointer intersection_span_span(Pointer s1, Pointer s2);
 
-		boolean intersection_timestamp_period(long t, Pointer p, Pointer result);
+		Pointer intersection_spanset_span(Pointer ss, Pointer s);
 
-		boolean intersection_timestamp_periodset(long t, Pointer ps, Pointer result);
-
-		boolean intersection_timestamp_timestamp(long t1, long t2, Pointer result);
-
-		boolean intersection_timestamp_timestampset(long t, Pointer ts, Pointer result);
-
-		Pointer intersection_timestampset_period(Pointer ts, Pointer p);
-
-		Pointer intersection_timestampset_periodset(Pointer ts, Pointer ps);
+		Pointer intersection_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean intersection_timestampset_timestamp(Pointer ts, long t, Pointer result);
 
-		Pointer intersection_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		Pointer minus_period_period(Pointer p1, Pointer p2);
-
-		Pointer minus_period_periodset(Pointer p, Pointer ps);
+		Pointer minus_set_set(Pointer s1, Pointer s2);
 
 		Pointer minus_period_timestamp(Pointer p, long t);
 
-		Pointer minus_period_timestampset(Pointer p, Pointer ts);
-
-		Pointer minus_periodset_period(Pointer ps, Pointer p);
-
-		Pointer minus_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		Pointer minus_periodset_timestamp(Pointer ps, long t);
 
-		Pointer minus_periodset_timestampset(Pointer ps, Pointer ts);
-
 		Pointer minus_span_span(Pointer s1, Pointer s2);
+
+		Pointer minus_span_spanset(Pointer s, Pointer ss);
+
+		Pointer minus_spanset_span(Pointer ss, Pointer s);
+
+		Pointer minus_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean minus_timestamp_period(long t, Pointer p, Pointer result);
 
 		boolean minus_timestamp_periodset(long t, Pointer ps, Pointer result);
 
-		boolean minus_timestamp_timestamp(long t1, long t2, Pointer result);
-
-		boolean minus_timestamp_timestampset(long t, Pointer ts, Pointer result);
-
-		Pointer minus_timestampset_period(Pointer ts, Pointer p);
-
-		Pointer minus_timestampset_periodset(Pointer ts, Pointer ps);
-
 		Pointer minus_timestampset_timestamp(Pointer ts, long t);
 
-		Pointer minus_timestampset_timestampset(Pointer ts1, Pointer ts2);
-
-		Pointer union_period_period(Pointer p1, Pointer p2);
-
-		Pointer union_period_periodset(Pointer p, Pointer ps);
+		Pointer union_set_set(Pointer s1, Pointer s2);
 
 		Pointer union_period_timestamp(Pointer p, long t);
 
-		Pointer union_period_timestampset(Pointer p, Pointer ts);
-
-		Pointer union_periodset_period(Pointer ps, Pointer p);
-
-		Pointer union_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		Pointer union_periodset_timestamp(Pointer ps, long t);
 
-		Pointer union_periodset_timestampset(Pointer ps, Pointer ts);
+		Pointer union_span_span(Pointer s1, Pointer s2);
 
-		Pointer union_span_span(Pointer s1, Pointer s2, boolean strict);
+		Pointer union_spanset_span(Pointer ss, Pointer s);
 
-		Pointer union_timestamp_period(long t, Pointer p);
-
-		Pointer union_timestamp_periodset(long t, Pointer ps);
-
-		Pointer union_timestamp_timestamp(long t1, long t2);
-
-		Pointer union_timestamp_timestampset(long t, Pointer ts);
-
-		Pointer union_timestampset_period(Pointer ts, Pointer p);
-
-		Pointer union_timestampset_periodset(Pointer ts, Pointer ps);
+		Pointer union_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		Pointer union_timestampset_timestamp(Pointer ts, long t);
-
-		Pointer union_timestampset_timestampset(Pointer ts1, Pointer ts2);
 
 		double distance_floatspan_float(Pointer s, double d);
 
 		double distance_intspan_int(Pointer s, int i);
 
-		double distance_period_periodset(Pointer p, Pointer ps);
+		double distance_set_set(Pointer s1, Pointer s2);
 
 		double distance_period_timestamp(Pointer p, long t);
 
-		double distance_period_timestampset(Pointer p, Pointer ts);
-
-		double distance_periodset_period(Pointer ps, Pointer p);
-
-		double distance_periodset_periodset(Pointer ps1, Pointer ps2);
-
 		double distance_periodset_timestamp(Pointer ps, long t);
-
-		double distance_periodset_timestampset(Pointer ps, Pointer ts);
 
 		double distance_span_span(Pointer s1, Pointer s2);
 
-		double distance_timestamp_period(long t, Pointer p);
+		double distance_spanset_span(Pointer ss, Pointer s);
 
-		double distance_timestamp_periodset(long t, Pointer ps);
-
-		double distance_timestamp_timestamp(long t1, long t2);
-
-		double distance_timestamp_timestampset(long t, Pointer ts);
-
-		double distance_timestampset_period(Pointer ts, Pointer p);
-
-		double distance_timestampset_periodset(Pointer ts, Pointer ps);
+		double distance_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		double distance_timestampset_timestamp(Pointer ts, long t);
 
-		double distance_timestampset_timestampset(Pointer ts1, Pointer ts2);
+		Pointer bigint_extent_transfn(Pointer s, long i);
+
+		Pointer bigint_union_transfn(Pointer state, long i);
+
+		Pointer float_extent_transfn(Pointer s, double d);
+
+		Pointer float_union_transfn(Pointer state, double d);
+
+		Pointer int_extent_transfn(Pointer s, int i);
+
+		Pointer int_union_transfn(Pointer state, int i);
+
+		Pointer period_tcount_transfn(Pointer state, Pointer p);
+
+		Pointer periodset_tcount_transfn(Pointer state, Pointer ps);
+
+		Pointer set_extent_transfn(Pointer span, Pointer set);
+
+		Pointer set_union_finalfn(Pointer state);
+
+		Pointer set_union_transfn(Pointer state, Pointer set);
+
+		Pointer span_extent_transfn(Pointer s1, Pointer s2);
+
+		Pointer span_union_transfn(Pointer state, Pointer span);
+
+		Pointer spanset_extent_transfn(Pointer s, Pointer ss);
+
+		Pointer spanset_union_finalfn(Pointer state);
+
+		Pointer spanset_union_transfn(Pointer state, Pointer ss);
+
+		Pointer text_union_transfn(Pointer state, Pointer txt);
 
 		Pointer timestamp_extent_transfn(Pointer p, long t);
 
-		Pointer timestampset_extent_transfn(Pointer p, Pointer ts);
+		Pointer timestamp_tcount_transfn(Pointer state, long t);
 
-		Pointer span_extent_transfn(Pointer p1, Pointer p2);
+		Pointer timestamp_union_transfn(Pointer state, long t);
 
-		Pointer periodset_extent_transfn(Pointer p, Pointer ps);
+		Pointer timestampset_tcount_transfn(Pointer state, Pointer ts);
 
-		Pointer timestamp_tunion_transfn(Pointer state, long t);
+		int set_cmp(Pointer s1, Pointer s2);
 
-		Pointer timestampset_tunion_transfn(Pointer state, Pointer ts);
+		boolean set_eq(Pointer s1, Pointer s2);
 
-		Pointer period_tunion_transfn(Pointer state, Pointer p);
+		boolean set_ge(Pointer s1, Pointer s2);
 
-		Pointer periodset_tunion_transfn(Pointer state, Pointer ps);
+		boolean set_gt(Pointer s1, Pointer s2);
 
-		Pointer timestamp_tunion_finalfn(Pointer state);
+		boolean set_le(Pointer s1, Pointer s2);
 
-		Pointer period_tunion_finalfn(Pointer state);
+		boolean set_lt(Pointer s1, Pointer s2);
 
-		Pointer timestamp_tcount_transfn(Pointer state, long t, Pointer interval, long origin);
-
-		Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, long origin);
-
-		Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, long origin);
-
-		Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, long origin);
-
-		boolean periodset_eq(Pointer ps1, Pointer ps2);
-
-		boolean periodset_ne(Pointer ps1, Pointer ps2);
-
-		int periodset_cmp(Pointer ps1, Pointer ps2);
-
-		boolean periodset_lt(Pointer ps1, Pointer ps2);
-
-		boolean periodset_le(Pointer ps1, Pointer ps2);
-
-		boolean periodset_ge(Pointer ps1, Pointer ps2);
-
-		boolean periodset_gt(Pointer ps1, Pointer ps2);
-
-		boolean span_eq(Pointer s1, Pointer s2);
-
-		boolean span_ne(Pointer s1, Pointer s2);
+		boolean set_ne(Pointer s1, Pointer s2);
 
 		int span_cmp(Pointer s1, Pointer s2);
 
-		boolean span_lt(Pointer s1, Pointer s2);
-
-		boolean span_le(Pointer s1, Pointer s2);
+		boolean span_eq(Pointer s1, Pointer s2);
 
 		boolean span_ge(Pointer s1, Pointer s2);
 
 		boolean span_gt(Pointer s1, Pointer s2);
 
-		boolean timestampset_eq(Pointer ss1, Pointer ss2);
+		boolean span_le(Pointer s1, Pointer s2);
 
-		boolean timestampset_ne(Pointer ss1, Pointer ss2);
+		boolean span_lt(Pointer s1, Pointer s2);
 
-		int timestampset_cmp(Pointer ss1, Pointer ss2);
+		boolean span_ne(Pointer s1, Pointer s2);
 
-		boolean timestampset_lt(Pointer ss1, Pointer ss2);
+		int spanset_cmp(Pointer ss1, Pointer ss2);
 
-		boolean timestampset_le(Pointer ss1, Pointer ss2);
+		boolean spanset_eq(Pointer ss1, Pointer ss2);
 
-		boolean timestampset_ge(Pointer ss1, Pointer ss2);
+		boolean spanset_ge(Pointer ss1, Pointer ss2);
 
-		boolean timestampset_gt(Pointer ss1, Pointer ss2);
+		boolean spanset_gt(Pointer ss1, Pointer ss2);
+
+		boolean spanset_le(Pointer ss1, Pointer ss2);
+
+		boolean spanset_lt(Pointer ss1, Pointer ss2);
+
+		boolean spanset_ne(Pointer ss1, Pointer ss2);
 
 		Pointer tbox_in(String str);
 
 		String tbox_out(Pointer box, int maxdd);
 
-		Pointer tbox_from_wkb(Pointer wkb, int size);
+		Pointer tbox_from_wkb(Pointer wkb, long size);
 
 		Pointer tbox_from_hexwkb(String hexwkb);
 
-		Pointer stbox_from_wkb(Pointer wkb, int size);
+		Pointer stbox_from_wkb(Pointer wkb, long size);
 
 		Pointer stbox_from_hexwkb(String hexwkb);
 
@@ -735,9 +775,9 @@ public class functions {
 
 		String stbox_out(Pointer box, int maxdd);
 
-		Pointer tbox_make(Pointer p, Pointer s);
+		Pointer tbox_make(Pointer s, Pointer p);
 
-		void tbox_set(Pointer p, Pointer s, Pointer box);
+		void tbox_set(Pointer s, Pointer p, Pointer box);
 
 		Pointer tbox_copy(Pointer box);
 
@@ -746,8 +786,6 @@ public class functions {
 		Pointer int_to_tbox(int i);
 
 		Pointer float_to_tbox(double d);
-
-		Pointer span_to_tbox(Pointer span);
 
 		Pointer timestamp_to_tbox(long t);
 
@@ -759,11 +797,19 @@ public class functions {
 
 		Pointer int_timestamp_to_tbox(int i, long t);
 
+		Pointer float_period_to_tbox(double d, Pointer p);
+
 		Pointer float_timestamp_to_tbox(double d, long t);
+
+		Pointer geo_period_to_stbox(Pointer gs, Pointer p);
+
+		Pointer geo_timestamp_to_stbox(Pointer gs, long t);
+
+		Pointer geo_to_stbox(Pointer gs);
 
 		Pointer int_period_to_tbox(int i, Pointer p);
 
-		Pointer float_period_to_tbox(double d, Pointer p);
+		Pointer numspan_to_tbox(Pointer s);
 
 		Pointer span_timestamp_to_tbox(Pointer span, long t);
 
@@ -781,8 +827,6 @@ public class functions {
 
 		Pointer tpoint_to_stbox(Pointer temp);
 
-		Pointer geo_to_stbox(Pointer gs);
-
 		Pointer timestamp_to_stbox(long t);
 
 		Pointer timestampset_to_stbox(Pointer ts);
@@ -791,21 +835,25 @@ public class functions {
 
 		Pointer periodset_to_stbox(Pointer ps);
 
-		Pointer geo_timestamp_to_stbox(Pointer gs, long t);
-
-		Pointer geo_period_to_stbox(Pointer gs, Pointer p);
-
 		boolean tbox_hasx(Pointer box);
 
 		boolean tbox_hast(Pointer box);
 
 		boolean tbox_xmin(Pointer box, Pointer result);
 
+		boolean tbox_xmin_inc(Pointer box, Pointer result);
+
 		boolean tbox_xmax(Pointer box, Pointer result);
+
+		boolean tbox_xmax_inc(Pointer box, Pointer result);
 
 		boolean tbox_tmin(Pointer box, Pointer result);
 
+		boolean tbox_tmin_inc(Pointer box, Pointer result);
+
 		boolean tbox_tmax(Pointer box, Pointer result);
+
+		boolean tbox_tmax_inc(Pointer box, Pointer result);
 
 		boolean stbox_hasx(Pointer box);
 
@@ -829,27 +877,33 @@ public class functions {
 
 		boolean stbox_tmin(Pointer box, Pointer result);
 
+		boolean stbox_tmin_inc(Pointer box, Pointer result);
+
 		boolean stbox_tmax(Pointer box, Pointer result);
+
+		boolean stbox_tmax_inc(Pointer box, Pointer result);
 
 		int stbox_srid(Pointer box);
 
-		void tbox_expand(Pointer box1, Pointer box2);
-
-		void tbox_shift_tscale(Pointer start, Pointer duration, Pointer box);
-
-		Pointer tbox_expand_value(Pointer box, double d);
-
-		Pointer tbox_expand_temporal(Pointer box, Pointer interval);
-
 		void stbox_expand(Pointer box1, Pointer box2);
 
-		void stbox_shift_tscale(Pointer start, Pointer duration, Pointer box);
+		Pointer stbox_expand_space(Pointer box, double d);
+
+		Pointer stbox_expand_time(Pointer box, Pointer interval);
+
+		Pointer stbox_get_space(Pointer box);
+
+		Pointer stbox_round(Pointer box, int maxdd);
 
 		Pointer stbox_set_srid(Pointer box, int srid);
 
-		Pointer stbox_expand_spatial(Pointer box, double d);
+		void tbox_expand(Pointer box1, Pointer box2);
 
-		Pointer stbox_expand_temporal(Pointer box, Pointer interval);
+		Pointer tbox_expand_value(Pointer box, double d);
+
+		Pointer tbox_expand_time(Pointer box, Pointer interval);
+
+		Pointer tbox_round(Pointer box, int maxdd);
 
 		boolean contains_tbox_tbox(Pointer box1, Pointer box2);
 
@@ -931,6 +985,8 @@ public class functions {
 
 		Pointer intersection_stbox_stbox(Pointer box1, Pointer box2);
 
+		Pointer stbox_quad_split(Pointer box, Pointer count);
+
 		boolean tbox_eq(Pointer box1, Pointer box2);
 
 		boolean tbox_ne(Pointer box1, Pointer box2);
@@ -959,10 +1015,6 @@ public class functions {
 
 		boolean stbox_gt(Pointer box1, Pointer box2);
 
-		Pointer cstring2text(String cstring);
-
-		String text2cstring(Pointer textptr);
-
 		Pointer tbool_in(String str);
 
 		String tbool_out(Pointer temp);
@@ -977,7 +1029,7 @@ public class functions {
 
 		Pointer temporal_from_mfjson(String mfjson);
 
-		Pointer temporal_from_wkb(Pointer wkb, int size);
+		Pointer temporal_from_wkb(Pointer wkb, long size);
 
 		Pointer tfloat_in(String str);
 
@@ -1001,103 +1053,79 @@ public class functions {
 
 		String ttext_out(Pointer temp);
 
-		Pointer tbool_from_base(boolean b, Pointer temp);
+		Pointer tbool_from_base_temp(boolean b, Pointer temp);
 
 		Pointer tboolinst_make(boolean b, long t);
 
-		Pointer tbooldiscseq_from_base_time(boolean b, Pointer ts);
+		Pointer tboolseq_from_base_period(boolean b, Pointer p);
 
-		Pointer tboolseq_from_base(boolean b, Pointer seq);
+		Pointer tboolseq_from_base_timestampset(boolean b, Pointer ts);
 
-		Pointer tboolseq_from_base_time(boolean b, Pointer p);
-
-		Pointer tboolseqset_from_base(boolean b, Pointer ss);
-
-		Pointer tboolseqset_from_base_time(boolean b, Pointer ps);
+		Pointer tboolseqset_from_base_periodset(boolean b, Pointer ps);
 
 		Pointer temporal_copy(Pointer temp);
 
-		Pointer tfloat_from_base(double d, Pointer temp, int interp);
+		Pointer tfloat_from_base_temp(double d, Pointer temp);
 
 		Pointer tfloatinst_make(double d, long t);
 
-		Pointer tfloatdiscseq_from_base_time(double d, Pointer ts);
+		Pointer tfloatseq_from_base_period(double d, Pointer p, int interp);
 
-		Pointer tfloatseq_from_base(double d, Pointer seq, int interp);
+		Pointer tfloatseq_from_base_timestampset(double d, Pointer ts);
 
-		Pointer tfloatseq_from_base_time(double d, Pointer p, int interp);
+		Pointer tfloatseqset_from_base_periodset(double d, Pointer ps, int interp);
 
-		Pointer tfloatseqset_from_base(double d, Pointer ss, int interp);
-
-		Pointer tfloatseqset_from_base_time(double d, Pointer ps, int interp);
-
-		Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, int interp);
+		Pointer tgeogpoint_from_base_temp(Pointer gs, Pointer temp);
 
 		Pointer tgeogpointinst_make(Pointer gs, long t);
 
-		Pointer tgeogpointdiscseq_from_base_time(Pointer gs, Pointer ts);
+		Pointer tgeogpointseq_from_base_period(Pointer gs, Pointer p, int interp);
 
-		Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, int interp);
+		Pointer tgeogpointseq_from_base_timestampset(Pointer gs, Pointer ts);
 
-		Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, int interp);
+		Pointer tgeogpointseqset_from_base_periodset(Pointer gs, Pointer ps, int interp);
 
-		Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, int interp);
-
-		Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, int interp);
-
-		Pointer tgeompoint_from_base(Pointer gs, Pointer temp, int interp);
+		Pointer tgeompoint_from_base_temp(Pointer gs, Pointer temp);
 
 		Pointer tgeompointinst_make(Pointer gs, long t);
 
-		Pointer tgeompointdiscseq_from_base_time(Pointer gs, Pointer ts);
+		Pointer tgeompointseq_from_base_period(Pointer gs, Pointer p, int interp);
 
-		Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, int interp);
+		Pointer tgeompointseq_from_base_timestampset(Pointer gs, Pointer ts);
 
-		Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, int interp);
+		Pointer tgeompointseqset_from_base_periodset(Pointer gs, Pointer ps, int interp);
 
-		Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, int interp);
-
-		Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, int interp);
-
-		Pointer tint_from_base(int i, Pointer temp);
+		Pointer tint_from_base_temp(int i, Pointer temp);
 
 		Pointer tintinst_make(int i, long t);
 
-		Pointer tintdiscseq_from_base_time(int i, Pointer ts);
+		Pointer tintseq_from_base_period(int i, Pointer p);
 
-		Pointer tintseq_from_base(int i, Pointer seq);
+		Pointer tintseq_from_base_timestampset(int i, Pointer ts);
 
-		Pointer tintseq_from_base_time(int i, Pointer p);
-
-		Pointer tintseqset_from_base(int i, Pointer ss);
-
-		Pointer tintseqset_from_base_time(int i, Pointer ps);
+		Pointer tintseqset_from_base_periodset(int i, Pointer ps);
 
 		Pointer tsequence_make(Pointer instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
 
 		Pointer tsequence_make_exp(Pointer instants, int count, int maxcount, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
 
-		Pointer tsequence_make_free(Pointer instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize);
-
 		Pointer tsequenceset_make(Pointer sequences, int count, boolean normalize);
 
-		Pointer tsequenceset_make_free(Pointer sequences, int count, boolean normalize);
+		Pointer tsequenceset_make_exp(Pointer sequences, int count, int maxcount, boolean normalize);
 
-		Pointer tsequenceset_make_gaps(Pointer instants, int count, int interp, float maxdist, Pointer maxt);
+		Pointer tsequenceset_make_gaps(Pointer instants, int count, int interp, Pointer maxt, double maxdist);
 
-		Pointer ttext_from_base(Pointer txt, Pointer temp);
+		Pointer ttext_from_base_temp(Pointer txt, Pointer temp);
 
 		Pointer ttextinst_make(Pointer txt, long t);
 
-		Pointer ttextdiscseq_from_base_time(Pointer txt, Pointer ts);
+		Pointer ttextseq_from_base_period(Pointer txt, Pointer p);
 
-		Pointer ttextseq_from_base(Pointer txt, Pointer seq);
+		Pointer ttextseq_from_base_timestampset(Pointer txt, Pointer ts);
 
-		Pointer ttextseq_from_base_time(Pointer txt, Pointer p);
+		Pointer ttextseqset_from_base_periodset(Pointer txt, Pointer ps);
 
-		Pointer ttextseqset_from_base(Pointer txt, Pointer ss);
-
-		Pointer ttextseqset_from_base_time(Pointer txt, Pointer ps);
+		Pointer temporal_to_period(Pointer temp);
 
 		Pointer tfloat_to_tint(Pointer temp);
 
@@ -1105,15 +1133,13 @@ public class functions {
 
 		Pointer tnumber_to_span(Pointer temp);
 
-		Pointer temporal_to_period(Pointer temp);
-
 		boolean tbool_end_value(Pointer temp);
 
 		boolean tbool_start_value(Pointer temp);
 
 		Pointer tbool_values(Pointer temp, Pointer count);
 
-		Pointer temporal_duration(Pointer temp);
+		Pointer temporal_duration(Pointer temp, boolean boundspan);
 
 		Pointer temporal_end_sequence(Pointer temp);
 
@@ -1121,7 +1147,7 @@ public class functions {
 
 		int temporal_hash(Pointer temp);
 
-		String temporal_interpolation(Pointer temp);
+		String temporal_interp(Pointer temp);
 
 		int temporal_num_instants(Pointer temp);
 
@@ -1135,29 +1161,27 @@ public class functions {
 
 		Pointer temporal_sequences(Pointer temp, Pointer count);
 
-		long temporal_size(Pointer temp);
-
 		Pointer temporal_start_sequence(Pointer temp);
 
 		long temporal_start_timestamp(Pointer temp);
+
+		Pointer temporal_stops(Pointer temp, double maxdist, Pointer minduration);
 
 		String temporal_subtype(Pointer temp);
 
 		Pointer temporal_time(Pointer temp);
 
-		Pointer temporal_timespan(Pointer temp);
-
 		boolean temporal_timestamp_n(Pointer temp, int n, Pointer result);
 
 		Pointer temporal_timestamps(Pointer temp, Pointer count);
+
+		Pointer temporal_values(Pointer temp, Pointer count);
 
 		double tfloat_end_value(Pointer temp);
 
 		double tfloat_max_value(Pointer temp);
 
 		double tfloat_min_value(Pointer temp);
-
-		Pointer tfloat_spans(Pointer temp, Pointer count);
 
 		double tfloat_start_value(Pointer temp);
 
@@ -1172,6 +1196,8 @@ public class functions {
 		int tint_start_value(Pointer temp);
 
 		Pointer tint_values(Pointer temp, Pointer count);
+
+		Pointer tnumber_valuespans(Pointer temp);
 
 		Pointer tpoint_end_value(Pointer temp);
 
@@ -1189,27 +1215,21 @@ public class functions {
 
 		Pointer ttext_values(Pointer temp, Pointer count);
 
-		Pointer tsequence_compact(Pointer seq);
-
-		Pointer temporal_append_tinstant(Pointer temp, Pointer inst, boolean expand);
-
-		Pointer temporal_merge(Pointer temp1, Pointer temp2);
-
-		Pointer temporal_merge_array(Pointer temparr, int count);
+		Pointer temporal_set_interp(Pointer temp, int interp);
 
 		Pointer temporal_shift(Pointer temp, Pointer shift);
 
 		Pointer temporal_shift_tscale(Pointer temp, Pointer shift, Pointer duration);
 
-		Pointer temporal_step_to_linear(Pointer temp);
-
 		Pointer temporal_to_tinstant(Pointer temp);
-
-		Pointer temporal_to_tdiscseq(Pointer temp);
 
 		Pointer temporal_to_tsequence(Pointer temp);
 
 		Pointer temporal_to_tsequenceset(Pointer temp);
+
+		Pointer temporal_tprecision(Pointer temp, Pointer duration, long origin);
+
+		Pointer temporal_tsample(Pointer temp, Pointer duration, long origin);
 
 		Pointer temporal_tscale(Pointer temp, Pointer duration);
 
@@ -1231,6 +1251,8 @@ public class functions {
 
 		Pointer temporal_at_timestampset(Pointer temp, Pointer ts);
 
+		Pointer temporal_at_values(Pointer temp, Pointer set);
+
 		Pointer temporal_minus_max(Pointer temp);
 
 		Pointer temporal_minus_min(Pointer temp);
@@ -1243,71 +1265,79 @@ public class functions {
 
 		Pointer temporal_minus_timestampset(Pointer temp, Pointer ts);
 
+		Pointer temporal_minus_values(Pointer temp, Pointer set);
+
 		Pointer tfloat_at_value(Pointer temp, double d);
 
-		Pointer tfloat_at_values(Pointer temp, Pointer values, int count);
-
 		Pointer tfloat_minus_value(Pointer temp, double d);
-
-		Pointer tfloat_minus_values(Pointer temp, Pointer values, int count);
 
 		boolean tfloat_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value);
 
 		Pointer tint_at_value(Pointer temp, int i);
 
-		Pointer tint_at_values(Pointer temp, Pointer values, int count);
-
 		Pointer tint_minus_value(Pointer temp, int i);
-
-		Pointer tint_minus_values(Pointer temp, Pointer values, int count);
 
 		boolean tint_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value);
 
 		Pointer tnumber_at_span(Pointer temp, Pointer span);
 
-		Pointer tnumber_at_spans(Pointer temp, Pointer spans, int count);
+		Pointer tnumber_at_spanset(Pointer temp, Pointer ss);
 
 		Pointer tnumber_at_tbox(Pointer temp, Pointer box);
 
 		Pointer tnumber_minus_span(Pointer temp, Pointer span);
 
-		Pointer tnumber_minus_spans(Pointer temp, Pointer spans, int count);
+		Pointer tnumber_minus_spanset(Pointer temp, Pointer ss);
 
 		Pointer tnumber_minus_tbox(Pointer temp, Pointer box);
 
-		Pointer tpoint_at_geometry(Pointer temp, Pointer gs);
+		Pointer tpoint_at_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
 
-		Pointer tpoint_at_stbox(Pointer temp, Pointer box);
+		Pointer tpoint_at_stbox(Pointer temp, Pointer box, boolean border_inc);
 
 		Pointer tpoint_at_value(Pointer temp, Pointer gs);
 
-		Pointer tpoint_at_values(Pointer temp, Pointer values, int count);
+		Pointer tpoint_minus_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
 
-		Pointer tpoint_minus_geometry(Pointer temp, Pointer gs);
-
-		Pointer tpoint_minus_stbox(Pointer temp, Pointer box);
+		Pointer tpoint_minus_stbox(Pointer temp, Pointer box, boolean border_inc);
 
 		Pointer tpoint_minus_value(Pointer temp, Pointer gs);
-
-		Pointer tpoint_minus_values(Pointer temp, Pointer values, int count);
 
 		boolean tpoint_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value);
 
 		Pointer ttext_at_value(Pointer temp, Pointer txt);
 
-		Pointer ttext_at_values(Pointer temp, Pointer values, int count);
-
 		Pointer ttext_minus_value(Pointer temp, Pointer txt);
 
-		Pointer ttext_minus_values(Pointer temp, Pointer values, int count);
-
 		boolean ttext_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value);
+
+		Pointer temporal_append_tinstant(Pointer temp, Pointer inst, double maxdist, Pointer maxt, boolean expand);
+
+		Pointer temporal_append_tsequence(Pointer temp, Pointer seq, boolean expand);
+
+		Pointer temporal_delete_period(Pointer temp, Pointer p, boolean connect);
+
+		Pointer temporal_delete_periodset(Pointer temp, Pointer ps, boolean connect);
+
+		Pointer temporal_delete_timestamp(Pointer temp, long t, boolean connect);
+
+		Pointer temporal_delete_timestampset(Pointer temp, Pointer ts, boolean connect);
+
+		Pointer temporal_insert(Pointer temp1, Pointer temp2, boolean connect);
+
+		Pointer temporal_merge(Pointer temp1, Pointer temp2);
+
+		Pointer temporal_merge_array(Pointer temparr, int count);
+
+		Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect);
 
 		Pointer tand_bool_tbool(boolean b, Pointer temp);
 
 		Pointer tand_tbool_bool(Pointer temp, boolean b);
 
 		Pointer tand_tbool_tbool(Pointer temp1, Pointer temp2);
+
+		Pointer tbool_when_true(Pointer temp);
 
 		Pointer tnot_tbool(Pointer temp);
 
@@ -1317,53 +1347,61 @@ public class functions {
 
 		Pointer tor_tbool_tbool(Pointer temp1, Pointer temp2);
 
-		Pointer tbool_when_true(Pointer temp);
+		Pointer add_float_tnumber(double d, Pointer tnumber);
 
-		Pointer add_float_tfloat(double d, Pointer tnumber);
+		Pointer add_int_tnumber(int i, Pointer tnumber);
 
-		Pointer add_int_tint(int i, Pointer tnumber);
+		Pointer add_tnumber_float(Pointer tnumber, double d);
 
-		Pointer add_tfloat_float(Pointer tnumber, double d);
-
-		Pointer add_tint_int(Pointer tnumber, int i);
+		Pointer add_tnumber_int(Pointer tnumber, int i);
 
 		Pointer add_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer div_float_tfloat(double d, Pointer tnumber);
+		Pointer div_float_tnumber(double d, Pointer tnumber);
 
-		Pointer div_int_tint(int i, Pointer tnumber);
+		Pointer div_int_tnumber(int i, Pointer tnumber);
 
-		Pointer div_tfloat_float(Pointer tnumber, double d);
+		Pointer div_tnumber_float(Pointer tnumber, double d);
 
-		Pointer div_tint_int(Pointer tnumber, int i);
+		Pointer div_tnumber_int(Pointer tnumber, int i);
 
 		Pointer div_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer mult_float_tfloat(double d, Pointer tnumber);
+		double float_degrees(double value, boolean normalize);
 
-		Pointer mult_int_tint(int i, Pointer tnumber);
+		Pointer mult_float_tnumber(double d, Pointer tnumber);
 
-		Pointer mult_tfloat_float(Pointer tnumber, double d);
+		Pointer mult_int_tnumber(int i, Pointer tnumber);
 
-		Pointer mult_tint_int(Pointer tnumber, int i);
+		Pointer mult_tnumber_float(Pointer tnumber, double d);
+
+		Pointer mult_tnumber_int(Pointer tnumber, int i);
 
 		Pointer mult_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer sub_float_tfloat(double d, Pointer tnumber);
+		Pointer sub_float_tnumber(double d, Pointer tnumber);
 
-		Pointer sub_int_tint(int i, Pointer tnumber);
+		Pointer sub_int_tnumber(int i, Pointer tnumber);
 
-		Pointer sub_tfloat_float(Pointer tnumber, double d);
+		Pointer sub_tnumber_float(Pointer tnumber, double d);
 
-		Pointer sub_tint_int(Pointer tnumber, int i);
+		Pointer sub_tnumber_int(Pointer tnumber, int i);
 
 		Pointer sub_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer tfloat_degrees(Pointer temp);
+		Pointer tfloat_round(Pointer temp, int maxdd);
+
+		Pointer tfloat_degrees(Pointer temp, boolean normalize);
+
+		Pointer tfloat_derivative(Pointer temp);
 
 		Pointer tfloat_radians(Pointer temp);
 
-		Pointer tfloat_derivative(Pointer temp);
+		Pointer tnumber_abs(Pointer temp);
+
+		Pointer tnumber_angular_difference(Pointer temp);
+
+		Pointer tnumber_delta_value(Pointer temp);
 
 		Pointer textcat_text_ttext(Pointer txt, Pointer temp);
 
@@ -1374,548 +1412,6 @@ public class functions {
 		Pointer ttext_upper(Pointer temp);
 
 		Pointer ttext_lower(Pointer temp);
-
-		boolean adjacent_float_tfloat(double d, Pointer tnumber);
-
-		boolean adjacent_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean adjacent_int_tint(int i, Pointer tnumber);
-
-		boolean adjacent_period_temporal(Pointer p, Pointer temp);
-
-		boolean adjacent_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean adjacent_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean adjacent_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean adjacent_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean adjacent_temporal_period(Pointer temp, Pointer p);
-
-		boolean adjacent_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean adjacent_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean adjacent_temporal_timestamp(Pointer temp, long t);
-
-		boolean adjacent_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean adjacent_tfloat_float(Pointer tnumber, double d);
-
-		boolean adjacent_timestamp_temporal(long t, Pointer temp);
-
-		boolean adjacent_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean adjacent_tint_int(Pointer tnumber, int i);
-
-		boolean adjacent_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean adjacent_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean adjacent_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean adjacent_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean adjacent_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean adjacent_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean contained_float_tfloat(double d, Pointer tnumber);
-
-		boolean contained_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean contained_int_tint(int i, Pointer tnumber);
-
-		boolean contained_period_temporal(Pointer p, Pointer temp);
-
-		boolean contained_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean contained_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean contained_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean contained_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean contained_temporal_period(Pointer temp, Pointer p);
-
-		boolean contained_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean contained_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean contained_temporal_timestamp(Pointer temp, long t);
-
-		boolean contained_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean contained_tfloat_float(Pointer tnumber, double d);
-
-		boolean contained_timestamp_temporal(long t, Pointer temp);
-
-		boolean contained_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean contained_tint_int(Pointer tnumber, int i);
-
-		boolean contained_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean contained_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean contained_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean contained_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean contained_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean contained_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean contains_bbox_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean contains_float_tfloat(double d, Pointer tnumber);
-
-		boolean contains_int_tint(int i, Pointer tnumber);
-
-		boolean contains_period_temporal(Pointer p, Pointer temp);
-
-		boolean contains_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean contains_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean contains_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean contains_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean contains_temporal_period(Pointer temp, Pointer p);
-
-		boolean contains_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean contains_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean contains_temporal_timestamp(Pointer temp, long t);
-
-		boolean contains_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean contains_tfloat_float(Pointer tnumber, double d);
-
-		boolean contains_timestamp_temporal(long t, Pointer temp);
-
-		boolean contains_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean contains_tint_int(Pointer tnumber, int i);
-
-		boolean contains_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean contains_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean contains_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean contains_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean contains_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean contains_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean left_float_tfloat(double d, Pointer tnumber);
-
-		boolean left_int_tint(int i, Pointer tnumber);
-
-		boolean left_tfloat_float(Pointer tnumber, double d);
-
-		boolean left_tint_int(Pointer tnumber, int i);
-
-		boolean overlaps_float_tfloat(double d, Pointer tnumber);
-
-		boolean overlaps_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overlaps_int_tint(int i, Pointer tnumber);
-
-		boolean overlaps_period_temporal(Pointer p, Pointer temp);
-
-		boolean overlaps_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean overlaps_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean overlaps_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overlaps_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean overlaps_temporal_period(Pointer temp, Pointer p);
-
-		boolean overlaps_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean overlaps_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean overlaps_temporal_timestamp(Pointer temp, long t);
-
-		boolean overlaps_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean overlaps_tfloat_float(Pointer tnumber, double d);
-
-		boolean overlaps_timestamp_temporal(long t, Pointer temp);
-
-		boolean overlaps_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean overlaps_tint_int(Pointer tnumber, int i);
-
-		boolean overlaps_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean overlaps_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean overlaps_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean overlaps_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overlaps_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overlaps_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overleft_float_tfloat(double d, Pointer tnumber);
-
-		boolean overleft_int_tint(int i, Pointer tnumber);
-
-		boolean overleft_tfloat_float(Pointer tnumber, double d);
-
-		boolean overleft_tint_int(Pointer tnumber, int i);
-
-		boolean overright_float_tfloat(double d, Pointer tnumber);
-
-		boolean overright_int_tint(int i, Pointer tnumber);
-
-		boolean overright_tfloat_float(Pointer tnumber, double d);
-
-		boolean overright_tint_int(Pointer tnumber, int i);
-
-		boolean right_float_tfloat(double d, Pointer tnumber);
-
-		boolean right_int_tint(int i, Pointer tnumber);
-
-		boolean right_tfloat_float(Pointer tnumber, double d);
-
-		boolean right_tint_int(Pointer tnumber, int i);
-
-		boolean same_float_tfloat(double d, Pointer tnumber);
-
-		boolean same_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean same_int_tint(int i, Pointer tnumber);
-
-		boolean same_period_temporal(Pointer p, Pointer temp);
-
-		boolean same_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean same_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean same_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean same_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean same_temporal_period(Pointer temp, Pointer p);
-
-		boolean same_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean same_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean same_temporal_timestamp(Pointer temp, long t);
-
-		boolean same_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean same_tfloat_float(Pointer tnumber, double d);
-
-		boolean same_timestamp_temporal(long t, Pointer temp);
-
-		boolean same_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean same_tint_int(Pointer tnumber, int i);
-
-		boolean same_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean same_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean same_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean same_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean same_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean same_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean above_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean above_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean above_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean above_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean above_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean after_period_temporal(Pointer p, Pointer temp);
-
-		boolean after_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean after_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean after_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean after_temporal_period(Pointer temp, Pointer p);
-
-		boolean after_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean after_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean after_temporal_timestamp(Pointer temp, long t);
-
-		boolean after_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean after_timestamp_temporal(long t, Pointer temp);
-
-		boolean after_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean after_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean after_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean after_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean after_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean back_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean back_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean back_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean back_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean back_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean before_period_temporal(Pointer p, Pointer temp);
-
-		boolean before_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean before_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean before_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean before_temporal_period(Pointer temp, Pointer p);
-
-		boolean before_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean before_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean before_temporal_timestamp(Pointer temp, long t);
-
-		boolean before_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean before_timestamp_temporal(long t, Pointer temp);
-
-		boolean before_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean before_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean before_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean before_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean before_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean below_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean below_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean below_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean below_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean below_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean front_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean front_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean front_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean front_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean front_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean left_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean left_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean left_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean left_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean left_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean left_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean left_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean left_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean left_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean left_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overabove_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overabove_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overabove_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overabove_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overabove_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overafter_period_temporal(Pointer p, Pointer temp);
-
-		boolean overafter_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean overafter_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overafter_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean overafter_temporal_period(Pointer temp, Pointer p);
-
-		boolean overafter_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean overafter_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean overafter_temporal_timestamp(Pointer temp, long t);
-
-		boolean overafter_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean overafter_timestamp_temporal(long t, Pointer temp);
-
-		boolean overafter_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean overafter_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean overafter_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean overafter_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overafter_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overback_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overback_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overback_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overback_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overback_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overbefore_period_temporal(Pointer p, Pointer temp);
-
-		boolean overbefore_periodset_temporal(Pointer ps, Pointer temp);
-
-		boolean overbefore_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overbefore_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean overbefore_temporal_period(Pointer temp, Pointer p);
-
-		boolean overbefore_temporal_periodset(Pointer temp, Pointer ps);
-
-		boolean overbefore_temporal_temporal(Pointer temp1, Pointer temp2);
-
-		boolean overbefore_temporal_timestamp(Pointer temp, long t);
-
-		boolean overbefore_temporal_timestampset(Pointer temp, Pointer ts);
-
-		boolean overbefore_timestamp_temporal(long t, Pointer temp);
-
-		boolean overbefore_timestampset_temporal(Pointer ts, Pointer temp);
-
-		boolean overbefore_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean overbefore_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean overbefore_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overbefore_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overbelow_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overbelow_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overbelow_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overbelow_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overbelow_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overfront_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overfront_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overfront_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overfront_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overfront_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overleft_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overleft_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean overleft_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overleft_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean overleft_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean overleft_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean overleft_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean overleft_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overleft_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overleft_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean overright_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean overright_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean overright_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean overright_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean overright_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean overright_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean overright_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean overright_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean overright_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean overright_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
-
-		boolean right_geo_tpoint(Pointer geo, Pointer tpoint);
-
-		boolean right_span_tnumber(Pointer span, Pointer tnumber);
-
-		boolean right_stbox_tpoint(Pointer stbox, Pointer tpoint);
-
-		boolean right_tbox_tnumber(Pointer tbox, Pointer tnumber);
-
-		boolean right_tnumber_span(Pointer tnumber, Pointer span);
-
-		boolean right_tnumber_tbox(Pointer tnumber, Pointer tbox);
-
-		boolean right_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
-
-		boolean right_tpoint_geo(Pointer tpoint, Pointer geo);
-
-		boolean right_tpoint_stbox(Pointer tpoint, Pointer stbox);
-
-		boolean right_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2);
 
 		Pointer distance_tfloat_float(Pointer temp, double d);
 
@@ -1992,6 +1488,10 @@ public class functions {
 		boolean tint_ever_le(Pointer temp, int i);
 
 		boolean tint_ever_lt(Pointer temp, int i);
+
+		boolean tpoint_always_eq(Pointer temp, long value);
+
+		boolean tpoint_ever_eq(Pointer temp, long value);
 
 		boolean ttext_always_eq(Pointer temp, Pointer txt);
 
@@ -2141,9 +1641,15 @@ public class functions {
 
 		Pointer bearing_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
+		Pointer tpoint_angular_difference(Pointer temp);
+
 		Pointer tpoint_azimuth(Pointer temp);
 
+		Pointer tpoint_convex_hull(Pointer temp);
+
 		Pointer tpoint_cumulative_length(Pointer temp);
+
+		boolean tpoint_direction(Pointer temp, Pointer result);
 
 		Pointer tpoint_get_coord(Pointer temp, int coord);
 
@@ -2159,29 +1665,33 @@ public class functions {
 
 		Pointer tpoint_trajectory(Pointer temp);
 
-		Pointer geo_expand_spatial(Pointer gs, double d);
+		Pointer geo_expand_space(Pointer gs, double d);
 
 		Pointer tgeompoint_tgeogpoint(Pointer temp, boolean oper);
 
-		Pointer tpoint_expand_spatial(Pointer temp, double d);
+		Pointer tpoint_expand_space(Pointer temp, double d);
+
+		Pointer tpoint_round(Pointer temp, int maxdd);
 
 		Pointer tpoint_make_simple(Pointer temp, Pointer count);
 
 		Pointer tpoint_set_srid(Pointer temp, int srid);
 
-		int contains_geo_tpoint(Pointer geo, Pointer temp);
+		int econtains_geo_tpoint(Pointer geo, Pointer temp);
 
-		int disjoint_tpoint_geo(Pointer temp, Pointer gs);
+		int edisjoint_tpoint_geo(Pointer temp, Pointer gs);
 
-		int disjoint_tpoint_tpoint(Pointer temp1, Pointer temp2);
+		int edisjoint_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
-		int dwithin_tpoint_geo(Pointer temp, Pointer gs, double dist);
+		int edwithin_tpoint_geo(Pointer temp, Pointer gs, double dist);
 
-		int dwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist);
+		int edwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist);
 
-		int intersects_tpoint_geo(Pointer temp, Pointer gs);
+		int eintersects_tpoint_geo(Pointer temp, Pointer gs);
 
-		int intersects_tpoint_tpoint(Pointer temp1, Pointer temp2);
+		int eintersects_tpoint_tpoint(Pointer temp1, Pointer temp2);
+
+		int etouches_tpoint_geo(Pointer temp, Pointer gs);
 
 		Pointer tcontains_geo_tpoint(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
@@ -2193,111 +1703,87 @@ public class functions {
 
 		Pointer tintersects_tpoint_geo(Pointer temp, Pointer geo, boolean restr, boolean atvalue);
 
-		int touches_tpoint_geo(Pointer temp, Pointer gs);
-
 		Pointer ttouches_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
-
-		Pointer temporal_insert(Pointer temp1, Pointer temp2, boolean connect);
-
-		Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect);
-
-		Pointer temporal_delete_timestamp(Pointer temp, long t, boolean connect);
-
-		Pointer temporal_delete_timestampset(Pointer temp, Pointer ts, boolean connect);
-
-		Pointer temporal_delete_period(Pointer temp, Pointer p, boolean connect);
-
-		Pointer temporal_delete_periodset(Pointer temp, Pointer ps, boolean connect);
-
-		boolean temporal_intersects_period(Pointer temp, Pointer p);
-
-		boolean temporal_intersects_periodset(Pointer temp, Pointer ps);
-
-		boolean temporal_intersects_timestamp(Pointer temp, long t);
-
-		boolean temporal_intersects_timestampset(Pointer temp, Pointer ss);
-
-		double tnumber_integral(Pointer temp);
-
-		double tnumber_twavg(Pointer temp);
-
-		Pointer tpoint_twcentroid(Pointer temp);
-
-		void skiplist_free(Pointer list);
-
-		Pointer temporal_extent_transfn(Pointer p, Pointer temp);
-
-		Pointer tnumber_extent_transfn(Pointer box, Pointer temp);
-
-		Pointer tpoint_extent_transfn(Pointer box, Pointer temp);
-
-		Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, long origin);
 
 		Pointer tbool_tand_transfn(Pointer state, Pointer temp);
 
 		Pointer tbool_tor_transfn(Pointer state, Pointer temp);
 
-		Pointer tint_tmin_transfn(Pointer state, Pointer temp);
-
-		Pointer tfloat_tmin_transfn(Pointer state, Pointer temp);
-
-		Pointer tint_tmax_transfn(Pointer state, Pointer temp);
-
-		Pointer tfloat_tmax_transfn(Pointer state, Pointer temp);
-
-		Pointer tint_tsum_transfn(Pointer state, Pointer temp);
-
-		Pointer tfloat_tsum_transfn(Pointer state, Pointer temp);
-
-		Pointer tnumber_tavg_transfn(Pointer state, Pointer temp);
-
-		Pointer ttext_tmin_transfn(Pointer state, Pointer temp);
-
-		Pointer ttext_tmax_transfn(Pointer state, Pointer temp);
+		Pointer temporal_extent_transfn(Pointer p, Pointer temp);
 
 		Pointer temporal_tagg_finalfn(Pointer state);
 
+		Pointer temporal_tcount_transfn(Pointer state, Pointer temp);
+
+		Pointer tfloat_tmax_transfn(Pointer state, Pointer temp);
+
+		Pointer tfloat_tmin_transfn(Pointer state, Pointer temp);
+
+		Pointer tfloat_tsum_transfn(Pointer state, Pointer temp);
+
+		Pointer tint_tmax_transfn(Pointer state, Pointer temp);
+
+		Pointer tint_tmin_transfn(Pointer state, Pointer temp);
+
+		Pointer tint_tsum_transfn(Pointer state, Pointer temp);
+
+		Pointer tnumber_extent_transfn(Pointer box, Pointer temp);
+
+		double tnumber_integral(Pointer temp);
+
 		Pointer tnumber_tavg_finalfn(Pointer state);
 
-		int int_bucket(int value, int size, int origin);
+		Pointer tnumber_tavg_transfn(Pointer state, Pointer temp);
+
+		double tnumber_twavg(Pointer temp);
+
+		Pointer tpoint_extent_transfn(Pointer box, Pointer temp);
+
+		Pointer tpoint_tcentroid_finalfn(Pointer state);
+
+		Pointer tpoint_tcentroid_transfn(Pointer state, Pointer temp);
+
+		Pointer tpoint_twcentroid(Pointer temp);
+
+		Pointer ttext_tmax_transfn(Pointer state, Pointer temp);
+
+		Pointer ttext_tmin_transfn(Pointer state, Pointer temp);
 
 		double float_bucket(double value, double size, double origin);
 
-		long timestamptz_bucket(long timestamp, Pointer duration, long origin);
+		Pointer floatspan_bucket_list(Pointer bounds, double size, double origin, Pointer newcount);
+
+		int int_bucket(int value, int size, int origin);
 
 		Pointer intspan_bucket_list(Pointer bounds, int size, int origin, Pointer newcount);
 
-		Pointer floatspan_bucket_list(Pointer bounds, double size, double origin, Pointer newcount);
-
 		Pointer period_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer newcount);
+
+		Pointer stbox_tile_list(Pointer bounds, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, Pointer cellcount);
 
 		Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, long torigin, Pointer rows, Pointer columns);
 
-		Pointer tint_value_split(Pointer temp, int size, int origin, Pointer newcount);
+		Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin, Pointer newcount);
 
 		Pointer tfloat_value_split(Pointer temp, double size, double origin, Pointer newcount);
 
-		Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin, Pointer newcount);
+		Pointer tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, long torigin, Pointer newcount);
+
+		long timestamptz_bucket(long timestamp, Pointer duration, long origin);
+
+		Pointer tint_value_split(Pointer temp, int size, int origin, Pointer newcount);
 
 		Pointer tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, long torigin, Pointer newcount);
 
-		Pointer tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, long torigin, Pointer newcount);
-
-		Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, long torigin, Pointer cellcount);
-
-		double temporal_frechet_distance(Pointer temp1, Pointer temp2);
-
 		double temporal_dyntimewarp_distance(Pointer temp1, Pointer temp2);
-
-		Pointer temporal_frechet_path(Pointer temp1, Pointer temp2, Pointer count);
 
 		Pointer temporal_dyntimewarp_path(Pointer temp1, Pointer temp2, Pointer count);
 
-		Pointer geo_to_tpoint(Pointer geo);
+		double temporal_frechet_distance(Pointer temp1, Pointer temp2);
 
-		Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronize);
+		Pointer temporal_frechet_path(Pointer temp1, Pointer temp2, Pointer count);
 
-		boolean tpoint_to_geo_measure(Pointer tpoint, Pointer measure, boolean segmentize, Pointer result);
+		double temporal_hausdorff_distance(Pointer temp1, Pointer temp2);
 
 	}
 
@@ -2314,11 +1800,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer gserialized_from_lwgeom(Pointer geom, Pointer size) {
 		return MeosLibrary.meos.gserialized_from_lwgeom(geom, size);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer lwgeom_as_lwpoint(Pointer lwgeom) {
-		return MeosLibrary.meos.lwgeom_as_lwpoint(lwgeom);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2377,6 +1858,11 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer cstring2text(String cstring) {
+		return MeosLibrary.meos.cstring2text(cstring);
+	}
+	
+	@SuppressWarnings("unused")
 	public static int pg_date_in(String str) {
 		return MeosLibrary.meos.pg_date_in(str);
 	}
@@ -2402,13 +1888,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String pg_interval_out(Pointer span) {
-		return MeosLibrary.meos.pg_interval_out(span);
+	public static Pointer pg_interval_mul(Pointer span, double factor) {
+		return MeosLibrary.meos.pg_interval_mul(span, factor);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer pg_interval_mul(Pointer span, double factor) {
-		return MeosLibrary.meos.pg_interval_mul(span, factor);
+	public static String pg_interval_out(Pointer span) {
+		return MeosLibrary.meos.pg_interval_out(span);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2462,8 +1948,43 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static String text2cstring(Pointer textptr) {
+		return MeosLibrary.meos.text2cstring(textptr);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer pg_timestamp_to_char(long dt, Pointer fmt) {
+		return MeosLibrary.meos.pg_timestamp_to_char(dt, fmt);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer pg_timestamptz_to_char(long dt, Pointer fmt) {
+		return MeosLibrary.meos.pg_timestamptz_to_char(dt, fmt);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer pg_interval_to_char(Pointer it, Pointer fmt) {
+		return MeosLibrary.meos.pg_interval_to_char(it, fmt);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long pg_to_timestamp(Pointer date_txt, Pointer fmt) {
+		return MeosLibrary.meos.pg_to_timestamp(date_txt, fmt);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int pg_to_date(Pointer date_txt, Pointer fmt) {
+		return MeosLibrary.meos.pg_to_date(date_txt, fmt);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer gserialized_as_ewkb(Pointer geom, String type) {
 		return MeosLibrary.meos.gserialized_as_ewkb(geom, type);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String gserialized_as_ewkt(Pointer geom, int precision) {
+		return MeosLibrary.meos.gserialized_as_ewkt(geom, precision);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2512,8 +2033,48 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean gserialized_same(Pointer geom1, Pointer geom2) {
-		return MeosLibrary.meos.gserialized_same(geom1, geom2);
+	public static boolean pgis_gserialized_same(Pointer geom1, Pointer geom2) {
+		return MeosLibrary.meos.pgis_gserialized_same(geom1, geom2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintset_in(String str) {
+		return MeosLibrary.meos.bigintset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String bigintset_out(Pointer set) {
+		return MeosLibrary.meos.bigintset_out(set);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintspan_in(String str) {
+		return MeosLibrary.meos.bigintspan_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String bigintspan_out(Pointer s) {
+		return MeosLibrary.meos.bigintspan_out(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintspanset_in(String str) {
+		return MeosLibrary.meos.bigintspanset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String bigintspanset_out(Pointer ss) {
+		return MeosLibrary.meos.bigintspanset_out(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatset_in(String str) {
+		return MeosLibrary.meos.floatset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String floatset_out(Pointer set, int maxdd) {
+		return MeosLibrary.meos.floatset_out(set, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2527,6 +2088,56 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer floatspanset_in(String str) {
+		return MeosLibrary.meos.floatspanset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String floatspanset_out(Pointer ss, int maxdd) {
+		return MeosLibrary.meos.floatspanset_out(ss, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geogset_in(String str) {
+		return MeosLibrary.meos.geogset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String geogset_out(Pointer set, int maxdd) {
+		return MeosLibrary.meos.geogset_out(set, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geomset_in(String str) {
+		return MeosLibrary.meos.geomset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String geomset_out(Pointer set, int maxdd) {
+		return MeosLibrary.meos.geomset_out(set, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String geoset_as_ewkt(Pointer set, int maxdd) {
+		return MeosLibrary.meos.geoset_as_ewkt(set, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String geoset_as_text(Pointer set, int maxdd) {
+		return MeosLibrary.meos.geoset_as_text(set, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer intset_in(String str) {
+		return MeosLibrary.meos.intset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String intset_out(Pointer set) {
+		return MeosLibrary.meos.intset_out(set);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer intspan_in(String str) {
 		return MeosLibrary.meos.intspan_in(str);
 	}
@@ -2534,6 +2145,16 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static String intspan_out(Pointer s) {
 		return MeosLibrary.meos.intspan_out(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer intspanset_in(String str) {
+		return MeosLibrary.meos.intspanset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String intspanset_out(Pointer ss) {
+		return MeosLibrary.meos.intspanset_out(ss);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2547,38 +2168,38 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String periodset_as_hexwkb(Pointer ps, byte variant, Pointer size_out) {
-		return MeosLibrary.meos.periodset_as_hexwkb(ps, variant, size_out);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_as_wkb(Pointer ps, byte variant, Pointer size_out) {
-		return MeosLibrary.meos.periodset_as_wkb(ps, variant, size_out);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_from_hexwkb(String hexwkb) {
-		return MeosLibrary.meos.periodset_from_hexwkb(hexwkb);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_from_wkb(Pointer wkb, int size) {
-		return MeosLibrary.meos.periodset_from_wkb(wkb, size);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer periodset_in(String str) {
 		return MeosLibrary.meos.periodset_in(str);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String periodset_out(Pointer ps) {
-		return MeosLibrary.meos.periodset_out(ps);
+	public static String periodset_out(Pointer ss) {
+		return MeosLibrary.meos.periodset_out(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String span_as_hexwkb(Pointer s, byte variant, Pointer size_out) {
-		return MeosLibrary.meos.span_as_hexwkb(s, variant, size_out);
+	public static String set_as_hexwkb(Pointer s, byte variant, Pointer size_out) {
+		return MeosLibrary.meos.set_as_hexwkb(s, variant, size_out);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_as_wkb(Pointer s, byte variant, Pointer size_out) {
+		return MeosLibrary.meos.set_as_wkb(s, variant, size_out);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_from_hexwkb(String hexwkb) {
+		return MeosLibrary.meos.set_from_hexwkb(hexwkb);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_from_wkb(Pointer wkb, long size) {
+		return MeosLibrary.meos.set_from_wkb(wkb, size);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String set_out(Pointer s, int maxdd) {
+		return MeosLibrary.meos.set_out(s, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2587,38 +2208,58 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static String span_as_hexwkb(Pointer s, byte variant, Pointer size_out) {
+		return MeosLibrary.meos.span_as_hexwkb(s, variant, size_out);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer span_from_hexwkb(String hexwkb) {
 		return MeosLibrary.meos.span_from_hexwkb(hexwkb);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer span_from_wkb(Pointer wkb, int size) {
+	public static Pointer span_from_wkb(Pointer wkb, long size) {
 		return MeosLibrary.meos.span_from_wkb(wkb, size);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String span_out(Pointer s, long arg) {
-		return MeosLibrary.meos.span_out(s, arg);
+	public static String span_out(Pointer s, int maxdd) {
+		return MeosLibrary.meos.span_out(s, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String timestampset_as_hexwkb(Pointer ts, byte variant, Pointer size_out) {
-		return MeosLibrary.meos.timestampset_as_hexwkb(ts, variant, size_out);
+	public static Pointer spanset_as_wkb(Pointer ss, byte variant, Pointer size_out) {
+		return MeosLibrary.meos.spanset_as_wkb(ss, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_as_wkb(Pointer ts, byte variant, Pointer size_out) {
-		return MeosLibrary.meos.timestampset_as_wkb(ts, variant, size_out);
+	public static String spanset_as_hexwkb(Pointer ss, byte variant, Pointer size_out) {
+		return MeosLibrary.meos.spanset_as_hexwkb(ss, variant, size_out);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_from_hexwkb(String hexwkb) {
-		return MeosLibrary.meos.timestampset_from_hexwkb(hexwkb);
+	public static Pointer spanset_from_hexwkb(String hexwkb) {
+		return MeosLibrary.meos.spanset_from_hexwkb(hexwkb);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_from_wkb(Pointer wkb, int size) {
-		return MeosLibrary.meos.timestampset_from_wkb(wkb, size);
+	public static Pointer spanset_from_wkb(Pointer wkb, long size) {
+		return MeosLibrary.meos.spanset_from_wkb(wkb, size);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String spanset_out(Pointer ss, int maxdd) {
+		return MeosLibrary.meos.spanset_out(ss, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer textset_in(String str) {
+		return MeosLibrary.meos.textset_in(str);
+	}
+	
+	@SuppressWarnings("unused")
+	public static String textset_out(Pointer set) {
+		return MeosLibrary.meos.textset_out(set);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2627,13 +2268,43 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String timestampset_out(Pointer ts) {
-		return MeosLibrary.meos.timestampset_out(ts);
+	public static String timestampset_out(Pointer set) {
+		return MeosLibrary.meos.timestampset_out(set);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintset_make(Pointer values, int count) {
+		return MeosLibrary.meos.bigintset_make(values, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintspan_make(long lower, long upper, boolean lower_inc, boolean upper_inc) {
+		return MeosLibrary.meos.bigintspan_make(lower, upper, lower_inc, upper_inc);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatset_make(Pointer values, int count) {
+		return MeosLibrary.meos.floatset_make(values, count);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer floatspan_make(double lower, double upper, boolean lower_inc, boolean upper_inc) {
 		return MeosLibrary.meos.floatspan_make(lower, upper, lower_inc, upper_inc);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geogset_make(Pointer values, int count) {
+		return MeosLibrary.meos.geogset_make(values, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geomset_make(Pointer values, int count) {
+		return MeosLibrary.meos.geomset_make(values, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer intset_make(Pointer values, int count) {
+		return MeosLibrary.meos.intset_make(values, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2647,18 +2318,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_copy(Pointer ps) {
-		return MeosLibrary.meos.periodset_copy(ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_make(Pointer periods, int count, boolean normalize) {
-		return MeosLibrary.meos.periodset_make(periods, count, normalize);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_make_free(Pointer periods, int count, boolean normalize) {
-		return MeosLibrary.meos.periodset_make_free(periods, count, normalize);
+	public static Pointer set_copy(Pointer s) {
+		return MeosLibrary.meos.set_copy(s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2667,23 +2328,68 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_copy(Pointer ts) {
-		return MeosLibrary.meos.timestampset_copy(ts);
+	public static Pointer spanset_copy(Pointer ps) {
+		return MeosLibrary.meos.spanset_copy(ps);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_make(Pointer times, int count) {
-		return MeosLibrary.meos.timestampset_make(times, count);
+	public static Pointer spanset_make(Pointer spans, int count, boolean normalize) {
+		return MeosLibrary.meos.spanset_make(spans, count, normalize);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_make_free(Pointer times, int count) {
-		return MeosLibrary.meos.timestampset_make_free(times, count);
+	public static Pointer spanset_make_exp(Pointer spans, int count, int maxcount, boolean normalize, boolean ordered) {
+		return MeosLibrary.meos.spanset_make_exp(spans, count, maxcount, normalize, ordered);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer float_to_floaspan(double d) {
-		return MeosLibrary.meos.float_to_floaspan(d);
+	public static Pointer spanset_make_free(Pointer spans, int count, boolean normalize) {
+		return MeosLibrary.meos.spanset_make_free(spans, count, normalize);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer textset_make(Pointer values, int count) {
+		return MeosLibrary.meos.textset_make(values, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer timestampset_make(Pointer values, int count) {
+		return MeosLibrary.meos.timestampset_make(values, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigint_to_bigintset(long i) {
+		return MeosLibrary.meos.bigint_to_bigintset(i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigint_to_bigintspan(int i) {
+		return MeosLibrary.meos.bigint_to_bigintspan(i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigint_to_bigintspanset(int i) {
+		return MeosLibrary.meos.bigint_to_bigintspanset(i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer float_to_floatset(double d) {
+		return MeosLibrary.meos.float_to_floatset(d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer float_to_floatspan(double d) {
+		return MeosLibrary.meos.float_to_floatspan(d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer float_to_floatspanset(double d) {
+		return MeosLibrary.meos.float_to_floatspanset(d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer int_to_intset(int i) {
+		return MeosLibrary.meos.int_to_intset(i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2692,13 +2398,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer period_to_periodset(Pointer period) {
-		return MeosLibrary.meos.period_to_periodset(period);
+	public static Pointer int_to_intspanset(int i) {
+		return MeosLibrary.meos.int_to_intspanset(i);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_to_period(Pointer ps) {
-		return MeosLibrary.meos.periodset_to_period(ps);
+	public static Pointer set_to_spanset(Pointer s) {
+		return MeosLibrary.meos.set_to_spanset(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer span_to_spanset(Pointer s) {
+		return MeosLibrary.meos.span_to_spanset(s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2712,13 +2423,68 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestamp_to_timestampset(long t) {
-		return MeosLibrary.meos.timestamp_to_timestampset(t);
+	public static Pointer timestamp_to_tstzset(long t) {
+		return MeosLibrary.meos.timestamp_to_tstzset(t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_to_periodset(Pointer ts) {
-		return MeosLibrary.meos.timestampset_to_periodset(ts);
+	public static long bigintset_end_value(Pointer s) {
+		return MeosLibrary.meos.bigintset_end_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long bigintset_start_value(Pointer s) {
+		return MeosLibrary.meos.bigintset_start_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean bigintset_value_n(Pointer s, int n, Pointer result) {
+		return MeosLibrary.meos.bigintset_value_n(s, n, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigintset_values(Pointer s) {
+		return MeosLibrary.meos.bigintset_values(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int bigintspan_lower(Pointer s) {
+		return MeosLibrary.meos.bigintspan_lower(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int bigintspan_upper(Pointer s) {
+		return MeosLibrary.meos.bigintspan_upper(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int bigintspanset_lower(Pointer ss) {
+		return MeosLibrary.meos.bigintspanset_lower(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int bigintspanset_upper(Pointer ss) {
+		return MeosLibrary.meos.bigintspanset_upper(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double floatset_end_value(Pointer s) {
+		return MeosLibrary.meos.floatset_end_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double floatset_start_value(Pointer s) {
+		return MeosLibrary.meos.floatset_start_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean floatset_value_n(Pointer s, int n, Pointer result) {
+		return MeosLibrary.meos.floatset_value_n(s, n, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatset_values(Pointer s) {
+		return MeosLibrary.meos.floatset_values(s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2732,6 +2498,41 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static double floatspanset_lower(Pointer ss) {
+		return MeosLibrary.meos.floatspanset_lower(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double floatspanset_upper(Pointer ss) {
+		return MeosLibrary.meos.floatspanset_upper(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int geoset_srid(Pointer set) {
+		return MeosLibrary.meos.geoset_srid(set);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int intset_end_value(Pointer s) {
+		return MeosLibrary.meos.intset_end_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int intset_start_value(Pointer s) {
+		return MeosLibrary.meos.intset_start_value(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean intset_value_n(Pointer s, int n, Pointer result) {
+		return MeosLibrary.meos.intset_value_n(s, n, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer intset_values(Pointer s) {
+		return MeosLibrary.meos.intset_values(s);
+	}
+	
+	@SuppressWarnings("unused")
 	public static int intspan_lower(Pointer s) {
 		return MeosLibrary.meos.intspan_lower(s);
 	}
@@ -2739,6 +2540,16 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static int intspan_upper(Pointer s) {
 		return MeosLibrary.meos.intspan_upper(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int intspanset_lower(Pointer ss) {
+		return MeosLibrary.meos.intspanset_lower(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int intspanset_upper(Pointer ss) {
+		return MeosLibrary.meos.intspanset_upper(ss);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2757,13 +2568,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_duration(Pointer ps) {
-		return MeosLibrary.meos.periodset_duration(ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_end_period(Pointer ps) {
-		return MeosLibrary.meos.periodset_end_period(ps);
+	public static Pointer periodset_duration(Pointer ps, boolean boundspan) {
+		return MeosLibrary.meos.periodset_duration(ps, boundspan);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2772,23 +2578,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static int periodset_hash(Pointer ps) {
-		return MeosLibrary.meos.periodset_hash(ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static long periodset_hash_extended(Pointer ps, long seed) {
-		return MeosLibrary.meos.periodset_hash_extended(ps, seed);
-	}
-	
-	@SuppressWarnings("unused")
-	public static int periodset_mem_size(Pointer ps) {
-		return MeosLibrary.meos.periodset_mem_size(ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static int periodset_num_periods(Pointer ps) {
-		return MeosLibrary.meos.periodset_num_periods(ps);
+	public static long periodset_lower(Pointer ps) {
+		return MeosLibrary.meos.periodset_lower(ps);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2797,23 +2588,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_period_n(Pointer ps, int i) {
-		return MeosLibrary.meos.periodset_period_n(ps, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_start_period(Pointer ps) {
-		return MeosLibrary.meos.periodset_start_period(ps);
-	}
-	
-	@SuppressWarnings("unused")
 	public static long periodset_start_timestamp(Pointer ps) {
 		return MeosLibrary.meos.periodset_start_timestamp(ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_timespan(Pointer ps) {
-		return MeosLibrary.meos.periodset_timespan(ps);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2824,6 +2600,36 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer periodset_timestamps(Pointer ps, Pointer count) {
 		return MeosLibrary.meos.periodset_timestamps(ps, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long periodset_upper(Pointer ps) {
+		return MeosLibrary.meos.periodset_upper(ps);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int set_hash(Pointer s) {
+		return MeosLibrary.meos.set_hash(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long set_hash_extended(Pointer s, long seed) {
+		return MeosLibrary.meos.set_hash_extended(s, seed);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int set_mem_size(Pointer s) {
+		return MeosLibrary.meos.set_mem_size(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int set_num_values(Pointer s) {
+		return MeosLibrary.meos.set_num_values(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_span(Pointer s) {
+		return MeosLibrary.meos.set_span(s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2852,53 +2658,143 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static long timestampset_end_timestamp(Pointer ss) {
-		return MeosLibrary.meos.timestampset_end_timestamp(ss);
+	public static Pointer spanset_end_span(Pointer ss) {
+		return MeosLibrary.meos.spanset_end_span(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int timestampset_hash(Pointer ss) {
-		return MeosLibrary.meos.timestampset_hash(ss);
+	public static int spanset_hash(Pointer ps) {
+		return MeosLibrary.meos.spanset_hash(ps);
 	}
 	
 	@SuppressWarnings("unused")
-	public static long timestampset_hash_extended(Pointer ss, long seed) {
-		return MeosLibrary.meos.timestampset_hash_extended(ss, seed);
+	public static long spanset_hash_extended(Pointer ps, long seed) {
+		return MeosLibrary.meos.spanset_hash_extended(ps, seed);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int timestampset_mem_size(Pointer ss) {
-		return MeosLibrary.meos.timestampset_mem_size(ss);
+	public static boolean spanset_lower_inc(Pointer ss) {
+		return MeosLibrary.meos.spanset_lower_inc(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int timestampset_num_timestamps(Pointer ss) {
-		return MeosLibrary.meos.timestampset_num_timestamps(ss);
+	public static int spanset_mem_size(Pointer ss) {
+		return MeosLibrary.meos.spanset_mem_size(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static long timestampset_start_timestamp(Pointer ss) {
-		return MeosLibrary.meos.timestampset_start_timestamp(ss);
+	public static int spanset_num_spans(Pointer ss) {
+		return MeosLibrary.meos.spanset_num_spans(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_timespan(Pointer ss) {
-		return MeosLibrary.meos.timestampset_timespan(ss);
+	public static Pointer spanset_span(Pointer ss) {
+		return MeosLibrary.meos.spanset_span(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_timestamp_n(Pointer ss, int n, Pointer result) {
-		return MeosLibrary.meos.timestampset_timestamp_n(ss, n, result);
+	public static Pointer spanset_span_n(Pointer ss, int i) {
+		return MeosLibrary.meos.spanset_span_n(ss, i);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_timestamps(Pointer ss) {
-		return MeosLibrary.meos.timestampset_timestamps(ss);
+	public static Pointer spanset_start_span(Pointer ss) {
+		return MeosLibrary.meos.spanset_start_span(ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_shift_tscale(Pointer ps, Pointer start, Pointer duration) {
-		return MeosLibrary.meos.periodset_shift_tscale(ps, start, duration);
+	public static boolean spanset_upper_inc(Pointer ss) {
+		return MeosLibrary.meos.spanset_upper_inc(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double spanset_width(Pointer ss) {
+		return MeosLibrary.meos.spanset_width(ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer spatialset_stbox(Pointer s) {
+		return MeosLibrary.meos.spatialset_stbox(s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long timestampset_end_timestamp(Pointer ts) {
+		return MeosLibrary.meos.timestampset_end_timestamp(ts);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long timestampset_start_timestamp(Pointer ts) {
+		return MeosLibrary.meos.timestampset_start_timestamp(ts);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean timestampset_timestamp_n(Pointer ts, int n, Pointer result) {
+		return MeosLibrary.meos.timestampset_timestamp_n(ts, n, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer timestampset_values(Pointer ts) {
+		return MeosLibrary.meos.timestampset_values(ts);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatset_round(Pointer s, int maxdd) {
+		return MeosLibrary.meos.floatset_round(s, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatspan_round(Pointer s, int maxdd) {
+		return MeosLibrary.meos.floatspan_round(s, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer floatspanset_round(Pointer ss, int maxdd) {
+		return MeosLibrary.meos.floatspanset_round(ss, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static void floatspan_set_intspan(Pointer s1, Pointer s2) {
+		MeosLibrary.meos.floatspan_set_intspan(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geoset_round(Pointer s, int maxdd) {
+		return MeosLibrary.meos.geoset_round(s, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static void intspan_set_floatspan(Pointer s1, Pointer s2) {
+		MeosLibrary.meos.intspan_set_floatspan(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static void numspan_set_floatspan(Pointer s1, Pointer s2) {
+		MeosLibrary.meos.numspan_set_floatspan(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer period_tprecision(Pointer s, Pointer duration, long torigin) {
+		return MeosLibrary.meos.period_tprecision(s, duration, torigin);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer periodset_tprecision(Pointer ss, Pointer duration, long torigin) {
+		return MeosLibrary.meos.periodset_tprecision(ss, duration, torigin);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer period_shift_tscale(Pointer p, Pointer shift, Pointer duration) {
+		return MeosLibrary.meos.period_shift_tscale(p, shift, duration);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer periodset_shift_tscale(Pointer ps, Pointer shift, Pointer duration) {
+		return MeosLibrary.meos.periodset_shift_tscale(ps, shift, duration);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_shift(Pointer s, long shift) {
+		return MeosLibrary.meos.set_shift(s, shift);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2907,13 +2803,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void period_shift_tscale(Pointer start, Pointer duration, Pointer result) {
-		MeosLibrary.meos.period_shift_tscale(start, duration, result);
+	public static long timestamp_tprecision(long t, Pointer duration, long torigin) {
+		return MeosLibrary.meos.timestamp_tprecision(t, duration, torigin);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_shift_tscale(Pointer ss, Pointer start, Pointer duration) {
-		return MeosLibrary.meos.timestampset_shift_tscale(ss, start, duration);
+	public static Pointer timestampset_shift_tscale(Pointer ts, Pointer shift, Pointer duration) {
+		return MeosLibrary.meos.timestampset_shift_tscale(ts, shift, duration);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean adjacent_bigintspan_bigint(Pointer s, long i) {
+		return MeosLibrary.meos.adjacent_bigintspan_bigint(s, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean adjacent_bigintspanset_bigint(Pointer ss, long i) {
+		return MeosLibrary.meos.adjacent_bigintspanset_bigint(ss, i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2927,28 +2833,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.adjacent_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean adjacent_period_timestamp(Pointer p, long t) {
 		return MeosLibrary.meos.adjacent_period_timestamp(p, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.adjacent_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.adjacent_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.adjacent_periodset_periodset(ps1, ps2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2957,33 +2843,38 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.adjacent_periodset_timestampset(ps, ts);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean adjacent_span_span(Pointer s1, Pointer s2) {
 		return MeosLibrary.meos.adjacent_span_span(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.adjacent_timestamp_period(t, p);
+	public static boolean adjacent_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.adjacent_spanset_span(ss, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.adjacent_timestamp_periodset(t, ps);
+	public static boolean adjacent_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.adjacent_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.adjacent_timestampset_period(ts, p);
+	public static boolean contained_bigint_bigintset(long i, Pointer s) {
+		return MeosLibrary.meos.contained_bigint_bigintset(i, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean adjacent_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.adjacent_timestampset_periodset(ts, ps);
+	public static boolean contained_bigint_bigintspan(long i, Pointer s) {
+		return MeosLibrary.meos.contained_bigint_bigintspan(i, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contained_bigint_bigintspanset(long i, Pointer ss) {
+		return MeosLibrary.meos.contained_bigint_bigintspanset(i, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contained_float_floatset(double d, Pointer s) {
+		return MeosLibrary.meos.contained_float_floatset(d, s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2992,23 +2883,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean contained_float_floatspanset(double d, Pointer ss) {
+		return MeosLibrary.meos.contained_float_floatspanset(d, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contained_int_intset(int i, Pointer s) {
+		return MeosLibrary.meos.contained_int_intset(i, s);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean contained_int_intspan(int i, Pointer s) {
 		return MeosLibrary.meos.contained_int_intspan(i, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contained_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.contained_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.contained_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.contained_periodset_periodset(ps1, ps2);
+	public static boolean contained_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.contained_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3017,13 +2908,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contained_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.contained_timestamp_period(t, p);
+	public static boolean contained_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.contained_span_spanset(s, ss);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contained_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.contained_timestamp_periodset(t, ps);
+	public static boolean contained_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.contained_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contained_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.contained_spanset_spanset(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contained_timestamp_period(long t, Pointer p) {
+		return MeosLibrary.meos.contained_timestamp_period(t, p);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3032,23 +2933,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contained_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.contained_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.contained_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.contained_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean contains_floatspan_float(Pointer s, double d) {
 		return MeosLibrary.meos.contains_floatspan_float(s, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contains_floatspanset_float(Pointer ss, double d) {
+		return MeosLibrary.meos.contains_floatspanset_float(ss, d);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3057,8 +2948,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contains_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.contains_period_periodset(p, ps);
+	public static boolean contains_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.contains_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3067,28 +2958,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contains_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.contains_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.contains_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.contains_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean contains_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.contains_periodset_timestamp(ps, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.contains_periodset_timestampset(ps, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3097,38 +2968,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean contains_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.contains_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contains_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.contains_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean contains_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.contains_spanset_spanset(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean contains_timestampset_timestamp(Pointer ts, long t) {
 		return MeosLibrary.meos.contains_timestampset_timestamp(ts, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean contains_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.contains_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.overlaps_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.overlaps_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.overlaps_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.overlaps_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.overlaps_periodset_timestampset(ps, ts);
+	public static boolean overlaps_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.overlaps_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3137,63 +2998,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overlaps_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.overlaps_timestampset_period(ts, p);
+	public static boolean overlaps_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.overlaps_spanset_span(ss, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overlaps_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.overlaps_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.overlaps_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.after_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_period_timestamp(Pointer p, long t) {
-		return MeosLibrary.meos.after_period_timestamp(p, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.after_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.after_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.after_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_periodset_timestamp(Pointer ps, long t) {
-		return MeosLibrary.meos.after_periodset_timestamp(ps, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.after_periodset_timestampset(ps, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.after_timestamp_period(t, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.after_timestamp_periodset(t, ps);
+	public static boolean overlaps_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.overlaps_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3202,93 +3013,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean after_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.after_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.after_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestampset_timestamp(Pointer ts, long t) {
-		return MeosLibrary.meos.after_timestampset_timestamp(ts, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.after_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.before_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_period_timestamp(Pointer p, long t) {
-		return MeosLibrary.meos.before_period_timestamp(p, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.before_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.before_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.before_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean before_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.before_periodset_timestamp(ps, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean before_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.before_periodset_timestampset(ps, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.before_timestamp_period(t, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.before_timestamp_periodset(t, ps);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean before_timestamp_timestampset(long t, Pointer ts) {
 		return MeosLibrary.meos.before_timestamp_timestampset(t, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.before_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.before_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestampset_timestamp(Pointer ts, long t) {
-		return MeosLibrary.meos.before_timestampset_timestamp(ts, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.before_timestampset_timestampset(ts1, ts2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3312,13 +3043,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean left_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.left_set_set(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean left_span_span(Pointer s1, Pointer s2) {
 		return MeosLibrary.meos.left_span_span(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overafter_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.overafter_period_periodset(p, ps);
+	public static boolean left_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.left_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean left_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.left_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean left_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.left_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3327,28 +3073,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overafter_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.overafter_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.overafter_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.overafter_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean overafter_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.overafter_periodset_timestamp(ps, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.overafter_periodset_timestampset(ps, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3367,58 +3093,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overafter_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.overafter_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.overafter_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_timestampset_timestamp(Pointer ts, long t) {
-		return MeosLibrary.meos.overafter_timestampset_timestamp(ts, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.overafter_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.overbefore_period_periodset(p, ps);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean overbefore_period_timestamp(Pointer p, long t) {
 		return MeosLibrary.meos.overbefore_period_timestamp(p, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean overbefore_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.overbefore_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.overbefore_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.overbefore_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean overbefore_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.overbefore_periodset_timestamp(ps, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.overbefore_periodset_timestampset(ps, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3434,26 +3115,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static boolean overbefore_timestamp_timestampset(long t, Pointer ts) {
 		return MeosLibrary.meos.overbefore_timestamp_timestampset(t, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.overbefore_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.overbefore_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestampset_timestamp(Pointer ts, long t) {
-		return MeosLibrary.meos.overbefore_timestampset_timestamp(ts, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.overbefore_timestampset_timestampset(ts1, ts2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3477,8 +3138,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean overleft_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.overleft_set_set(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean overleft_span_span(Pointer s1, Pointer s2) {
 		return MeosLibrary.meos.overleft_span_span(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overleft_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.overleft_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overleft_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.overleft_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overleft_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.overleft_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3502,8 +3183,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean overright_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.overright_set_set(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean overright_span_span(Pointer s1, Pointer s2) {
 		return MeosLibrary.meos.overright_span_span(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overright_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.overright_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overright_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.overright_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean overright_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.overright_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3527,13 +3228,38 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean right_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.right_set_set(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean right_span_span(Pointer s1, Pointer s2) {
 		return MeosLibrary.meos.right_span_span(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer intersection_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.intersection_period_periodset(p, ps);
+	public static boolean right_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.right_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean right_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.right_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean right_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.right_spanset_spanset(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static void bbox_union_span_span(Pointer s1, Pointer s2, Pointer result) {
+		MeosLibrary.meos.bbox_union_span_span(s1, s2, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer intersection_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.intersection_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3542,28 +3268,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer intersection_period_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.intersection_period_timestampset(ps, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer intersection_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.intersection_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer intersection_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.intersection_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean intersection_periodset_timestamp(Pointer ps, long t, Pointer result) {
 		return MeosLibrary.meos.intersection_periodset_timestamp(ps, t, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer intersection_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.intersection_periodset_timestampset(ps, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3572,33 +3278,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_timestamp_period(long t, Pointer p, Pointer result) {
-		return MeosLibrary.meos.intersection_timestamp_period(t, p, result);
+	public static Pointer intersection_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.intersection_spanset_span(ss, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_timestamp_periodset(long t, Pointer ps, Pointer result) {
-		return MeosLibrary.meos.intersection_timestamp_periodset(t, ps, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean intersection_timestamp_timestamp(long t1, long t2, Pointer result) {
-		return MeosLibrary.meos.intersection_timestamp_timestamp(t1, t2, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean intersection_timestamp_timestampset(long t, Pointer ts, Pointer result) {
-		return MeosLibrary.meos.intersection_timestamp_timestampset(t, ts, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer intersection_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.intersection_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer intersection_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.intersection_timestampset_periodset(ts, ps);
+	public static Pointer intersection_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.intersection_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3607,18 +3293,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer intersection_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.intersection_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_period_period(Pointer p1, Pointer p2) {
-		return MeosLibrary.meos.minus_period_period(p1, p2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.minus_period_periodset(p, ps);
+	public static Pointer minus_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.minus_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3627,33 +3303,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer minus_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.minus_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.minus_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.minus_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer minus_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.minus_periodset_timestamp(ps, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer minus_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.minus_periodset_timestampset(ps, ts);
+	public static Pointer minus_span_span(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.minus_span_span(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_span(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.minus_span_span(s1, s2);
+	public static Pointer minus_span_spanset(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.minus_span_spanset(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer minus_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.minus_spanset_span(ss, s);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer minus_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.minus_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3667,43 +3338,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_timestamp_timestamp(long t1, long t2, Pointer result) {
-		return MeosLibrary.meos.minus_timestamp_timestamp(t1, t2, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean minus_timestamp_timestampset(long t, Pointer ts, Pointer result) {
-		return MeosLibrary.meos.minus_timestamp_timestampset(t, ts, result);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.minus_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer minus_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.minus_timestampset_periodset(ts, ps);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer minus_timestampset_timestamp(Pointer ts, long t) {
 		return MeosLibrary.meos.minus_timestampset_timestamp(ts, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer minus_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.minus_timestampset_timestampset(ts1, ts2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_period_period(Pointer p1, Pointer p2) {
-		return MeosLibrary.meos.union_period_period(p1, p2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.union_period_periodset(p, ps);
+	public static Pointer union_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.union_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3712,73 +3353,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer union_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.union_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.union_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.union_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer union_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.union_periodset_timestamp(ps, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer union_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.union_periodset_timestampset(ps, ts);
+	public static Pointer union_span_span(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.union_span_span(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer union_span_span(Pointer s1, Pointer s2, boolean strict) {
-		return MeosLibrary.meos.union_span_span(s1, s2, strict);
+	public static Pointer union_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.union_spanset_span(ss, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer union_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.union_timestamp_period(t, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.union_timestamp_periodset(t, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestamp_timestamp(long t1, long t2) {
-		return MeosLibrary.meos.union_timestamp_timestamp(t1, t2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestamp_timestampset(long t, Pointer ts) {
-		return MeosLibrary.meos.union_timestamp_timestampset(t, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.union_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.union_timestampset_periodset(ts, ps);
+	public static Pointer union_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.union_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer union_timestampset_timestamp(Pointer ts, long t) {
 		return MeosLibrary.meos.union_timestampset_timestamp(ts, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer union_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.union_timestampset_timestampset(ts1, ts2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3792,8 +3388,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static double distance_period_periodset(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.distance_period_periodset(p, ps);
+	public static double distance_set_set(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.distance_set_set(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3802,28 +3398,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static double distance_period_timestampset(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.distance_period_timestampset(p, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_periodset_period(Pointer ps, Pointer p) {
-		return MeosLibrary.meos.distance_periodset_period(ps, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_periodset_periodset(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.distance_periodset_periodset(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static double distance_periodset_timestamp(Pointer ps, long t) {
 		return MeosLibrary.meos.distance_periodset_timestamp(ps, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_periodset_timestampset(Pointer ps, Pointer ts) {
-		return MeosLibrary.meos.distance_periodset_timestampset(ps, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3832,33 +3408,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static double distance_timestamp_period(long t, Pointer p) {
-		return MeosLibrary.meos.distance_timestamp_period(t, p);
+	public static double distance_spanset_span(Pointer ss, Pointer s) {
+		return MeosLibrary.meos.distance_spanset_span(ss, s);
 	}
 	
 	@SuppressWarnings("unused")
-	public static double distance_timestamp_periodset(long t, Pointer ps) {
-		return MeosLibrary.meos.distance_timestamp_periodset(t, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_timestamp_timestamp(long t1, long t2) {
-		return MeosLibrary.meos.distance_timestamp_timestamp(t1, t2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_timestamp_timestampset(long t, Pointer ts) {
-		return MeosLibrary.meos.distance_timestamp_timestampset(t, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_timestampset_period(Pointer ts, Pointer p) {
-		return MeosLibrary.meos.distance_timestampset_period(ts, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double distance_timestampset_periodset(Pointer ts, Pointer ps) {
-		return MeosLibrary.meos.distance_timestampset_periodset(ts, ps);
+	public static double distance_spanset_spanset(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.distance_spanset_spanset(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3867,8 +3423,88 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static double distance_timestampset_timestampset(Pointer ts1, Pointer ts2) {
-		return MeosLibrary.meos.distance_timestampset_timestampset(ts1, ts2);
+	public static Pointer bigint_extent_transfn(Pointer s, long i) {
+		return MeosLibrary.meos.bigint_extent_transfn(s, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer bigint_union_transfn(Pointer state, long i) {
+		return MeosLibrary.meos.bigint_union_transfn(state, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer float_extent_transfn(Pointer s, double d) {
+		return MeosLibrary.meos.float_extent_transfn(s, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer float_union_transfn(Pointer state, double d) {
+		return MeosLibrary.meos.float_union_transfn(state, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer int_extent_transfn(Pointer s, int i) {
+		return MeosLibrary.meos.int_extent_transfn(s, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer int_union_transfn(Pointer state, int i) {
+		return MeosLibrary.meos.int_union_transfn(state, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer period_tcount_transfn(Pointer state, Pointer p) {
+		return MeosLibrary.meos.period_tcount_transfn(state, p);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer periodset_tcount_transfn(Pointer state, Pointer ps) {
+		return MeosLibrary.meos.periodset_tcount_transfn(state, ps);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_extent_transfn(Pointer span, Pointer set) {
+		return MeosLibrary.meos.set_extent_transfn(span, set);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_union_finalfn(Pointer state) {
+		return MeosLibrary.meos.set_union_finalfn(state);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_union_transfn(Pointer state, Pointer set) {
+		return MeosLibrary.meos.set_union_transfn(state, set);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer span_extent_transfn(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.span_extent_transfn(s1, s2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer span_union_transfn(Pointer state, Pointer span) {
+		return MeosLibrary.meos.span_union_transfn(state, span);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer spanset_extent_transfn(Pointer s, Pointer ss) {
+		return MeosLibrary.meos.spanset_extent_transfn(s, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer spanset_union_finalfn(Pointer state) {
+		return MeosLibrary.meos.spanset_union_finalfn(state);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer spanset_union_transfn(Pointer state, Pointer ss) {
+		return MeosLibrary.meos.spanset_union_transfn(state, ss);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer text_union_transfn(Pointer state, Pointer txt) {
+		return MeosLibrary.meos.text_union_transfn(state, txt);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3877,113 +3513,53 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_extent_transfn(Pointer p, Pointer ts) {
-		return MeosLibrary.meos.timestampset_extent_transfn(p, ts);
+	public static Pointer timestamp_tcount_transfn(Pointer state, long t) {
+		return MeosLibrary.meos.timestamp_tcount_transfn(state, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer span_extent_transfn(Pointer p1, Pointer p2) {
-		return MeosLibrary.meos.span_extent_transfn(p1, p2);
+	public static Pointer timestamp_union_transfn(Pointer state, long t) {
+		return MeosLibrary.meos.timestamp_union_transfn(state, t);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_extent_transfn(Pointer p, Pointer ps) {
-		return MeosLibrary.meos.periodset_extent_transfn(p, ps);
+	public static Pointer timestampset_tcount_transfn(Pointer state, Pointer ts) {
+		return MeosLibrary.meos.timestampset_tcount_transfn(state, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestamp_tunion_transfn(Pointer state, long t) {
-		return MeosLibrary.meos.timestamp_tunion_transfn(state, t);
+	public static int set_cmp(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_cmp(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestampset_tunion_transfn(Pointer state, Pointer ts) {
-		return MeosLibrary.meos.timestampset_tunion_transfn(state, ts);
+	public static boolean set_eq(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_eq(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer period_tunion_transfn(Pointer state, Pointer p) {
-		return MeosLibrary.meos.period_tunion_transfn(state, p);
+	public static boolean set_ge(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_ge(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer periodset_tunion_transfn(Pointer state, Pointer ps) {
-		return MeosLibrary.meos.periodset_tunion_transfn(state, ps);
+	public static boolean set_gt(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_gt(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestamp_tunion_finalfn(Pointer state) {
-		return MeosLibrary.meos.timestamp_tunion_finalfn(state);
+	public static boolean set_le(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_le(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer period_tunion_finalfn(Pointer state) {
-		return MeosLibrary.meos.period_tunion_finalfn(state);
+	public static boolean set_lt(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_lt(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer timestamp_tcount_transfn(Pointer state, long t, Pointer interval, long origin) {
-		return MeosLibrary.meos.timestamp_tcount_transfn(state, t, interval, origin);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer timestampset_tcount_transfn(Pointer state, Pointer ts, Pointer interval, long origin) {
-		return MeosLibrary.meos.timestampset_tcount_transfn(state, ts, interval, origin);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer period_tcount_transfn(Pointer state, Pointer p, Pointer interval, long origin) {
-		return MeosLibrary.meos.period_tcount_transfn(state, p, interval, origin);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer periodset_tcount_transfn(Pointer state, Pointer ps, Pointer interval, long origin) {
-		return MeosLibrary.meos.periodset_tcount_transfn(state, ps, interval, origin);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_eq(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_eq(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_ne(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_ne(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static int periodset_cmp(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_cmp(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_lt(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_lt(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_le(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_le(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_ge(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_ge(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean periodset_gt(Pointer ps1, Pointer ps2) {
-		return MeosLibrary.meos.periodset_gt(ps1, ps2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean span_eq(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.span_eq(s1, s2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean span_ne(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.span_ne(s1, s2);
+	public static boolean set_ne(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.set_ne(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3992,13 +3568,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean span_lt(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.span_lt(s1, s2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean span_le(Pointer s1, Pointer s2) {
-		return MeosLibrary.meos.span_le(s1, s2);
+	public static boolean span_eq(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.span_eq(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4012,38 +3583,53 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_eq(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_eq(ss1, ss2);
+	public static boolean span_le(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.span_le(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_ne(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_ne(ss1, ss2);
+	public static boolean span_lt(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.span_lt(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int timestampset_cmp(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_cmp(ss1, ss2);
+	public static boolean span_ne(Pointer s1, Pointer s2) {
+		return MeosLibrary.meos.span_ne(s1, s2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_lt(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_lt(ss1, ss2);
+	public static int spanset_cmp(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_cmp(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_le(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_le(ss1, ss2);
+	public static boolean spanset_eq(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_eq(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_ge(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_ge(ss1, ss2);
+	public static boolean spanset_ge(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_ge(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_gt(Pointer ss1, Pointer ss2) {
-		return MeosLibrary.meos.timestampset_gt(ss1, ss2);
+	public static boolean spanset_gt(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_gt(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean spanset_le(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_le(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean spanset_lt(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_lt(ss1, ss2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean spanset_ne(Pointer ss1, Pointer ss2) {
+		return MeosLibrary.meos.spanset_ne(ss1, ss2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4057,7 +3643,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbox_from_wkb(Pointer wkb, int size) {
+	public static Pointer tbox_from_wkb(Pointer wkb, long size) {
 		return MeosLibrary.meos.tbox_from_wkb(wkb, size);
 	}
 	
@@ -4067,7 +3653,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer stbox_from_wkb(Pointer wkb, int size) {
+	public static Pointer stbox_from_wkb(Pointer wkb, long size) {
 		return MeosLibrary.meos.stbox_from_wkb(wkb, size);
 	}
 	
@@ -4107,13 +3693,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbox_make(Pointer p, Pointer s) {
-		return MeosLibrary.meos.tbox_make(p, s);
+	public static Pointer tbox_make(Pointer s, Pointer p) {
+		return MeosLibrary.meos.tbox_make(s, p);
 	}
 	
 	@SuppressWarnings("unused")
-	public static void tbox_set(Pointer p, Pointer s, Pointer box) {
-		MeosLibrary.meos.tbox_set(p, s, box);
+	public static void tbox_set(Pointer s, Pointer p, Pointer box) {
+		MeosLibrary.meos.tbox_set(s, p, box);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4134,11 +3720,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer float_to_tbox(double d) {
 		return MeosLibrary.meos.float_to_tbox(d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer span_to_tbox(Pointer span) {
-		return MeosLibrary.meos.span_to_tbox(span);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4167,8 +3748,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer float_period_to_tbox(double d, Pointer p) {
+		return MeosLibrary.meos.float_period_to_tbox(d, p);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer float_timestamp_to_tbox(double d, long t) {
 		return MeosLibrary.meos.float_timestamp_to_tbox(d, t);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geo_period_to_stbox(Pointer gs, Pointer p) {
+		return MeosLibrary.meos.geo_period_to_stbox(gs, p);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geo_timestamp_to_stbox(Pointer gs, long t) {
+		return MeosLibrary.meos.geo_timestamp_to_stbox(gs, t);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer geo_to_stbox(Pointer gs) {
+		return MeosLibrary.meos.geo_to_stbox(gs);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4177,8 +3778,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer float_period_to_tbox(double d, Pointer p) {
-		return MeosLibrary.meos.float_period_to_tbox(d, p);
+	public static Pointer numspan_to_tbox(Pointer s) {
+		return MeosLibrary.meos.numspan_to_tbox(s);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4222,11 +3823,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer geo_to_stbox(Pointer gs) {
-		return MeosLibrary.meos.geo_to_stbox(gs);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_stbox(long t) {
 		return MeosLibrary.meos.timestamp_to_stbox(t);
 	}
@@ -4247,16 +3843,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer geo_timestamp_to_stbox(Pointer gs, long t) {
-		return MeosLibrary.meos.geo_timestamp_to_stbox(gs, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer geo_period_to_stbox(Pointer gs, Pointer p) {
-		return MeosLibrary.meos.geo_period_to_stbox(gs, p);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean tbox_hasx(Pointer box) {
 		return MeosLibrary.meos.tbox_hasx(box);
 	}
@@ -4272,8 +3858,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean tbox_xmin_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.tbox_xmin_inc(box, result);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean tbox_xmax(Pointer box, Pointer result) {
 		return MeosLibrary.meos.tbox_xmax(box, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean tbox_xmax_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.tbox_xmax_inc(box, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4282,8 +3878,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean tbox_tmin_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.tbox_tmin_inc(box, result);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean tbox_tmax(Pointer box, Pointer result) {
 		return MeosLibrary.meos.tbox_tmax(box, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean tbox_tmax_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.tbox_tmax_inc(box, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4342,8 +3948,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static boolean stbox_tmin_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.stbox_tmin_inc(box, result);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean stbox_tmax(Pointer box, Pointer result) {
 		return MeosLibrary.meos.stbox_tmax(box, result);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean stbox_tmax_inc(Pointer box, Pointer result) {
+		return MeosLibrary.meos.stbox_tmax_inc(box, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4352,33 +3968,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void tbox_expand(Pointer box1, Pointer box2) {
-		MeosLibrary.meos.tbox_expand(box1, box2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static void tbox_shift_tscale(Pointer start, Pointer duration, Pointer box) {
-		MeosLibrary.meos.tbox_shift_tscale(start, duration, box);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tbox_expand_value(Pointer box, double d) {
-		return MeosLibrary.meos.tbox_expand_value(box, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tbox_expand_temporal(Pointer box, Pointer interval) {
-		return MeosLibrary.meos.tbox_expand_temporal(box, interval);
-	}
-	
-	@SuppressWarnings("unused")
 	public static void stbox_expand(Pointer box1, Pointer box2) {
 		MeosLibrary.meos.stbox_expand(box1, box2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static void stbox_shift_tscale(Pointer start, Pointer duration, Pointer box) {
-		MeosLibrary.meos.stbox_shift_tscale(start, duration, box);
+	public static Pointer stbox_expand_space(Pointer box, double d) {
+		return MeosLibrary.meos.stbox_expand_space(box, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer stbox_expand_time(Pointer box, Pointer interval) {
+		return MeosLibrary.meos.stbox_expand_time(box, interval);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer stbox_get_space(Pointer box) {
+		return MeosLibrary.meos.stbox_get_space(box);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer stbox_round(Pointer box, int maxdd) {
+		return MeosLibrary.meos.stbox_round(box, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4387,13 +3998,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer stbox_expand_spatial(Pointer box, double d) {
-		return MeosLibrary.meos.stbox_expand_spatial(box, d);
+	public static void tbox_expand(Pointer box1, Pointer box2) {
+		MeosLibrary.meos.tbox_expand(box1, box2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer stbox_expand_temporal(Pointer box, Pointer interval) {
-		return MeosLibrary.meos.stbox_expand_temporal(box, interval);
+	public static Pointer tbox_expand_value(Pointer box, double d) {
+		return MeosLibrary.meos.tbox_expand_value(box, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tbox_expand_time(Pointer box, Pointer interval) {
+		return MeosLibrary.meos.tbox_expand_time(box, interval);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tbox_round(Pointer box, int maxdd) {
+		return MeosLibrary.meos.tbox_round(box, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4597,6 +4218,11 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer stbox_quad_split(Pointer box, Pointer count) {
+		return MeosLibrary.meos.stbox_quad_split(box, count);
+	}
+	
+	@SuppressWarnings("unused")
 	public static boolean tbox_eq(Pointer box1, Pointer box2) {
 		return MeosLibrary.meos.tbox_eq(box1, box2);
 	}
@@ -4667,16 +4293,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer cstring2text(String cstring) {
-		return MeosLibrary.meos.cstring2text(cstring);
-	}
-	
-	@SuppressWarnings("unused")
-	public static String text2cstring(Pointer textptr) {
-		return MeosLibrary.meos.text2cstring(textptr);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer tbool_in(String str) {
 		return MeosLibrary.meos.tbool_in(str);
 	}
@@ -4712,7 +4328,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_from_wkb(Pointer wkb, int size) {
+	public static Pointer temporal_from_wkb(Pointer wkb, long size) {
 		return MeosLibrary.meos.temporal_from_wkb(wkb, size);
 	}
 	
@@ -4772,8 +4388,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbool_from_base(boolean b, Pointer temp) {
-		return MeosLibrary.meos.tbool_from_base(b, temp);
+	public static Pointer tbool_from_base_temp(boolean b, Pointer temp) {
+		return MeosLibrary.meos.tbool_from_base_temp(b, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4782,28 +4398,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbooldiscseq_from_base_time(boolean b, Pointer ts) {
-		return MeosLibrary.meos.tbooldiscseq_from_base_time(b, ts);
+	public static Pointer tboolseq_from_base_period(boolean b, Pointer p) {
+		return MeosLibrary.meos.tboolseq_from_base_period(b, p);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tboolseq_from_base(boolean b, Pointer seq) {
-		return MeosLibrary.meos.tboolseq_from_base(b, seq);
+	public static Pointer tboolseq_from_base_timestampset(boolean b, Pointer ts) {
+		return MeosLibrary.meos.tboolseq_from_base_timestampset(b, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tboolseq_from_base_time(boolean b, Pointer p) {
-		return MeosLibrary.meos.tboolseq_from_base_time(b, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tboolseqset_from_base(boolean b, Pointer ss) {
-		return MeosLibrary.meos.tboolseqset_from_base(b, ss);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tboolseqset_from_base_time(boolean b, Pointer ps) {
-		return MeosLibrary.meos.tboolseqset_from_base_time(b, ps);
+	public static Pointer tboolseqset_from_base_periodset(boolean b, Pointer ps) {
+		return MeosLibrary.meos.tboolseqset_from_base_periodset(b, ps);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4812,8 +4418,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_from_base(double d, Pointer temp, int interp) {
-		return MeosLibrary.meos.tfloat_from_base(d, temp, interp);
+	public static Pointer tfloat_from_base_temp(double d, Pointer temp) {
+		return MeosLibrary.meos.tfloat_from_base_temp(d, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4822,33 +4428,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloatdiscseq_from_base_time(double d, Pointer ts) {
-		return MeosLibrary.meos.tfloatdiscseq_from_base_time(d, ts);
+	public static Pointer tfloatseq_from_base_period(double d, Pointer p, int interp) {
+		return MeosLibrary.meos.tfloatseq_from_base_period(d, p, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloatseq_from_base(double d, Pointer seq, int interp) {
-		return MeosLibrary.meos.tfloatseq_from_base(d, seq, interp);
+	public static Pointer tfloatseq_from_base_timestampset(double d, Pointer ts) {
+		return MeosLibrary.meos.tfloatseq_from_base_timestampset(d, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloatseq_from_base_time(double d, Pointer p, int interp) {
-		return MeosLibrary.meos.tfloatseq_from_base_time(d, p, interp);
+	public static Pointer tfloatseqset_from_base_periodset(double d, Pointer ps, int interp) {
+		return MeosLibrary.meos.tfloatseqset_from_base_periodset(d, ps, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloatseqset_from_base(double d, Pointer ss, int interp) {
-		return MeosLibrary.meos.tfloatseqset_from_base(d, ss, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloatseqset_from_base_time(double d, Pointer ps, int interp) {
-		return MeosLibrary.meos.tfloatseqset_from_base_time(d, ps, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tgeogpoint_from_base(Pointer gs, Pointer temp, int interp) {
-		return MeosLibrary.meos.tgeogpoint_from_base(gs, temp, interp);
+	public static Pointer tgeogpoint_from_base_temp(Pointer gs, Pointer temp) {
+		return MeosLibrary.meos.tgeogpoint_from_base_temp(gs, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4857,33 +4453,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeogpointdiscseq_from_base_time(Pointer gs, Pointer ts) {
-		return MeosLibrary.meos.tgeogpointdiscseq_from_base_time(gs, ts);
+	public static Pointer tgeogpointseq_from_base_period(Pointer gs, Pointer p, int interp) {
+		return MeosLibrary.meos.tgeogpointseq_from_base_period(gs, p, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeogpointseq_from_base(Pointer gs, Pointer seq, int interp) {
-		return MeosLibrary.meos.tgeogpointseq_from_base(gs, seq, interp);
+	public static Pointer tgeogpointseq_from_base_timestampset(Pointer gs, Pointer ts) {
+		return MeosLibrary.meos.tgeogpointseq_from_base_timestampset(gs, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeogpointseq_from_base_time(Pointer gs, Pointer p, int interp) {
-		return MeosLibrary.meos.tgeogpointseq_from_base_time(gs, p, interp);
+	public static Pointer tgeogpointseqset_from_base_periodset(Pointer gs, Pointer ps, int interp) {
+		return MeosLibrary.meos.tgeogpointseqset_from_base_periodset(gs, ps, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeogpointseqset_from_base(Pointer gs, Pointer ss, int interp) {
-		return MeosLibrary.meos.tgeogpointseqset_from_base(gs, ss, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tgeogpointseqset_from_base_time(Pointer gs, Pointer ps, int interp) {
-		return MeosLibrary.meos.tgeogpointseqset_from_base_time(gs, ps, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tgeompoint_from_base(Pointer gs, Pointer temp, int interp) {
-		return MeosLibrary.meos.tgeompoint_from_base(gs, temp, interp);
+	public static Pointer tgeompoint_from_base_temp(Pointer gs, Pointer temp) {
+		return MeosLibrary.meos.tgeompoint_from_base_temp(gs, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4892,33 +4478,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeompointdiscseq_from_base_time(Pointer gs, Pointer ts) {
-		return MeosLibrary.meos.tgeompointdiscseq_from_base_time(gs, ts);
+	public static Pointer tgeompointseq_from_base_period(Pointer gs, Pointer p, int interp) {
+		return MeosLibrary.meos.tgeompointseq_from_base_period(gs, p, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeompointseq_from_base(Pointer gs, Pointer seq, int interp) {
-		return MeosLibrary.meos.tgeompointseq_from_base(gs, seq, interp);
+	public static Pointer tgeompointseq_from_base_timestampset(Pointer gs, Pointer ts) {
+		return MeosLibrary.meos.tgeompointseq_from_base_timestampset(gs, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeompointseq_from_base_time(Pointer gs, Pointer p, int interp) {
-		return MeosLibrary.meos.tgeompointseq_from_base_time(gs, p, interp);
+	public static Pointer tgeompointseqset_from_base_periodset(Pointer gs, Pointer ps, int interp) {
+		return MeosLibrary.meos.tgeompointseqset_from_base_periodset(gs, ps, interp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tgeompointseqset_from_base(Pointer gs, Pointer ss, int interp) {
-		return MeosLibrary.meos.tgeompointseqset_from_base(gs, ss, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tgeompointseqset_from_base_time(Pointer gs, Pointer ps, int interp) {
-		return MeosLibrary.meos.tgeompointseqset_from_base_time(gs, ps, interp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tint_from_base(int i, Pointer temp) {
-		return MeosLibrary.meos.tint_from_base(i, temp);
+	public static Pointer tint_from_base_temp(int i, Pointer temp) {
+		return MeosLibrary.meos.tint_from_base_temp(i, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4927,28 +4503,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tintdiscseq_from_base_time(int i, Pointer ts) {
-		return MeosLibrary.meos.tintdiscseq_from_base_time(i, ts);
+	public static Pointer tintseq_from_base_period(int i, Pointer p) {
+		return MeosLibrary.meos.tintseq_from_base_period(i, p);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tintseq_from_base(int i, Pointer seq) {
-		return MeosLibrary.meos.tintseq_from_base(i, seq);
+	public static Pointer tintseq_from_base_timestampset(int i, Pointer ts) {
+		return MeosLibrary.meos.tintseq_from_base_timestampset(i, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tintseq_from_base_time(int i, Pointer p) {
-		return MeosLibrary.meos.tintseq_from_base_time(i, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tintseqset_from_base(int i, Pointer ss) {
-		return MeosLibrary.meos.tintseqset_from_base(i, ss);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tintseqset_from_base_time(int i, Pointer ps) {
-		return MeosLibrary.meos.tintseqset_from_base_time(i, ps);
+	public static Pointer tintseqset_from_base_periodset(int i, Pointer ps) {
+		return MeosLibrary.meos.tintseqset_from_base_periodset(i, ps);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4962,28 +4528,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tsequence_make_free(Pointer instants, int count, boolean lower_inc, boolean upper_inc, int interp, boolean normalize) {
-		return MeosLibrary.meos.tsequence_make_free(instants, count, lower_inc, upper_inc, interp, normalize);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer tsequenceset_make(Pointer sequences, int count, boolean normalize) {
 		return MeosLibrary.meos.tsequenceset_make(sequences, count, normalize);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tsequenceset_make_free(Pointer sequences, int count, boolean normalize) {
-		return MeosLibrary.meos.tsequenceset_make_free(sequences, count, normalize);
+	public static Pointer tsequenceset_make_exp(Pointer sequences, int count, int maxcount, boolean normalize) {
+		return MeosLibrary.meos.tsequenceset_make_exp(sequences, count, maxcount, normalize);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tsequenceset_make_gaps(Pointer instants, int count, int interp, float maxdist, Pointer maxt) {
-		return MeosLibrary.meos.tsequenceset_make_gaps(instants, count, interp, maxdist, maxt);
+	public static Pointer tsequenceset_make_gaps(Pointer instants, int count, int interp, Pointer maxt, double maxdist) {
+		return MeosLibrary.meos.tsequenceset_make_gaps(instants, count, interp, maxt, maxdist);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttext_from_base(Pointer txt, Pointer temp) {
-		return MeosLibrary.meos.ttext_from_base(txt, temp);
+	public static Pointer ttext_from_base_temp(Pointer txt, Pointer temp) {
+		return MeosLibrary.meos.ttext_from_base_temp(txt, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4992,28 +4553,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttextdiscseq_from_base_time(Pointer txt, Pointer ts) {
-		return MeosLibrary.meos.ttextdiscseq_from_base_time(txt, ts);
+	public static Pointer ttextseq_from_base_period(Pointer txt, Pointer p) {
+		return MeosLibrary.meos.ttextseq_from_base_period(txt, p);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttextseq_from_base(Pointer txt, Pointer seq) {
-		return MeosLibrary.meos.ttextseq_from_base(txt, seq);
+	public static Pointer ttextseq_from_base_timestampset(Pointer txt, Pointer ts) {
+		return MeosLibrary.meos.ttextseq_from_base_timestampset(txt, ts);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttextseq_from_base_time(Pointer txt, Pointer p) {
-		return MeosLibrary.meos.ttextseq_from_base_time(txt, p);
+	public static Pointer ttextseqset_from_base_periodset(Pointer txt, Pointer ps) {
+		return MeosLibrary.meos.ttextseqset_from_base_periodset(txt, ps);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttextseqset_from_base(Pointer txt, Pointer ss) {
-		return MeosLibrary.meos.ttextseqset_from_base(txt, ss);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer ttextseqset_from_base_time(Pointer txt, Pointer ps) {
-		return MeosLibrary.meos.ttextseqset_from_base_time(txt, ps);
+	public static Pointer temporal_to_period(Pointer temp) {
+		return MeosLibrary.meos.temporal_to_period(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5032,11 +4588,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_to_period(Pointer temp) {
-		return MeosLibrary.meos.temporal_to_period(temp);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean tbool_end_value(Pointer temp) {
 		return MeosLibrary.meos.tbool_end_value(temp);
 	}
@@ -5052,8 +4603,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_duration(Pointer temp) {
-		return MeosLibrary.meos.temporal_duration(temp);
+	public static Pointer temporal_duration(Pointer temp, boolean boundspan) {
+		return MeosLibrary.meos.temporal_duration(temp, boundspan);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5072,8 +4623,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String temporal_interpolation(Pointer temp) {
-		return MeosLibrary.meos.temporal_interpolation(temp);
+	public static String temporal_interp(Pointer temp) {
+		return MeosLibrary.meos.temporal_interp(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5107,11 +4658,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static long temporal_size(Pointer temp) {
-		return MeosLibrary.meos.temporal_size(temp);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer temporal_start_sequence(Pointer temp) {
 		return MeosLibrary.meos.temporal_start_sequence(temp);
 	}
@@ -5119,6 +4665,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static long temporal_start_timestamp(Pointer temp) {
 		return MeosLibrary.meos.temporal_start_timestamp(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_stops(Pointer temp, double maxdist, Pointer minduration) {
+		return MeosLibrary.meos.temporal_stops(temp, maxdist, minduration);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5132,11 +4683,6 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_timespan(Pointer temp) {
-		return MeosLibrary.meos.temporal_timespan(temp);
-	}
-	
-	@SuppressWarnings("unused")
 	public static boolean temporal_timestamp_n(Pointer temp, int n, Pointer result) {
 		return MeosLibrary.meos.temporal_timestamp_n(temp, n, result);
 	}
@@ -5144,6 +4690,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer temporal_timestamps(Pointer temp, Pointer count) {
 		return MeosLibrary.meos.temporal_timestamps(temp, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_values(Pointer temp, Pointer count) {
+		return MeosLibrary.meos.temporal_values(temp, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5159,11 +4710,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static double tfloat_min_value(Pointer temp) {
 		return MeosLibrary.meos.tfloat_min_value(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloat_spans(Pointer temp, Pointer count) {
-		return MeosLibrary.meos.tfloat_spans(temp, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5199,6 +4745,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer tint_values(Pointer temp, Pointer count) {
 		return MeosLibrary.meos.tint_values(temp, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_valuespans(Pointer temp) {
+		return MeosLibrary.meos.tnumber_valuespans(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5242,23 +4793,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tsequence_compact(Pointer seq) {
-		return MeosLibrary.meos.tsequence_compact(seq);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_append_tinstant(Pointer temp, Pointer inst, boolean expand) {
-		return MeosLibrary.meos.temporal_append_tinstant(temp, inst, expand);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_merge(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.temporal_merge(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_merge_array(Pointer temparr, int count) {
-		return MeosLibrary.meos.temporal_merge_array(temparr, count);
+	public static Pointer temporal_set_interp(Pointer temp, int interp) {
+		return MeosLibrary.meos.temporal_set_interp(temp, interp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5272,18 +4808,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_step_to_linear(Pointer temp) {
-		return MeosLibrary.meos.temporal_step_to_linear(temp);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer temporal_to_tinstant(Pointer temp) {
 		return MeosLibrary.meos.temporal_to_tinstant(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_to_tdiscseq(Pointer temp) {
-		return MeosLibrary.meos.temporal_to_tdiscseq(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5294,6 +4820,16 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer temporal_to_tsequenceset(Pointer temp) {
 		return MeosLibrary.meos.temporal_to_tsequenceset(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_tprecision(Pointer temp, Pointer duration, long origin) {
+		return MeosLibrary.meos.temporal_tprecision(temp, duration, origin);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_tsample(Pointer temp, Pointer duration, long origin) {
+		return MeosLibrary.meos.temporal_tsample(temp, duration, origin);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5347,6 +4883,11 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer temporal_at_values(Pointer temp, Pointer set) {
+		return MeosLibrary.meos.temporal_at_values(temp, set);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer temporal_minus_max(Pointer temp) {
 		return MeosLibrary.meos.temporal_minus_max(temp);
 	}
@@ -5377,23 +4918,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer temporal_minus_values(Pointer temp, Pointer set) {
+		return MeosLibrary.meos.temporal_minus_values(temp, set);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer tfloat_at_value(Pointer temp, double d) {
 		return MeosLibrary.meos.tfloat_at_value(temp, d);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_at_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tfloat_at_values(temp, values, count);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer tfloat_minus_value(Pointer temp, double d) {
 		return MeosLibrary.meos.tfloat_minus_value(temp, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloat_minus_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tfloat_minus_values(temp, values, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5407,18 +4943,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tint_at_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tint_at_values(temp, values, count);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer tint_minus_value(Pointer temp, int i) {
 		return MeosLibrary.meos.tint_minus_value(temp, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tint_minus_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tint_minus_values(temp, values, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5432,8 +4958,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tnumber_at_spans(Pointer temp, Pointer spans, int count) {
-		return MeosLibrary.meos.tnumber_at_spans(temp, spans, count);
+	public static Pointer tnumber_at_spanset(Pointer temp, Pointer ss) {
+		return MeosLibrary.meos.tnumber_at_spanset(temp, ss);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5447,8 +4973,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tnumber_minus_spans(Pointer temp, Pointer spans, int count) {
-		return MeosLibrary.meos.tnumber_minus_spans(temp, spans, count);
+	public static Pointer tnumber_minus_spanset(Pointer temp, Pointer ss) {
+		return MeosLibrary.meos.tnumber_minus_spanset(temp, ss);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5457,13 +4983,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_at_geometry(Pointer temp, Pointer gs) {
-		return MeosLibrary.meos.tpoint_at_geometry(temp, gs);
+	public static Pointer tpoint_at_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period) {
+		return MeosLibrary.meos.tpoint_at_geom_time(temp, gs, zspan, period);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_at_stbox(Pointer temp, Pointer box) {
-		return MeosLibrary.meos.tpoint_at_stbox(temp, box);
+	public static Pointer tpoint_at_stbox(Pointer temp, Pointer box, boolean border_inc) {
+		return MeosLibrary.meos.tpoint_at_stbox(temp, box, border_inc);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5472,28 +4998,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_at_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tpoint_at_values(temp, values, count);
+	public static Pointer tpoint_minus_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period) {
+		return MeosLibrary.meos.tpoint_minus_geom_time(temp, gs, zspan, period);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_minus_geometry(Pointer temp, Pointer gs) {
-		return MeosLibrary.meos.tpoint_minus_geometry(temp, gs);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_minus_stbox(Pointer temp, Pointer box) {
-		return MeosLibrary.meos.tpoint_minus_stbox(temp, box);
+	public static Pointer tpoint_minus_stbox(Pointer temp, Pointer box, boolean border_inc) {
+		return MeosLibrary.meos.tpoint_minus_stbox(temp, box, border_inc);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_minus_value(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.tpoint_minus_value(temp, gs);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_minus_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.tpoint_minus_values(temp, values, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5507,23 +5023,63 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttext_at_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.ttext_at_values(temp, values, count);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer ttext_minus_value(Pointer temp, Pointer txt) {
 		return MeosLibrary.meos.ttext_minus_value(temp, txt);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer ttext_minus_values(Pointer temp, Pointer values, int count) {
-		return MeosLibrary.meos.ttext_minus_values(temp, values, count);
+	public static boolean ttext_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value) {
+		return MeosLibrary.meos.ttext_value_at_timestamp(temp, t, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean ttext_value_at_timestamp(Pointer temp, long t, boolean strict, Pointer value) {
-		return MeosLibrary.meos.ttext_value_at_timestamp(temp, t, strict, value);
+	public static Pointer temporal_append_tinstant(Pointer temp, Pointer inst, double maxdist, Pointer maxt, boolean expand) {
+		return MeosLibrary.meos.temporal_append_tinstant(temp, inst, maxdist, maxt, expand);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_append_tsequence(Pointer temp, Pointer seq, boolean expand) {
+		return MeosLibrary.meos.temporal_append_tsequence(temp, seq, expand);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_delete_period(Pointer temp, Pointer p, boolean connect) {
+		return MeosLibrary.meos.temporal_delete_period(temp, p, connect);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_delete_periodset(Pointer temp, Pointer ps, boolean connect) {
+		return MeosLibrary.meos.temporal_delete_periodset(temp, ps, connect);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_delete_timestamp(Pointer temp, long t, boolean connect) {
+		return MeosLibrary.meos.temporal_delete_timestamp(temp, t, connect);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_delete_timestampset(Pointer temp, Pointer ts, boolean connect) {
+		return MeosLibrary.meos.temporal_delete_timestampset(temp, ts, connect);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_insert(Pointer temp1, Pointer temp2, boolean connect) {
+		return MeosLibrary.meos.temporal_insert(temp1, temp2, connect);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_merge(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.temporal_merge(temp1, temp2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_merge_array(Pointer temparr, int count) {
+		return MeosLibrary.meos.temporal_merge_array(temparr, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect) {
+		return MeosLibrary.meos.temporal_update(temp1, temp2, connect);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5539,6 +5095,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer tand_tbool_tbool(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.tand_tbool_tbool(temp1, temp2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tbool_when_true(Pointer temp) {
+		return MeosLibrary.meos.tbool_when_true(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5562,28 +5123,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbool_when_true(Pointer temp) {
-		return MeosLibrary.meos.tbool_when_true(temp);
+	public static Pointer add_float_tnumber(double d, Pointer tnumber) {
+		return MeosLibrary.meos.add_float_tnumber(d, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer add_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.add_float_tfloat(d, tnumber);
+	public static Pointer add_int_tnumber(int i, Pointer tnumber) {
+		return MeosLibrary.meos.add_int_tnumber(i, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer add_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.add_int_tint(i, tnumber);
+	public static Pointer add_tnumber_float(Pointer tnumber, double d) {
+		return MeosLibrary.meos.add_tnumber_float(tnumber, d);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer add_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.add_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer add_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.add_tint_int(tnumber, i);
+	public static Pointer add_tnumber_int(Pointer tnumber, int i) {
+		return MeosLibrary.meos.add_tnumber_int(tnumber, i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5592,23 +5148,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer div_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.div_float_tfloat(d, tnumber);
+	public static Pointer div_float_tnumber(double d, Pointer tnumber) {
+		return MeosLibrary.meos.div_float_tnumber(d, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer div_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.div_int_tint(i, tnumber);
+	public static Pointer div_int_tnumber(int i, Pointer tnumber) {
+		return MeosLibrary.meos.div_int_tnumber(i, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer div_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.div_tfloat_float(tnumber, d);
+	public static Pointer div_tnumber_float(Pointer tnumber, double d) {
+		return MeosLibrary.meos.div_tnumber_float(tnumber, d);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer div_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.div_tint_int(tnumber, i);
+	public static Pointer div_tnumber_int(Pointer tnumber, int i) {
+		return MeosLibrary.meos.div_tnumber_int(tnumber, i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5617,23 +5173,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer mult_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.mult_float_tfloat(d, tnumber);
+	public static double float_degrees(double value, boolean normalize) {
+		return MeosLibrary.meos.float_degrees(value, normalize);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer mult_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.mult_int_tint(i, tnumber);
+	public static Pointer mult_float_tnumber(double d, Pointer tnumber) {
+		return MeosLibrary.meos.mult_float_tnumber(d, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer mult_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.mult_tfloat_float(tnumber, d);
+	public static Pointer mult_int_tnumber(int i, Pointer tnumber) {
+		return MeosLibrary.meos.mult_int_tnumber(i, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer mult_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.mult_tint_int(tnumber, i);
+	public static Pointer mult_tnumber_float(Pointer tnumber, double d) {
+		return MeosLibrary.meos.mult_tnumber_float(tnumber, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer mult_tnumber_int(Pointer tnumber, int i) {
+		return MeosLibrary.meos.mult_tnumber_int(tnumber, i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5642,23 +5203,23 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer sub_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.sub_float_tfloat(d, tnumber);
+	public static Pointer sub_float_tnumber(double d, Pointer tnumber) {
+		return MeosLibrary.meos.sub_float_tnumber(d, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer sub_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.sub_int_tint(i, tnumber);
+	public static Pointer sub_int_tnumber(int i, Pointer tnumber) {
+		return MeosLibrary.meos.sub_int_tnumber(i, tnumber);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer sub_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.sub_tfloat_float(tnumber, d);
+	public static Pointer sub_tnumber_float(Pointer tnumber, double d) {
+		return MeosLibrary.meos.sub_tnumber_float(tnumber, d);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer sub_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.sub_tint_int(tnumber, i);
+	public static Pointer sub_tnumber_int(Pointer tnumber, int i) {
+		return MeosLibrary.meos.sub_tnumber_int(tnumber, i);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5667,8 +5228,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_degrees(Pointer temp) {
-		return MeosLibrary.meos.tfloat_degrees(temp);
+	public static Pointer tfloat_round(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.tfloat_round(temp, maxdd);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_degrees(Pointer temp, boolean normalize) {
+		return MeosLibrary.meos.tfloat_degrees(temp, normalize);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_derivative(Pointer temp) {
+		return MeosLibrary.meos.tfloat_derivative(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5677,8 +5248,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_derivative(Pointer temp) {
-		return MeosLibrary.meos.tfloat_derivative(temp);
+	public static Pointer tnumber_abs(Pointer temp) {
+		return MeosLibrary.meos.tnumber_abs(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_angular_difference(Pointer temp) {
+		return MeosLibrary.meos.tnumber_angular_difference(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_delta_value(Pointer temp) {
+		return MeosLibrary.meos.tnumber_delta_value(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5704,1361 +5285,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer ttext_lower(Pointer temp) {
 		return MeosLibrary.meos.ttext_lower(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.adjacent_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.adjacent_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.adjacent_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.adjacent_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.adjacent_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.adjacent_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.adjacent_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.adjacent_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.adjacent_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.adjacent_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.adjacent_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.adjacent_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.adjacent_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.adjacent_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.adjacent_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.adjacent_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.adjacent_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.adjacent_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.adjacent_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.adjacent_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.adjacent_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.adjacent_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean adjacent_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.adjacent_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.contained_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.contained_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.contained_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.contained_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.contained_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.contained_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.contained_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.contained_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.contained_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.contained_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.contained_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.contained_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.contained_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.contained_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.contained_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.contained_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.contained_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.contained_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.contained_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.contained_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.contained_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.contained_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contained_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.contained_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_bbox_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.contains_bbox_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.contains_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.contains_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.contains_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.contains_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.contains_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.contains_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.contains_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.contains_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.contains_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.contains_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.contains_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.contains_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.contains_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.contains_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.contains_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.contains_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.contains_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.contains_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.contains_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.contains_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.contains_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean contains_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.contains_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.left_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.left_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.left_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.left_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.overlaps_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overlaps_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.overlaps_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.overlaps_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.overlaps_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.overlaps_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overlaps_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.overlaps_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.overlaps_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.overlaps_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.overlaps_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.overlaps_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.overlaps_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.overlaps_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.overlaps_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.overlaps_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.overlaps_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.overlaps_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.overlaps_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.overlaps_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overlaps_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overlaps_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overlaps_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overlaps_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.overleft_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.overleft_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.overleft_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.overleft_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.overright_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.overright_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.overright_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.overright_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.right_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.right_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.right_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.right_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_float_tfloat(double d, Pointer tnumber) {
-		return MeosLibrary.meos.same_float_tfloat(d, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.same_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_int_tint(int i, Pointer tnumber) {
-		return MeosLibrary.meos.same_int_tint(i, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.same_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.same_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.same_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.same_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.same_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.same_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.same_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.same_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.same_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.same_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tfloat_float(Pointer tnumber, double d) {
-		return MeosLibrary.meos.same_tfloat_float(tnumber, d);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.same_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.same_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tint_int(Pointer tnumber, int i) {
-		return MeosLibrary.meos.same_tint_int(tnumber, i);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.same_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.same_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.same_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.same_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.same_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean same_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.same_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean above_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.above_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean above_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.above_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean above_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.above_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean above_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.above_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean above_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.above_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.after_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.after_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.after_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.after_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.after_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.after_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.after_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.after_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.after_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.after_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.after_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.after_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.after_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.after_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean after_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.after_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean back_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.back_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean back_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.back_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean back_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.back_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean back_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.back_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean back_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.back_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.before_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.before_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.before_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.before_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.before_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.before_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.before_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.before_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.before_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.before_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.before_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.before_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.before_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.before_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean before_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.before_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean below_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.below_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean below_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.below_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean below_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.below_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean below_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.below_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean below_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.below_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean front_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.front_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean front_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.front_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean front_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.front_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean front_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.front_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean front_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.front_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.left_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.left_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.left_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.left_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.left_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.left_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.left_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.left_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.left_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean left_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.left_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overabove_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overabove_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overabove_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overabove_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overabove_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overabove_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overabove_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overabove_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overabove_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overabove_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.overafter_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.overafter_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overafter_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.overafter_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.overafter_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.overafter_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.overafter_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.overafter_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.overafter_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.overafter_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.overafter_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.overafter_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.overafter_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overafter_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overafter_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overafter_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overback_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overback_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overback_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overback_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overback_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overback_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overback_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overback_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overback_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overback_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_period_temporal(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.overbefore_period_temporal(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_periodset_temporal(Pointer ps, Pointer temp) {
-		return MeosLibrary.meos.overbefore_periodset_temporal(ps, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overbefore_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.overbefore_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.overbefore_temporal_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.overbefore_temporal_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_temporal(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.overbefore_temporal_temporal(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.overbefore_temporal_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_timestampset(Pointer temp, Pointer ts) {
-		return MeosLibrary.meos.overbefore_temporal_timestampset(temp, ts);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestamp_temporal(long t, Pointer temp) {
-		return MeosLibrary.meos.overbefore_timestamp_temporal(t, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_timestampset_temporal(Pointer ts, Pointer temp) {
-		return MeosLibrary.meos.overbefore_timestampset_temporal(ts, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.overbefore_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.overbefore_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overbefore_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbefore_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overbefore_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbelow_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overbelow_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbelow_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overbelow_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbelow_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overbelow_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbelow_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overbelow_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overbelow_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overbelow_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overfront_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overfront_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overfront_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overfront_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overfront_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overfront_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overfront_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overfront_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overfront_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overfront_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overleft_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.overleft_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overleft_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.overleft_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.overleft_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.overleft_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.overleft_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overleft_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overleft_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overleft_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overleft_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.overright_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.overright_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.overright_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.overright_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.overright_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.overright_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.overright_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.overright_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.overright_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean overright_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.overright_tpoint_tpoint(tpoint1, tpoint2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_geo_tpoint(Pointer geo, Pointer tpoint) {
-		return MeosLibrary.meos.right_geo_tpoint(geo, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_span_tnumber(Pointer span, Pointer tnumber) {
-		return MeosLibrary.meos.right_span_tnumber(span, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_stbox_tpoint(Pointer stbox, Pointer tpoint) {
-		return MeosLibrary.meos.right_stbox_tpoint(stbox, tpoint);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tbox_tnumber(Pointer tbox, Pointer tnumber) {
-		return MeosLibrary.meos.right_tbox_tnumber(tbox, tnumber);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tnumber_span(Pointer tnumber, Pointer span) {
-		return MeosLibrary.meos.right_tnumber_span(tnumber, span);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tnumber_tbox(Pointer tnumber, Pointer tbox) {
-		return MeosLibrary.meos.right_tnumber_tbox(tnumber, tbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		return MeosLibrary.meos.right_tnumber_tnumber(tnumber1, tnumber2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tpoint_geo(Pointer tpoint, Pointer geo) {
-		return MeosLibrary.meos.right_tpoint_geo(tpoint, geo);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tpoint_stbox(Pointer tpoint, Pointer stbox) {
-		return MeosLibrary.meos.right_tpoint_stbox(tpoint, stbox);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean right_tpoint_tpoint(Pointer tpoint1, Pointer tpoint2) {
-		return MeosLibrary.meos.right_tpoint_tpoint(tpoint1, tpoint2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7249,6 +5475,16 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static boolean tint_ever_lt(Pointer temp, int i) {
 		return MeosLibrary.meos.tint_ever_lt(temp, i);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean tpoint_always_eq(Pointer temp, long value) {
+		return MeosLibrary.meos.tpoint_always_eq(temp, value);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean tpoint_ever_eq(Pointer temp, long value) {
+		return MeosLibrary.meos.tpoint_ever_eq(temp, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7622,13 +5858,28 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tpoint_angular_difference(Pointer temp) {
+		return MeosLibrary.meos.tpoint_angular_difference(temp);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_azimuth(Pointer temp) {
 		return MeosLibrary.meos.tpoint_azimuth(temp);
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tpoint_convex_hull(Pointer temp) {
+		return MeosLibrary.meos.tpoint_convex_hull(temp);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_cumulative_length(Pointer temp) {
 		return MeosLibrary.meos.tpoint_cumulative_length(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static boolean tpoint_direction(Pointer temp, Pointer result) {
+		return MeosLibrary.meos.tpoint_direction(temp, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7667,8 +5918,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer geo_expand_spatial(Pointer gs, double d) {
-		return MeosLibrary.meos.geo_expand_spatial(gs, d);
+	public static Pointer geo_expand_space(Pointer gs, double d) {
+		return MeosLibrary.meos.geo_expand_space(gs, d);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7677,8 +5928,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_expand_spatial(Pointer temp, double d) {
-		return MeosLibrary.meos.tpoint_expand_spatial(temp, d);
+	public static Pointer tpoint_expand_space(Pointer temp, double d) {
+		return MeosLibrary.meos.tpoint_expand_space(temp, d);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_round(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.tpoint_round(temp, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7692,38 +5948,43 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static int contains_geo_tpoint(Pointer geo, Pointer temp) {
-		return MeosLibrary.meos.contains_geo_tpoint(geo, temp);
+	public static int econtains_geo_tpoint(Pointer geo, Pointer temp) {
+		return MeosLibrary.meos.econtains_geo_tpoint(geo, temp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int disjoint_tpoint_geo(Pointer temp, Pointer gs) {
-		return MeosLibrary.meos.disjoint_tpoint_geo(temp, gs);
+	public static int edisjoint_tpoint_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.edisjoint_tpoint_geo(temp, gs);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int disjoint_tpoint_tpoint(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.disjoint_tpoint_tpoint(temp1, temp2);
+	public static int edisjoint_tpoint_tpoint(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.edisjoint_tpoint_tpoint(temp1, temp2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int dwithin_tpoint_geo(Pointer temp, Pointer gs, double dist) {
-		return MeosLibrary.meos.dwithin_tpoint_geo(temp, gs, dist);
+	public static int edwithin_tpoint_geo(Pointer temp, Pointer gs, double dist) {
+		return MeosLibrary.meos.edwithin_tpoint_geo(temp, gs, dist);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int dwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist) {
-		return MeosLibrary.meos.dwithin_tpoint_tpoint(temp1, temp2, dist);
+	public static int edwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist) {
+		return MeosLibrary.meos.edwithin_tpoint_tpoint(temp1, temp2, dist);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int intersects_tpoint_geo(Pointer temp, Pointer gs) {
-		return MeosLibrary.meos.intersects_tpoint_geo(temp, gs);
+	public static int eintersects_tpoint_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.eintersects_tpoint_geo(temp, gs);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int intersects_tpoint_tpoint(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.intersects_tpoint_tpoint(temp1, temp2);
+	public static int eintersects_tpoint_tpoint(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.eintersects_tpoint_tpoint(temp1, temp2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int etouches_tpoint_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.etouches_tpoint_geo(temp, gs);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7752,103 +6013,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static int touches_tpoint_geo(Pointer temp, Pointer gs) {
-		return MeosLibrary.meos.touches_tpoint_geo(temp, gs);
-	}
-	
-	@SuppressWarnings("unused")
 	public static Pointer ttouches_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.ttouches_tpoint_geo(temp, gs, restr, atvalue);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_insert(Pointer temp1, Pointer temp2, boolean connect) {
-		return MeosLibrary.meos.temporal_insert(temp1, temp2, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect) {
-		return MeosLibrary.meos.temporal_update(temp1, temp2, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_delete_timestamp(Pointer temp, long t, boolean connect) {
-		return MeosLibrary.meos.temporal_delete_timestamp(temp, t, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_delete_timestampset(Pointer temp, Pointer ts, boolean connect) {
-		return MeosLibrary.meos.temporal_delete_timestampset(temp, ts, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_delete_period(Pointer temp, Pointer p, boolean connect) {
-		return MeosLibrary.meos.temporal_delete_period(temp, p, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_delete_periodset(Pointer temp, Pointer ps, boolean connect) {
-		return MeosLibrary.meos.temporal_delete_periodset(temp, ps, connect);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean temporal_intersects_period(Pointer temp, Pointer p) {
-		return MeosLibrary.meos.temporal_intersects_period(temp, p);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean temporal_intersects_periodset(Pointer temp, Pointer ps) {
-		return MeosLibrary.meos.temporal_intersects_periodset(temp, ps);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean temporal_intersects_timestamp(Pointer temp, long t) {
-		return MeosLibrary.meos.temporal_intersects_timestamp(temp, t);
-	}
-	
-	@SuppressWarnings("unused")
-	public static boolean temporal_intersects_timestampset(Pointer temp, Pointer ss) {
-		return MeosLibrary.meos.temporal_intersects_timestampset(temp, ss);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double tnumber_integral(Pointer temp) {
-		return MeosLibrary.meos.tnumber_integral(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double tnumber_twavg(Pointer temp) {
-		return MeosLibrary.meos.tnumber_twavg(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_twcentroid(Pointer temp) {
-		return MeosLibrary.meos.tpoint_twcentroid(temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static void skiplist_free(Pointer list) {
-		MeosLibrary.meos.skiplist_free(list);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_extent_transfn(Pointer p, Pointer temp) {
-		return MeosLibrary.meos.temporal_extent_transfn(p, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tnumber_extent_transfn(Pointer box, Pointer temp) {
-		return MeosLibrary.meos.tnumber_extent_transfn(box, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_extent_transfn(Pointer box, Pointer temp) {
-		return MeosLibrary.meos.tpoint_extent_transfn(box, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_tcount_transfn(Pointer state, Pointer temp, Pointer interval, long origin) {
-		return MeosLibrary.meos.temporal_tcount_transfn(state, temp, interval, origin);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7862,48 +6028,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tint_tmin_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tint_tmin_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloat_tmin_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tfloat_tmin_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tint_tmax_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tint_tmax_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloat_tmax_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tfloat_tmax_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tint_tsum_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tint_tsum_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tfloat_tsum_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tfloat_tsum_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tnumber_tavg_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.tnumber_tavg_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer ttext_tmin_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.ttext_tmin_transfn(state, temp);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer ttext_tmax_transfn(Pointer state, Pointer temp) {
-		return MeosLibrary.meos.ttext_tmax_transfn(state, temp);
+	public static Pointer temporal_extent_transfn(Pointer p, Pointer temp) {
+		return MeosLibrary.meos.temporal_extent_transfn(p, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7912,13 +6038,93 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer temporal_tcount_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.temporal_tcount_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tmax_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tfloat_tmax_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tmin_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tfloat_tmin_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tsum_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tfloat_tsum_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tint_tmax_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tint_tmax_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tint_tmin_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tint_tmin_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tint_tsum_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tint_tsum_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_extent_transfn(Pointer box, Pointer temp) {
+		return MeosLibrary.meos.tnumber_extent_transfn(box, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double tnumber_integral(Pointer temp) {
+		return MeosLibrary.meos.tnumber_integral(temp);
+	}
+	
+	@SuppressWarnings("unused")
 	public static Pointer tnumber_tavg_finalfn(Pointer state) {
 		return MeosLibrary.meos.tnumber_tavg_finalfn(state);
 	}
 	
 	@SuppressWarnings("unused")
-	public static int int_bucket(int value, int size, int origin) {
-		return MeosLibrary.meos.int_bucket(value, size, origin);
+	public static Pointer tnumber_tavg_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tnumber_tavg_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double tnumber_twavg(Pointer temp) {
+		return MeosLibrary.meos.tnumber_twavg(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_extent_transfn(Pointer box, Pointer temp) {
+		return MeosLibrary.meos.tpoint_extent_transfn(box, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_tcentroid_finalfn(Pointer state) {
+		return MeosLibrary.meos.tpoint_tcentroid_finalfn(state);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_tcentroid_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.tpoint_tcentroid_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_twcentroid(Pointer temp) {
+		return MeosLibrary.meos.tpoint_twcentroid(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer ttext_tmax_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.ttext_tmax_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer ttext_tmin_transfn(Pointer state, Pointer temp) {
+		return MeosLibrary.meos.ttext_tmin_transfn(state, temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7927,8 +6133,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static long timestamptz_bucket(long timestamp, Pointer duration, long origin) {
-		return MeosLibrary.meos.timestamptz_bucket(timestamp, duration, origin);
+	public static Pointer floatspan_bucket_list(Pointer bounds, double size, double origin, Pointer newcount) {
+		return MeosLibrary.meos.floatspan_bucket_list(bounds, size, origin, newcount);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int int_bucket(int value, int size, int origin) {
+		return MeosLibrary.meos.int_bucket(value, size, origin);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7937,13 +6148,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_bucket_list(Pointer bounds, double size, double origin, Pointer newcount) {
-		return MeosLibrary.meos.floatspan_bucket_list(bounds, size, origin, newcount);
+	public static Pointer period_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer newcount) {
+		return MeosLibrary.meos.period_bucket_list(bounds, duration, origin, newcount);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer period_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer newcount) {
-		return MeosLibrary.meos.period_bucket_list(bounds, duration, origin, newcount);
+	public static Pointer stbox_tile_list(Pointer bounds, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, Pointer cellcount) {
+		return MeosLibrary.meos.stbox_tile_list(bounds, xsize, ysize, zsize, duration, sorigin, torigin, cellcount);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7952,8 +6163,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tint_value_split(Pointer temp, int size, int origin, Pointer newcount) {
-		return MeosLibrary.meos.tint_value_split(temp, size, origin, newcount);
+	public static Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin, Pointer newcount) {
+		return MeosLibrary.meos.temporal_time_split(temp, duration, torigin, newcount);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7962,8 +6173,18 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin, Pointer newcount) {
-		return MeosLibrary.meos.temporal_time_split(temp, duration, torigin, newcount);
+	public static Pointer tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, long torigin, Pointer newcount) {
+		return MeosLibrary.meos.tfloat_value_time_split(temp, size, vorigin, duration, torigin, newcount);
+	}
+	
+	@SuppressWarnings("unused")
+	public static long timestamptz_bucket(long timestamp, Pointer duration, long origin) {
+		return MeosLibrary.meos.timestamptz_bucket(timestamp, duration, origin);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tint_value_split(Pointer temp, int size, int origin, Pointer newcount) {
+		return MeosLibrary.meos.tint_value_split(temp, size, origin, newcount);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7972,28 +6193,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, long torigin, Pointer newcount) {
-		return MeosLibrary.meos.tfloat_value_time_split(temp, size, vorigin, duration, torigin, newcount);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer stbox_tile_list(Pointer bounds, double size, Pointer duration, Pointer sorigin, long torigin, Pointer cellcount) {
-		return MeosLibrary.meos.stbox_tile_list(bounds, size, duration, sorigin, torigin, cellcount);
-	}
-	
-	@SuppressWarnings("unused")
-	public static double temporal_frechet_distance(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.temporal_frechet_distance(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
 	public static double temporal_dyntimewarp_distance(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.temporal_dyntimewarp_distance(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer temporal_frechet_path(Pointer temp1, Pointer temp2, Pointer count) {
-		return MeosLibrary.meos.temporal_frechet_path(temp1, temp2, count);
 	}
 	
 	@SuppressWarnings("unused")
@@ -8002,17 +6203,17 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer geo_to_tpoint(Pointer geo) {
-		return MeosLibrary.meos.geo_to_tpoint(geo);
+	public static double temporal_frechet_distance(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.temporal_frechet_distance(temp1, temp2);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_simplify(Pointer temp, double eps_dist, boolean synchronize) {
-		return MeosLibrary.meos.temporal_simplify(temp, eps_dist, synchronize);
+	public static Pointer temporal_frechet_path(Pointer temp1, Pointer temp2, Pointer count) {
+		return MeosLibrary.meos.temporal_frechet_path(temp1, temp2, count);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tpoint_to_geo_measure(Pointer tpoint, Pointer measure, boolean segmentize, Pointer result) {
-		return MeosLibrary.meos.tpoint_to_geo_measure(tpoint, measure, segmentize, result);
+	public static double temporal_hausdorff_distance(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.temporal_hausdorff_distance(temp1, temp2);
 	}
 }

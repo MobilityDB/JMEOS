@@ -1,6 +1,6 @@
 package tutorials;
 
-import functions.functions_old;
+import functions.functions;
 import jnr.ffi.Pointer;
 
 import java.io.*;
@@ -17,7 +17,7 @@ public class disassemble_berlinmod {
 	
 	public static void main(String[] args) {
 		
-		functions_old.meos_initialize("UTC");
+		functions.meos_initialize("UTC");
 		
 		char[] header_buffer = new char[MAX_LENGTH_HEADER];
 		char[] date_buffer = new char[MAX_LENGTH_DATE];
@@ -57,8 +57,8 @@ public class disassemble_berlinmod {
 				seq = Integer.parseInt(tokens[3].trim());
 				String trip_buffer_string = tokens[4];
 				
-				Pointer day = functions_old.pg_date_in(date_buffer_string);
-				Pointer trip = functions_old.temporal_from_hexwkb(trip_buffer_string);
+				int day = functions.pg_date_in(date_buffer_string);
+				Pointer trip = functions.temporal_from_hexwkb(trip_buffer_string);
 				
 				trips[i].vehid = vehid;
 				trips[i].tripid = tripid;
@@ -84,7 +84,7 @@ public class disassemble_berlinmod {
 		int records_in = i;
 		
 		
-		functions_old.meos_finalize();
+		functions.meos_finalize();
 		
 	}
 	
@@ -92,7 +92,7 @@ public class disassemble_berlinmod {
 	public static class trip_record {
 		public int tripid;
 		public int vehid;
-		public Pointer day;
+		public int day;
 		public int seq;
 		public Pointer trip;
 		

@@ -1,10 +1,13 @@
 package types.time;
 
 import functions.functions;
-import types.core.DataType;
-import types.core.TypeName;
 import jnr.ffi.Pointer;
+import types.TemporalObject;
+import types.core.TypeName;
+import types.temporal.Temporal;
+import utils.ConversionUtils;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -23,14 +26,12 @@ Add the last constructor
  */
 
 
-
 /**
  * Class that represents the MobilityDB type PeriodSet
  */
 @TypeName(name = "periodset")
-public class PeriodSet extends DataType {
+public class PeriodSet extends TemporalObject<Pointer> {
 	private final List<Period> periodList;
-	private Pointer _inner = null;
 	
 	/**
 	 * The default constructor
@@ -39,9 +40,8 @@ public class PeriodSet extends DataType {
 		super();
 		periodList = new ArrayList<>();
 	}
-
-
-	public PeriodSet(Pointer _inner){
+	
+	public PeriodSet(Pointer _inner) {
 		this();
 		this._inner = _inner;
 	}
@@ -69,58 +69,57 @@ public class PeriodSet extends DataType {
 		Collections.addAll(periodList, periods);
 		validate();
 	}
-
-
-
+	
 	public PeriodSet from_hexwkb(String str) throws SQLException {
 		Pointer result = functions.periodset_from_hexwkb(str);
 		return new PeriodSet(result);
 	}
-
-
-
-	public boolean is_adjacent_Period(Period other){
-
-		return functions.adjacent_periodset_period(this._inner,other.get_inner());
+	
+	/**
+	 * Returns whether "this" is temporally adjacent to "other".
+	 * That is, they share a bound but only one of them contains it.
+	 * <pre>
+	 * Examples:
+	 * >>> PeriodSet('{[2012-01-01, 2012-01-02)}').is_adjacent(PeriodSet('{[2012-01-02, 2012-01-03]}'))
+	 * >>> True
+	 * >>> PeriodSet('{[2012-01-01, 2012-01-02]}').is_adjacent(PeriodSet('{[2012-01-02, 2012-01-03]}'))
+	 * >>> False  # Both contain bound
+	 * >>> PeriodSet('{[2012-01-01, 2012-01-02)}').is_adjacent(PeriodSet('{[(2012-01-02, 2012-01-03]]}'))
+	 * >>> False  # Neither contain bound
+	 * </pre>
+	 * MEOS Functions:
+	 * <ul>
+	 *     <li>adjacent_spanset_span</li>
+	 *     <li>adjacent_spanset_spanset</li>
+	 *     <li>adjacent_periodset_timestamp</li>
+	 *     <li>adjacent_periodset_timestampset</li>
+	 * </ul>
+	 *
+	 * @param other temporal object to compare with
+	 * @return True if adjacent, False otherwise
+	 */
+	public boolean isAdjacent(TemporalObject<?> other) {
+		boolean returnValue;
+		switch (other) {
+			case Period p -> returnValue = functions.adjacent_spanset_span(this._inner, p.get_inner());
+			case PeriodSet ps -> returnValue = functions.adjacent_spanset_spanset(this._inner, ps.get_inner());
+			case DateTime dt -> returnValue = functions.adjacent_periodset_timestamp(this._inner, ConversionUtils.datetimeToTimestampTz(dt.get_inner()));
+			case TimestampSet ts -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));
+			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
+			case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
+			case Box b -> returnValue = functions.adjacent_spanset_span(this._inner, b.to_period()._inner);
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-
-    public boolean is_adjacent_Periodset(PeriodSet other){
-        return functions.adjacent_periodset_periodset(this._inner,other.get_inner());
-    }
-
-
-    /*
-    public boolean is_adjacent_datetime(OffsetDateTime other){
-        return adjacent_periodset_timestamp(this._inner,other);
-    }
-
-     */
-
-
-    /*
-    public boolean is_adjacent_timestampset(TimestampSet other){
-        return adjacent_periodset_timestampset(this._inner, other._inner);
-    }
-
-     */
-    /*
-    public boolean is_adjacent_temporal(Temporal other){
-        return adjacent_periodset_temporal(this._inner,other._inner);
-    }
-
-     */
-
-
-
-
-
-	public boolean is_contained_Period(Period other){
-
-		return functions.contained_periodset_period(this._inner,other.get_inner());
+	
+	public boolean is_contained_Period(Period other) {
+		
+		return functions.contained_periodset_period(this._inner, other.get_inner());
 	}
-
-	public boolean is_contained_Periodset(PeriodSet other){
-		return functions.contained_periodset_periodset(this._inner,other.get_inner());
+	
+	public boolean is_contained_Periodset(PeriodSet other) {
+		return functions.contained_periodset_periodset(this._inner, other.get_inner());
 	}
 
     /*
@@ -129,18 +128,16 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-	public boolean contains_Period(Period other){
-
-		return functions.contains_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean contains_Period(Period other) {
+		
+		return functions.contains_periodset_period(this._inner, other.get_inner());
 	}
-
-    public boolean contains_Periodset(PeriodSet other){
-        return functions.contains_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public boolean contains_Periodset(PeriodSet other) {
+		return functions.contains_periodset_periodset(this._inner, other.get_inner());
+	}
 
     /*
     public boolean contains_datetime(OffsetDateTime other){
@@ -161,18 +158,16 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-	public boolean overlaps_Period(Period other){
-
-		return functions.overlaps_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean overlaps_Period(Period other) {
+		
+		return functions.overlaps_periodset_period(this._inner, other.get_inner());
 	}
-
-    public boolean overlaps_Periodset(PeriodSet other){
-        return functions.overlaps_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public boolean overlaps_Periodset(PeriodSet other) {
+		return functions.overlaps_periodset_periodset(this._inner, other.get_inner());
+	}
 
 
     /*
@@ -186,19 +181,16 @@ public class PeriodSet extends DataType {
         return overlaps_periodset_temporal(this._inner,other._inner);
     }
      */
-
-
-
-
-
-	public boolean isafter_Period(Period other){
-
-		return functions.after_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean isafter_Period(Period other) {
+		
+		return functions.after_periodset_period(this._inner, other.get_inner());
 	}
-
-    public boolean isafter_Periodset(PeriodSet other){
-        return functions.after_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public boolean isafter_Periodset(PeriodSet other) {
+		return functions.after_periodset_periodset(this._inner, other.get_inner());
+	}
 
 
     /*
@@ -220,20 +212,16 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-
-
-	public boolean isbefore_Period(Period other){
-
-		return functions.before_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean isbefore_Period(Period other) {
+		
+		return functions.before_periodset_period(this._inner, other.get_inner());
 	}
-
-    public boolean isbefore_Periodset(PeriodSet other){
-        return functions.before_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public boolean isbefore_Periodset(PeriodSet other) {
+		return functions.before_periodset_periodset(this._inner, other.get_inner());
+	}
 
 
     /*
@@ -255,15 +243,11 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-
-
-	public boolean isover_or_after_Period(Period other){
-
-		return functions.overafter_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean isover_or_after_Period(Period other) {
+		
+		return functions.overafter_periodset_period(this._inner, other.get_inner());
 	}
     /*
     public boolean isover_or_after_Periodset(PeriodSet other){
@@ -290,19 +274,16 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-
-	public boolean isover_or_before_Period(Period other){
-
-		return functions.overbefore_periodset_period(this._inner,other.get_inner());
+	
+	
+	public boolean isover_or_before_Period(Period other) {
+		
+		return functions.overbefore_periodset_period(this._inner, other.get_inner());
 	}
-
-    public boolean isover_or_before_Periodset(PeriodSet other){
-        return functions.overbefore_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public boolean isover_or_before_Periodset(PeriodSet other) {
+		return functions.overbefore_periodset_periodset(this._inner, other.get_inner());
+	}
 
 
     /*
@@ -331,19 +312,16 @@ public class PeriodSet extends DataType {
     }
 
      */
-
-
-
-
-
-	public float distance_Period(Period other){
-
-		return (float) functions.distance_periodset_period(this._inner,other.get_inner());
+	
+	
+	public float distance_Period(Period other) {
+		
+		return (float) functions.distance_periodset_period(this._inner, other.get_inner());
 	}
-
-    public float distance_Periodset(PeriodSet other){
-        return (float) functions.distance_periodset_periodset(this._inner,other.get_inner());
-    }
+	
+	public float distance_Periodset(PeriodSet other) {
+		return (float) functions.distance_periodset_periodset(this._inner, other.get_inner());
+	}
 
 
     /*
@@ -358,19 +336,16 @@ public class PeriodSet extends DataType {
         return (float)distance_periodset_timestampset(this._inner, other._inner);
     }
      */
-
-
-
-
-
+	
+	
 	public PeriodSet intersection_Period(Period other) throws SQLException {
-
+		
 		return new PeriodSet(functions.intersection_periodset_period(this._inner, other.get_inner()));
 	}
-
-    public PeriodSet intersection_Periodset(PeriodSet other){
-        return new PeriodSet(functions.intersection_periodset_periodset(this._inner,other._inner));
-    }
+	
+	public PeriodSet intersection_Periodset(PeriodSet other) {
+		return new PeriodSet(functions.intersection_periodset_periodset(this._inner, other._inner));
+	}
 
 
 
@@ -387,18 +362,15 @@ public class PeriodSet extends DataType {
         return new TimestampSet(intersection_periodset_timestampset(this._inner,other._inner));
     }
      */
-
-
-
-
-
-    public PeriodSet minus_Period(Period other){
-        return new PeriodSet(functions.minus_periodset_period(this._inner,other.get_inner()));
-    }
-
-    public PeriodSet minus_PeriodSet(PeriodSet other){
-        return new PeriodSet(functions.minus_periodset_periodset(this._inner,other.get_inner()));
-    }
+	
+	
+	public PeriodSet minus_Period(Period other) {
+		return new PeriodSet(functions.minus_periodset_period(this._inner, other.get_inner()));
+	}
+	
+	public PeriodSet minus_PeriodSet(PeriodSet other) {
+		return new PeriodSet(functions.minus_periodset_periodset(this._inner, other.get_inner()));
+	}
     /*
     public PeriodSet minus_datetime(OffsetDateTime other){
         return new PeriodSet(minus_periodset_timestamp(this._inner,other));
@@ -409,20 +381,18 @@ public class PeriodSet extends DataType {
         return new PeriodSet(minus_period_timestampset(this._inner,other));
     }
      */
+	
+	
+	public PeriodSet union_Period(Period other) {
+		return new PeriodSet(functions.union_periodset_period(this._inner, other.get_inner()));
+	}
+	
+	public PeriodSet union_PeriodSet(PeriodSet other) {
+		return new PeriodSet(functions.union_periodset_periodset(this._inner, other.get_inner()));
+	}
 
 
-
-
-    public PeriodSet union_Period(Period other){
-        return new PeriodSet(functions.union_periodset_period(this._inner,other.get_inner()));
-    }
-
-    public PeriodSet union_PeriodSet(PeriodSet other){
-        return new PeriodSet(functions.union_periodset_periodset(this._inner,other.get_inner()));
-    }
-
-
-    /*
+    /*l
     public PeriodSet union_datetime(OffsetDateTime other){
         return new PeriodSet(union_periodset_timestamp(this._inner,other));
     }
@@ -433,23 +403,10 @@ public class PeriodSet extends DataType {
         return new PeriodSet(union_periodset_timestampset(this._inner,other._inner));
     }
      */
-
-
-
-
-
-
-
-	public Pointer get_inner(){
-		return this._inner;
-	}
-
 	
 	@Override
 	public String getValue() {
-		return String.format("{%s}", periodList.stream()
-				.map(Period::toString)
-				.collect(Collectors.joining(", ")));
+		return String.format("{%s}", periodList.stream().map(Period::toString).collect(Collectors.joining(", ")));
 	}
 	
 	@Override
@@ -457,8 +414,7 @@ public class PeriodSet extends DataType {
 		String trimmed = value.trim();
 		
 		if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-			Matcher m = Pattern.compile("[\\[|\\(].*?[^\\]\\)][\\]|\\)]")
-					.matcher(trimmed);
+			Matcher m = Pattern.compile("[\\[|\\(].*?[^\\]\\)][\\]|\\)]").matcher(trimmed);
 			while (m.find()) {
 				periodList.add(new Period(m.group()));
 			}
@@ -471,11 +427,9 @@ public class PeriodSet extends DataType {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PeriodSet) {
-			PeriodSet fobj = (PeriodSet) obj;
+		if (obj instanceof PeriodSet fobj) {
 			
-			return periodList.size() == fobj.periodList.size() &&
-					periodList.equals(fobj.periodList);
+			return periodList.size() == fobj.periodList.size() && periodList.equals(fobj.periodList);
 		}
 		
 		return false;
@@ -688,8 +642,7 @@ public class PeriodSet extends DataType {
 					throw new SQLException("All periods should have a value.");
 				}
 				
-				if (x.getUpper().isAfter(y.getLower()) ||
-						(x.getUpper().isEqual(y.getLower()) && x.isUpperInclusive() && y.isLowerInclusive())) {
+				if (x.getUpper().isAfter(y.getLower()) || (x.getUpper().isEqual(y.getLower()) && x.isUpperInclusive() && y.isLowerInclusive())) {
 					throw new SQLException("The periods of a period set cannot overlap.");
 				}
 			}

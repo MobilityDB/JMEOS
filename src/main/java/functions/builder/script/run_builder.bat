@@ -17,7 +17,7 @@ REM Go to project directory
 cd /d "%JMEOS_HOME%"
 
 REM Compile Java File
-javac -d target/classes src/main/java/utils/*.java src/main/java/functions/builder/FunctionsBuilder.java
+javac -d target/classes src/main/java/utils/builder/*.java src/main/java/functions/builder/FunctionsBuilder.java
 java -cp target/classes functions.builder.FunctionsBuilder
 
 REM Check if compilation was successful

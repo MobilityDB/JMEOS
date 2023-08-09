@@ -1,11 +1,12 @@
 package tutorials;
 
-import functions.functions_old;
 import jnr.ffi.Pointer;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import static functions.functions.*;
 
 
 public class assemble_ais {
@@ -19,7 +20,7 @@ public class assemble_ais {
 	
 	public static void main(String[] args) {
 		
-		functions_old.meos_initialize("UTC");
+		meos_initialize("UTC");
 		
 		long t = System.nanoTime() / 1000000;
 		
@@ -65,7 +66,7 @@ public class assemble_ais {
 				rec.Longitude = Double.parseDouble(tokens[3].trim());
 				rec.SOG = Double.parseDouble(tokens[4].trim());
 				String temp = tokens[0];
-				rec.T = functions_old.pg_timestamp_in(tokens[0], -1);
+				rec.T = pg_timestamp_in(tokens[0], -1);
 				
 				if (tokens.length == 5) {
 					no_records++;
@@ -101,17 +102,17 @@ public class assemble_ais {
 				
 				if (no_records % 1000 == 0) {
 					
-					String t_out = functions_old.pg_timestamp_out(rec.T);
+					String t_out = pg_timestamp_out(rec.T);
 					String str_pointbuffer;
 					str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude, t_out);
 					
 					String test = "Point(4.617660 55.573682)@2004-06-15 07:13:32+00";
-					Pointer inst1 = functions_old.tgeogpoint_in(test);
-					String inst1_out = functions_old.tpoint_as_text(inst1, 2);
+					Pointer inst1 = tgeogpoint_in(test);
+					String inst1_out = tpoint_as_text(inst1, 2);
 					
 					
-					Pointer inst2 = functions_old.tfloatinst_make((float) rec.SOG, rec.T);
-					String inst2_out = functions_old.tfloat_out(inst2, 2);
+					Pointer inst2 = tfloatinst_make((float) rec.SOG, rec.T);
+					String inst2_out = tfloat_out(inst2, 2);
 					
 					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);
 					
@@ -125,12 +126,12 @@ public class assemble_ais {
 		
 		System.out.printf("\n%d no_records read.\n%d incomplete records ignored.\n", no_records, no_nulls);
 		
-		functions_old.meos_finalize();
+		meos_finalize();
 		
 	}
 	
 	public static class AIS_record {
-		public Pointer T;
+		public long T;
 		public long MMSI;
 		public double Latitude;
 		public double Longitude;

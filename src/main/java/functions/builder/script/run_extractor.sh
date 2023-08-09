@@ -16,7 +16,7 @@ fi
 cd "$JMEOS_HOME"
 
 # Compile Java File
-javac -d target/classes src/main/java/utils/*.java src/main/java/functions/builder/FunctionsExtractor.java
+javac -d target/classes src/main/java/utils/builder/*.java src/main/java/functions/builder/FunctionsExtractor.java
 java -cp target/classes functions.builder.FunctionsExtractor
 
 # Check if compilation was successful

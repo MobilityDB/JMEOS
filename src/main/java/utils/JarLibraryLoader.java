@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.URL;
 
 /**
+ * Utility library to permit the loading of a library in a JAR.
  * <a href="https://github.com/jnr/jnr-ffi/issues/93#issuecomment-717760847">...</a>
  *
  * @param <T> Library defined interface
@@ -19,12 +20,24 @@ public class JarLibraryLoader<T> {
 	/**
 	 * Constructor of this class.
 	 *
-	 * @param libraryClass    class of the library defined interface
-	 * @param libraryName     name of the library
+	 * @param libraryClass Class of the library defined interface
+	 * @param libraryName  Name of the library
 	 */
 	public JarLibraryLoader(Class<T> libraryClass, String libraryName) {
 		this.libraryClass = libraryClass;
 		this.libraryName = libraryName;
+	}
+	
+	/**
+	 * Create a new instance of {@link JarLibraryLoader}
+	 *
+	 * @param libraryClass Class of the library defined interface
+	 * @param libraryName  Name of the library
+	 * @param <T>          Library defined interface
+	 * @return New instance of JarLibraryLoader
+	 */
+	public static <T> JarLibraryLoader<T> create(Class<T> libraryClass, String libraryName) {
+		return new JarLibraryLoader<>(libraryClass, libraryName);
 	}
 	
 	/**
@@ -83,7 +96,7 @@ public class JarLibraryLoader<T> {
 	/**
 	 * Provide the library instance.
 	 *
-	 * @return the library instance
+	 * @return The library instance
 	 */
 	public T getLibraryInstance() {
 		if (getOSName().equals("Linux")) {

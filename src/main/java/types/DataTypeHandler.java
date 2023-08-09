@@ -1,5 +1,6 @@
 package types;
 
+import org.postgresql.PGConnection;
 import types.basic.tbool.TBool;
 import types.basic.tfloat.TFloat;
 import types.basic.tint.TInt;
@@ -13,7 +14,6 @@ import types.core.TypeName;
 import types.time.Period;
 import types.time.PeriodSet;
 import types.time.TimestampSet;
-import org.postgresql.PGConnection;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

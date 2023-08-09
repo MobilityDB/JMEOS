@@ -3,13 +3,14 @@ package functions.builder;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static utils.BuilderLibrary.extractPatternFromFile;
-import static utils.BuilderLibrary.writeFileFromArray;
+import static utils.builder.BuilderLibrary.extractPatternFromFile;
+import static utils.builder.BuilderLibrary.writeFileFromArray;
 
 /**
  * Class used to extract the functions from the MEOS library.
@@ -37,45 +38,40 @@ public class FunctionsExtractor {
 	/**
 	 * Script launch function.
 	 *
-	 * @param args arguments
+	 * @param args Arguments
 	 */
 	public static void main(String[] args) {
-		// Retrieve the value of the JMEOS_PATH environment variable
+		/* Retrieve the value of the JMEOS_PATH environment variable */
 		String jmeosHome = System.getenv("JMEOS_HOME");
 		
-		// Check if environment variable exists
+		/* Check if environment variable exists */
 		if (jmeosHome != null) {
 			System.out.println("JMEOS_HOME: " + jmeosHome);
-			
-			// Set the current working directory
-			System.setProperty("user.dir", jmeosHome);
-			
-			// Check if the current working directory has been updated
-			String currentWorkingDir = System.getProperty("user.dir");
-			System.out.println("Current working directory: " + currentWorkingDir);
+			System.setProperty("user.dir", jmeosHome); // Set the current working directory
 			
 			ArrayList<String> functions = extractPatternFromFile(INPUT_FILE_PATH, FUNCTION_PATTERN);
 			writeFileFromArray(functions, OUTPUT_FUNCTIONS_PATH);
 			System.out.println("Feature extraction completed. The functions have been written to the file " + OUTPUT_FUNCTIONS_PATH);
+			
 			ArrayList<String> types = getTypesFromFile();
 			writeFileFromArray(types, OUTPUT_TYPES_PATH);
 			System.out.println("Extraction of types completed. The types have been written to the file " + OUTPUT_TYPES_PATH);
 		} else {
-			System.err.println("The JMEOS_HOME environment variable is not set.\nCancellation of extraction.");
+			throw new InvalidPathException("JMEOS_HOME", "The JMEOS_HOME environment variable is not set.\nCancellation of build.");
 		}
 	}
 	
 	/**
 	 * Get types from a file.
 	 *
-	 * @return the list of lines
+	 * @return The list of lines
 	 */
 	private static ArrayList<String> getTypesFromFile() {
 		ArrayList<String> rawTypes = extractPatternFromFile(FunctionsExtractor.INPUT_FILE_PATH, FunctionsExtractor.TYPES_PATTERN);
 		ArrayList<String> structureNames = getStructureNames(FunctionsExtractor.INPUT_FILE_PATH);
 		ArrayList<String> filteredTypes = new ArrayList<>();
 		
-		// Add typedefs if they are not structure type.
+		/* Add typedefs if they are not structure type */
 		for (String rawType : rawTypes) {
 			String[] words = rawType.trim().split("\\s+");
 			if (words.length >= 2) {
@@ -92,8 +88,8 @@ public class FunctionsExtractor {
 	/**
 	 * Retrieves structure names from file.
 	 *
-	 * @param filePath file path
-	 * @return list of structure names
+	 * @param filePath File path
+	 * @return List of structure names
 	 */
 	public static ArrayList<String> getStructureNames(String filePath) {
 		List<String> structureNames = new ArrayList<>();

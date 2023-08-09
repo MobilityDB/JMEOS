@@ -1,17 +1,15 @@
 package tutorials;
 
-import functions.functions_old;
-import types.basic.tpoint.TPoint;
-import types.temporal.TemporalValue;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import net.postgis.jdbc.geometry.Point;
+import types.basic.tpoint.TPoint;
+import types.temporal.TemporalValue;
 
 import java.sql.SQLException;
 
 import static functions.functions.*;
-import static functions.functions_old.meos_finalize;
 
 public class hello_world {
 	
@@ -61,8 +59,8 @@ public class hello_world {
 		
 		//runtime.getMemoryManager().free
 		
-		Pointer tmstp = functions_old.pg_timestamp_in("2020-01-08 00:00:00", -1);
-		String output = functions_old.pg_timestamp_out(tmstp);
+		long tmstp = pg_timestamp_in("2020-01-08 00:00:00", -1);
+		String output = pg_timestamp_out(tmstp);
 		System.out.println(output);
 		
 		
