@@ -86,18 +86,18 @@ public class JarLibraryLoader<T> {
 	 * @return the library instance
 	 */
 	public T getLibraryInstance() {
-		try {
-			copyFileFromJar("/jmeos/lib/libmeos.so", projectPath + "/src/lib/libmeos.so");
-			System.out.println("File copied successfully.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 		if (getOSName().equals("Linux")) {
-			return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			try {
+				copyFileFromJar("/jmeos/lib/libmeos.so", projectPath + "/src/lib/libmeos.so");
+				System.out.println("File copied successfully.");
+				
+				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			} catch (IOException e) {
+				System.out.println("Running in test mode");
+				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			}
 		} else {
-			System.err.println("JMEOS is only linux based");
-			return null;
+			throw new UnsupportedOperationException("JMEOS is only supported on Linux OS");
 		}
 	}
 }
