@@ -66,12 +66,12 @@ public class BuilderLibrary {
 	 * Allows to read lines iteratively from a builder.
 	 *
 	 * @param builder the builder in question
-	 * @param process the lambda expression to run
+	 * @param line the lambda expression to run
 	 */
-	public static void readBuilderLines(StringBuilder builder, Consumer<String> process) {
+	public static void readBuilderLines(StringBuilder builder, Consumer<String> line) {
 		String[] lines = builder.toString().split("\n");
-		for (String line : lines) {
-			process.accept(line);
+		for (String builderLine : lines) {
+			line.accept(builderLine);
 		}
 	}
 	
@@ -79,13 +79,13 @@ public class BuilderLibrary {
 	 * Allows you to read the lines of a file and make changes to them.
 	 *
 	 * @param filepath file path
-	 * @param process  lambda expression
+	 * @param line  lambda expression
 	 */
-	public static void readFileLines(String filepath, Consumer<String> process) {
+	public static void readFileLines(String filepath, Consumer<String> line) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				process.accept(line);
+			String stringLine;
+			while ((stringLine = reader.readLine()) != null) {
+				line.accept(stringLine);
 			}
 		} catch (IOException e) {
 			System.out.println("Error reading file: " + e.getMessage());
