@@ -1,6 +1,6 @@
 package functions.builder;
 
-import utils.builder.BuilderLibrary;
+import utils.builder.BuilderUtils;
 import utils.builder.Pair;
 
 import java.nio.file.InvalidPathException;
@@ -33,11 +33,11 @@ public class FunctionsBuilder {
 	/**
 	 * Gives the types of the function's parameters and return from a line corresponding to the format of a function.
 	 *
-	 * @param signature Function signature
-	 * @return Types list
+	 * @param signature function signature
+	 * @return types list
 	 */
 	private static ArrayList<String> getFunctionTypes(String signature) {
-		ArrayList<String> functionTypes = BuilderLibrary.extractFunctionTypes(signature);
+		ArrayList<String> functionTypes = BuilderUtils.extractFunctionTypes(signature);
 		
 		/* Remove Array Types from the functionTypes list then change it to normal type */
 		List<String> arrayTypesList = functionTypes.stream().filter(type -> type.contains("[]")).toList();
@@ -52,7 +52,7 @@ public class FunctionsBuilder {
 	/**
 	 * Main script execution function.
 	 *
-	 * @param args Arguments
+	 * @param args arguments
 	 */
 	public static void main(String[] args) {
 		/* Retrieve the value of the JMEOS_PATH environment variable */
@@ -63,12 +63,11 @@ public class FunctionsBuilder {
 			System.out.println("JMEOS_HOME: " + jmeosHome);
 			System.setProperty("user.dir", jmeosHome); // Set the current working directory
 			
-			FunctionsBuilder builder = new FunctionsBuilder();
+			var builder = new FunctionsBuilder();
 			
 			/* Generation of all the functions signature */
-			StringBuilder functionsBuilder = builder.generateFunctions();
-			StringBuilder functionsInterfaceBuilder = builder.generateInterfaceFunctions(functionsBuilder);
-			StringBuilder functionsClassBuilder = builder.generateClassFunctions(functionsBuilder);
+			StringBuilder functionsInterfaceBuilder = builder.generateFunctions(false);
+			StringBuilder functionsClassBuilder = builder.generateFunctions(true);
 			System.out.println("Unsupported types: " + builder.unsupportedEquivalentTypes);
 			System.out.println("Unsupported conversion typedefs: " + builder.unsupportedConversionTypedefs);
 			System.out.println("Unsupported conversion types: " + builder.unsupportedConversionTypes);
@@ -76,10 +75,36 @@ public class FunctionsBuilder {
 			/* Generation of the file */
 			StringBuilder interfaceBuilder = builder.generateInterface(functionsInterfaceBuilder);
 			StringBuilder classBuilder = builder.generateClass(functionsClassBuilder, interfaceBuilder);
-			BuilderLibrary.writeFileFromBuilder(classBuilder, FUNCTIONS_CLASS_PATH);
+			BuilderUtils.writeFileFromBuilder(classBuilder, FUNCTIONS_CLASS_PATH);
 		} else {
 			throw new InvalidPathException("JMEOS_HOME", "The JMEOS_HOME environment variable is not set.\nCancellation of build.");
 		}
+	}
+	
+	/**
+	 * Processes the rows to generate the functions.
+	 *
+	 * @param line the line corresponding to a function
+	 * @return the processed line
+	 */
+	private static String performTypeConversion(String line) {
+		if (!line.isBlank()) {
+			/* Remove keywords that are not of interest to us */
+			line = line.replaceAll("extern ", "");
+			line = line.replaceAll("const ", "");
+			line = line.replaceAll("static inline ", "");
+			
+			/* Changing types with * */
+			line = line.replaceAll("char\\s\\*", "*char ");
+			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
+			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
+			
+			/* Changing special types or names */
+			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void)) //FIXME utiliser les Optional pour les param optionel look pymeos
+			line = line.replaceAll("synchronized", "synchronize"); // Change the keyword used by Java (for the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized))
+		}
+		
+		return line;
 	}
 	
 	/**
@@ -89,9 +114,9 @@ public class FunctionsBuilder {
 	 * Value: new type in Java
 	 * </pre>
 	 *
-	 * @return Type dictionary
+	 * @return type dictionary
 	 */
-	private HashMap<String, String> buildEquivalentTypes() {
+	private static HashMap<String, String> buildEquivalentTypes() {
 		HashMap<String, String> types = new HashMap<>();
 		types.put("\\*", "Pointer");
 		types.put("\\*char", "String");
@@ -135,11 +160,11 @@ public class FunctionsBuilder {
 	 *
 	 * @return types dictionary
 	 */
-	private HashMap<String, String> buildConversionTypedefs() {
+	private static HashMap<String, String> buildConversionTypedefs() {
 		HashMap<String, String> typedefs = new HashMap<>();
 		
 		/* Added typedefs extracted from C file */
-		BuilderLibrary.readFileLines(C_TYPES_PATH, line -> {
+		BuilderUtils.readFileLines(C_TYPES_PATH, line -> {
 			Pattern pattern = Pattern.compile("^typedef\\s(\\w+)\\s(\\w+);");
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.find()) {
@@ -163,7 +188,7 @@ public class FunctionsBuilder {
 	 *
 	 * @return types dictionary
 	 */
-	private HashMap<String, String> buildConversionTypes() {
+	private static HashMap<String, String> buildConversionTypes() {
 		HashMap<String, String> conversionTypes = new HashMap<>();
 		conversionTypes.put("Timestamp", "LocalDateTime");
 		conversionTypes.put("TimestampTz", "OffsetDateTime");
@@ -171,14 +196,24 @@ public class FunctionsBuilder {
 	}
 	
 	/**
+	 * Check unsupported types.
+	 *
+	 * @param signature function signature
+	 */
+	private static List<String> getUnsupportedTypes(String signature, Map<String, String> types) {
+		/* Retrieving unsupported types for the line */
+		return getFunctionTypes(signature).stream().filter(type -> !types.containsValue(type)).toList();
+	}
+	
+	/**
 	 * Used to generate the class of functions.
 	 *
-	 * @param functionsBuilder Builder of functions
-	 * @param interfaceBuilder Interface builder
-	 * @return The class builder
+	 * @param functionsBuilder builder of functions
+	 * @param interfaceBuilder interface builder
+	 * @return the class builder
 	 */
 	private StringBuilder generateClass(StringBuilder functionsBuilder, StringBuilder interfaceBuilder) {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		
 		/* Get the package name */
 		Package pkg = FunctionsBuilder.class.getPackage();
@@ -190,35 +225,75 @@ public class FunctionsBuilder {
 				import jnr.ffi.Pointer;
 				import utils.JarLibraryLoader;
 				
-				import java.time.LocalDateTime;
-				import java.time.OffsetDateTime;
+				import java.time.*;
 				""";
 		String className = "public class functions {";
 		builder.append(definePackage).append("\n").append(imports).append("\n").append(className).append("\n");
 		
 		/* Added interface */
-		BuilderLibrary.appendStringBuilders(interfaceBuilder, builder, "\t", "\n\n");
+		BuilderUtils.appendStringBuilders(interfaceBuilder, builder, "\t", "\n\n");
 		
 		/* Addition of functions */
 		StringBuilder functionBodyBuilder = new StringBuilder();
-		BuilderLibrary.readBuilderLines(functionsBuilder, line -> {
+		BuilderUtils.readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
-				String functionSignature = "public static " + BuilderLibrary.removeSemicolon(line) + " {\n";
-				List<String> functionTypeConversion = getTypeConversionProcess(line);
+				String functionSignature = "public static " + BuilderUtils.removeSemicolon(line) + " {\n";
+				var typeConversionProcess = this.getTypeConversionProcess(line);
+				var typesNamesList = BuilderUtils.extractPairKeys(typeConversionProcess);
+				var typesConversionContent = BuilderUtils.extractPairValues(typeConversionProcess);
 				
-				String functionCall = "";
-				if (!getFunctionTypes(line).get(0).equals("void")) // When return
-					functionCall += "return ";
-				functionCall += "MeosLibrary.meos." + BuilderLibrary.extractFunctionName(line) + "(" + BuilderLibrary.getListWithoutBrackets(BuilderLibrary.extractParamNames(line)) + ");";
+				/* Manage the calling of meos library associate function */
+				List<String> functionCallingProcess = new ArrayList<>();
+				List<String> paramNames = BuilderUtils.extractParamNames(line);
+				if (typesNamesList.isEmpty()) {
+					functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(line) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
+				} else {
+					/* Modify the names of the parameter types that has endured conversion */
+					for (var typeNames : typesNamesList) {
+						String oldName = typeNames.key();
+						String newName = typeNames.value();
+						paramNames = BuilderUtils.modifyList(paramNames, oldName, newName);
+					}
+					functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(line) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
+				}
 				
+				/* Manage the return process */
+				if (!getFunctionTypes(line).get(0).equals("void")) {
+					var classReturnType = BuilderUtils.extractFunctionTypes(line).get(0);
+					
+					/* Manage the returning process of conversion types */
+					if (conversionTypes.containsValue(classReturnType)) {
+						List<String> returnProcess = new ArrayList<>();
+						var functionCall = BuilderUtils.removeSemicolon(functionCallingProcess.get(0));
+						
+						returnProcess.add("var result = " + functionCall + ";");
+						
+						switch (classReturnType) {
+							case "LocalDateTime" -> returnProcess.add(
+									"LocalDateTime.ofEpochSecond(result, 0, ZoneOffset.UTC);"
+							);
+							case "OffsetDateTime" -> returnProcess.addAll(List.of(
+									"Instant instant = Instant.ofEpochSecond(result);",
+									"OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);"
+							));
+							default -> throw new TypeNotPresentException(classReturnType, new Throwable("Type not supported by the builder returning conversion process"));
+						}
+						returnProcess.set(returnProcess.size() - 1, "return " + returnProcess.get(returnProcess.size() - 1)); // Add return at the last line of the list
+						functionCallingProcess = returnProcess;
+					} else {
+						functionCallingProcess.set(0, "return " + functionCallingProcess.get(0));
+					}
+				}
+				
+				/* Add all the different parts in the function body builder */
 				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n")
 						.append(functionSignature)
-						.append(BuilderLibrary.formattingLines(functionTypeConversion, "\t", "\n"))
-						.append(BuilderLibrary.formattingLine(functionCall, "\t", "\n"))
-						.append(BuilderLibrary.formattingLine("}", "", "\n\n"));
+						.append(BuilderUtils.formattingLineList(typesConversionContent, "\t", "\n"))
+						.append(BuilderUtils.formattingLineList(functionCallingProcess, "\t", "\n"))
+						.append(BuilderUtils.formattingLine("}", "", "\n\n"));
 			}
 		});
-		BuilderLibrary.appendStringBuilders(functionBodyBuilder, builder, "\t", "\n");
+		BuilderUtils.appendStringBuilders(functionBodyBuilder, builder, "\t", "\n");
 		builder.append("}");
 		return builder;
 	}
@@ -226,80 +301,50 @@ public class FunctionsBuilder {
 	/**
 	 * Generation of the interface.
 	 *
-	 * @param functionsBuilder Builder of functions
-	 * @return The interface builder
+	 * @param functionsBuilder builder of functions
+	 * @return the interface builder
 	 */
 	private StringBuilder generateInterface(StringBuilder functionsBuilder) {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		
 		builder.append("""
 				public interface MeosLibrary {
 					MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, "meos").getLibraryInstance();
 					MeosLibrary meos = MeosLibrary.INSTANCE;
 				""");
-		BuilderLibrary.appendStringBuilders(functionsBuilder, builder, "\t", "\n");
+		BuilderUtils.appendStringBuilders(functionsBuilder, builder, "\t", "\n");
 		builder.append("}");
 		return builder;
 	}
 	
 	/**
-	 * Generation of functions with their equivalent types and typedef equivalent types.
+	 * Generation of functions with their conversion types, typedef conversion types and equivalent types.
 	 *
-	 * @return The function builder
-	 *
-	 * //TODO faire une fonction generique de celle-ci et generateClassFunction
+	 * @return the function builder
 	 */
-	private StringBuilder generateInterfaceFunctions(StringBuilder functions) {
-		StringBuilder builder = new StringBuilder();
+	private StringBuilder generateFunctions(boolean performTypesConversion) {
+		var builder = new StringBuilder();
 		
-		BuilderLibrary.readBuilderLines(functions, line -> {
-			line = BuilderLibrary.replaceTypes(conversionTypedefs, line);
+		BuilderUtils.readFileLines(FunctionsBuilder.C_FUNCTIONS_PATH, line -> {
+			line = performTypeConversion(line);
+			
+			/* Perform types conversion */
+			if (performTypesConversion) {
+				/* Replaces types from type dictionary */
+				line = BuilderUtils.replaceTypes(conversionTypes, line);
+				/* Fetch unsupported types that are not yet in the global list */
+				unsupportedConversionTypes.addAll(getUnsupportedTypes(line, conversionTypes).stream().filter(type -> !unsupportedConversionTypes.contains(type)).toList());
+			}
+			
+			/* Perform typedef conversion */
+			line = BuilderUtils.replaceTypes(conversionTypedefs, line);
 			unsupportedConversionTypedefs.addAll(getUnsupportedTypes(line, conversionTypedefs).stream().filter(type -> !unsupportedConversionTypedefs.contains(type)).toList());
 			
-			line = BuilderLibrary.replaceTypes(equivalentTypes, line);
+			/* Perform equivalent type conversion */
+			line = BuilderUtils.replaceTypes(equivalentTypes, line);
 			unsupportedEquivalentTypes.addAll(getUnsupportedTypes(line, equivalentTypes).stream().filter(type -> !unsupportedEquivalentTypes.contains(type)).toList());
 			
-			builder.append(BuilderLibrary.formattingLine(line, "", "\n"));
-		});
-		
-		return builder;
-	}
-	
-	/**
-	 * Generation of functions with their equivalent types and typedef conversion types.
-	 *
-	 * @return The function builder
-	 */
-	private StringBuilder generateClassFunctions(StringBuilder functions) {
-		StringBuilder builder = new StringBuilder();
-		
-		BuilderLibrary.readBuilderLines(functions, line -> {
-			/* Replaces types from type dictionary */
-			line = BuilderLibrary.replaceTypes(conversionTypes, line);
-			/* Fetch unsupported types that are not yet in the global list */
-			unsupportedConversionTypes.addAll(getUnsupportedTypes(line, conversionTypes).stream().filter(type -> !unsupportedConversionTypes.contains(type)).toList());
-			
-			/* Replaces types from type dictionary */
-			line = BuilderLibrary.replaceTypes(equivalentTypes, line);
-			/* Fetch unsupported types that are not yet in the global list */
-			unsupportedEquivalentTypes.addAll(getUnsupportedTypes(line, equivalentTypes).stream().filter(type -> !unsupportedEquivalentTypes.contains(type)).toList());
-			
-			builder.append(BuilderLibrary.formattingLine(line, "", "\n"));
-		});
-		return builder;
-	}
-	
-	/**
-	 * Generation of functions with their equivalent types.
-	 *
-	 * @return The function builder
-	 */
-	private StringBuilder generateFunctions() {
-		StringBuilder builder = new StringBuilder();
-		
-		BuilderLibrary.readFileLines(FunctionsBuilder.C_FUNCTIONS_PATH, line -> {
-			String processedLine = performTypeConversion(line);
-			builder.append(BuilderLibrary.formattingLine(processedLine, "", "\n"));
+			builder.append(BuilderUtils.formattingLine(line, "", "\n"));
 		});
 		return builder;
 	}
@@ -307,12 +352,16 @@ public class FunctionsBuilder {
 	/**
 	 * Process of adding code to handle conversion of certain types
 	 *
-	 * @param signature Function signature
-	 * @return The code to perform the type conversion
+	 * @param signature function signature
+	 * @return list of Pair defined as follows :
+	 * <pre>
+	 * Key : lines for the conversion process
+	 * Value : new variable name
+	 * </pre>
 	 */
-	private List<String> getTypeConversionProcess(String signature) {
-		ArrayList<String> lines = new ArrayList<>();
-		List<Pair<String, String>> typesList = BuilderLibrary.extractParamTypesAndNames(signature);
+	private List<Pair<Pair<String, String>, String>> getTypeConversionProcess(String signature) {
+		List<Pair<Pair<String, String>, String>> conversionList = new ArrayList<>();
+		List<Pair<String, String>> typesList = BuilderUtils.extractParamTypesAndNames(signature);
 		
 		/* For each types */
 		for (Pair<String, String> type : typesList) {
@@ -320,52 +369,18 @@ public class FunctionsBuilder {
 			
 			/* If this type needs a conversion */
 			if (conversionTypes.containsValue(typeValue)) {
+				String conversionLines;
 				String typeName = type.value();
 				String newTypeName = typeName + "_new";
 				
 				switch (typeValue) {
-					case "LocalDateTime" -> lines.add(newTypeName + " = " + typeName + ".toEpochSecond(java.time.ZoneOffset.UTC);");
-					case "OffsetDateTime" -> lines.add(newTypeName + " = " + typeName + ".toEpochSecond();");
+					case "LocalDateTime" -> conversionLines = "var " + newTypeName + " = " + typeName + ".toEpochSecond(ZoneOffset.UTC);";
+					case "OffsetDateTime" -> conversionLines = "var " + newTypeName + " = " + typeName + ".toEpochSecond();";
 					default -> throw new TypeNotPresentException(typeValue, new Throwable("Type not supported by the builder conversion process"));
 				}
+				conversionList.add(new Pair<>(new Pair<>(typeName, newTypeName), conversionLines));
 			}
 		}
-		return lines;
-	}
-	
-	/**
-	 * Processes the rows to generate the functions.
-	 *
-	 * @param line The line corresponding to a function
-	 * @return The processed line
-	 */
-	private static String performTypeConversion(String line) {
-		if (!line.isBlank()) {
-			/* Remove keywords that are not of interest to us */
-			line = line.replaceAll("extern ", "");
-			line = line.replaceAll("const ", "");
-			line = line.replaceAll("static inline ", "");
-			
-			/* Changing types with * */
-			line = line.replaceAll("char\\s\\*", "*char ");
-			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
-			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
-			
-			/* Changing special types or names */
-			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void)) //FIXME utiliser les Optional pour les param optionel look pymeos
-			line = line.replaceAll("synchronized", "synchronize"); // Change the keyword used by Java (for the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized))
-		}
-		
-		return line;
-	}
-	
-	/**
-	 * Check unsupported types.
-	 *
-	 * @param signature Function signature
-	 */
-	private List<String> getUnsupportedTypes(String signature, Map<String, String> types) {
-		/* Retrieving unsupported types for the line */
-		return getFunctionTypes(signature).stream().filter(type -> !types.containsValue(type)).toList();
+		return conversionList;
 	}
 }

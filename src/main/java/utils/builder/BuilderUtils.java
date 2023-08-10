@@ -1,9 +1,7 @@
 package utils.builder;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +12,7 @@ import java.util.regex.Pattern;
  * @author Killian Monnier
  * @since 27/07/2023
  */
-public class BuilderLibrary {
+public class BuilderUtils {
 	
 	/**
 	 * Writes lines to a file.
@@ -66,7 +64,7 @@ public class BuilderLibrary {
 	 * Allows to read lines iteratively from a builder.
 	 *
 	 * @param builder the builder in question
-	 * @param line the lambda expression to run
+	 * @param line    the lambda expression to run
 	 */
 	public static void readBuilderLines(StringBuilder builder, Consumer<String> line) {
 		String[] lines = builder.toString().split("\n");
@@ -79,7 +77,7 @@ public class BuilderLibrary {
 	 * Allows you to read the lines of a file and make changes to them.
 	 *
 	 * @param filepath file path
-	 * @param line  lambda expression
+	 * @param line     lambda expression
 	 */
 	public static void readFileLines(String filepath, Consumer<String> line) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
@@ -170,8 +168,8 @@ public class BuilderLibrary {
 	 * @param signature function signature
 	 * @return the list of parameter names
 	 */
-	public static ArrayList<String> extractParamNames(String signature) {
-		ArrayList<String> paramNames = new ArrayList<>();
+	public static List<String> extractParamNames(String signature) {
+		List<String> paramNames = new ArrayList<>();
 		
 		// Using a regular expression to extract parameter names
 		Pattern pattern = Pattern.compile("\\b\\w+\\b(?=\\s*,|\\s*\\))");
@@ -237,11 +235,13 @@ public class BuilderLibrary {
 	 * Extract all the keys from a {@link Pair} type.
 	 *
 	 * @param pairList list of pair
+	 * @param <K>      key
+	 * @param <V>      value
 	 * @return list of keys of all the pairs
 	 */
-	public static ArrayList<String> extractKeys(List<Pair<String, String>> pairList) {
-		ArrayList<String> keysList = new ArrayList<>();
-		for (Pair<String, String> pair : pairList) {
+	public static <K, V> List<K> extractPairKeys(List<Pair<K, V>> pairList) {
+		var keysList = new ArrayList<K>();
+		for (var pair : pairList) {
 			keysList.add(pair.key());
 		}
 		return keysList;
@@ -251,14 +251,53 @@ public class BuilderLibrary {
 	 * Extract all the values from a {@link Pair} type.
 	 *
 	 * @param pairList list of pair
+	 * @param <K>      key
+	 * @param <V>      value
 	 * @return list of values of all the pairs
 	 */
-	public static ArrayList<String> extractValues(List<Pair<String, String>> pairList) {
-		ArrayList<String> valuesList = new ArrayList<>();
-		for (Pair<String, String> pair : pairList) {
+	public static <K, V> List<V> extractPairValues(List<Pair<K, V>> pairList) {
+		var valuesList = new ArrayList<V>();
+		for (var pair : pairList) {
 			valuesList.add(pair.value());
 		}
 		return valuesList;
+	}
+	
+	/**
+	 * Retrieves the key corresponding to the specified value from the given map.
+	 *
+	 * @param map   the map containing key-value pairs
+	 * @param value the value whose key is to be retrieved
+	 * @param <K>   the type of keys in the map
+	 * @param <V>   the type of values in the map
+	 * @return the key associated with the specified value, or {@code null} if not found
+	 */
+	public static <K, V> K getKeyFromValue(Map<K, V> map, V value) {
+		for (Map.Entry<K, V> entry : map.entrySet()) {
+			if (Objects.equals(value, entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null; // value not found
+	}
+	
+	/**
+	 * Modifies a list by replacing a target element with a new value.
+	 *
+	 * @param list   the original list.
+	 * @param target the target element to be replaced.
+	 * @param value  the new value to replace the target element.
+	 * @return a new unmodifiable list with the target element replaced.
+	 */
+	public static List<String> modifyList(List<String> list, String target, String value) {
+		List<String> modifiedList = new ArrayList<>(list);
+		int index = modifiedList.indexOf(target);
+		
+		if (index != -1) {
+			modifiedList.set(index, value);
+		}
+		
+		return Collections.unmodifiableList(modifiedList);
 	}
 	
 	/**
@@ -269,11 +308,11 @@ public class BuilderLibrary {
 	 * @param endOfLine   characters of end of each line
 	 * @return the lines concatenated and formatted
 	 */
-	public static String formattingLines(List<String> lines, String beginOfLine, String endOfLine) {
+	public static String formattingLineList(List<String> lines, String beginOfLine, String endOfLine) {
 		StringBuilder formattedString = new StringBuilder();
 		
 		for (String line : lines) {
-			// Add beginOfLine at the beginning and endOfLine at the end of each line
+			/* Add beginOfLine at the beginning and endOfLine at the end of each line */
 			formattedString.append(beginOfLine).append(line).append(endOfLine);
 		}
 		
@@ -295,9 +334,9 @@ public class BuilderLibrary {
 	/**
 	 * Replaces occurrences of types from the provided dictionary in the given line.
 	 *
-	 * @param typesReplacement A dictionary where keys are old types and values are new types.
-	 * @param line The input line of text containing type declarations.
-	 * @return The line with replaced type occurrences.
+	 * @param typesReplacement a dictionary where keys are old types and values are new types.
+	 * @param line             the input line of text containing type declarations.
+	 * @return the line with replaced type occurrences.
 	 */
 	public static String replaceTypes(Map<String, String> typesReplacement, String line) {
 		for (Map.Entry<String, String> entry : typesReplacement.entrySet()) {

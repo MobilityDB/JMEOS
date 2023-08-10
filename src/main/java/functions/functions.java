@@ -3,8 +3,7 @@ package functions;
 import jnr.ffi.Pointer;
 import utils.JarLibraryLoader;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 
 public class functions {
 	public interface MeosLibrary {
@@ -1863,12 +1862,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static DateADT pg_date_in(String str) {
+	public static int pg_date_in(String str) {
 		return MeosLibrary.meos.pg_date_in(str);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String pg_date_out(DateADT date) {
+	public static String pg_date_out(int date) {
 		return MeosLibrary.meos.pg_date_out(date);
 	}
 	
@@ -1903,54 +1902,61 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static TimeADT pg_time_in(String str, int typmod) {
+	public static long pg_time_in(String str, int typmod) {
 		return MeosLibrary.meos.pg_time_in(str, typmod);
 	}
 	
 	@SuppressWarnings("unused")
-	public static String pg_time_out(TimeADT time) {
+	public static String pg_time_out(long time) {
 		return MeosLibrary.meos.pg_time_out(time);
 	}
 	
 	@SuppressWarnings("unused")
 	public static LocalDateTime pg_timestamp_in(String str, int typmod) {
-		return MeosLibrary.meos.pg_timestamp_in(str, typmod);
+		var result = MeosLibrary.meos.pg_timestamp_in(str, typmod);
+		return LocalDateTime.ofEpochSecond(result, 0, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer pg_timestamp_mi(OffsetDateTime dt1, OffsetDateTime dt2) {
-		dt1 = dt1.toEpochSecond();
-		dt2 = dt2.toEpochSecond();
-		return MeosLibrary.meos.pg_timestamp_mi(dt1, dt2);
+		var dt1_new = dt1.toEpochSecond();
+		var dt2_new = dt2.toEpochSecond();
+		return MeosLibrary.meos.pg_timestamp_mi(dt1_new, dt2_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime pg_timestamp_mi_interval(OffsetDateTime timestamp, Pointer span) {
-		timestamp = timestamp.toEpochSecond();
-		return MeosLibrary.meos.pg_timestamp_mi_interval(timestamp, span);
+		var timestamp_new = timestamp.toEpochSecond();
+		var result = MeosLibrary.meos.pg_timestamp_mi_interval(timestamp_new, span);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static String pg_timestamp_out(LocalDateTime dt) {
-		dt = dt.toEpochSecond(java.time.ZoneOffset.UTC);
-		return MeosLibrary.meos.pg_timestamp_out(dt);
+		var dt_new = dt.toEpochSecond(ZoneOffset.UTC);
+		return MeosLibrary.meos.pg_timestamp_out(dt_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime pg_timestamp_pl_interval(OffsetDateTime timestamp, Pointer span) {
-		timestamp = timestamp.toEpochSecond();
-		return MeosLibrary.meos.pg_timestamp_pl_interval(timestamp, span);
+		var timestamp_new = timestamp.toEpochSecond();
+		var result = MeosLibrary.meos.pg_timestamp_pl_interval(timestamp_new, span);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime pg_timestamptz_in(String str, int typmod) {
-		return MeosLibrary.meos.pg_timestamptz_in(str, typmod);
+		var result = MeosLibrary.meos.pg_timestamptz_in(str, typmod);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static String pg_timestamptz_out(OffsetDateTime dt) {
-		dt = dt.toEpochSecond();
-		return MeosLibrary.meos.pg_timestamptz_out(dt);
+		var dt_new = dt.toEpochSecond();
+		return MeosLibrary.meos.pg_timestamptz_out(dt_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -1960,14 +1966,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer pg_timestamp_to_char(LocalDateTime dt, Pointer fmt) {
-		dt = dt.toEpochSecond(java.time.ZoneOffset.UTC);
-		return MeosLibrary.meos.pg_timestamp_to_char(dt, fmt);
+		var dt_new = dt.toEpochSecond(ZoneOffset.UTC);
+		return MeosLibrary.meos.pg_timestamp_to_char(dt_new, fmt);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer pg_timestamptz_to_char(OffsetDateTime dt, Pointer fmt) {
-		dt = dt.toEpochSecond();
-		return MeosLibrary.meos.pg_timestamptz_to_char(dt, fmt);
+		var dt_new = dt.toEpochSecond();
+		return MeosLibrary.meos.pg_timestamptz_to_char(dt_new, fmt);
 	}
 	
 	@SuppressWarnings("unused")
@@ -1977,11 +1983,13 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime pg_to_timestamp(Pointer date_txt, Pointer fmt) {
-		return MeosLibrary.meos.pg_to_timestamp(date_txt, fmt);
+		var result = MeosLibrary.meos.pg_to_timestamp(date_txt, fmt);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
-	public static DateADT pg_to_date(Pointer date_txt, Pointer fmt) {
+	public static int pg_to_date(Pointer date_txt, Pointer fmt) {
 		return MeosLibrary.meos.pg_to_date(date_txt, fmt);
 	}
 	
@@ -2322,9 +2330,9 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer period_make(OffsetDateTime lower, OffsetDateTime upper, boolean lower_inc, boolean upper_inc) {
-		lower = lower.toEpochSecond();
-		upper = upper.toEpochSecond();
-		return MeosLibrary.meos.period_make(lower, upper, lower_inc, upper_inc);
+		var lower_new = lower.toEpochSecond();
+		var upper_new = upper.toEpochSecond();
+		return MeosLibrary.meos.period_make(lower_new, upper_new, lower_inc, upper_inc);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2424,20 +2432,20 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_period(OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_to_period(t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_to_period(t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_periodset(OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_to_periodset(t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_to_periodset(t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_tstzset(OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_to_tstzset(t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_to_tstzset(t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2572,12 +2580,16 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime period_lower(Pointer p) {
-		return MeosLibrary.meos.period_lower(p);
+		var result = MeosLibrary.meos.period_lower(p);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime period_upper(Pointer p) {
-		return MeosLibrary.meos.period_upper(p);
+		var result = MeosLibrary.meos.period_upper(p);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2587,12 +2599,16 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime periodset_end_timestamp(Pointer ps) {
-		return MeosLibrary.meos.periodset_end_timestamp(ps);
+		var result = MeosLibrary.meos.periodset_end_timestamp(ps);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime periodset_lower(Pointer ps) {
-		return MeosLibrary.meos.periodset_lower(ps);
+		var result = MeosLibrary.meos.periodset_lower(ps);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2602,7 +2618,9 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime periodset_start_timestamp(Pointer ps) {
-		return MeosLibrary.meos.periodset_start_timestamp(ps);
+		var result = MeosLibrary.meos.periodset_start_timestamp(ps);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2617,7 +2635,9 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime periodset_upper(Pointer ps) {
-		return MeosLibrary.meos.periodset_upper(ps);
+		var result = MeosLibrary.meos.periodset_upper(ps);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2732,12 +2752,16 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime timestampset_end_timestamp(Pointer ts) {
-		return MeosLibrary.meos.timestampset_end_timestamp(ts);
+		var result = MeosLibrary.meos.timestampset_end_timestamp(ts);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime timestampset_start_timestamp(Pointer ts) {
-		return MeosLibrary.meos.timestampset_start_timestamp(ts);
+		var result = MeosLibrary.meos.timestampset_start_timestamp(ts);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2787,14 +2811,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer period_tprecision(Pointer s, Pointer duration, OffsetDateTime torigin) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.period_tprecision(s, duration, torigin);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.period_tprecision(s, duration, torigin_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer periodset_tprecision(Pointer ss, Pointer duration, OffsetDateTime torigin) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.periodset_tprecision(ss, duration, torigin);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.periodset_tprecision(ss, duration, torigin_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2808,7 +2832,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer set_shift(Pointer s, Datum shift) {
+	public static Pointer set_shift(Pointer s, long shift) {
 		return MeosLibrary.meos.set_shift(s, shift);
 	}
 	
@@ -2819,9 +2843,11 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime timestamp_tprecision(OffsetDateTime t, Pointer duration, OffsetDateTime torigin) {
-		t = t.toEpochSecond();
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.timestamp_tprecision(t, duration, torigin);
+		var t_new = t.toEpochSecond();
+		var torigin_new = torigin.toEpochSecond();
+		var result = MeosLibrary.meos.timestamp_tprecision(t_new, duration, torigin_new);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2851,14 +2877,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean adjacent_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.adjacent_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.adjacent_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean adjacent_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.adjacent_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.adjacent_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2943,14 +2969,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean contained_timestamp_period(OffsetDateTime t, Pointer p) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.contained_timestamp_period(t, p);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.contained_timestamp_period(t_new, p);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean contained_timestamp_timestampset(OffsetDateTime t, Pointer ts) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.contained_timestamp_timestampset(t, ts);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.contained_timestamp_timestampset(t_new, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -2975,14 +3001,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean contains_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.contains_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.contains_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean contains_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.contains_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.contains_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3007,8 +3033,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean contains_timestampset_timestamp(Pointer ts, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.contains_timestampset_timestamp(ts, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.contains_timestampset_timestamp(ts, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3033,20 +3059,20 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean after_timestamp_timestampset(OffsetDateTime t, Pointer ts) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.after_timestamp_timestampset(t, ts);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.after_timestamp_timestampset(t_new, ts);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean before_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.before_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.before_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean before_timestamp_timestampset(OffsetDateTime t, Pointer ts) {
-		long t = t.toEpochSecond();
-		return MeosLibrary.meos.before_timestamp_timestampset(t, ts);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.before_timestamp_timestampset(t_new, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3096,62 +3122,62 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean overafter_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overafter_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overafter_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overafter_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overafter_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overafter_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overafter_timestamp_period(OffsetDateTime t, Pointer p) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overafter_timestamp_period(t, p);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overafter_timestamp_period(t_new, p);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overafter_timestamp_periodset(OffsetDateTime t, Pointer ps) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overafter_timestamp_periodset(t, ps);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overafter_timestamp_periodset(t_new, ps);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overafter_timestamp_timestampset(OffsetDateTime t, Pointer ts) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overafter_timestamp_timestampset(t, ts);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overafter_timestamp_timestampset(t_new, ts);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overbefore_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overbefore_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overbefore_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overbefore_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overbefore_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overbefore_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overbefore_timestamp_period(OffsetDateTime t, Pointer p) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overbefore_timestamp_period(t, p);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overbefore_timestamp_period(t_new, p);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overbefore_timestamp_periodset(OffsetDateTime t, Pointer ps) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overbefore_timestamp_periodset(t, ps);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overbefore_timestamp_periodset(t_new, ps);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean overbefore_timestamp_timestampset(OffsetDateTime t, Pointer ts) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.overbefore_timestamp_timestampset(t, ts);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.overbefore_timestamp_timestampset(t_new, ts);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3301,14 +3327,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean intersection_period_timestamp(Pointer p, OffsetDateTime t, Pointer result) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_period_timestamp(p, t, result);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.intersection_period_timestamp(p, t_new, result);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean intersection_periodset_timestamp(Pointer ps, OffsetDateTime t, Pointer result) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_periodset_timestamp(ps, t, result);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.intersection_periodset_timestamp(ps, t_new, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3328,8 +3354,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean intersection_timestampset_timestamp(Pointer ts, OffsetDateTime t, Pointer result) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_timestampset_timestamp(ts, t, result);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.intersection_timestampset_timestamp(ts, t_new, result);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3339,14 +3365,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer minus_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.minus_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.minus_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer minus_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.minus_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.minus_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3371,20 +3397,20 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean minus_timestamp_period(OffsetDateTime t, Pointer p, Pointer result) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestamp_period(t, p, result);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.minus_timestamp_period(t_new, p, result);
 	}
 	
 	@SuppressWarnings("unused")
 	public static boolean minus_timestamp_periodset(OffsetDateTime t, Pointer ps, Pointer result) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestamp_periodset(t, ps, result);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.minus_timestamp_periodset(t_new, ps, result);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer minus_timestampset_timestamp(Pointer ts, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestampset_timestamp(ts, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.minus_timestampset_timestamp(ts, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3394,14 +3420,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer union_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.union_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.union_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer union_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.union_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.union_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3421,8 +3447,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer union_timestampset_timestamp(Pointer ts, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.union_timestampset_timestamp(ts, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.union_timestampset_timestamp(ts, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3442,14 +3468,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static double distance_period_timestamp(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.distance_period_timestamp(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.distance_period_timestamp(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static double distance_periodset_timestamp(Pointer ps, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.distance_periodset_timestamp(ps, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.distance_periodset_timestamp(ps, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3469,8 +3495,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static double distance_timestampset_timestamp(Pointer ts, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.distance_timestampset_timestamp(ts, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.distance_timestampset_timestamp(ts, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3560,20 +3586,20 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_extent_transfn(Pointer p, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_extent_transfn(p, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_extent_transfn(p, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_tcount_transfn(Pointer state, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_tcount_transfn(state, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_tcount_transfn(state, t_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_union_transfn(Pointer state, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_union_transfn(state, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_union_transfn(state, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3778,8 +3804,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_tbox(OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_to_tbox(t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_to_tbox(t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3799,8 +3825,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer int_timestamp_to_tbox(int i, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.int_timestamp_to_tbox(i, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.int_timestamp_to_tbox(i, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3810,8 +3836,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer float_timestamp_to_tbox(double d, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.float_timestamp_to_tbox(d, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.float_timestamp_to_tbox(d, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3821,8 +3847,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer geo_timestamp_to_stbox(Pointer gs, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.geo_timestamp_to_stbox(gs, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.geo_timestamp_to_stbox(gs, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3842,8 +3868,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer span_timestamp_to_tbox(Pointer span, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.span_timestamp_to_tbox(span, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.span_timestamp_to_tbox(span, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3883,8 +3909,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer timestamp_to_stbox(OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.timestamp_to_stbox(t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.timestamp_to_stbox(t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4454,8 +4480,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tboolinst_make(boolean b, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tboolinst_make(b, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tboolinst_make(b, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4485,8 +4511,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tfloatinst_make(double d, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tfloatinst_make(d, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tfloatinst_make(d, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4511,8 +4537,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tgeogpointinst_make(Pointer gs, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tgeogpointinst_make(gs, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tgeogpointinst_make(gs, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4537,8 +4563,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tgeompointinst_make(Pointer gs, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tgeompointinst_make(gs, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tgeompointinst_make(gs, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4563,8 +4589,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tintinst_make(int i, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tintinst_make(i, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tintinst_make(i, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4614,8 +4640,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer ttextinst_make(Pointer txt, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.ttextinst_make(txt, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.ttextinst_make(txt, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4680,7 +4706,9 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime temporal_end_timestamp(Pointer temp) {
-		return MeosLibrary.meos.temporal_end_timestamp(temp);
+		var result = MeosLibrary.meos.temporal_end_timestamp(temp);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4730,7 +4758,9 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime temporal_start_timestamp(Pointer temp) {
-		return MeosLibrary.meos.temporal_start_timestamp(temp);
+		var result = MeosLibrary.meos.temporal_start_timestamp(temp);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4890,14 +4920,14 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_tprecision(Pointer temp, Pointer duration, OffsetDateTime origin) {
-		origin = origin.toEpochSecond();
-		return MeosLibrary.meos.temporal_tprecision(temp, duration, origin);
+		var origin_new = origin.toEpochSecond();
+		return MeosLibrary.meos.temporal_tprecision(temp, duration, origin_new);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_tsample(Pointer temp, Pointer duration, OffsetDateTime origin) {
-		origin = origin.toEpochSecond();
-		return MeosLibrary.meos.temporal_tsample(temp, duration, origin);
+		var origin_new = origin.toEpochSecond();
+		return MeosLibrary.meos.temporal_tsample(temp, duration, origin_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4917,8 +4947,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean tbool_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tbool_value_at_timestamp(temp, t, strict, value);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tbool_value_at_timestamp(temp, t_new, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4943,8 +4973,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_at_timestamp(Pointer temp, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.temporal_at_timestamp(temp, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.temporal_at_timestamp(temp, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -4979,8 +5009,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_minus_timestamp(Pointer temp, OffsetDateTime t) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.temporal_minus_timestamp(temp, t);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.temporal_minus_timestamp(temp, t_new);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5005,8 +5035,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean tfloat_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tfloat_value_at_timestamp(temp, t, strict, value);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tfloat_value_at_timestamp(temp, t_new, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5021,8 +5051,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean tint_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tint_value_at_timestamp(temp, t, strict, value);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tint_value_at_timestamp(temp, t_new, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5087,8 +5117,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean tpoint_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.tpoint_value_at_timestamp(temp, t, strict, value);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.tpoint_value_at_timestamp(temp, t_new, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5103,8 +5133,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static boolean ttext_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.ttext_value_at_timestamp(temp, t, strict, value);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.ttext_value_at_timestamp(temp, t_new, strict, value);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5129,8 +5159,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_delete_timestamp(Pointer temp, OffsetDateTime t, boolean connect) {
-		t = t.toEpochSecond();
-		return MeosLibrary.meos.temporal_delete_timestamp(temp, t, connect);
+		var t_new = t.toEpochSecond();
+		return MeosLibrary.meos.temporal_delete_timestamp(temp, t_new, connect);
 	}
 	
 	@SuppressWarnings("unused")
@@ -5554,12 +5584,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tpoint_always_eq(Pointer temp, Datum value) {
+	public static boolean tpoint_always_eq(Pointer temp, long value) {
 		return MeosLibrary.meos.tpoint_always_eq(temp, value);
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tpoint_ever_eq(Pointer temp, Datum value) {
+	public static boolean tpoint_ever_eq(Pointer temp, long value) {
 		return MeosLibrary.meos.tpoint_ever_eq(temp, value);
 	}
 	
@@ -6225,26 +6255,26 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer period_bucket_list(Pointer bounds, Pointer duration, OffsetDateTime origin, Pointer newcount) {
-		origin = origin.toEpochSecond();
-		return MeosLibrary.meos.period_bucket_list(bounds, duration, origin, newcount);
+		var origin_new = origin.toEpochSecond();
+		return MeosLibrary.meos.period_bucket_list(bounds, duration, origin_new, newcount);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer stbox_tile_list(Pointer bounds, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, Pointer cellcount) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.stbox_tile_list(bounds, xsize, ysize, zsize, duration, sorigin, torigin, cellcount);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.stbox_tile_list(bounds, xsize, ysize, zsize, duration, sorigin, torigin_new, cellcount);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer tbox_tile_list(Pointer bounds, double xsize, Pointer duration, double xorigin, OffsetDateTime torigin, Pointer rows, Pointer columns) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.tbox_tile_list(bounds, xsize, duration, xorigin, torigin, rows, columns);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tbox_tile_list(bounds, xsize, duration, xorigin, torigin_new, rows, columns);
 	}
 	
 	@SuppressWarnings("unused")
 	public static Pointer temporal_time_split(Pointer temp, Pointer duration, OffsetDateTime torigin, Pointer newcount) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.temporal_time_split(temp, duration, torigin, newcount);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.temporal_time_split(temp, duration, torigin_new, newcount);
 	}
 	
 	@SuppressWarnings("unused")
@@ -6254,15 +6284,17 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tfloat_value_time_split(Pointer temp, double size, double vorigin, Pointer duration, OffsetDateTime torigin, Pointer newcount) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.tfloat_value_time_split(temp, size, vorigin, duration, torigin, newcount);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tfloat_value_time_split(temp, size, vorigin, duration, torigin_new, newcount);
 	}
 	
 	@SuppressWarnings("unused")
 	public static OffsetDateTime timestamptz_bucket(OffsetDateTime timestamp, Pointer duration, OffsetDateTime origin) {
-		timestamp = timestamp.toEpochSecond();
-		origin = origin.toEpochSecond();
-		return MeosLibrary.meos.timestamptz_bucket(timestamp, duration, origin);
+		var timestamp_new = timestamp.toEpochSecond();
+		var origin_new = origin.toEpochSecond();
+		var result = MeosLibrary.meos.timestamptz_bucket(timestamp_new, duration, origin_new);
+		Instant instant = Instant.ofEpochSecond(result);
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
 	
 	@SuppressWarnings("unused")
@@ -6272,8 +6304,8 @@ public class functions {
 	
 	@SuppressWarnings("unused")
 	public static Pointer tint_value_time_split(Pointer temp, int size, int vorigin, Pointer duration, OffsetDateTime torigin, Pointer newcount) {
-		torigin = torigin.toEpochSecond();
-		return MeosLibrary.meos.tint_value_time_split(temp, size, vorigin, duration, torigin, newcount);
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tint_value_time_split(temp, size, vorigin, duration, torigin_new, newcount);
 	}
 	
 	@SuppressWarnings("unused")

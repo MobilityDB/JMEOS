@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static utils.builder.BuilderLibrary.extractPatternFromFile;
-import static utils.builder.BuilderLibrary.writeFileFromArray;
+import static utils.builder.BuilderUtils.extractPatternFromFile;
+import static utils.builder.BuilderUtils.writeFileFromArray;
 
 /**
  * Class used to extract the functions from the MEOS library.
@@ -38,7 +38,7 @@ public class FunctionsExtractor {
 	/**
 	 * Script launch function.
 	 *
-	 * @param args Arguments
+	 * @param args arguments
 	 */
 	public static void main(String[] args) {
 		/* Retrieve the value of the JMEOS_PATH environment variable */
@@ -64,7 +64,7 @@ public class FunctionsExtractor {
 	/**
 	 * Get types from a file.
 	 *
-	 * @return The list of lines
+	 * @return the list of lines
 	 */
 	private static ArrayList<String> getTypesFromFile() {
 		ArrayList<String> rawTypes = extractPatternFromFile(FunctionsExtractor.INPUT_FILE_PATH, FunctionsExtractor.TYPES_PATTERN);
@@ -88,8 +88,8 @@ public class FunctionsExtractor {
 	/**
 	 * Retrieves structure names from file.
 	 *
-	 * @param filePath File path
-	 * @return List of structure names
+	 * @param filePath file path
+	 * @return list of structure names
 	 */
 	public static ArrayList<String> getStructureNames(String filePath) {
 		List<String> structureNames = new ArrayList<>();
