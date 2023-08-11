@@ -4,10 +4,7 @@ import utils.builder.BuilderUtils;
 import utils.builder.Pair;
 
 import java.nio.file.InvalidPathException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -206,6 +203,99 @@ public class FunctionsBuilder {
 	}
 	
 	/**
+	 * Produce the process of adding code to handle conversion of certain types for a function.
+	 *
+	 * @param signature function signature
+	 * @return list of {@link Pair} defined as follows :
+	 * <ul>
+	 *     <li>Key : {@link Pair} defined as follows :</li>
+	 *     <ul>
+	 *         <li>Key : old type name</li>
+	 *         <li>Value : new type name</li>
+	 *     </ul>
+	 *     <li>Value : list of lines for the conversion process</li>
+	 * </ul>
+	 */
+	private List<Pair<Pair<String, String>, List<String>>> generateConversionProcess(String signature) {
+		List<Pair<Pair<String, String>, List<String>>> conversionList = new ArrayList<>();
+		List<Pair<String, String>> typesList = BuilderUtils.extractParamTypesAndNames(signature);
+		
+		/* For each types */
+		for (Pair<String, String> type : typesList) {
+			String typeValue = type.key();
+			
+			/* If this type needs a conversion */
+			if (conversionTypes.containsValue(typeValue)) {
+				List<String> conversionLines = new ArrayList<>();
+				String typeName = type.value();
+				String newTypeName = typeName + "_new";
+				
+				switch (typeValue) {
+					case "LocalDateTime" -> conversionLines.add("var " + newTypeName + " = " + typeName + ".toEpochSecond(ZoneOffset.UTC);");
+					case "OffsetDateTime" -> conversionLines.add("var " + newTypeName + " = " + typeName + ".toEpochSecond();");
+					default -> throw new TypeNotPresentException(typeValue, new Throwable("Type not supported by the builder conversion process"));
+				}
+				conversionList.add(new Pair<>(new Pair<>(typeName, newTypeName), conversionLines));
+			}
+		}
+		return conversionList;
+	}
+	
+	/**
+	 * Produce the returning process for a function
+	 *
+	 * @param signature      function signature
+	 * @param typesNamesList list of types names to change it in the calling of the equivalent interface function
+	 * @return the returning process
+	 */
+	private List<String> generateReturnProcess(String signature, List<Pair<String, String>> typesNamesList) {
+		List<String> functionCallingProcess = new ArrayList<>();
+		List<String> paramNames = BuilderUtils.extractParamNames(signature);
+		
+		/* Manage the calling of meos library associate function */
+		if (typesNamesList.isEmpty()) {
+			functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
+		} else {
+			/* Modify the names of the parameter types that has endured conversion */
+			for (var typeNames : typesNamesList) {
+				String oldName = typeNames.key();
+				String newName = typeNames.value();
+				paramNames = BuilderUtils.modifyList(paramNames, oldName, newName);
+			}
+			functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
+		} // TODO modifier ça
+		
+		/* Manage the return process : if there is something to return */
+		if (!getFunctionTypes(signature).get(0).equals("void")) {
+			var classReturnType = BuilderUtils.extractFunctionTypes(signature).get(0);
+			
+			/* Manage the returning process of conversion types */
+			if (conversionTypes.containsValue(classReturnType)) {
+				List<String> returnProcess = new ArrayList<>();
+				var functionCall = BuilderUtils.removeSemicolon(functionCallingProcess.get(0));
+				
+				returnProcess.add("var result = " + functionCall + ";");
+				
+				switch (classReturnType) {
+					case "LocalDateTime" -> returnProcess.add(
+							"LocalDateTime.ofEpochSecond(result, 0, ZoneOffset.UTC);"
+					);
+					case "OffsetDateTime" -> returnProcess.addAll(List.of(
+							"Instant instant = Instant.ofEpochSecond(result);",
+							"OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);"
+					));
+					default -> throw new TypeNotPresentException(classReturnType, new Throwable("Type not supported by the builder returning conversion process"));
+				}
+				returnProcess.set(returnProcess.size() - 1, "return " + returnProcess.get(returnProcess.size() - 1)); // Add return at the last line of the list
+				functionCallingProcess = returnProcess;
+			} else {
+				functionCallingProcess.set(0, "return " + functionCallingProcess.get(0));
+			}
+		}
+		return functionCallingProcess;
+	}
+	
+	/**
 	 * Used to generate the class of functions.
 	 *
 	 * @param functionsBuilder builder of functions
@@ -238,58 +328,21 @@ public class FunctionsBuilder {
 		BuilderUtils.readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
 				String functionSignature = "public static " + BuilderUtils.removeSemicolon(line) + " {\n";
-				var typeConversionProcess = this.getTypeConversionProcess(line);
-				var typesNamesList = BuilderUtils.extractPairKeys(typeConversionProcess);
-				var typesConversionContent = BuilderUtils.extractPairValues(typeConversionProcess);
 				
-				/* Manage the calling of meos library associate function */
-				List<String> functionCallingProcess = new ArrayList<>();
-				List<String> paramNames = BuilderUtils.extractParamNames(line);
-				if (typesNamesList.isEmpty()) {
-					functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(line) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
-				} else {
-					/* Modify the names of the parameter types that has endured conversion */
-					for (var typeNames : typesNamesList) {
-						String oldName = typeNames.key();
-						String newName = typeNames.value();
-						paramNames = BuilderUtils.modifyList(paramNames, oldName, newName);
-					}
-					functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(line) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
-				}
+				/* Generate the conversion process */
+				var conversionProcess = this.generateConversionProcess(line);
+				var conversionProcessList = BuilderUtils.extractPairValues(conversionProcess);
+				var conversionProcessContent = conversionProcessList.stream().flatMap(Collection::stream).toList();
 				
-				/* Manage the return process */
-				if (!getFunctionTypes(line).get(0).equals("void")) {
-					var classReturnType = BuilderUtils.extractFunctionTypes(line).get(0);
-					
-					/* Manage the returning process of conversion types */
-					if (conversionTypes.containsValue(classReturnType)) {
-						List<String> returnProcess = new ArrayList<>();
-						var functionCall = BuilderUtils.removeSemicolon(functionCallingProcess.get(0));
-						
-						returnProcess.add("var result = " + functionCall + ";");
-						
-						switch (classReturnType) {
-							case "LocalDateTime" -> returnProcess.add(
-									"LocalDateTime.ofEpochSecond(result, 0, ZoneOffset.UTC);"
-							);
-							case "OffsetDateTime" -> returnProcess.addAll(List.of(
-									"Instant instant = Instant.ofEpochSecond(result);",
-									"OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);"
-							));
-							default -> throw new TypeNotPresentException(classReturnType, new Throwable("Type not supported by the builder returning conversion process"));
-						}
-						returnProcess.set(returnProcess.size() - 1, "return " + returnProcess.get(returnProcess.size() - 1)); // Add return at the last line of the list
-						functionCallingProcess = returnProcess;
-					} else {
-						functionCallingProcess.set(0, "return " + functionCallingProcess.get(0));
-					}
-				}
+				/* Generate the returning process */
+				var typesNamesList = BuilderUtils.extractPairKeys(conversionProcess);
+				var returnProcessContent = this.generateReturnProcess(line, typesNamesList);
 				
 				/* Add all the different parts in the function body builder */
 				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n")
 						.append(functionSignature)
-						.append(BuilderUtils.formattingLineList(typesConversionContent, "\t", "\n"))
-						.append(BuilderUtils.formattingLineList(functionCallingProcess, "\t", "\n"))
+						.append(BuilderUtils.formattingLineList(conversionProcessContent, "\t", "\n"))
+						.append(BuilderUtils.formattingLineList(returnProcessContent, "\t", "\n"))
 						.append(BuilderUtils.formattingLine("}", "", "\n\n"));
 			}
 		});
@@ -349,38 +402,5 @@ public class FunctionsBuilder {
 		return builder;
 	}
 	
-	/**
-	 * Process of adding code to handle conversion of certain types
-	 *
-	 * @param signature function signature
-	 * @return list of Pair defined as follows :
-	 * <pre>
-	 * Key : lines for the conversion process
-	 * Value : new variable name
-	 * </pre>
-	 */
-	private List<Pair<Pair<String, String>, String>> getTypeConversionProcess(String signature) {
-		List<Pair<Pair<String, String>, String>> conversionList = new ArrayList<>();
-		List<Pair<String, String>> typesList = BuilderUtils.extractParamTypesAndNames(signature);
-		
-		/* For each types */
-		for (Pair<String, String> type : typesList) {
-			String typeValue = type.key();
-			
-			/* If this type needs a conversion */
-			if (conversionTypes.containsValue(typeValue)) {
-				String conversionLines;
-				String typeName = type.value();
-				String newTypeName = typeName + "_new";
-				
-				switch (typeValue) {
-					case "LocalDateTime" -> conversionLines = "var " + newTypeName + " = " + typeName + ".toEpochSecond(ZoneOffset.UTC);";
-					case "OffsetDateTime" -> conversionLines = "var " + newTypeName + " = " + typeName + ".toEpochSecond();";
-					default -> throw new TypeNotPresentException(typeValue, new Throwable("Type not supported by the builder conversion process"));
-				}
-				conversionList.add(new Pair<>(new Pair<>(typeName, newTypeName), conversionLines));
-			}
-		}
-		return conversionList;
-	}
+	
 }

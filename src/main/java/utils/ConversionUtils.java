@@ -9,6 +9,7 @@ package utils;
 import functions.functions;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,12 +23,26 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConversionUtils {
 	
-	public static long datetimeToTimestampTz(LocalDateTime dt) {
+	/**
+	 * Take a {@link LocalDateTime} and convert it to an {@link OffsetDateTime}.
+	 *
+	 * @param dt localDateTime
+	 * @return offsetDateTime
+	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
+	 */
+	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX"));
 		return functions.pg_timestamptz_in(formattedDt, -1);
 	}
 	
-	public static LocalDateTime timestampTzToDatetime(int ts) {
+	/**
+	 * Take a {@link OffsetDateTime} and convert it to an {@link LocalDateTime}.
+	 *
+	 * @param ts offsetDateTime
+	 * @return localDateTime
+	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
+	 */
+	public static LocalDateTime timestampTzToDatetime(OffsetDateTime ts) {
 		return ZonedDateTime.parse(functions.pg_timestamptz_out(ts)).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
 	}
 	
