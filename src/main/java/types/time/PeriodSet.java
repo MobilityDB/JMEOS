@@ -131,7 +131,6 @@ public class PeriodSet extends TemporalObject<Pointer> {
 	
 	
 	public boolean contains_Period(Period other) {
-		
 		return functions.contains_periodset_period(this._inner, other.get_inner());
 	}
 	
