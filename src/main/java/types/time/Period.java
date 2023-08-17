@@ -3,15 +3,12 @@ package types.time;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.TemporalObject;
-import types.core.DataType;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import types.temporal.Temporal;
-import types.boxes.TBox;
 
 /**
  * Class for representing sets of contiguous timestamps between a lower and

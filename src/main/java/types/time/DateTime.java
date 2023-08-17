@@ -1,13 +1,9 @@
 package types.time;
 
-import functions.functions;
-import jnr.ffi.Pointer;
 import types.TemporalObject;
-import utils.ConversionUtils;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 /**
  * Class that represent a DateTime.

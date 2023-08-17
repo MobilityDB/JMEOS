@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
-import types.temporal.Temporal;
 import types.time.Period;
 import types.time.PeriodSet;
 import types.time.TimestampSet;
@@ -456,7 +455,7 @@ public class STBox extends Box {
 
     @Override
     public Period to_period() throws SQLException {
-        Pointer result = stbox_to_period(this._inner);
+        Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }
 

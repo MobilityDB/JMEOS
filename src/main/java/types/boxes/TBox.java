@@ -1,6 +1,5 @@
 package types.boxes;
 
-import types.core.DataType;
 import functions.functions;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
@@ -9,7 +8,6 @@ import types.time.Period;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
-import types.boxes.Box;
 
 
 /**
