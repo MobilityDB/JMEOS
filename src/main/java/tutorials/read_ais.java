@@ -4,6 +4,8 @@ import functions.functions;
 import jnr.ffi.Pointer;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Scanner;
 
 import static functions.functions.meos_finalize;
@@ -79,7 +81,7 @@ public class read_ais {
 					
 					float rec_tmp = (float) rec.SOG;
 					
-					Pointer inst2 = functions.tfloatinst_make(rec_tmp, rec.T);
+					Pointer inst2 = functions.tfloatinst_make(rec_tmp, OffsetDateTime.from(rec.T));
 					String inst2_out = functions.tfloat_out(inst2, 2);
 					
 					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);
@@ -99,7 +101,7 @@ public class read_ais {
 	}
 	
 	public static class AIS_record {
-		public long T;
+		public LocalDateTime T;
 		public long MMSI;
 		public double Latitude;
 		public double Longitude;

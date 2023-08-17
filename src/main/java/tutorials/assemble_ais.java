@@ -3,6 +3,8 @@ package tutorials;
 import jnr.ffi.Pointer;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -111,7 +113,7 @@ public class assemble_ais {
 					String inst1_out = tpoint_as_text(inst1, 2);
 					
 					
-					Pointer inst2 = tfloatinst_make((float) rec.SOG, rec.T);
+					Pointer inst2 = tfloatinst_make((float) rec.SOG, OffsetDateTime.from(rec.T));
 					String inst2_out = tfloat_out(inst2, 2);
 					
 					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);
@@ -131,7 +133,7 @@ public class assemble_ais {
 	}
 	
 	public static class AIS_record {
-		public long T;
+		public LocalDateTime T;
 		public long MMSI;
 		public double Latitude;
 		public double Longitude;

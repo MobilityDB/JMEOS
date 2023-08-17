@@ -1,14 +1,16 @@
 package types.boxes;
 
 import types.core.DataType;
+import functions.functions;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
+import types.time.Period;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import types.boxes.Box;
 
-import static functions.functions.*;
 
 //import static function.functions.stbox_from_hexwkb;
 
@@ -16,7 +18,7 @@ import static functions.functions.*;
  * Class that represents the MobilityDB type TBox
  */
 @TypeName(name = "tbox")
-public class TBox extends DataType {
+public class TBox extends Box {
 	private double xmin = 0.0f;
 	private double xmax = 0.0f;
 	private OffsetDateTime tmin;
@@ -36,18 +38,20 @@ public class TBox extends DataType {
 	}
 	
 	
-	public TBox(Pointer inner) {
+	public TBox(Pointer inner) throws SQLException {
 		this(inner, true, true, true, true);
 	}
 	
 	public TBox(Pointer inner, boolean xmin_inc, boolean xmax_inc, boolean tmax_inc, boolean
-			tmin_inc) {
+			tmin_inc) throws SQLException {
 		super();
 		this._inner = inner;
 		this.xmin_inc = xmin_inc;
 		this.xmax_inc = xmax_inc;
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
+		String str = functions.tbox_out(this._inner,2);
+		setValue(str);
 	}
 	
 	/**
@@ -60,7 +64,7 @@ public class TBox extends DataType {
 		super();
 		setValue(value);
 		
-		this._inner = tbox_in(value);
+		this._inner = functions.tbox_in(value);
 	}
 	
 	/**
@@ -102,7 +106,11 @@ public class TBox extends DataType {
 		this.tmin = tmin;
 		this.tmax = tmax;
 	}
-	
+
+
+
+
+
 	
 	/**
 	 * Function that produces an TBox from a string through MEOS.
@@ -111,22 +119,75 @@ public class TBox extends DataType {
 	 * @return a JNR-FFI pointer
 	 */
 	
-	public TBox from_hexwkb(String hexwkb) {
-		Pointer result = tbox_from_hexwkb(hexwkb);
+	public static TBox from_hexwkb(String hexwkb) throws SQLException {
+		return new TBox(functions.tbox_from_hexwkb(hexwkb));
+	}
+
+	public TBox from_value_number(Number value) throws SQLException {
+		TBox tbox = null;
+		if(Integer.class.isInstance(value)){
+			tbox = new TBox(functions.int_to_tbox((int)value));
+		}
+		else if (Float.class.isInstance(value)){
+			tbox = new TBox(functions.float_to_tbox((int)value));
+		}
+		return tbox;
+	}
+
+	/*
+	public TBox from_value_range(){
+		;
+	}
+
+	 */
+
+
+	public String to_str(){
+		return this.to_str(15);
+	}
+	public String to_str(int max_decimals){
+		return functions.tbox_out(this._inner,max_decimals);
+	}
+
+	@Override
+	public Period to_period() throws SQLException {
+		return new Period(functions.tbox_to_period(this._inner));
+	}
+
+	public boolean has_x(){
+		return functions.tbox_hasx(this._inner);
+	}
+
+	public boolean has_t(){
+		return functions.tbox_hast(this._inner);
+	}
+
+
+
+	public TBox expand(Object obj) throws SQLException {
+		Pointer result = null;
+		if(obj instanceof TBox){
+			result = functions.tbox_copy(this._inner);
+			functions.tbox_expand(((TBox) obj).get_inner(),result);
+		}
+		else if(Integer.class.isInstance(obj) || Float.class.isInstance(obj)){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
 		return new TBox(result);
 	}
-	
-	
-	public TBox expand_stbox(TBox stbox, TBox other) {
-		Pointer result = tbox_copy(this._inner);
-		tbox_expand(other._inner, result);
-		return new TBox(result);
+
+
+
+	public TBox round() throws SQLException {
+		return this.round(0);
 	}
-	
-	public TBox expand_float(STBox stbox, float other) {
-		Pointer result = tbox_expand_value(this._inner, other);
-		return new TBox(result);
+
+	public TBox round(int maxdd) throws SQLException {
+		Pointer new_inner = functions.tbox_copy(this._inner);
+		functions.tbox_round(new_inner,maxdd);
+		return new TBox(new_inner);
 	}
+
 
     /*
     //Add the timedelta function
@@ -136,179 +197,192 @@ public class TBox extends DataType {
     }
 
      */
-	
-	
-	public TBox union(TBox other) {
-		return new TBox(union_tbox_tbox(this._inner, other._inner));
-	}
+
 	
 	public boolean is_adjacent_tbox(TBox other) {
-		return adjacent_tbox_tbox(this._inner, other._inner);
+		return functions.adjacent_tbox_tbox(this._inner, other._inner);
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_adjacent_tnumber(TNumber other){
-        return adjacent_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	public boolean is_contained_in_tbox(TBox other) {
-		return contained_tbox_tbox(this._inner, other._inner);
+	public boolean is_contained_in(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.contained_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_contained_in_tnumber(TNumber other){
-        return contained_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean contains_in_tbox(TBox other) {
-		return contains_tbox_tbox(this._inner, other._inner);
+	public boolean contains(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.contains_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean contains_in_tnumber(TNumber other){
-        return contains_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean overlaps_in_tbox(TBox other) {
-		return overlaps_tbox_tbox(this._inner, other._inner);
+	public boolean overlaps(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.overlaps_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean overlaps_in_tnumber(TNumber other){
-        return overlaps_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean is_same_tbox(TBox other) {
-		return same_tbox_tbox(this._inner, other._inner);
+	public boolean is_same(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.same_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_same_tnumber(TNumber other){
-        return same_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	public boolean is_left_tbox(TBox other) {
-		return left_tbox_tbox(this._inner, other._inner);
+
+	public boolean is_left(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.left_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_left_tnumber(TNumber other){
-        return left_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean isover_or_left_tbox(TBox other) {
-		return overleft_tbox_tbox(this._inner, other._inner);
+	public boolean is_over_or_left(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.overleft_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean isover_or_left_tnumber(TNumber other){
-        return overleft_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	public boolean is_right_tbox(TBox other) {
-		return right_tbox_tbox(this._inner, other._inner);
+	public boolean is_right(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.right_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_right_tnumber(TNumber other){
-        return right_tbox_tnumber(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_right_tbox(TBox other) {
-		return overright_tbox_tbox(this._inner, other._inner);
+	public boolean is_over_or_right(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.overright_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean isover_or_right_tnumber(TNumber other){
-        return overright_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean is_before_tbox(TBox other) {
-		return before_tbox_tbox(this._inner, other._inner);
+	public boolean is_before(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.before_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_before_tnumber(TNumber other){
-        return before_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean isover_or_before_tbox(TBox other) {
-		return overbefore_tbox_tbox(this._inner, other._inner);
+	public boolean is_over_or_before(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.overbefore_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean isover_or_before_tnumber(TNumber other){
-        return overbefore_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
-	
-	
-	public boolean is_after_tbox(TBox other) {
-		return after_tbox_tbox(this._inner, other._inner);
+	public boolean is_after(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.after_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean is_after_tnumber(TNumber other){
-        return after_tbox_tnumber(this._inner, other._inner);
-    }
-
-     */
-	
-	public boolean isover_or_after_tbox(TBox other) {
-		return overafter_tbox_tbox(this._inner, other._inner);
+	public boolean is_over_or_after(Object obj) throws SQLException {
+		boolean result = false;
+		if(obj instanceof TBox){
+			result = functions.overafter_tbox_tbox(this._inner, ((TBox) obj).get_inner());
+		}
+		/*
+		else if(obj instanceof Tnumber){
+			result = functions.tbox_expand_value(this._inner,(float)obj);
+		}
+		 */
+		return result;
 	}
 
-    /*
-    //Add for tnumber
-    public boolean isover_or_after_tnumber(TNumber other){
-        return overafter_tbox_tnumber(this._inner, other._inner);
-    }
 
-     */
+	public TBox union(TBox other) throws SQLException {
+		return new TBox(functions.union_tbox_tbox(this._inner, other._inner));
+	}
+
+
+	public TBox intersection(TBox other) throws SQLException {
+		return new TBox(functions.intersection_tbox_tbox(this._inner,other.get_inner()));
+	}
 	
 	
 	public float nearest_approach_distance(TBox other) {
-		return (float) nad_tbox_tbox(this._inner, other._inner);
+		return (float) functions.nad_tbox_tbox(this._inner, other._inner);
 	}
 	
 	
@@ -417,4 +491,19 @@ public class TBox extends DataType {
 	public OffsetDateTime getTmax() {
 		return tmax;
 	}
+
+	public boolean get_tmin_inc(){
+		return tmin_inc;
+	}
+
+	public boolean get_tmax_inc(){
+		return tmax_inc;
+	}
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
+
+
+
 }

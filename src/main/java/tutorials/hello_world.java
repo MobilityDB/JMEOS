@@ -8,6 +8,7 @@ import types.basic.tpoint.TPoint;
 import types.temporal.TemporalValue;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static functions.functions.*;
 
@@ -59,7 +60,7 @@ public class hello_world {
 		
 		//runtime.getMemoryManager().free
 		
-		long tmstp = pg_timestamp_in("2020-01-08 00:00:00", -1);
+		LocalDateTime tmstp = pg_timestamp_in("2020-01-08 00:00:00", -1);
 		String output = pg_timestamp_out(tmstp);
 		System.out.println(output);
 		

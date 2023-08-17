@@ -69,6 +69,7 @@ class PeriodTest {
 		assertTrue(period.getUpper_inc() == upper_inc);
 		assertTrue(period.getLower_inc() == lower_inc);
 	}
+
 	
 	
 	@Test

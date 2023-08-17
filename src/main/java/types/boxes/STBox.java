@@ -1,7 +1,7 @@
 package types.boxes;
 
 import functions.functions;
-import types.core.DataType;
+import types.TemporalObject;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
@@ -11,11 +11,18 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
+import types.temporal.Temporal;
+import types.time.Period;
+import types.time.PeriodSet;
+import types.time.TimestampSet;
+
+import static functions.functions.stbox_to_period;
+
 /**
  * Class that represents the MobilityDB type STBox
  */
 @TypeName(name = "stbox")
-public class STBox extends DataType {
+public class STBox extends Box {
 	private Point pMin = null;
 	private Point pMax = null;
 	private OffsetDateTime tMin = null;
@@ -25,7 +32,29 @@ public class STBox extends DataType {
 	private Pointer _inner = null;
 	private boolean tmin_inc = true;
 	private boolean tmax_inc = true;
-	
+
+	public STBox _get_box(TemporalObject<?> other) throws SQLException {
+		return this._get_box(other,true,false);
+	}
+
+	public STBox _get_box(TemporalObject<?> other, boolean allow_space_only, boolean allow_time_only) throws SQLException {
+		STBox other_box=null;
+
+		if (other instanceof STBox){
+
+		}
+
+		if (allow_time_only) {
+			switch (other) {
+				case STBox st -> other_box = new STBox(st.get_inner());
+				case Period p -> other_box = new STBox(functions.period_to_stbox(p.get_inner()));
+				case PeriodSet ps -> other_box = new STBox(functions.periodset_to_stbox(ps.get_inner()));
+				case TimestampSet ts -> other_box = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
+				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			}
+		}
+		return other_box;
+	}
 	/**
 	 * The default constructor
 	 */
@@ -33,16 +62,18 @@ public class STBox extends DataType {
 		super();
 	}
 	
-	public STBox(Pointer inner) {
+	public STBox(Pointer inner) throws SQLException {
 		this(inner, true, true, false);
 	}
 	
-	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic) {
+	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic) throws SQLException {
 		super();
 		this._inner = inner;
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
 		this.isGeodetic = geodetic;
+		String str = functions.stbox_out(this._inner,2);
+		setValue(str);
 	}
 	
 	/**
@@ -312,7 +343,7 @@ public class STBox extends DataType {
 	 * @return a JNR-FFI pointer
 	 */
 	
-	public STBox from_hexwkb(String hexwkb) {
+	public static STBox from_hexwkb(String hexwkb) throws SQLException {
 		Pointer result = functions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
 	}
@@ -326,13 +357,13 @@ public class STBox extends DataType {
    */
 	
 	
-	public STBox from_geometry(Geometry geom) {
+	public STBox from_geometry(Geometry geom) throws SQLException {
 		Pointer gs = functions.gserialized_in(geom.toString(), -1);
 		return new STBox(functions.geo_to_stbox(gs));
 	}
 	
 	
-	public STBox from_space(Geometry value) {
+	public STBox from_space(Geometry value) throws SQLException {
 		return from_geometry(value);
 	}
 
@@ -349,27 +380,29 @@ public class STBox extends DataType {
      */
 	
 	
-	public STBox from_timestampset(Pointer time) {
+	public STBox from_timestampset(Pointer time) throws SQLException {
 		Pointer result = functions.timestampset_to_stbox(time);
 		return new STBox(result);
 	}
 	
-	public STBox from_period(Pointer time) {
+	public STBox from_period(Pointer time) throws SQLException {
 		Pointer result = functions.period_to_stbox(time);
 		return new STBox(result);
 	}
 	
-	public STBox from_periodset(Pointer time) {
+	public STBox from_periodset(Pointer time) throws SQLException {
 		Pointer result = functions.periodset_to_stbox(time);
 		return new STBox(result);
 	}
 	
-	
+	/*
 	public STBox from_expanding_bounding_box_geom(Geometry value, float expansion) {
 		Pointer gs = functions.gserialized_in(value.toString(), -1);
 		Pointer result = functions.geo_expand_spatial(gs, expansion);
 		return new STBox(result);
 	}
+
+	 */
 
 
     /* Modify Tpoint type
@@ -422,14 +455,13 @@ public class STBox extends DataType {
 
      */
 
-    /*
-    // A Rajouter sur la classe period
-    public Period to_period(){
+    @Override
+    public Period to_period() throws SQLException {
         Pointer result = stbox_to_period(this._inner);
         return new Period(result);
     }
 
-     */
+
 	
 	public boolean has_xy() {
 		return functions.stbox_hasx(this._inner);
@@ -480,16 +512,21 @@ public class STBox extends DataType {
      */
 	
 	
-	public STBox expand_stbox(STBox stbox, STBox other) {
+	public STBox expand_stbox(STBox stbox, STBox other) throws SQLException {
 		Pointer result = functions.stbox_copy(this._inner);
 		functions.stbox_expand(other._inner, result);
 		return new STBox(result);
 	}
-	
-	public STBox expand_float(STBox stbox, float other) {
-		Pointer result = functions.stbox_expand_spatial(this._inner, other);
-		return new STBox(result);
+
+	public STBox expand_numerical(Number value) throws SQLException {
+		STBox result = null;
+		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
+			result = new STBox(functions.stbox_expand_space(this.get_inner(),(float) value));
+		}
+		return result;
 	}
+
+
 
     /*
     //Add the timedelta function
@@ -500,284 +537,97 @@ public class STBox extends DataType {
 
      */
 	
-	public STBox union(STBox other, boolean bool) {
-		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, bool));
-	}
-	
-	public boolean is_adjacent_stbox(STBox other) {
-		return functions.adjacent_stbox_stbox(this._inner, other._inner);
+	public STBox union(STBox other, boolean strict) throws SQLException {
+		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
-    /*
-    //Add for tpoint
-    public boolean is_adjacent_tpoint(TPoint other){
-        return adjacent_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_contained_in_stbox(STBox other) {
-		return functions.contained_stbox_stbox(this._inner, other._inner);
+	public STBox intersection(STBox other) throws SQLException {
+		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_contained_in_tpoint(TPoint other){
-        return contained_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean contains_stbox(STBox other) {
-		return functions.contained_stbox_stbox(this._inner, other._inner);
+	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {
+		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean contains_tpoint(TPoint other){
-        return contained_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	public boolean overlaps_stbox(STBox other) {
-		return functions.overlaps_stbox_stbox(this._inner, other._inner);
+	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+		return functions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean overlaps_tpoint(TPoint other){
-        return overlaps_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	public boolean is_same_stbox(STBox other) {
-		return functions.same_stbox_stbox(this._inner, other._inner);
+	public boolean contains(TemporalObject<?> other) throws SQLException {
+		return functions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_same_tpoint(TPoint other){
-        return same_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_left_stbox(STBox other) {
-		return functions.left_stbox_stbox(this._inner, other._inner);
+	public boolean overlaps(TemporalObject<?> other) throws SQLException {
+		return functions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_left_tpoint(TPoint other){
-        return left_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	public boolean isover_or_left_stbox(STBox other) {
-		return functions.overleft_stbox_stbox(this._inner, other._inner);
+	public boolean is_same(TemporalObject<?> other) throws SQLException {
+		return functions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_left_tpoint(TPoint other){
-        return overleft_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_right_stbox(STBox other) {
-		return functions.right_stbox_stbox(this._inner, other._inner);
+	public boolean is_left(TemporalObject<?> other) throws SQLException {
+		return functions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_right_tpoint(TPoint other){
-        return right_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_right_stbox(STBox other) {
-		return functions.overright_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_left(TemporalObject<?> other) throws SQLException {
+		return functions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_right_tpoint(TPoint other){
-        return overright_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_below_stbox(STBox other) {
-		return functions.below_stbox_stbox(this._inner, other._inner);
+	public boolean is_right(TemporalObject<?> other) throws SQLException {
+		return functions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_below_tpoint(TPoint other){
-        return below_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_below_stbox(STBox other) {
-		return functions.overbelow_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_right(TemporalObject<?> other) throws SQLException {
+		return functions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_below_tpoint(TPoint other){
-        return overbelow_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_above_stbox(STBox other) {
-		return functions.above_stbox_stbox(this._inner, other._inner);
+	public boolean is_below(TemporalObject<?> other) throws SQLException {
+		return functions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_above_tpoint(TPoint other){
-        return above_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_above_stbox(STBox other) {
-		return functions.overabove_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_below(TemporalObject<?> other) throws SQLException {
+		return functions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_above_tpoint(TPoint other){
-        return overabove_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_front_stbox(STBox other) {
-		return functions.front_stbox_stbox(this._inner, other._inner);
+	public boolean is_above(TemporalObject<?> other) throws SQLException {
+		return functions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_front_tpoint(TPoint other){
-        return front_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	public boolean isover_or_front_stbox(STBox other) {
-		return functions.overfront_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_above(TemporalObject<?> other) throws SQLException {
+		return functions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_front_tpoint(TPoint other){
-        return overfront_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_back_stbox(STBox other) {
-		return functions.back_stbox_stbox(this._inner, other._inner);
+	public boolean is_front(TemporalObject<?> other) throws SQLException {
+		return functions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_back_tpoint(TPoint other){
-        return back_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_back_stbox(STBox other) {
-		return functions.overback_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_front(TemporalObject<?> other) throws SQLException {
+		return functions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_back_tpoint(TPoint other){
-        return overback_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_before_stbox(STBox other) {
-		return functions.before_stbox_stbox(this._inner, other._inner);
+	public boolean is_behind(TemporalObject<?> other) throws SQLException {
+		return functions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean is_before_tpoint(TPoint other){
-        return before_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_before_stbox(STBox other) {
-		return functions.overbefore_stbox_stbox(this._inner, other._inner);
+	public boolean is_over_or_behind(TemporalObject<?> other) throws SQLException {
+		return functions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
-
-    /*
-    //Add for tpoint
-    public boolean isover_or_before_tpoint(TPoint other){
-        return overbefore_stbox_tpoint(this._inner, other._inner);
-    }
-
-     */
-	
-	
-	public boolean is_after_stbox(STBox other) {
-		return functions.after_stbox_stbox(this._inner, other._inner);
+	public boolean is_before(TemporalObject<?> other) throws SQLException {
+		return this.to_period().is_before(other);
 	}
 
+	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
+		return this.to_period().is_over_or_before(other);
+	}
 
-    /*
-    //Add for tpoint
-    public boolean is_after_tpoint(TPoint other){
-        return after_stbox_tpoint(this._inner, other._inner);
-    }
+	public boolean is_after(TemporalObject<?> other) throws SQLException {
+		return this.to_period().is_after(other);
+	}
 
-     */
-	
+	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
+		return this.to_period().is_over_or_after(other);
+	}
 	
 	public float nearest_approach_distance_geom(Geometry other) {
 		Pointer gs = functions.gserialized_in(other.toString(), -1);
@@ -937,6 +787,14 @@ public class STBox extends DataType {
 	
 	public Double getZmax() {
 		return pMax != null ? pMax.getZ() : null;
+	}
+
+	public boolean get_tmin_inc(){
+		return tmin_inc;
+	}
+
+	public boolean get_tmax_inc(){
+		return tmax_inc;
 	}
 	
 	public OffsetDateTime getTMin() {

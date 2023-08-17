@@ -12,15 +12,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import types.boxes.*;
 
-import static functions.functions.timestampset_in;
+import functions.functions;
 
 
 /**
  * Class that represents the MobilityDB type TimestampSet
  */
 @TypeName(name = "timestampset")
-public class TimestampSet extends TemporalObject<Pointer> {
+public class TimestampSet extends Time {
 	private final List<OffsetDateTime> dateTimeList;
 	
 	/**
@@ -31,9 +32,11 @@ public class TimestampSet extends TemporalObject<Pointer> {
 		dateTimeList = new ArrayList<>();
 	}
 	
-	public TimestampSet(Pointer _inner) {
+	public TimestampSet(Pointer _inner) throws SQLException {
 		this();
 		this._inner = _inner;
+		String str = functions.timestampset_out(this._inner);
+		setValue(str);
 	}
 	
 	
@@ -46,7 +49,7 @@ public class TimestampSet extends TemporalObject<Pointer> {
 	public TimestampSet(String value) throws SQLException {
 		this();
 		setValue(value);
-		this._inner = timestampset_in(value);
+		this._inner = functions.timestampset_in(value);
 	}
 	
 	/**
@@ -61,31 +64,63 @@ public class TimestampSet extends TemporalObject<Pointer> {
 		validate();
 	}
 	
-	
-	public TimestampSet from_hexwkb(String hexwkb) {
-		Pointer result = timestampset_from_hexwkb(hexwkb);
+	/*
+	public static TimestampSet from_wkb(byte[] wkb){
+		return new TimestampSet(functions.set_from_)
+	}
+	 */
+
+	public static TimestampSet from_hexwkb(String hexwkb) throws SQLException {
+		Pointer result = functions.set_from_hexwkb(hexwkb);
 		return new TimestampSet(result);
 	}
 	
-	public PeriodSet to_periodset() {
-		return new PeriodSet(timestampset_to_periodset(this._inner));
-	}
-	
-	
-	public boolean is_adjacent_Period(Period other) {
-		
-		return adjacent_timestampset_period(this._inner, other.get_inner());
-	}
-	
-	public boolean is_adjacent_Periodset(PeriodSet other) {
-		return adjacent_timestampset_periodset(this._inner, other.get_inner());
+	public PeriodSet to_periodset() throws SQLException {
+		return new PeriodSet(functions.set_to_spanset(this.get_inner()));
 	}
 
-	/*
-    public boolean is_adjacent_temporal(Temporal other){
-        return adjacent_timestampset_temporal(this._inner,other._inner);
-    }
-     */
+	public Period period() throws SQLException {
+		return new Period(functions.set_span(this._inner));
+	}
+
+	public int num_timestamps(){
+		return functions.set_num_values(this._inner);
+	}
+
+
+	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
+		boolean returnValue;
+		switch (other) {
+			case Period p -> returnValue = functions.adjacent_span_span(functions.set_span(this._inner), p.get_inner());
+			case PeriodSet ps -> returnValue = functions.adjacent_spanset_spanset(ps.get_inner(), functions.set_to_spanset(this._inner));
+			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
+			//case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
+			case Box b -> returnValue = functions.adjacent_span_span(functions.set_span(this._inner), b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
+
+
+	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+		boolean returnValue;
+		switch (other) {
+			case Period p -> returnValue = functions.contained_span_span(functions.set_span(this._inner), p.get_inner());
+			case PeriodSet ps -> returnValue = functions.adjacent_spanset_spanset(ps.get_inner(), functions.set_to_spanset(this._inner));
+			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
+			//case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
+			case Box b -> returnValue = functions.adjacent_span_span(functions.set_span(this._inner), b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
+	
+
+
+
+
+
+
 	
 	@Override
 	public String getValue() {
@@ -156,20 +191,7 @@ public class TimestampSet extends TemporalObject<Pointer> {
 		
 		return Duration.between(dateTimeList.get(0), dateTimeList.get(dateTimeList.size() - 1));
 	}
-	
-	/**
-	 * Gets the period
-	 *
-	 * @return a Period
-	 * @throws SQLException
-	 */
-	public Period period() throws SQLException {
-		if (dateTimeList.isEmpty()) {
-			return new Period();
-		}
-		
-		return new Period(dateTimeList.get(0), dateTimeList.get(dateTimeList.size() - 1), true, true);
-	}
+
 	
 	/**
 	 * Get the number of timestamps

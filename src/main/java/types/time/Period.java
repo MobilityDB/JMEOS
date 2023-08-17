@@ -10,6 +10,8 @@ import types.core.TypeName;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import types.temporal.Temporal;
+import types.boxes.TBox;
 
 /**
  * Class for representing sets of contiguous timestamps between a lower and
@@ -31,7 +33,7 @@ import java.time.OffsetDateTime;
  * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
  */
 @TypeName(name = "period")
-public class Period extends TemporalObject<Pointer> {
+public class Period extends Time {
 	private static final String LOWER_INCLUSIVE = "[";
 	private static final String LOWER_EXCLUSIVE = "(";
 	private static final String UPPER_INCLUSIVE = "]";
@@ -96,8 +98,8 @@ public class Period extends TemporalObject<Pointer> {
 		this.upper = upper;
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
-		long lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
-		long upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
+		OffsetDateTime lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
+		OffsetDateTime upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 		validate();
 		
@@ -119,8 +121,8 @@ public class Period extends TemporalObject<Pointer> {
 		this.upper = upper;
 		this.lowerInclusive = lowerInclusive;
 		this.upperInclusive = upperInclusive;
-		long lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
-		long upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
+		OffsetDateTime lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
+		OffsetDateTime upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 		validate();
 	}
@@ -140,341 +142,194 @@ public class Period extends TemporalObject<Pointer> {
 		return new Period(copy);
 	}
 	
-	public PeriodSet to_periodset() {
+	public PeriodSet to_periodset() throws SQLException {
 		return new PeriodSet(functions.span_to_spanset(this._inner));
 	}
-	
-	public boolean is_adjacent_Period(Period other) {
-		return functions.adjacent_span_span(this._inner, other._inner);
-	}
-	
-	public boolean is_adjacent_Periodset(PeriodSet other) {
-		return functions.adjacent_spanset_spanset(this._inner, other.get_inner());
-	}
-	
-    public boolean is_adjacent_datetime(OffsetDateTime other){
-        return functions.adjacent_period_timestamp(this._inner, functions.dat(other));
-    }
 
-    /*
-    public boolean is_adjacent_timestampset(TimestampSet other){
-        return adjacent_period_timestampset(this._inner, other._inner);
-    }
 
-     */
-    /*
-    public boolean is_adjacent_temporal(Temporal other){
-        return adjacent_period_temporal(this._inner,other._inner);
-    }
 
-     */
-	
-	public boolean is_contained_in_Period(Period other) {
-		return functions.contained_span_span(this._inner, other._inner);
-	}
-	
-	public boolean is_contained_in_Periodset(PeriodSet other) {
-		return functions.contained_span_spanset(this._inner, other.get_inner());
+
+	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
+		boolean returnValue;
+		switch (other) {
+			case Period p -> returnValue = functions.adjacent_span_span(this._inner, p.get_inner());
+			case PeriodSet ps -> returnValue = functions.adjacent_spanset_span(ps.get_inner(), this._inner);
+			//case DateTime dt -> returnValue = functions.adjacent_periodset_timestamp(this._inner, ConversionUtils.datetimeToTimestampTz(dt.get_inner()));
+			case TimestampSet ts -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_span(ts.get_inner()));
+			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
+			//case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
+			//case Box b -> returnValue = functions.adjacent_spanset_span(this._inner, b.to_period()._inner);
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
 
-    /*
-    public boolean is_contained_in_temporal(Temporal other){
-        return contained_period_temporal(this._inner,other._inner);
-    }
-     */
-	
-	public boolean contains_Period(Period other) {
-		
-		return functions.contains_span_span(this._inner, other._inner);
-	}
-	
-	public boolean contains_Periodset(PeriodSet other) {
-		return functions.contains_span_spanset(this._inner, other.get_inner());
+	public boolean is_contained_in(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.contained_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.contained_span_spanset(this._inner,ps.get_inner());
+			//case Temporal t -> returnValue = functions.contained_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.contained_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
 
 
-    /*
-    public boolean contains_datetime(OffsetDateTime other){
-        return contains_period_timestamp(this._inner,other);
-    }
-
-     */
-
-    /*
-    public boolean contains_timestampset(TimestampSet other){
-        return contains_period_timestampset(this._inner, other._inner);
-    }
-
-     */
-    /*
-    public boolean contains_temporal(Temporal other){
-        return contains_period_temporal(this._inner,other._inner);
-    }
-
-     */
-	
-	
-	public boolean overlaps_Period(Period other) {
-		
-		return functions.overlaps_span_span(this._inner, other._inner);
-	}
-	
-	//	public boolean overlaps_Periodset(PeriodSet other) {
-	//		return functions.overlaps_span_spanset(this._inner, other.get_inner());
-	//	}
-	
-	
-	//	public boolean overlaps_timestampset(TimestampSet other) {
-	//		return functions.overlaps_period_timestampset(this._inner, other.get_inner());
-	//	}
 
 
-    /*
-    public boolean overlaps_temporal(Temporal other){
-        return overlaps_period_temporal(this._inner,other._inner);
-    }
-     */
-	
-	public boolean isafter_Period(Period other) {
-		
-		return functions.right_span_span(this._inner, other._inner);
-	}
-	
-	public boolean isafter_Periodset(PeriodSet other) {
-		return functions.after(this._inner, other.get_inner());
+	public boolean contains(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.contains_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.contains_span_spanset(this._inner,ps.get_inner());
+			case TimestampSet ts -> returnValue = functions.contains_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.contains_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.contains_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
 
 
-    /*
-    public boolean isafter_datetime(OffsetDateTime other){
-        return after_period_timestamp(this._inner,other);
-    }
-
-     */
-	
-	
-	public boolean isafter_timestampset(TimestampSet other) {
-		return functions.after_period_timestampset(this._inner, other.get_inner());
+	public boolean overlaps(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.overlaps_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.overlaps_spanset_span(ps.get_inner(),this._inner);
+			case TimestampSet ts -> returnValue = functions.overlaps_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.overlaps_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.overlaps_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
 
 
-    /*
-    public boolean isafter_temporal(Temporal other){
-        return after_period_temporal(this._inner,other._inner);
-    }
 
-     */
-	
-	
-	public boolean isbefore_Period(Period other) {
-		
-		return functions.left_span_span(this._inner, other._inner);
+	public boolean is_same(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.span_eq(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.span_eq(this._inner,functions.spanset_span(ps.get_inner()));
+			case TimestampSet ts -> returnValue = functions.span_eq(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.span_eq(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.span_eq(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-    /*
-    public boolean isbefore_Periodset(PeriodSet other){
-        return before_period_periodset(this._inner,other._inner);
-    }
-     */
 
-    /*
-    public boolean isbefore_datetime(OffsetDateTime other){
-        return before_period_timestamp(this._inner,other);
-    }
 
-     */
 
-    /*
-    public boolean isbefore_timestampset(TimestampSet other){
-        return before_period_timestampset(this._inner, other._inner);
-    }
 
-     */
-    /*
-    public boolean isbefore_temporal(Temporal other){
-        return before_period_temporal(this._inner,other._inner);
-    }
 
-     */
-	
-	
-	public boolean isover_or_after_Period(Period other) {
-		
-		return functions.overright_span_span(this._inner, other._inner);
+	public boolean is_before(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.left_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.left_span_spanset(this._inner,ps.get_inner());
+			case TimestampSet ts -> returnValue = functions.left_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.left_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.left_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-    /*
-    public boolean isover_or_after_Periodset(PeriodSet other){
-        return overafter_period_periodset(this._inner,other._inner);
-    }
-     */
 
-    /*
-    public boolean isover_or_after_datetime(OffsetDateTime other){
-        return overafter_period_timestamp(this._inner,other);
-    }
 
-     */
 
-    /*
-    public boolean isover_or_after_timestampset(TimestampSet other){
-        return overafter_period_timestampset(this._inner, other._inner);
-    }
-
-     */
-    /*
-    public boolean isover_or_after_temporal(Temporal other){
-        return overafter_period_temporal(this._inner,other._inner);
-    }
-
-     */
-	
-	
-	public boolean isover_or_before_Period(Period other) {
-		
-		return functions.overleft_span_span(this._inner, other._inner);
+	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.overleft_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.overleft_span_spanset(this._inner,ps.get_inner());
+			case TimestampSet ts -> returnValue = functions.overleft_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.overleft_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.overleft_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-    /*
-    public boolean isover_or_before_Periodset(PeriodSet other){
-        return overbefore_period_periodset(this._inner,other._inner);
-    }
-     */
 
-    /*
-    public boolean isover_or_before_datetime(OffsetDateTime other){
-        return overbefore_period_timestamp(this._inner,other);
-    }
 
-     */
-
-    /*
-    public boolean isover_or_before_timestampset(TimestampSet other){
-        return overbefore_period_timestampset(this._inner, other._inner);
-    }
-
-     */
-    /*
-    public boolean isover_or_before_temporal(Temporal other){
-        return overbefore_period_temporal(this._inner,other._inner);
-    }
-
-     */
-
-    /*
-    public boolean is_same(Temporal other){
-        return same_period_temporal(this._inner,other._inner);
-    }
-
-     */
-	
-	
-	public float distance_Period(Period other) {
-		
-		return (float) functions.distance_span_span(this._inner, other._inner);
+	public boolean is_after(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.right_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.right_span_spanset(this._inner,ps.get_inner());
+			case TimestampSet ts -> returnValue = functions.right_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.right_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.right_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-    /*
-    public float distance_Periodset(PeriodSet other){
-        return (float)distance_period_periodset(this._inner,other._inner);
-    }
-     */
 
-    /*
-    public float distance_datetime(OffsetDateTime other){
-        return (float)distance_period_timestamp(this._inner,other);
-    }
 
-     */
 
-    /*
-    public float distance_timestampset(TimestampSet other){
-        return (float)distance_period_timestampset(this._inner, other._inner);
-    }
-     */
-	
-	
-	public Period intersection_Period(Period other) throws SQLException {
-		
-		return new Period(functions.intersection_span_span(this._inner, other._inner));
+	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException{
+		boolean returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.overright_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.overright_span_spanset(this._inner,ps.get_inner());
+			case TimestampSet ts -> returnValue = functions.overright_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.overright_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.overright_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
-    /*
-    public PeriodSet intersection_Periodset(PeriodSet other){
-        return new PeriodSet(intersection_period_periodset(this._inner,other._inner));
-    }
-
-     */
 
 
-    /*
-    public OffsetDateTime intersection_datetime(OffsetDateTime other){
-        return timestamptz_to_datetime(intersection_period_timestamp(this._inner,datetime_to_timestamptz(other)));
-    }
+	//TODO: use Duration class from java.time instead
 
-     */
+	public double distance(TemporalObject<?> other) throws SQLException{
+		double returnValue;
+		switch (other){
+			case Period p -> returnValue = functions.distance_span_span(this._inner,p.get_inner());
+			case PeriodSet ps -> returnValue = functions.distance_spanset_span(ps.get_inner(),this._inner);
+			case TimestampSet ts -> returnValue = functions.distance_span_span(this._inner,functions.set_span(ts.get_inner()));
+			//case Temporal t -> returnValue = functions.distance_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			//case TBox b -> returnValue = functions.distance_span_span(this._inner,b.to_period().get_inner());
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
 
-    /*
-    public TimestampSet intersection_timestampset(TimestampSet other){
-        return new TimestampSet(intersection_period_timestampset(this._inner,other._inner));
-    }
-     */
 
-
-    /*
-    public PeriodSet minus_Period(Period other){
-        return new PeriodSet(minus_period_period(this._inner,other._inner));
-    }
-
-     */
-
-    /*
-    public PeriodSet minus_PeriodSet(PeriodSet other){
-        return new PeriodSet(minus_period_periodset(this._inner,other._inner));
-    }
-
-     */
-
-    /*
-    public PeriodSet minus_datetime(OffsetDateTime other){
-        return new PeriodSet(minus_period_timestamp(this._inner,other));
-    }
-
-     */
-
-    /*
-    public PeriodSet minus_timestampset(TimestampSet other){
-        return new PeriodSet(minus_period_timestampset(this._inner,other._inner));
-    }
-
-     */
+	//TODO: Intersection but define Time first with extends
 
 
 
+	public PeriodSet minus(TemporalObject<?> other) throws SQLException{
+		PeriodSet returnValue;
+		switch (other){
+			case Period p -> returnValue = new PeriodSet(functions.minus_span_span(this._inner,p.get_inner()));
+			case PeriodSet ps -> returnValue = new PeriodSet(functions.minus_span_spanset(this._inner,ps.get_inner()));
+			case TimestampSet ts -> returnValue = new PeriodSet(functions.minus_span_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
 
 
-    /*
-    public PeriodSet union_Period(Period other){
-        return new PeriodSet(union_period_period(this._inner,other._inner));
-    }
+	public PeriodSet union(TemporalObject<?> other) throws SQLException{
+		PeriodSet returnValue;
+		switch (other){
+			case Period p -> returnValue = new PeriodSet(functions.union_span_span(this._inner,p.get_inner()));
+			case PeriodSet ps -> returnValue = new PeriodSet(functions.union_spanset_span(ps.get_inner(),this._inner));
+			case TimestampSet ts -> returnValue = new PeriodSet(functions.union_spanset_span(functions.set_to_spanset(ts.get_inner()),this._inner));
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
 
-     */
 
-    /*
-    public PeriodSet union_PeriodSet(PeriodSet other){
-        return new PeriodSet(union_period_periodset(this._inner,other._inner));
-    }
-
-     */
-
-    /*
-    public PeriodSet union_datetime(OffsetDateTime other){
-        return new PeriodSet(union_period_timestamp(this._inner,other));
-    }
-
-     */
-
-    /*
-    public PeriodSet union_timestampset(TimestampSet other){
-        return new PeriodSet(union_period_timestampset(this._inner,other._inner));
-    }
-
-     */
+	public String to_string(){
+		return functions.span_out(this._inner,10);
+	}
 	
 	
 	/**
@@ -485,7 +340,7 @@ public class Period extends TemporalObject<Pointer> {
 		if (lower == null || upper == null) {
 			return null;
 		}
-		
+
 		return String.format("%s%s, %s%s",
 				lowerInclusive ? LOWER_INCLUSIVE : LOWER_EXCLUSIVE,
 				DateTimeFormatHelper.getStringFormat(lower),
@@ -650,10 +505,5 @@ public class Period extends TemporalObject<Pointer> {
 		if (lower.isEqual(upper) && (!lowerInclusive || !upperInclusive)) {
 			throw new SQLException("The lower and upper bounds must be inclusive for an instant period.");
 		}
-	}
-	
-	@Override
-	public boolean isAdjacent(TemporalObject other) {
-		return false;
 	}
 }
