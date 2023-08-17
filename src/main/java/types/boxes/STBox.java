@@ -16,7 +16,6 @@ import types.time.Period;
 import types.time.PeriodSet;
 import types.time.TimestampSet;
 
-import static functions.functions.stbox_to_period;
 
 /**
  * Class that represents the MobilityDB type STBox

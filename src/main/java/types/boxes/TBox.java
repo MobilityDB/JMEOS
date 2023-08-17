@@ -12,8 +12,6 @@ import java.time.OffsetDateTime;
 import types.boxes.Box;
 
 
-//import static function.functions.stbox_from_hexwkb;
-
 /**
  * Class that represents the MobilityDB type TBox
  */

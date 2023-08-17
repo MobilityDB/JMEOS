@@ -1,12 +1,6 @@
 package types.time;
 
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
-
-//import functions.functions_old.*;
-//import static functions.functions.meos_initialize;
-//import static functions.functions.tgeompoint_in;
-//import static functions.functions_old.meos_finalize;
 
 import functions.functions;
 
