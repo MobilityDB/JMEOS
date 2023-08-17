@@ -1,4 +1,4 @@
-package main.java.types.boxes;
+package types.boxes;
 
 import types.core.DataType;
 import functions.functions;

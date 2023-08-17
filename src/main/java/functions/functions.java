@@ -8,7 +8,7 @@ import java.time.*;
 public class functions {
 	public interface MeosLibrary {
 
-		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, "/home/nidhal/IdeaProjects/JMEOS/src/lib/libmeos.so").getLibraryInstance();
+		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, "meos").getLibraryInstance();
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
