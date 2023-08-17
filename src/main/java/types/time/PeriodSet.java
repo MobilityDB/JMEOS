@@ -72,7 +72,7 @@ public class PeriodSet extends Time {
 		validate();
 	}
 
-	
+
 	public static PeriodSet from_hexwkb(String str) throws SQLException {
 		Pointer result = functions.spanset_from_hexwkb(str);
 		return new PeriodSet(result);
@@ -81,7 +81,7 @@ public class PeriodSet extends Time {
 	public Period to_period() throws SQLException {
 		return new Period(functions.spanset_span(this._inner));
 	}
-	
+
 	/**
 	 * Returns whether "this" is temporally adjacent to "other".
 	 * That is, they share a bound but only one of them contains it.

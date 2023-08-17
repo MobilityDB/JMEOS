@@ -1,4 +1,4 @@
-package utils.builder;
+package utils;
 
 /**
  * Key value pair

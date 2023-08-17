@@ -7,9 +7,15 @@
     <groupId>org.jmeos</groupId>
     <artifactId>jmeos</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
     <description>JMEOS is a Java library allowing MobilityDB users
         to perform MEOS native operations on MobilityDB data types.
     </description>
+
+    <modules>
+        <module>src/main/java/builder</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
@@ -86,7 +92,8 @@
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>shaded</shadedClassifierName>
                     <createDependencyReducedPom>true</createDependencyReducedPom>
-                    <dependencyReducedPomLocation>${project.basedir}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <dependencyReducedPomLocation>${project.basedir}/dependency-reduced-pom.xml
+                    </dependencyReducedPomLocation>
                     <relocations>
                         <!-- Relocate classes to jmeos package -->
                         <relocation>
@@ -119,7 +126,8 @@
                     </filters>
                     <transformers>
                         <!-- Inclure le fichier libmeos.so dans le dossier lib du jar -->
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
                             <resource>src/lib/libmeos.so</resource>
                             <file>lib/libmeos.so</file>
                         </transformer>
