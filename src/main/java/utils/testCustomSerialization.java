@@ -19,7 +19,7 @@ public class testCustomSerialization {
         Pointer pointer_out = CustomSerialization.constructPointer(addr);
         String value = functions.period_out(pointer_out);
         System.out.println(value);
-        
+
         functions.meos_finalize();
 
     }
