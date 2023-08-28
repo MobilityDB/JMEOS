@@ -1,11 +1,16 @@
 package types.basic.tfloat;
 
 import types.temporal.TSequenceSet;
-
+import jnr.ffi.Pointer;
 import java.sql.SQLException;
 
 public class TFloatSeqSet extends TSequenceSet<Float> {
-	
+
+
+	public TFloatSeqSet(Pointer inner){
+		super(inner);
+	}
+
 	/**
 	 * The string constructor
 	 *

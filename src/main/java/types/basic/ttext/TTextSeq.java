@@ -3,12 +3,14 @@ package types.basic.ttext;
 import types.temporal.TSequence;
 
 import java.sql.SQLException;
+import jnr.ffi.Pointer;
 
 /**
  * By Default Interpolation is stepwise
  */
 public class TTextSeq extends TSequence<String> {
-	
+	private Pointer _inner;
+
 	/**
 	 * The string constructor
 	 *
@@ -61,6 +63,11 @@ public class TTextSeq extends TSequence<String> {
 	 */
 	public TTextSeq(TTextInst[] values, boolean lowerInclusive, boolean upperInclusive) throws SQLException {
 		super(true, values, lowerInclusive, upperInclusive, TText::compareValue);
+	}
+
+	public TTextSeq(Pointer inner){
+		super(inner);
+		this._inner = inner;
 	}
 	
 	@Override

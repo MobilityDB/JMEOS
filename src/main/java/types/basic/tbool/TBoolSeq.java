@@ -1,5 +1,6 @@
 package types.basic.tbool;
 
+import jnr.ffi.Pointer;
 import types.temporal.TSequence;
 
 import java.sql.SQLException;
@@ -8,7 +9,13 @@ import java.sql.SQLException;
  * By Default Interpolation is stepwise
  */
 public class TBoolSeq extends TSequence<Boolean> {
-	
+
+
+	public TBoolSeq(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *

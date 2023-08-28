@@ -1,5 +1,6 @@
 package types.basic.tpoint;
 
+import jnr.ffi.Pointer;
 import types.basic.tpoint.helpers.SRIDParseResponse;
 import types.basic.tpoint.helpers.SRIDParser;
 import types.temporal.TInstant;
@@ -15,7 +16,9 @@ import java.sql.SQLException;
  */
 public class TPointSeq extends TSequence<Point> {
 	private int srid;
-	
+	private Pointer _inner;
+
+
 	protected TPointSeq(String value, GetTemporalInstantFunction<Point> getTemporalInstantFunction)
 			throws SQLException {
 		super(value, getTemporalInstantFunction, TPoint::compareValue);
@@ -43,6 +46,11 @@ public class TPointSeq extends TSequence<Point> {
 						boolean lowerInclusive, boolean upperInclusive) throws SQLException {
 		super(stepwise, values, lowerInclusive, upperInclusive, TPoint::compareValue);
 		this.srid = SRIDParser.applySRID(srid, getValues());
+	}
+
+	protected TPointSeq(Pointer inner){
+		super(inner);
+		this._inner = inner;
 	}
 	
 	/**

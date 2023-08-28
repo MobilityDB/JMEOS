@@ -1,3 +1,5 @@
+package main.java;
+
 import utils.BuilderUtils;
 
 import java.io.BufferedReader;

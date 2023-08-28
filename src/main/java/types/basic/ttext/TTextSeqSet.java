@@ -1,11 +1,15 @@
 package types.basic.ttext;
 
 import types.temporal.TSequenceSet;
-
+import jnr.ffi.Pointer;
 import java.sql.SQLException;
 
 public class TTextSeqSet extends TSequenceSet<String> {
-	
+
+	public TTextSeqSet(Pointer inner){
+		super(inner);
+	}
+
 	/**
 	 * The string constructor
 	 *

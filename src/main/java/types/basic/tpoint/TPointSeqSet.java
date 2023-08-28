@@ -1,5 +1,6 @@
 package types.basic.tpoint;
 
+import jnr.ffi.Pointer;
 import types.basic.tpoint.helpers.SRIDParseResponse;
 import types.basic.tpoint.helpers.SRIDParser;
 import types.temporal.TSequenceSet;
@@ -19,6 +20,7 @@ import java.util.StringJoiner;
  */
 public class TPointSeqSet extends TSequenceSet<Point> {
 	private int srid;
+	private Pointer _inner;
 	
 	protected TPointSeqSet(String value,
 						   GetTemporalSequenceFunction<Point> getTemporalSequenceFunction) throws SQLException {
@@ -41,6 +43,11 @@ public class TPointSeqSet extends TSequenceSet<Point> {
 		super(stepwise, values, TPoint::compareValue);
 		this.srid = srid;
 		applySRID();
+	}
+
+	protected TPointSeqSet(Pointer inner){
+		super(inner);
+		this._inner = inner;
 	}
 	
 	/**

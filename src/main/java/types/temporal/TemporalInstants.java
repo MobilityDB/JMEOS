@@ -16,11 +16,15 @@ import java.util.List;
  */
 public abstract class TemporalInstants<V extends Serializable> extends Temporal<V> {
 	protected final ArrayList<TInstant<V>> instantList = new ArrayList<>();
-	private final CompareValueFunction<V> compareValueFunction;
+	private CompareValueFunction<V> compareValueFunction;
 	
 	protected TemporalInstants(TemporalType temporalType, CompareValueFunction<V> compareValueFunction) {
 		super(temporalType);
 		this.compareValueFunction = compareValueFunction;
+	}
+
+	protected TemporalInstants(TemporalType temporalType){
+		super(temporalType);
 	}
 	
 	/**

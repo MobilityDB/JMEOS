@@ -1,5 +1,6 @@
 package types.basic.tpoint.tgeom;
 
+import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import net.postgis.jdbc.geometry.Point;
 
@@ -7,7 +8,12 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TGeomPointInst extends TInstant<Point> {
-	
+
+
+	public TGeomPointInst(Pointer inner){
+		super(inner);
+	}
+
 	/**
 	 * The string constructor
 	 *

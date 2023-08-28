@@ -3,6 +3,7 @@ package types.temporal;
 import types.temporal.delegates.GetSingleTemporalValueFunction;
 import types.time.Period;
 import types.time.PeriodSet;
+import functions.functions;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -10,6 +11,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import jnr.ffi.Pointer;
 
 /**
  * Base class for temporal instant
@@ -17,7 +19,9 @@ import java.util.List;
  * @param <V>
  */
 public abstract class TInstant<V extends Serializable> extends Temporal<V> {
-	private final TemporalValue<V> temporalValue;
+	private TemporalValue<V> temporalValue = null;
+	private Pointer _inner = null;
+
 	
 	protected TInstant(String value, GetSingleTemporalValueFunction<V> getSingleTemporalValue) throws SQLException {
 		super(TemporalType.TEMPORAL_INSTANT);
@@ -36,6 +40,12 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		temporalValue = value;
 		validate();
 	}
+
+	protected TInstant(Pointer inner){
+		super(TemporalType.TEMPORAL_INSTANT);
+		this._inner = inner;
+	}
+
 	
 	@Override
 	protected void validateTemporalDataType() throws SQLException {

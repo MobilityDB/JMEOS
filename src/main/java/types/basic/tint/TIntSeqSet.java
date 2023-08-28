@@ -1,11 +1,16 @@
 package types.basic.tint;
 
 import types.temporal.TSequenceSet;
-
+import jnr.ffi.Pointer;
 import java.sql.SQLException;
 
 public class TIntSeqSet extends TSequenceSet<Integer> {
-	
+
+
+	public TIntSeqSet(Pointer inner){
+		super(inner);
+	}
+
 	/**
 	 * The string constructor
 	 *

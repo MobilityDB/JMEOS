@@ -1,12 +1,19 @@
 package types.basic.tfloat;
 
+import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TFloatInst extends TInstant<Float> {
-	
+
+
+	public TFloatInst(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *

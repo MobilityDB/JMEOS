@@ -1,5 +1,6 @@
 package types.basic.tpoint.tgeog;
 
+import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.basic.tpoint.helpers.TPointConstants;
 import types.temporal.TemporalValue;
@@ -9,7 +10,13 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TGeogPointInst extends TInstant<Point> {
-	
+
+
+	public TGeogPointInst(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *

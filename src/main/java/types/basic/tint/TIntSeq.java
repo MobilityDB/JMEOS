@@ -1,5 +1,6 @@
 package types.basic.tint;
 
+import jnr.ffi.Pointer;
 import types.temporal.TSequence;
 
 import java.sql.SQLException;
@@ -8,7 +9,12 @@ import java.sql.SQLException;
  * By Default Interpolation is stepwise
  */
 public class TIntSeq extends TSequence<Integer> {
-	
+
+	public TIntSeq(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *

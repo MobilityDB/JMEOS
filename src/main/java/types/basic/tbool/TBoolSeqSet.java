@@ -1,11 +1,16 @@
 package types.basic.tbool;
 
+import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;
 
 import java.sql.SQLException;
 
 public class TBoolSeqSet extends TSequenceSet<Boolean> {
-	
+
+	public TBoolSeqSet(Pointer inner){
+		super(inner);
+	}
+
 	/**
 	 * The string constructor
 	 *

@@ -1,5 +1,6 @@
 package types.temporal;
 
+import jnr.ffi.Pointer;
 import types.temporal.delegates.CompareValueFunction;
 import types.temporal.delegates.GetTemporalInstantFunction;
 import types.time.Period;
@@ -18,6 +19,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	protected boolean stepwise;
 	private boolean lowerInclusive;
 	private boolean upperInclusive;
+	private Pointer _inner;
 	
 	protected TSequence(String value,
 						GetTemporalInstantFunction<V> getTemporalInstantFunction,
@@ -70,6 +72,12 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 		this.upperInclusive = upperInclusive;
 		this.stepwise = stepwise;
 		validate();
+	}
+
+
+	protected TSequence(Pointer inner){
+		super(TemporalType.TEMPORAL_SEQUENCE);
+		this._inner = inner;
 	}
 	
 	/**

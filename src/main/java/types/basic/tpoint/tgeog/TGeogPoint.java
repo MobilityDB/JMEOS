@@ -45,7 +45,7 @@ public class TGeogPoint extends TPoint {
 	
 	/**
 	 * Method with compatible signature for delegate
-	 * {@link com.mobilitydb.jdbc.temporal.delegates.GetSingleTemporalValueFunction}
+	 * {@link types.temporal.delegates.GetSingleTemporalValueFunction}
 	 *
 	 * @param value string representation of the value
 	 * @return Temporal value wrapper with the value parsed

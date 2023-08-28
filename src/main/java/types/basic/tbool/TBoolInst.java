@@ -1,12 +1,18 @@
 package types.basic.tbool;
 
 import types.temporal.TInstant;
-
+import jnr.ffi.Pointer;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TBoolInst extends TInstant<Boolean> {
-	
+
+
+	public TBoolInst(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *

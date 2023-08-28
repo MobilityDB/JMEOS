@@ -1,5 +1,6 @@
 package types.temporal;
 
+import jnr.ffi.Pointer;
 import types.temporal.delegates.CompareValueFunction;
 import types.temporal.delegates.GetTemporalSequenceFunction;
 import types.time.Period;
@@ -14,9 +15,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> implements TemporalSequences<V> {
-	private final CompareValueFunction<V> compareValueFunction;
+	private CompareValueFunction<V> compareValueFunction;
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();
 	protected boolean stepwise;
+	private Pointer _inner;
 	
 	protected TSequenceSet(String value,
 						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
@@ -60,6 +62,12 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 		this.stepwise = stepwise;
 		sequenceList.addAll(Arrays.asList(values));
 		validate();
+	}
+
+	protected TSequenceSet(Pointer inner){
+		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		this._inner = inner;
+
 	}
 	
 	/**

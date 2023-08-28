@@ -1,12 +1,20 @@
 package types.basic.tint;
 
+import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TIntInst extends TInstant<Integer> {
-	
+
+
+	public TIntInst(Pointer inner){
+		super(inner);
+	}
+
+
+
 	/**
 	 * The string constructor
 	 *

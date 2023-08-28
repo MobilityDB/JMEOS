@@ -1,12 +1,20 @@
 package types.basic.ttext;
 
+import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 public class TTextInst extends TInstant<String> {
-	
+
+
+	public TTextInst(Pointer inner){
+		super(inner);
+	}
+
+
+
 	/**
 	 * The string constructor
 	 *

@@ -1,12 +1,18 @@
 package types.basic.tpoint.tgeog;
 
+import jnr.ffi.Pointer;
 import types.basic.tpoint.TPointSeq;
 import types.basic.tpoint.helpers.TPointConstants;
 
 import java.sql.SQLException;
 
 public class TGeogPointSeq extends TPointSeq {
-	
+
+	public TGeogPointSeq(Pointer inner){
+		super(inner);
+	}
+
+
 	/**
 	 * The string constructor
 	 *
