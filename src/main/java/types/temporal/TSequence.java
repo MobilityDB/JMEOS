@@ -127,7 +127,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	protected void validateTemporalDataType() throws SQLException {
 		validateInstantList("Temporal sequence");
 		
@@ -153,7 +153,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public String buildValue() {
 		return buildValue(false);
 	}
@@ -175,7 +175,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public Period period() throws SQLException {
 		return new Period(instantList.get(0).getTimestamp(),
 				instantList.get(instantList.size() - 1).getTimestamp(),
@@ -185,7 +185,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public PeriodSet getTime() throws SQLException {
 		return new PeriodSet(period());
 	}
@@ -193,7 +193,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public Duration duration() {
 		try {
 			return period().duration();
@@ -205,7 +205,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public Duration timespan() {
 		try {
 			return period().duration();
@@ -217,7 +217,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public boolean intersectsTimestamp(OffsetDateTime dateTime) {
 		try {
 			return period().contains(dateTime);
@@ -229,7 +229,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public boolean intersectsPeriod(Period period) {
 		try {
 			return period().overlap(period);
@@ -238,7 +238,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 		}
 	}
 	
-	@Override
+
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -264,7 +264,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 		return false;
 	}
 	
-	@Override
+
 	public int hashCode() {
 		String value = toString();
 		return value != null ? value.hashCode() : 0;
@@ -285,7 +285,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public int numSequences() {
 		return 1;
 	}
@@ -293,7 +293,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TSequence<V> startSequence() {
 		return this;
 	}
@@ -301,7 +301,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TSequence<V> endSequence() {
 		return this;
 	}
@@ -309,7 +309,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TSequence<V> sequenceN(int n) throws SQLException {
 		if (n == 0) {
 			return this;
@@ -321,7 +321,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public List<TSequence<V>> sequences() {
 		ArrayList<TSequence<V>> list = new ArrayList<>();
 		list.add(this);

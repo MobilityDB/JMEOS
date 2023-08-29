@@ -46,8 +46,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		this._inner = inner;
 	}
 
-	
-	@Override
+
 	protected void validateTemporalDataType() throws SQLException {
 		if (temporalValue == null) {
 			throw new SQLException("Temporal value cannot be null.");
@@ -58,7 +57,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		}
 	}
 	
-	@Override
+
 	public String buildValue() {
 		return temporalValue.toString();
 	}
@@ -84,7 +83,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public List<V> getValues() {
 		List<V> values = new ArrayList<>();
 		values.add(temporalValue.getValue());
@@ -94,7 +92,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public V startValue() {
 		return temporalValue.getValue();
 	}
@@ -102,7 +99,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public V endValue() {
 		return temporalValue.getValue();
 	}
@@ -110,7 +106,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public V minValue() {
 		return temporalValue.getValue();
 	}
@@ -118,7 +113,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public V maxValue() {
 		return temporalValue.getValue();
 	}
@@ -126,7 +120,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public V valueAtTimestamp(OffsetDateTime timestamp) {
 		if (timestamp.isEqual(temporalValue.getTime())) {
 			return temporalValue.getValue();
@@ -137,7 +130,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public int numTimestamps() {
 		return 1;
 	}
@@ -145,7 +138,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public OffsetDateTime[] timestamps() {
 		return new OffsetDateTime[]{temporalValue.getTime()};
 	}
@@ -153,7 +145,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public OffsetDateTime timestampN(int n) throws SQLException {
 		if (n == 0) {
 			return temporalValue.getTime();
@@ -165,7 +156,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public OffsetDateTime startTimestamp() {
 		return temporalValue.getTime();
 	}
@@ -173,7 +163,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public OffsetDateTime endTimestamp() {
 		return temporalValue.getTime();
 	}
@@ -181,7 +170,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public Period period() throws SQLException {
 		return new Period(temporalValue.getTime(), temporalValue.getTime(), true, true);
 	}
@@ -189,7 +177,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public PeriodSet getTime() throws SQLException {
 		return new PeriodSet(period());
 	}
@@ -197,7 +184,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public int numInstants() {
 		return 1;
 	}
@@ -205,7 +191,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public TInstant<V> startInstant() {
 		return this;
 	}
@@ -213,7 +198,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public TInstant<V> endInstant() {
 		return this;
 	}
@@ -221,7 +205,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public TInstant<V> instantN(int n) throws SQLException {
 		if (n == 0) {
 			return this;
@@ -233,7 +216,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public List<TInstant<V>> instants() {
 		ArrayList<TInstant<V>> list = new ArrayList<>();
 		list.add(this);
@@ -243,7 +225,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public Duration duration() {
 		return Duration.ZERO;
 	}
@@ -251,7 +232,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public Duration timespan() {
 		return Duration.ZERO;
 	}
@@ -259,7 +239,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void shift(Duration duration) {
 		temporalValue.setTime(temporalValue.getTime().plus(duration));
 	}
@@ -267,7 +246,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public boolean intersectsTimestamp(OffsetDateTime dateTime) {
 		return temporalValue.getTime().isEqual(dateTime);
 	}
@@ -275,7 +253,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public boolean intersectsPeriod(Period period) {
 		if (period == null) {
 			return false;
@@ -292,8 +269,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	public OffsetDateTime getTimestamp() {
 		return temporalValue.getTime();
 	}
-	
-	@Override
+
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -305,8 +281,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		}
 		return false;
 	}
-	
-	@Override
+
 	public int hashCode() {
 		String value = toString();
 		return value != null ? value.hashCode() : 0;

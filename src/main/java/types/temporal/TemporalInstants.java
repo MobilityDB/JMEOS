@@ -30,7 +30,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public List<V> getValues() {
 		List<V> values = new ArrayList<>();
 		for (TInstant<V> temp : instantList) {
@@ -42,7 +42,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public V startValue() {
 		if (instantList.isEmpty()) {
 			return null;
@@ -54,7 +54,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public V endValue() {
 		if (instantList.isEmpty()) {
 			return null;
@@ -66,7 +66,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public V minValue() {
 		if (instantList.isEmpty()) {
 			return null;
@@ -88,7 +88,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public V maxValue() {
 		if (instantList.isEmpty()) {
 			return null;
@@ -110,7 +110,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public V valueAtTimestamp(OffsetDateTime timestamp) {
 		for (TInstant<V> temp : instantList) {
 			if (timestamp.isEqual(temp.getTimestamp())) {
@@ -123,7 +123,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public int numTimestamps() {
 		return instantList.size();
 	}
@@ -131,7 +131,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public OffsetDateTime[] timestamps() {
 		OffsetDateTime[] result = new OffsetDateTime[instantList.size()];
 		
@@ -145,7 +145,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public OffsetDateTime timestampN(int n) throws SQLException {
 		if (n >= 0 && n < instantList.size()) {
 			return instantList.get(n).getTimestamp();
@@ -157,7 +157,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public OffsetDateTime startTimestamp() {
 		return instantList.get(0).getTimestamp();
 	}
@@ -165,7 +165,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public OffsetDateTime endTimestamp() {
 		return instantList.get(instantList.size() - 1).getTimestamp();
 	}
@@ -173,7 +173,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public int numInstants() {
 		return instantList.size();
 	}
@@ -181,7 +181,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TInstant<V> startInstant() {
 		return instantList.get(0);
 	}
@@ -189,7 +189,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TInstant<V> endInstant() {
 		return instantList.get(instantList.size() - 1);
 	}
@@ -197,7 +197,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public TInstant<V> instantN(int n) throws SQLException {
 		if (n >= 0 && n < instantList.size()) {
 			return instantList.get(n);
@@ -209,7 +209,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public List<TInstant<V>> instants() {
 		return new ArrayList<>(instantList);
 	}
@@ -217,14 +217,14 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+
 	public void shift(Duration duration) {
 		for (TInstant<V> instant : instantList) {
 			instant.shift(duration);
 		}
 	}
 	
-	@Override
+
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -247,7 +247,7 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 		return false;
 	}
 	
-	@Override
+
 	public int hashCode() {
 		String value = toString();
 		return value != null ? value.hashCode() : 0;

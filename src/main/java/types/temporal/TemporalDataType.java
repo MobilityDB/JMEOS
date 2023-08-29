@@ -43,7 +43,6 @@ public abstract class TemporalDataType<V extends Serializable> extends DataType 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public String getValue() {
 		return temporal.buildValue();
 	}
