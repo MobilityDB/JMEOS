@@ -635,6 +635,67 @@ public class STBox extends Box {
 	public float nearest_approach_distance_stbox(STBox other) {
 		return (float) functions.nad_stbox_stbox(this._inner, other._inner);
 	}
+
+
+
+
+	public boolean equals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
+		return result;
+	}
+
+	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
+		return result;
+	}
+
+	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof STBox){
+			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof STBox){
+			return functions.stbox_le(this._inner,((STBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof STBox){
+			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof STBox){
+			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+
+
+
+
+
+
+
 	
 	
 	@Override
@@ -706,31 +767,7 @@ public class STBox extends Box {
 		}
 		validate();
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof STBox) {
-			STBox other = (STBox) obj;
-			
-			boolean pMinIsEqual;
-			boolean pMaxIsEqual;
-			
-			if (pMin != null && other.pMin != null) {
-				pMinIsEqual = pMin.equals(other.pMin);
-			} else {
-				pMinIsEqual = pMin == other.pMin;
-			}
-			
-			if (pMax != null && other.pMax != null) {
-				pMaxIsEqual = pMax.equals(other.pMax);
-			} else {
-				pMaxIsEqual = pMax == other.pMax;
-			}
-			
-			return tIsEqual(other) && pMinIsEqual && pMaxIsEqual && isGeodetic == other.isGeodetic();
-		}
-		return false;
-	}
+
 	
 	/**
 	 * Compares if the values in time dimension are the same

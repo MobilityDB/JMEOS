@@ -1,6 +1,7 @@
 package types.boxes;
 
 import functions.functions;
+import types.TemporalObject;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
@@ -380,6 +381,66 @@ public class TBox extends Box {
 	public float nearest_approach_distance(TBox other) {
 		return (float) functions.nad_tbox_tbox(this._inner, other._inner);
 	}
+
+
+
+
+	public boolean equals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof TBox ? functions.tbox_eq(this._inner,((TBox) other).get_inner()) : false;
+		return result;
+	}
+
+	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof TBox ? functions.stbox_ne(this._inner,((TBox) other).get_inner()) : true;
+		return result;
+	}
+
+	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TBox){
+			return functions.tbox_lt(this._inner,((TBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TBox){
+			return functions.tbox_le(this._inner,((TBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TBox){
+			return functions.tbox_gt(this._inner,((TBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TBox){
+			return functions.tbox_ge(this._inner,((TBox) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+
+
+
+
+
+
 	
 	
 	@Override
@@ -432,39 +493,7 @@ public class TBox extends Box {
 			throw new SQLException("Tmin should have a value.");
 		}
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TBox) {
-			TBox other = (TBox) obj;
-			
-			if (xmin != other.getXmin()) {
-				return false;
-			}
-			
-			if (xmax != other.getXmax()) {
-				return false;
-			}
-			
-			boolean xminIsEqual;
-			boolean xmaxIsEqual;
-			
-			if (tmin != null && other.getTmin() != null) {
-				xminIsEqual = tmin.isEqual(other.getTmin());
-			} else {
-				xminIsEqual = tmin == other.getTmin();
-			}
-			
-			if (tmax != null && other.getTmax() != null) {
-				xmaxIsEqual = tmax.isEqual(other.getTmax());
-			} else {
-				xmaxIsEqual = tmax == other.getTmax();
-			}
-			
-			return xminIsEqual && xmaxIsEqual;
-		}
-		return false;
-	}
+
 	
 	@Override
 	public int hashCode() {

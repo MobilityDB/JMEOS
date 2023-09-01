@@ -286,6 +286,60 @@ public class PeriodSet extends Time {
 	}
 
 
+	public PeriodSet add(TemporalObject<?> other) throws SQLException {
+		return this.union(other);
+	}
+
+	public boolean equals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof PeriodSet ? functions.spanset_eq(this._inner,((PeriodSet) other).get_inner()) : false;
+		return result;
+	}
+
+	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof PeriodSet ? functions.spanset_ne(this._inner,((PeriodSet) other).get_inner()) : true;
+		return result;
+	}
+
+	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof PeriodSet){
+			return functions.spanset_lt(this._inner,((PeriodSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof PeriodSet){
+			return functions.spanset_le(this._inner,((PeriodSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof PeriodSet){
+			return functions.spanset_gt(this._inner,((PeriodSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof PeriodSet){
+			return functions.spanset_ge(this._inner,((PeriodSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
 	
 	@Override
 	public String getValue() {
@@ -307,16 +361,7 @@ public class PeriodSet extends Time {
 		
 		validate();
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof PeriodSet fobj) {
-			
-			return periodList.size() == fobj.periodList.size() && periodList.equals(fobj.periodList);
-		}
-		
-		return false;
-	}
+
 	
 	@Override
 	public int hashCode() {

@@ -114,9 +114,80 @@ public class TimestampSet extends Time {
 		}
 		return returnValue;
 	}
-	
 
 
+
+	public TemporalObject<?> union(TemporalObject<?> other) throws SQLException {
+		TemporalObject<?> returnValue;
+		switch (other) {
+			case Period p -> returnValue = new Period(functions.union_spanset_span(functions.set_to_spanset(this._inner),p.get_inner()));
+			case PeriodSet ps -> returnValue = new PeriodSet(functions.union_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
+			//case TimestampSet ts -> returnValue =  new TimestampSet(functions.union_timestampset_timestamp(this._inner,datetime()))
+			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
+	}
+
+
+
+
+
+
+	public TemporalObject<?> add(TemporalObject<?> other) throws SQLException {
+		return this.union(other);
+	}
+
+
+
+	public boolean equals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof TimestampSet ? functions.set_eq(this._inner,((TimestampSet) other).get_inner()) : false;
+		return result;
+	}
+
+	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof TimestampSet ? functions.set_ne(this._inner,((TimestampSet) other).get_inner()) : true;
+		return result;
+	}
+
+	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TimestampSet){
+			return functions.set_lt(this._inner,((TimestampSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TimestampSet){
+			return functions.set_le(this._inner,((TimestampSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TimestampSet){
+			return functions.set_gt(this._inner,((TimestampSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof TimestampSet){
+			return functions.set_ge(this._inner,((TimestampSet) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
 
 
 
@@ -150,27 +221,7 @@ public class TimestampSet extends Time {
 		
 		validate();
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TimestampSet) {
-			TimestampSet fobj = (TimestampSet) obj;
-			
-			if (dateTimeList.size() == fobj.dateTimeList.size()) {
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					if (!dateTimeList.get(i).isEqual(fobj.dateTimeList.get(i))) {
-						return false;
-					}
-				}
-			} else {
-				return false;
-			}
-			
-			return true;
-		}
-		
-		return false;
-	}
+
 	
 	@Override
 	public int hashCode() {

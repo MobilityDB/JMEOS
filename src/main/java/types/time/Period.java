@@ -327,6 +327,59 @@ public class Period extends Time {
 	public String to_string(){
 		return functions.span_out(this._inner,10);
 	}
+
+	public PeriodSet add(TemporalObject<?> other) throws SQLException {
+		return this.union(other);
+	}
+
+	public boolean equals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof Period ? functions.span_eq(this._inner,((Period) other).get_inner()) : false;
+		return result;
+	}
+
+	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+		boolean result;
+		result = other instanceof Period ? functions.span_ne(this._inner,((Period) other).get_inner()) : true;
+		return result;
+	}
+
+	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof Period){
+			return functions.span_lt(this._inner,((Period) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof Period){
+			return functions.span_le(this._inner,((Period) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+		if (other instanceof Period){
+			return functions.span_gt(this._inner,((Period) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
+
+
+	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+		if (other instanceof Period){
+			return functions.span_ge(this._inner,((Period) other).get_inner());
+		}
+		else{
+			throw new SQLException("Operation not supported with this type.");
+		}
+	}
 	
 	
 	/**
@@ -401,58 +454,23 @@ public class Period extends Time {
 		return upperInclusive;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Period) {
-			Period other = (Period) obj;
-			
-			if (lowerInclusive != other.isLowerInclusive()) {
-				return false;
-			}
-			
-			if (upperInclusive != other.isUpperInclusive()) {
-				return false;
-			}
-			
-			boolean lowerAreEqual;
-			boolean upperAreEqual;
-			
-			if (lower != null && other.getLower() != null) {
-				lowerAreEqual = lower.isEqual(other.getLower());
-			} else {
-				lowerAreEqual = lower == other.getLower();
-			}
-			
-			
-			if (upper != null && other.getUpper() != null) {
-				upperAreEqual = upper.isEqual(other.getUpper());
-			} else {
-				upperAreEqual = upper == other.getUpper();
-			}
-			
-			return lowerAreEqual && upperAreEqual;
-		}
-		
-		return false;
-	}
+
 	
 	@Override
 	public int hashCode() {
 		String value = getValue();
 		return value != null ? value.hashCode() : 0;
 	}
-	
+
+
 	/**
 	 * Gets the interval on which the temporal value is defined
-	 *
 	 * @return a duration
 	 */
-	public Duration duration() {
-		return Duration.between(lower, upper);
+	public Duration duration(){
+		return Duration.between(lower,upper);
 	}
+
 	
 	/**
 	 * Shifts the duration sent
@@ -462,29 +480,7 @@ public class Period extends Time {
 	public Period shift(Duration duration) throws SQLException {
 		return new Period(lower.plus(duration), upper.plus(duration), lowerInclusive, upperInclusive);
 	}
-	
-	/**
-	 * Checks if the OffsetDatetime is contained in the Period
-	 *
-	 * @param dateTime - a datetime
-	 * @return true if the received datetime is contained in the current Period; otherwise false
-	 */
-	public boolean contains(OffsetDateTime dateTime) {
-		return (lower.isBefore(dateTime) && upper.isAfter(dateTime)) ||
-				(lowerInclusive && lower.isEqual(dateTime)) ||
-				(upperInclusive && upper.isEqual(dateTime));
-	}
-	
-	/**
-	 * Checks if there any timestamp in common
-	 *
-	 * @param period - a Period
-	 * @return true if the received period overlaps the current Period; otherwise false
-	 */
-	public boolean overlap(Period period) {
-		return contains(period.lower) || contains(period.upper);
-	}
-	
+
 	/**
 	 * Verifies that the received fields are valid
 	 *
