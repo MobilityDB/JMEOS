@@ -257,6 +257,10 @@ public class PeriodSet extends Time {
 		return returnValue;
 	}
 
+	public Time mul(TemporalObject<?> other) throws SQLException {
+		return this.intersection(other);
+	}
+
 
 
 	public PeriodSet minus(TemporalObject<?> other) throws SQLException {
@@ -271,7 +275,9 @@ public class PeriodSet extends Time {
 		return returnValue;
 	}
 
-
+	public PeriodSet sub(TemporalObject<?> other) throws SQLException {
+		return this.minus(other);
+	}
 
 	public PeriodSet union(TemporalObject<?> other) throws SQLException {
 		PeriodSet returnValue;

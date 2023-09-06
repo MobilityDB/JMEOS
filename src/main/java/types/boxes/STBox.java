@@ -333,6 +333,11 @@ public class STBox extends Box {
 			this._inner = inner;
 		}
 	}
+
+
+	public STBox copy() throws SQLException {
+		return new STBox(functions.stbox_copy(this._inner));
+	}
 	
 	/**
 	 * Function that produces an STBox from a string through MEOS.
@@ -376,21 +381,19 @@ public class STBox extends Box {
     }
 
      */
-	
-	
-	public STBox from_timestampset(Pointer time) throws SQLException {
-		Pointer result = functions.timestampset_to_stbox(time);
-		return new STBox(result);
-	}
-	
-	public STBox from_period(Pointer time) throws SQLException {
-		Pointer result = functions.period_to_stbox(time);
-		return new STBox(result);
-	}
-	
-	public STBox from_periodset(Pointer time) throws SQLException {
-		Pointer result = functions.periodset_to_stbox(time);
-		return new STBox(result);
+
+
+
+
+	public static STBox from_time(TemporalObject<?> other) throws SQLException{
+		STBox returnValue;
+		switch (other){
+			case Period p -> returnValue = new STBox(functions.period_to_stbox(p.get_inner()));
+			case PeriodSet ps -> returnValue = new STBox(functions.periodset_to_stbox(ps.get_inner()));
+			case TimestampSet ts -> returnValue = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
+			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+		}
+		return returnValue;
 	}
 	
 	/*
@@ -539,8 +542,16 @@ public class STBox extends Box {
 		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
+	public STBox add(STBox other) throws SQLException {
+		return this.union(other, true);
+	}
+
 	public STBox intersection(STBox other) throws SQLException {
 		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
+	}
+
+	public STBox mul(STBox other) throws SQLException {
+		return this.intersection(other);
 	}
 
 	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {

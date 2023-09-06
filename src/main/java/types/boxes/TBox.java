@@ -106,7 +106,9 @@ public class TBox extends Box {
 
 
 
-
+	public TBox copy() throws SQLException {
+		return new TBox(functions.tbox_copy(this._inner));
+	}
 
 	
 	/**
@@ -372,9 +374,17 @@ public class TBox extends Box {
 		return new TBox(functions.union_tbox_tbox(this._inner, other._inner));
 	}
 
+	public TBox add(TBox other) throws SQLException {
+		return this.union(other);
+	}
+
 
 	public TBox intersection(TBox other) throws SQLException {
 		return new TBox(functions.intersection_tbox_tbox(this._inner,other.get_inner()));
+	}
+
+	public TBox mul(TBox other) throws SQLException {
+		return this.intersection(other);
 	}
 	
 	

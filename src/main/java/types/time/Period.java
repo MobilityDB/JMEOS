@@ -123,6 +123,10 @@ public class Period extends Time {
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 		validate();
 	}
+
+    public Period copy() throws SQLException {
+        return new Period(functions.span_copy(this._inner));
+    }
 	
 	public static Period from_hexwkb(String str) throws SQLException {
 		Pointer result = functions.span_from_hexwkb(str);
@@ -296,8 +300,21 @@ public class Period extends Time {
 	}
 
 
-	//TODO: Intersection but define Time first with extends
+    public Time intersection(TemporalObject<?> other) throws SQLException{
+        Time returnValue = null;
+        switch (other){
+            case Period p -> returnValue = new Period(functions.intersection_span_span(this._inner,p.get_inner()));
+            case PeriodSet ps -> returnValue = new PeriodSet(functions.intersection_spanset_span(ps.get_inner(), this._inner));
+            case TimestampSet ts -> returnValue = new TimestampSet(functions.intersection_spanset_span(functions.set_to_spanset(ts.get_inner()),this._inner));
+            default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+        }
+        return returnValue;
+    }
 
+
+    public Time mul(TemporalObject<?> other) throws SQLException {
+        return this.intersection(other);
+    }
 
 
 	public PeriodSet minus(TemporalObject<?> other) throws SQLException{
@@ -310,6 +327,10 @@ public class Period extends Time {
 		}
 		return returnValue;
 	}
+
+    public PeriodSet sub(TemporalObject<?> other) throws SQLException {
+        return this.minus(other);
+    }
 
 
 	public PeriodSet union(TemporalObject<?> other) throws SQLException{
