@@ -366,13 +366,13 @@ class PeriodTest {
 	void testOverlaps(String value) throws SQLException {
 		Period periodA = new Period(value);
 		Period periodB = new Period("[2021-09-09 00:00:00+01, 2021-09-11 00:00:00+01)");
-		assertTrue(periodA.overlap(periodB));
+		assertTrue(periodA.overlaps(periodB));
 	}
 	
 	@Test
 	void testNotOverlaps() throws SQLException {
 		Period periodA = new Period("[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01)");
 		Period periodB = new Period("[2021-09-11 00:00:00+01, 2021-09-13 00:00:00+01)");
-		assertFalse(periodA.overlap(periodB));
+		assertFalse(periodA.overlaps(periodB));
 	}
 }

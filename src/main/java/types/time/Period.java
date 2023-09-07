@@ -3,6 +3,7 @@ package types.time;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.TemporalObject;
+import types.boxes.Box;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
@@ -17,16 +18,19 @@ import java.time.OffsetDateTime;
  * ``Period`` objects can be created with a single argument of type string
  * as in MobilityDB.
  * <p>
- * >>> Period('(2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01)')
+ * >>> new Period("(2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01)")
  * <p>
  * Another possibility is to provide the ``lower`` and ``upper`` named parameters (of type str or datetime), and
  * optionally indicate whether the bounds are inclusive or exclusive (by default, the lower bound is inclusive and the
  * upper is exclusive):
  * <p>
- * >>> Period(lower='2019-09-08 00:00:00+01', upper='2019-09-10 00:00:00+01')
- * >>> Period(lower='2019-09-08 00:00:00+01', upper='2019-09-10 00:00:00+01', lower_inc=False, upper_inc=True)
- * >>> Period(lower=parse('2019-09-08 00:00:00+01'), upper=parse('2019-09-10 00:00:00+01'), upper_inc=True)
+ * >>> new Period(lower='2019-09-08 00:00:00+01', upper='2019-09-10 00:00:00+01')
+ * >>> new Period(lower='2019-09-08 00:00:00+01', upper='2019-09-10 00:00:00+01', lower_inc=False, upper_inc=True)
+ * >>> new Period(lower=parse('2019-09-08 00:00:00+01'), upper=parse('2019-09-10 00:00:00+01'), upper_inc=True)
  * <p>
+ * @author nidhal
+ * @since 07/09/2023
+ *
  * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
  */
 @TypeName(name = "period")
@@ -39,7 +43,13 @@ public class Period extends Time {
 	private OffsetDateTime upper;
 	private boolean lowerInclusive = true;
 	private boolean upperInclusive = false;
-	
+
+
+	/**
+	 * ------------------------ Constructors ------------------------
+	 */
+
+
 	/**
 	 * The default constructor
 	 */
@@ -124,31 +134,171 @@ public class Period extends Time {
 		validate();
 	}
 
+	/**
+	 * Return a copy of "this" object.
+	 *
+	 * @return Instance of Period class
+	 * @throws SQLException
+	 * @meos:  span_copy
+	 */
     public Period copy() throws SQLException {
         return new Period(functions.span_copy(this._inner));
     }
-	
-	public static Period from_hexwkb(String str) throws SQLException {
-		Pointer result = functions.span_from_hexwkb(str);
+
+
+	/**
+	 * Returns a Period from its WKB representation in hex-encoded ASCII.
+	 *
+	 * @param hexwkb: WKB representation in hex-encoded ASCII
+	 * @return Instance of Period class
+	 * @throws SQLException
+	 * @meos: span_from_hexwkb
+	 */
+	public static Period from_hexwkb(String hexwkb) throws SQLException {
+		Pointer result = functions.span_from_hexwkb(hexwkb);
 		return new Period(result);
 	}
-	
-	public float width() {
-		return (float) functions.span_width(this._inner);
+
+
+	/**
+	 * ------------------------ Output ------------------------
+	 */
+
+
+	/**
+	 * Return the string representation of the content of "this" object.
+	 *
+	 * @return string instance
+	 * @meos: period_out
+	 */
+	public String toString(){
+		return functions.period_out(this._inner);
 	}
-	
-	public Period expand(Period other) throws SQLException {
-		Pointer copy = functions.span_copy(this._inner);
-		functions.span_expand(other._inner, copy);
-		return new Period(copy);
-	}
-	
+
+
+	/**
+	 * ------------------------ Conversions ------------------------
+	 */
+
+
+	/**
+	 * Returns a period set containing "this" object.
+	 *
+	 * @return PeriodSet instance
+	 * @throws SQLException
+	 * @meos: span_to_spanset
+	 */
 	public PeriodSet to_periodset() throws SQLException {
 		return new PeriodSet(functions.span_to_spanset(this._inner));
 	}
 
 
 
+	/**
+	 * ------------------------ Accessors ------------------------
+	 */
+
+
+	/**
+	 * Returns whether the lower bound of the period is inclusive or not
+	 *
+	 * @return True if the lower bound of the period is inclusive and False otherwise
+	 * @meos: span_lower_inc
+	 */
+	public boolean lower_inc(){
+		return functions.span_lower_inc(this._inner);
+	}
+
+	/**
+	 * Returns whether the upper bound of the period is inclusive or not
+	 *
+	 * @return True if the upper bound of the period is inclusive and False otherwise
+	 * @meos: span_upper_inc
+	 */
+	public boolean upper_inc(){
+		return functions.span_upper_inc(this._inner);
+	}
+
+	public OffsetDateTime getLower() {
+		return lower;
+	}
+
+	public OffsetDateTime getUpper() {
+		return upper;
+	}
+
+	public boolean isLowerInclusive() {
+		return lowerInclusive;
+	}
+
+	public boolean isUpperInclusive() {
+		return upperInclusive;
+	}
+
+	/**
+	 *  Returns the duration of the period.
+	 *
+	 * @return timedelta instance representing the duration of the period
+	 * @meos: period_duration
+	 */
+	public Duration duration(){
+		return Duration.between(lower,upper);
+	}
+
+
+	/**
+	 * Returns the duration of the period.
+	 *
+	 * @return a float representing the duration of the period in seconds
+	 * @meos: span_width
+	 */
+	public float duration_in_second(){
+		return (float) functions.span_width(this._inner);
+	}
+
+	/**
+	 * Return the hash representation of "this".
+	 *
+	 * @return integer instance
+	 * @meos: span_hash
+	 */
+	public int hash(){
+		return functions.span_hash(this._inner);
+	}
+
+
+	/**
+	 * ------------------------ Transformations ------------------------
+	 */
+
+
+	/**
+	 * Returns a new period that includes both "this" and "other"
+	 * <p>
+	 * Examples:
+	 * <p>
+	 *     >>> Period('[2000-01-01, 2000-01-04)').expand(Period('[2000-01-05, 2000-01-10]'))
+	 * </p>
+	 * <p>
+	 *     >>> 'Period([2000-01-01 00:00:00+01, 2000-01-10 00:00:00+01])'
+	 * </p>
+	 * <p/>
+	 * @param other period instance needed to expand the object
+	 * @return Period instance
+	 * @throws SQLException
+	 * @meos: span_expand
+	 */
+
+	public Period expand(Period other) throws SQLException {
+		Pointer copy = functions.span_copy(this._inner);
+		functions.span_expand(other._inner, copy);
+		return new Period(copy);
+	}
+
+
+	/**
+	 * ------------------------ Topological Operations ------------------------
+	 */
 
 	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
@@ -159,7 +309,7 @@ public class Period extends Time {
 			case TimestampSet ts -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_span(ts.get_inner()));
 			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
 			//case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
-			//case Box b -> returnValue = functions.adjacent_spanset_span(this._inner, b.to_period()._inner);
+			case Box b -> returnValue = functions.adjacent_span_span(this._inner, b.to_period()._inner);
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -171,7 +321,7 @@ public class Period extends Time {
 			case Period p -> returnValue = functions.contained_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.contained_span_spanset(this._inner,ps.get_inner());
 			//case Temporal t -> returnValue = functions.contained_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.contained_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.contained_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -187,7 +337,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.contains_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.contains_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.contains_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.contains_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.contains_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -201,7 +351,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.overlaps_spanset_span(ps.get_inner(),this._inner);
 			case TimestampSet ts -> returnValue = functions.overlaps_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.overlaps_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.overlaps_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.overlaps_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -216,7 +366,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.span_eq(this._inner,functions.spanset_span(ps.get_inner()));
 			case TimestampSet ts -> returnValue = functions.span_eq(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.span_eq(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.span_eq(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.span_eq(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -224,7 +374,9 @@ public class Period extends Time {
 
 
 
-
+	/**
+	 * ------------------------ Position Operations ------------------------
+	 */
 
 	public boolean is_before(TemporalObject<?> other) throws SQLException{
 		boolean returnValue;
@@ -233,7 +385,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.left_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.left_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.left_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.left_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.left_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -248,7 +400,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.overleft_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overleft_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.overleft_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.overleft_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.overleft_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -262,7 +414,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.right_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.right_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.right_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.right_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.right_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -277,7 +429,7 @@ public class Period extends Time {
 			case PeriodSet ps -> returnValue = functions.overright_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overright_span_span(this._inner,functions.set_span(ts.get_inner()));
 			//case Temporal t -> returnValue = functions.overright_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.overright_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = functions.overright_span_span(this._inner,b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -285,6 +437,10 @@ public class Period extends Time {
 
 
 	//TODO: use Duration class from java.time instead
+
+	/**
+	 * ------------------------ Distance Operations ------------------------
+	 */
 
 	public double distance(TemporalObject<?> other) throws SQLException{
 		double returnValue;
@@ -298,6 +454,10 @@ public class Period extends Time {
 		}
 		return returnValue;
 	}
+
+	/**
+	 * ------------------------ Set Operations ------------------------
+	 */
 
 
     public Time intersection(TemporalObject<?> other) throws SQLException{
@@ -345,13 +505,13 @@ public class Period extends Time {
 	}
 
 
-	public String to_string(){
-		return functions.span_out(this._inner,10);
-	}
-
 	public PeriodSet add(TemporalObject<?> other) throws SQLException {
 		return this.union(other);
 	}
+
+	/**
+	 * ------------------------ Comparisons ------------------------
+	 */
 
 	public boolean equals(TemporalObject<?> other) throws SQLException{
 		boolean result;
@@ -449,47 +609,6 @@ public class Period extends Time {
 		this.lower = DateTimeFormatHelper.getDateTimeFormat(values[0].substring(1).trim());
 		this.upper = DateTimeFormatHelper.getDateTimeFormat(values[1].substring(0, values[1].length() - 1).trim());
 		validate();
-	}
-	
-	public OffsetDateTime getLower() {
-		return lower;
-	}
-	
-	public OffsetDateTime getUpper() {
-		return upper;
-	}
-	
-	public boolean getUpper_inc() {
-		return upperInclusive;
-	}
-	
-	public boolean getLower_inc() {
-		return lowerInclusive;
-	}
-	
-	public boolean isLowerInclusive() {
-		return lowerInclusive;
-	}
-	
-	public boolean isUpperInclusive() {
-		return upperInclusive;
-	}
-	
-
-	
-	@Override
-	public int hashCode() {
-		String value = getValue();
-		return value != null ? value.hashCode() : 0;
-	}
-
-
-	/**
-	 * Gets the interval on which the temporal value is defined
-	 * @return a duration
-	 */
-	public Duration duration(){
-		return Duration.between(lower,upper);
 	}
 
 	
