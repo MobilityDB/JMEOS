@@ -28,7 +28,7 @@ import java.time.OffsetDateTime;
  * >>> new Period(lower='2019-09-08 00:00:00+01', upper='2019-09-10 00:00:00+01', lower_inc=False, upper_inc=True)
  * >>> new Period(lower=parse('2019-09-08 00:00:00+01'), upper=parse('2019-09-10 00:00:00+01'), upper_inc=True)
  * <p>
- * @author nidhal
+ * @author Nidhal Mareghni
  * @since 07/09/2023
  *
  * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
