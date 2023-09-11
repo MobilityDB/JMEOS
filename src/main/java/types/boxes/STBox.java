@@ -1,6 +1,8 @@
 package types.boxes;
 
 import functions.functions;
+import jnr.ffi.Memory;
+import jnr.ffi.Runtime;
 import types.TemporalObject;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
@@ -17,7 +19,26 @@ import types.time.TimestampSet;
 
 
 /**
- * Class that represents the MobilityDB type STBox
+ * Class for representing a spatio-temporal box. Temporal bounds may be inclusive or exclusive.
+ * <pre>
+ *     ``STBox`` objects can be created with a single argument of type string as in MobilityDB.
+ *         >>> STBox('STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])')
+ *</pre>
+ * <pre>
+ *     Another possibility is to provide the different dimensions with the corresponding parameters:
+ *         - ``xmin``, ``xmax``, ``ymin``, ``ymax`` for spatial dimension
+ *         - ``zmin``, ``zmax`` for the third spatial dimension
+ *         - ``tmin``, ``tmax`` for temporal dimension
+ *         - ``tmin_inc``, ``tmax_inc`` to specify if the temporal bounds are inclusive or exclusive
+ *         - ``geodetic`` to specify if the spatial dimension is geodetic
+ *         - ``srid`` to specify the spatial reference system identifier
+ *</pre>
+ *     Note that at least the 2D spatial dimension or the temporal dimension must be provided.
+ *<p>
+ *         >>> STBox(xmin=1.0, xmax=4.0, ymin=2.0, ymax=5.0, tmin=datetime(2001, 1, 1), tmax=datetime(2001, 1, 2))
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 @TypeName(name = "stbox")
 public class STBox extends Box {
@@ -30,6 +51,7 @@ public class STBox extends Box {
 	private Pointer _inner = null;
 	private boolean tmin_inc = true;
 	private boolean tmax_inc = true;
+	private Runtime runtime = Runtime.getSystemRuntime();
 
 	public STBox _get_box(TemporalObject<?> other) throws SQLException {
 		return this._get_box(other,true,false);
@@ -53,6 +75,10 @@ public class STBox extends Box {
 		}
 		return other_box;
 	}
+
+	/** ------------------------- Constructors ---------------------------------- */
+
+
 	/**
 	 * The default constructor
 	 */
@@ -334,18 +360,27 @@ public class STBox extends Box {
 		}
 	}
 
-
+	/**
+	 * Returns a copy of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_copy</li>
+	 * @return a STBox instance
+	 * @throws SQLException
+	 */
 	public STBox copy() throws SQLException {
 		return new STBox(functions.stbox_copy(this._inner));
 	}
-	
+
 	/**
-	 * Function that produces an STBox from a string through MEOS.
-	 *
-	 * @param hexwkb
-	 * @return a JNR-FFI pointer
+	 * Returns a "STBox" from its WKB representation in hex-encoded ASCII.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_from_hexwkb</li>
+	 * @param hexwkb WKB representation in hex-encoded ASCII
+	 * @return a new STBox instance
+	 * @throws SQLException
 	 */
-	
 	public static STBox from_hexwkb(String hexwkb) throws SQLException {
 		Pointer result = functions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
@@ -358,17 +393,23 @@ public class STBox extends Box {
         return stbox_as_hexwkb(this._inner,-1,this._inner.size())[0];
     }
    */
-	
-	
-	public STBox from_geometry(Geometry geom) throws SQLException {
+
+	/**
+	 * Returns a "STBox" from a "Geometry".
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>gserialized_in, geo_to_stbox </li>
+	 *
+	 * @param geom A `Geometry` instance.
+	 * @param geodetic Whether to create a geodetic or geometric `STBox`.
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
+	public static STBox from_geometry(Geometry geom, boolean geodetic) throws SQLException {
 		Pointer gs = functions.gserialized_in(geom.toString(), -1);
 		return new STBox(functions.geo_to_stbox(gs));
 	}
-	
-	
-	public STBox from_space(Geometry value) throws SQLException {
-		return from_geometry(value);
-	}
+
 
 
     /*
@@ -383,8 +424,20 @@ public class STBox extends Box {
      */
 
 
-
-
+	/**
+	 * Returns a "STBox" from a "Time" instance.
+	 *<p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>timestamp_to_stbox</li>
+	 *             <li>timestampset_to_stbox</li>
+	 *             <li>period_to_stbox</li>
+	 *             <li>periodset_to_stbox</li>
+	 *         </ul>
+	 * @param other a Time instance
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
 	public static STBox from_time(TemporalObject<?> other) throws SQLException{
 		STBox returnValue;
 		switch (other){
@@ -456,63 +509,163 @@ public class STBox extends Box {
 
      */
 
-    @Override
+
+	/** ------------------------- Output ---------------------------------------- */
+
+	/**
+	 *  Returns a string representation of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_out</li>
+	 * @param max_decimals number of decimals
+	 * @return a String instance
+	 */
+	public String toString(int max_decimals){
+		return functions.stbox_out(this._inner,max_decimals);
+	}
+
+
+
+	/** ------------------------- Conversions ---------------------------------- */
+
+	/**
+	 * Returns the temporal dimension of "this" as a "Period" instance.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_to_period</li>
+	 * @return a new Period instance
+	 * @throws SQLException
+	 */
     public Period to_period() throws SQLException {
         Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }
 
 
-	
+	/** ------------------------- Accessors ------------------------------------- */
+
+	/**
+	 * Returns whether "this" has a spatial (XY) dimension.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_hasx</li>
+	 * @return True if "this" has a spatial dimension, False otherwise.
+	 */
 	public boolean has_xy() {
 		return functions.stbox_hasx(this._inner);
 	}
-	
+
+
+	/**
+	 * Returns whether "this" has a Z dimension.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_hasz</li>
+	 * @return True if "this" has a Z dimension, False otherwise.
+	 */
 	public boolean has_z() {
 		return functions.stbox_hasz(this._inner);
 	}
-	
+
+
+	/**
+	 * Returns whether "this" has a time dimension.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_hast</li>
+	 * @return True if "this" has a time dimension, False otherwise.
+	 */
 	public boolean has_t() {
 		return functions.stbox_hast(this._inner);
 	}
-	
+
+	/**
+	 * Returns whether "this" is geodetic.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li> stbox_isgeodetic </li>
+	 * @return True if "this" is geodetic, False otherwise.
+	 */
 	public boolean geodetic() {
 		return functions.stbox_isgeodetic(this._inner);
 	}
 
 
-
-
-    /*
-    //Check the following with pointer double
+	/**
+	 * Returns the minimum X coordinate of ``self``.
+	 *
+	 *         Returns:
+	 *             A :class:`float` with the minimum X coordinate of ``self``.
+	 *
+	 *         MEOS Functions:
+	 *             stbox_xmin
+	 * @return
+	 */
     public boolean xmin(){
-        return stbox_xmin(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_xmin(this._inner, result);
     }
     public boolean ymin(){
-        return stbox_ymin(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_ymin(this._inner, result);
     }
     public boolean zmin(){
-        return stbox_zmin(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_zmin(this._inner, result);
     }
     public boolean tmin(){
-        return stbox_tmin(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_tmin(this._inner, result);
     }
     public boolean xmax(){
-        return stbox_xmax(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_xmax(this._inner, result);
     }
     public boolean ymax(){
-        return stbox_ymax(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_ymax(this._inner, result);
     }
     public boolean zmax(){
-        return stbox_zmax(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_zmax(this._inner, result);
     }
     public boolean tmax(){
-        return stbox_tmax(this._inner);
+		Pointer result = Memory.allocate(runtime,Double.BYTES);
+        return functions.stbox_tmax(this._inner, result);
     }
 
-     */
+
+	/** ------------------------- Spatial Reference System ---------------------- */
+
+	/**
+	 * Returns the SRID of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_srid</li>
+	 * @return an Integer with the SRID of "this"
+	 */
+	public int srid(){
+		return functions.stbox_srid(this._inner);
+	}
+
+
+	/**
+	 * Returns a copy of "this" with the SRID set to "value".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>stbox_set_srid</li>
+	 * @param value The new SRID.
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
+	public STBox set_srid(int value) throws SQLException {
+		return new STBox(functions.stbox_set_srid(this._inner,value));
+	}
 	
-	
+
+	/** ------------------------- Transformations ------------------------------- */
+
+
 	public STBox expand_stbox(STBox stbox, STBox other) throws SQLException {
 		Pointer result = functions.stbox_copy(this._inner);
 		functions.stbox_expand(other._inner, result);
@@ -527,9 +680,7 @@ public class STBox extends Box {
 		return result;
 	}
 
-
-
-    /*
+	 /*
     //Add the timedelta function
     public STBox expand_timedelta(STBox stbox, Duration duration){
         Pointer result = stbox_expand_temporal(this._inner, timedelta_to_interval(duration));
@@ -537,23 +688,104 @@ public class STBox extends Box {
     }
 
      */
-	
+
+
+	/**
+	 * Returns "this" rounded to the given number of decimal digits.
+	 *<p>
+	 *         MEOS Functions:
+	 *            <li>stbox_round </li>
+	 *
+	 * @param maxdd Maximum number of decimal digits.
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
+	public STBox round(int maxdd) throws SQLException {
+		Pointer new_inner = functions.stbox_copy(this._inner);
+		functions.stbox_round(new_inner,maxdd);
+		return new STBox(new_inner);
+	}
+
+
+
+
+
+
+	/** ------------------------- Set Operations -------------------------------- */
+
+
+	/**
+	 * Returns the union of "this" with "other". Fails if the union is not contiguous.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>union_stbox_stbox</li>
+	 * @param other spatiotemporal box to merge with
+	 * @param strict included or not
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
 	public STBox union(STBox other, boolean strict) throws SQLException {
 		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
+
+	/**
+	 * Returns the union of "this" with "other". Fails if the union is not contiguous.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>union_stbox_stbox</li>
+	 * @param other spatiotemporal box to merge with
+	 * @param strict included or not
+	 * @return a new STBox instance
+	 * @throws SQLException
+	 */
 	public STBox add(STBox other) throws SQLException {
 		return this.union(other, true);
 	}
 
+
+	/**
+	 * Returns the intersection of "this" with "other".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>intersection_stbox_stbox </li>
+	 *
+	 * @param other temporal object to merge with
+	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
+	 * @throws SQLException
+	 */
 	public STBox intersection(STBox other) throws SQLException {
 		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
 	}
 
+
+	/**
+	 * Returns the intersection of "this" with "other".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>intersection_stbox_stbox </li>
+	 *
+	 * @param other temporal object to merge with
+	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
+	 * @throws SQLException
+	 */
 	public STBox mul(STBox other) throws SQLException {
 		return this.intersection(other);
 	}
 
+
+	/**
+	 * Returns whether ``self`` and `other` are adjacent. Two spatiotemporal boxes are adjacent if they share n
+	 *         dimensions and the intersection is of at most n-1 dimensions. Note that for `TPoint` instances, the bounding box
+	 *         of the temporal point is used.
+	 *<p></p>
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>adjacent_stbox_stbox</li>
+	 * @param other The other spatiotemporal object to check adjacency with "this".
+	 * @return "true" if "this" and "other" are adjacent, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {
 		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
