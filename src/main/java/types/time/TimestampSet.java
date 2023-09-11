@@ -18,12 +18,31 @@ import functions.functions;
 
 
 /**
- * Class that represents the MobilityDB type TimestampSet
+ * Class for representing lists of distinct timestamp values.
+ *	<pre>
+ *     ``TimestampSet`` objects can be created with a single argument of type string
+ *     as in MobilityDB.
+ *
+ *         >>> TimestampSet(string='{2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01, 2019-09-11 00:00:00+01}')
+ *
+ *     Another possibility is to give a tuple or list of composing timestamps,
+ *     which can be instances of ``str`` or ``datetime``. The composing timestamps
+ *     must be given in increasing order.
+ *
+ *         >>> TimestampSet(timestamp_list=['2019-09-08 00:00:00+01', '2019-09-10 00:00:00+01', '2019-09-11 00:00:00+01'])
+ *         >>> TimestampSet(timestamp_list=[parse('2019-09-08 00:00:00+01'), parse('2019-09-10 00:00:00+01'), parse('2019-09-11 00:00:00+01')])
+ * </pre>
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 @TypeName(name = "timestampset")
 public class TimestampSet extends Time {
 	private final List<OffsetDateTime> dateTimeList;
-	
+
+
+	/** ------------------------- Constructors ---------------------------------- */
+
+
 	/**
 	 * The default constructor
 	 */
@@ -63,33 +82,111 @@ public class TimestampSet extends Time {
 		Collections.addAll(dateTimeList, dateTimes);
 		validate();
 	}
-	
+
+
+	/**
+	 * Return a copy of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_copy</li>
+	 * @return a new TimestampSet instance
+	 * @throws SQLException
+	 */
+	public TimestampSet copy() throws SQLException {
+		return new TimestampSet(functions.set_copy(this._inner));
+	}
+
 	/*
 	public static TimestampSet from_wkb(byte[] wkb){
 		return new TimestampSet(functions.set_from_)
 	}
 	 */
 
+
+	/**
+	 * Returns a "TimestampSet" from its WKB representation in hex-encoded ASCII.
+	 *  <p>
+	 *         MEOS Functions:
+	 *             <li>set_from_hexwkb</li>
+	 * @param hexwkb WKB representation in hex-encoded ASCII
+	 * @return a new TimestampSet instance
+	 * @throws SQLException
+	 */
 	public static TimestampSet from_hexwkb(String hexwkb) throws SQLException {
 		Pointer result = functions.set_from_hexwkb(hexwkb);
 		return new TimestampSet(result);
 	}
-	
+
+	/** ------------------------- Output ---------------------------------------- */
+
+
+	/**
+	 * Return the string representation of the content of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_out</li>
+	 * @return a new String instance
+	 */
+	public String toString(){
+		return functions.set_out(this._inner,15);
+	}
+
+
+	/** ------------------------- Conversions ----------------------------------- */
+
+
+	/**
+	 * Returns a PeriodSet that contains a Period for each Timestamp in "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_to_spanset</li>
+	 * @return a new PeriodSet instance
+	 * @throws SQLException
+	 */
 	public PeriodSet to_periodset() throws SQLException {
 		return new PeriodSet(functions.set_to_spanset(this.get_inner()));
 	}
 
+	/** ------------------------- Accessors ------------------------------------- */
+
+	/**
+	 * Returns a period that encompasses "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_span</li>
+	 * @return a new Period instance
+	 * @throws SQLException
+	 */
 	public Period period() throws SQLException {
 		return new Period(functions.set_span(this._inner));
 	}
 
+
+	/**
+	 * Returns the number of timestamps in "this".
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>set_num_values</li>
+	 * @return a new Integer instance
+	 */
 	public int num_timestamps(){
 		return functions.set_num_values(this._inner);
 	}
 
+	/**
+	 * Return the hash representation of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_hash</li>
+	 * @return a new Integer instance
+	 */
 	public int hash(){
 		return functions.set_hash(this._inner);
 	}
+
+
+	/** ------------------------- Topological Operations ------------------------ */
+
 
 	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;

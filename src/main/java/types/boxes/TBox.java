@@ -12,7 +12,26 @@ import java.time.OffsetDateTime;
 
 
 /**
- * Class that represents the MobilityDB type TBox
+ * Class for representing numeric temporal boxes. Both numeric and temporal bounds may be inclusive or not.
+ *<pre>
+ *     ``TBox`` objects can be created with a single argument of type string as in MobilityDB.
+ *
+ *         >>> TBox('TBOXINT XT([0, 10),[2020-06-01, 2020-06-05])')
+ *         >>> TBox('TBOXFLOAT XT([0, 10),[2020-06-01, 2020-06-05])')
+ *         >>> TBox('TBOX T([2020-06-01, 2020-06-05])')
+ *
+ *     Another possibility is to provide the ``xmin``/``xmax`` (of type str or
+ *     int/float) and ``tmin``/``tmax`` (of type str or datetime) named parameters,
+ *     and optionally indicate whether the bounds are inclusive or exclusive (by
+ *     default, lower bounds are inclusive and upper bounds are exclusive):
+ *
+ *         >>> TBox(xmin=0, xmax=10, tmin='2020-06-01', tmax='2020-06-0')
+ *         >>> TBox(xmin=0, xmax=10, tmin='2020-06-01', tmax='2020-06-0', xmax_inc=True, tmax_inc=True)
+ *         >>> TBox(xmin='0', xmax='10', tmin=parse('2020-06-01'), tmax=parse('2020-06-0'))
+ *</pre>
+ *     Note that you can create a TBox with only the numerical or the temporal dimension. In these cases, it will be
+ *     equivalent to a {@link Period} (if it only has temporal dimension) or to a
+ *     floatrange (if it only has the numeric dimension).
  */
 @TypeName(name = "tbox")
 public class TBox extends Box {
@@ -27,9 +46,7 @@ public class TBox extends Box {
 	private Pointer _inner = null;
 	
 	
-	/**
-	 * The default constructor
-	 */
+	/** ------------------------- Constructors ---------------------------------- */
 	public TBox() {
 		super();
 	}
@@ -105,19 +122,29 @@ public class TBox extends Box {
 	}
 
 
-
+	/**
+	 * Returns a copy of "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>tbox_copy</li>
+	 * @return a new TBox instance
+	 * @throws SQLException
+	 */
 	public TBox copy() throws SQLException {
 		return new TBox(functions.tbox_copy(this._inner));
 	}
 
-	
+
 	/**
-	 * Function that produces an TBox from a string through MEOS.
+	 *  Returns a "TBox" from its WKB representation in hex-encoded ASCII.
 	 *
-	 * @param hexwkb
-	 * @return a JNR-FFI pointer
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tbox_from_hexwkb</li>
+	 * @param hexwkb WKB representation in hex-encoded ASCII
+	 * @return a new TBox instance
+	 * @throws SQLException
 	 */
-	
 	public static TBox from_hexwkb(String hexwkb) throws SQLException {
 		return new TBox(functions.tbox_from_hexwkb(hexwkb));
 	}
@@ -133,18 +160,13 @@ public class TBox extends Box {
 		return tbox;
 	}
 
-	/*
-	public TBox from_value_range(){
-		;
+
+
+
+	public String toString(){
+		return this.toString(15);
 	}
-
-	 */
-
-
-	public String to_str(){
-		return this.to_str(15);
-	}
-	public String to_str(int max_decimals){
+	public String toString(int max_decimals){
 		return functions.tbox_out(this._inner,max_decimals);
 	}
 

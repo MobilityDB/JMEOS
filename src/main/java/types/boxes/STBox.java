@@ -735,7 +735,6 @@ public class STBox extends Box {
 	 *         MEOS Functions:
 	 *             <li>union_stbox_stbox</li>
 	 * @param other spatiotemporal box to merge with
-	 * @param strict included or not
 	 * @return a new STBox instance
 	 * @throws SQLException
 	 */
@@ -790,86 +789,326 @@ public class STBox extends Box {
 		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is contained in "other". Note that for "TPoint" instances, the bounding
+	 *         box of the temporal point is used.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>contained_stbox_stbox</li>
+	 * @param other The spatiotemporal object to check containment with "this.
+	 * @return "true" if "this" is contained in "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
 		return functions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" contains `content`. Note that for "TPoint" instances, the bounding box of
+	 *         the temporal point is used.
+	 *
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>contains_stbox_stbox </li>
+	 * @param other The spatiotemporal object to check containment with "this".
+	 * @return "true" if "this" contains "other", "false otherwise.
+	 * @throws SQLException
+	 */
 	public boolean contains(TemporalObject<?> other) throws SQLException {
 		return functions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" overlaps "other". Note that for "TPoint" instances, the bounding box of
+	 *         the temporal point is used.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>overlaps_stbox_stbox </li>
+	 * @param other The spatiotemporal object to check overlap with "this".
+	 * @return "true" if "this" overlaps "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean overlaps(TemporalObject<?> other) throws SQLException {
 		return functions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is the same as "other". Note that for "TPoint" instances, the bounding box of
+	 *         the temporal point is used.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>same_stbox_stbox</li>
+	 * @param other The spatiotemporal object to check equality with "this".
+	 * @return "true" if "this" is the same as "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_same(TemporalObject<?> other) throws SQLException {
 		return functions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is strictly to the left  of "other". Checks the X dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>left_stbox_stbox </li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly to the left of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_left(TemporalObject<?> other) throws SQLException {
 		return functions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is to the left "other" allowing for overlap. That is, "this" does not extend
+	 *         to the right of "other. Checks the X dimension.
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>overleft_stbox_stbox, tpoint_to_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is to the left of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_left(TemporalObject<?> other) throws SQLException {
 		return functions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is strictly to the right of "other". Checks the X dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>right_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly to the right of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_right(TemporalObject<?> other) throws SQLException {
 		return functions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is to the right of "other" allowing for overlap. That is, "this" does not
+	 *         extend to the left of "other". Checks the X dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>overright_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is to the right of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_right(TemporalObject<?> other) throws SQLException {
 		return functions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+	/**
+	 * Returns whether "this" is strictly below "other". Checks the Y dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>below_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly below of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_below(TemporalObject<?> other) throws SQLException {
 		return functions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is below "other" allowing for overlap. That is, "this" does not extend
+	 *         above "other". Checks the Y dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>overbelow_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is below "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_below(TemporalObject<?> other) throws SQLException {
 		return functions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is strictly above "other". Checks the Y dimension.
+	 *
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>above_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly above of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_above(TemporalObject<?> other) throws SQLException {
 		return functions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is above "other" allowing for overlap. That is, "this" does not extend
+	 *         below "other". Checks the Y dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>overabove_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is above "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_above(TemporalObject<?> other) throws SQLException {
 		return functions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is strictly in front of "other". Checks the Z dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>front_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly in front of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_front(TemporalObject<?> other) throws SQLException {
 		return functions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is in front of "other" allowing for overlap. That is, "this" does not extend
+	 *         behind "other". Checks the Z dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>overfront_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is in front of "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_front(TemporalObject<?> other) throws SQLException {
 		return functions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is strictly behind "other". Checks the Z dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>back_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly behind of "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_behind(TemporalObject<?> other) throws SQLException {
 		return functions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 * Returns whether "this" is behind "other" allowing for overlap. That is, "this" does not extend
+	 *         in front of "other". Checks the Z dimension.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>overback_stbox_stbox</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is behind of "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_behind(TemporalObject<?> other) throws SQLException {
 		return functions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
+
+	/**
+	 *  Returns whether "this" is strictly before "other". Checks the time dimension.
+	 *
+	 * <p>
+	 *         See Also:
+	 * 				{@link Period#is_before(TemporalObject)}
+	 * 	<p>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly before "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_before(TemporalObject<?> other) throws SQLException {
 		return this.to_period().is_before(other);
 	}
 
+
+	/**
+	 *  Returns whether "this" is before "other" allowing for overlap. That is, "this" does not extend
+	 *         after "other". Checks the time dimension.
+	 *
+	 * <p>
+	 *     See Also:
+	 * 	 			{@link Period#is_over_or_before(TemporalObject)}
+	 * 	 </p>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
 		return this.to_period().is_over_or_before(other);
 	}
 
+
+	/**
+	 * Returns whether "this" is strictly after "other". Checks the time dimension.
+	 *
+	 * <p>
+	 *      See Also:
+	 * 	 			{@link Period#is_after(TemporalObject)}
+	 *     </p>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is strictly after "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_after(TemporalObject<?> other) throws SQLException {
 		return this.to_period().is_after(other);
 	}
 
+
+	/**
+	 * Returns whether "this" is after "other" allowing for overlap. That is, "this does not extend
+	 *         before "other". Checks the time dimension.
+	 *
+	 *  <p>
+	 *      See Also:
+	 * 				{@link Period#is_over_or_after(TemporalObject)}
+	 *      </p>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
 		return this.to_period().is_over_or_after(other);
 	}
-	
+
+	/** ------------------------- Distance Operations --------------------------- */
+
+
+	/**
+	 * Returns the distance between the nearest points of "this" and "other".
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>nad_stbox_geo</li>
+	 *             <li>nad_stbox_stbox</li>
+	 *          </ul>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
+	 */
 	public float nearest_approach_distance_geom(Geometry other) {
 		Pointer gs = functions.gserialized_in(other.toString(), -1);
 		return (float) functions.nad_stbox_geo(this._inner, gs);
@@ -881,19 +1120,52 @@ public class STBox extends Box {
 
 
 
+	/** ------------------------- Comparisons ----------------------------------- */
 
+	/**
+	 * Returns whether "this" is equal to "other".
+	 *
+	 *  <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_eq</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is equal to "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean equals(TemporalObject<?> other) throws SQLException{
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
 		return result;
 	}
 
+
+	/**
+	 * Returns whether "this" is not equal to "other".
+	 *
+	 *  <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ne</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is not equal to "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean notEquals(TemporalObject<?> other) throws SQLException{
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
 		return result;
 	}
 
+	/**
+	 * Returns whether "this" is less than "other". Compares first the SRID, then the time dimension,
+	 *         and finally the spatial dimension (X, then Y then Z lower bounds and then the upper bounds).
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_lt</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is less than "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean lessThan(TemporalObject<?> other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
@@ -903,6 +1175,18 @@ public class STBox extends Box {
 		}
 	}
 
+
+	/**
+	 * Returns whether "this" is less than or equal to "other". Compares first the SRID, then the time dimension,
+	 *         and finally the spatial dimension (X, then Y then Z lower bounds and then the upper bounds).
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_le</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is less than or equal "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_le(this._inner,((STBox) other).get_inner());
@@ -912,6 +1196,18 @@ public class STBox extends Box {
 		}
 	}
 
+
+	/**
+	 * Returns whether "this" is greater than "other". Compares first the SRID, then the time dimension,
+	 *         and finally the spatial dimension (X, then Y then Z lower bounds and then the upper bounds).
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_gt</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is greater "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
@@ -921,7 +1217,17 @@ public class STBox extends Box {
 		}
 	}
 
-
+	/**
+	 *  Returns whether "this" is greater than or equal to "other". Compares first the SRID, then the time dimension,
+	 *         and finally the spatial dimension (X, then Y then Z lower bounds and then the upper bounds).
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ge</li>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return "true" if "this" is greater or equal "other", "false" otherwise.
+	 * @throws SQLException
+	 */
 	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
