@@ -188,6 +188,27 @@ public class TimestampSet extends Time {
 	/** ------------------------- Topological Operations ------------------------ */
 
 
+    /**
+     * Returns whether "this" is temporally adjacent to "other". That is, they share a bound but only one of them
+     *         contains it.
+     * <pre>
+     *         Examples:
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_adjacent(Period('[2012-01-02, 2012-01-03]'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_adjacent(Period('[2012-01-02, 2012-01-03]'))
+     *             >>> False  # Both contain bound
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_adjacent(Period('(2012-01-02, 2012-01-03]'))
+     *             >>> False  # Neither contain bound
+     *</pre>
+     *         MEOS Functions:
+     *         <ul>
+     *              <li>adjacent_span_span</li>
+     *              <li>adjacent_spanset_span</li>
+     *         </ul>
+     * @param other temporal object to compare with
+     * @return true if adjacent, false otherwise
+     * @throws SQLException
+     */
 	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -202,6 +223,29 @@ public class TimestampSet extends Time {
 	}
 
 
+    /**
+     * Returns whether "this" is temporally contained in "other".
+     *<pre>
+     *         Examples:
+     *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_contained_in(Period('[2012-01-01, 2012-01-04]'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('[2012-01-01, 2012-01-02]'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('(2012-01-01, 2012-01-02)'))
+     *             >>> False
+     *</pre>
+     *         MEOS Functions:
+     *         <ul>
+     *              <li>contained_span_span</li>
+     *              <li>contained_span_spanset</li>
+     *              <li>contained_set_set</li>
+     *              <li>contained_spanset_spanset</li>
+     *         </ul>
+     *
+     * @param other temporal object to compare with
+     * @return true if contained, false otherwise
+     * @throws SQLException
+     */
 	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -216,7 +260,27 @@ public class TimestampSet extends Time {
 	}
 
 
-
+    /**
+     * Returns whether "this" temporally contains "other".
+     *<pre>
+     *         Examples:
+     *             >>> TimestampSet('{2012-01-01, 2012-01-04}').contains(parse('2012-01-01]'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').contains(TimestampSet('{2012-01-01}'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').contains(TimestampSet('{2012-01-01, 2012-01-03}'))
+     *             >>> False
+     *</pre>
+     *         MEOS Functions:
+     *         <ul>
+     *             <li>contains_timestampset_timestamp</li>
+     *             <li>contains_set_set</li>
+     *             <li>contains_spanset_spanset</li>
+     *         </ul>
+     * @param other temporal object to compare with
+     * @return true if contains, false otherwise
+     * @throws SQLException
+     */
 	public boolean contains(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -229,8 +293,29 @@ public class TimestampSet extends Time {
 	}
 
 
-
-
+    /**
+     * Returns whether "this" temporally overlaps "other". That is, both share at least an instant
+     * <pre>
+     *         Examples:
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(TimestampSet('{2012-01-02, 2012-01-03}'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('[2012-01-02, 2012-01-03]'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('(2012-01-02, 2012-01-03]'))
+     *             >>> False
+     *</pre>
+     *
+     *         MEOS Functions:
+     *         <ul>
+     *              <li>overlaps_set_set</li>
+     *              <li>overlaps_span_span</li>
+     *              <li>overlaps_spanset_spanset</li>
+     *         </ul>
+     *
+     * @param other temporal object to compare with
+     * @return true if overlaps, false otherwise
+     * @throws SQLException
+     */
 	public boolean overlaps(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -245,13 +330,51 @@ public class TimestampSet extends Time {
 		return returnValue;
 	}
 
+
+    /**
+     * Returns whether the bounding period of "this" is the same as the bounding period of "other".
+     *
+     *         See Also:
+     *             {@link Period#is_same(TemporalObject)}
+     * @param other A time or temporal object to compare to `self`.
+     * @return true if same, false otherwise.
+     * @throws SQLException
+     */
 	public boolean is_same(TemporalObject<?> other) throws SQLException {
 		return this.period().is_same(other);
 	}
 
 
+    /** ------------------------- Position Operations --------------------------- */
 
 
+    /**
+     * Returns whether "this" is strictly after "other". That is, the first timestamp in "this"
+     *         is after "other".
+     * <pre>
+     *         Examples:
+     *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_after(Period('[2012-01-01, 2012-01-02)'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_after(TimestampSet('{2012-01-01}'))
+     *             >>> True
+     *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_after(Period('[2012-01-01, 2012-01-02]'))
+     *             >>> False
+     *</pre>
+     *
+     *         MEOS Functions:
+     *         <ul>
+     *         <li> overbefore_timestamp_timestampset</li>
+     *         <li> right_set_set</li>
+     *         <li> right_span_span</li>
+     *         <li> right_span_spanset</li>
+     *         </ul>
+     *
+     *
+     *
+     * @param other temporal object to compare with
+     * @return true if after, false otherwise
+     * @throws SQLException
+     */
 	public boolean is_after(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -267,7 +390,29 @@ public class TimestampSet extends Time {
 	}
 
 
-
+	/**
+	 * Returns whether "this" is strictly before "other". That is, "this" ends before "other" starts.
+	 *
+	 * <pre>
+	 *         Examples:
+	 *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_before(TimestampSet('{2012-01-03}'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_before(Period('(2012-01-02, 2012-01-03]'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_before(Period('[2012-01-02, 2012-01-03]'))
+	 *             >>> False
+	 * </pre>
+	 *         MEOS Functions:
+	 *         	   <ul>
+	 *             <li>overafter_timestamp_period</li>
+	 *             <li>left_span_span</li>
+	 *             <li>left_span_spanset</li>
+	 *             </ul>
+	 *
+	 * @param other: temporal object to compare with
+	 * @return true if before, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean is_before(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -283,6 +428,29 @@ public class TimestampSet extends Time {
 	}
 
 
+	/**
+	 * Returns whether "this" is after "other" allowing overlap. That is, "this" starts after "other" starts
+	 *         (or at the same time).
+	 * <pre>
+	 *         Examples:
+	 *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_over_or_after(Period('[2012-01-01, 2012-01-02)'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_over_or_after(Period('[2012-01-01, 2012-01-02]'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_over_or_after(Period('[2012-01-01, 2012-01-03]'))
+	 *             >>> False
+	 *</pre>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *         <li>overafter_period_timestamp</li>
+	 *         <li>overright_span_span</li>
+	 *         <li>overright_span_spanset</li>
+	 *         </ul>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if overlapping or after, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -298,8 +466,29 @@ public class TimestampSet extends Time {
 	}
 
 
-
-
+	/**
+	 * Returns whether "this" is before "other" allowing overlap. That is, "this" ends before "other" ends (or
+	 *         at the same time).
+	 * <pre>
+	 *         Examples:
+	 *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_over_or_before(Period('[2012-01-02, 2012-01-03]'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_over_or_before(Period('[2012-01-02, 2012-01-03]'))
+	 *             >>> True
+	 *             >>> TimestampSet('{2012-01-03, 2012-01-05}').is_over_or_before(Period('[2012-01-01, 2012-01-04]'))
+	 *             >>> False
+	 *</pre>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>overbefore_period_timestamp</li>
+	 *             <li>overleft_span_span</li>
+	 *             <li>overleft_span_spanset</li>
+	 *             </ul>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if before, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -314,7 +503,25 @@ public class TimestampSet extends Time {
 		return returnValue;
 	}
 
+	/** ------------------------- Distance Operations --------------------------- */
 
+
+	/** ------------------------- Set Operations -------------------------------- */
+
+	/**
+	 * Returns the temporal intersection of "this" and "other".
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *         <li>intersection_set_set</li>
+	 *         <li>intersection_spanset_span</li>
+	 *         <li>intersection_spanset_spanset</li>
+	 *         </ul>
+	 *
+	 * @param other temporal object to intersect with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public Time intersection(TemporalObject<?> other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
@@ -328,13 +535,41 @@ public class TimestampSet extends Time {
 		return returnValue;
 	}
 
-
+	/**
+	 * Returns the temporal intersection of "this" and "other".
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *         <li>intersection_set_set</li>
+	 *         <li>intersection_spanset_span</li>
+	 *         <li>intersection_spanset_spanset</li>
+	 *         </ul>
+	 *
+	 * @param other temporal object to intersect with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public Time mul(TemporalObject<?> other) throws SQLException {
 		return this.intersection(other);
 	}
 
 
-
+	/**
+	 * Returns the temporal difference of "this" and "other".
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>minus_timestampset_timestamp</li>
+	 *             <li>minus_set_set</li>
+	 *             <li>minus_spanset_span</li>
+	 *             <li>minus_spanset_spanset</li>
+	 *         </ul>
+	 *
+	 *
+	 * @param other temporal object to diff with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public Time minus(TemporalObject<?> other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
@@ -349,12 +584,41 @@ public class TimestampSet extends Time {
 	}
 
 
-
+	/**
+	 * Returns the temporal difference of "this" and "other".
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>minus_timestampset_timestamp</li>
+	 *             <li>minus_set_set</li>
+	 *             <li>minus_spanset_span</li>
+	 *             <li>minus_spanset_spanset</li>
+	 *         </ul>
+	 *
+	 *
+	 * @param other temporal object to diff with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public Time sub(TemporalObject<?> other) throws SQLException {
 		return this.minus(other);
 	}
 
-
+	/**
+	 * Returns the temporal union of "this" and "other".
+	 *
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>union_timestampset_timestamp</li>
+	 *             <li>union_set_set</li>
+	 *             <li>union_spanset_span</li>
+	 *             <li>union_spanset_spanset</li>
+	 *         </ul>
+	 * @param other temporal object to merge with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public Time union(TemporalObject<?> other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
@@ -368,28 +632,80 @@ public class TimestampSet extends Time {
 	}
 
 
-
-
-
-
+	/**
+	 * Returns the temporal union of "this" and "other".
+	 *
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>union_timestampset_timestamp</li>
+	 *             <li>union_set_set</li>
+	 *             <li>union_spanset_span</li>
+	 *             <li>union_spanset_spanset</li>
+	 *         </ul>
+	 * @param other temporal object to merge with
+	 * @return a Time instance. The actual class depends on "other".
+	 * @throws SQLException
+	 */
 	public TemporalObject<?> add(TemporalObject<?> other) throws SQLException {
 		return this.union(other);
 	}
 
 
+	/** ------------------------- Comparisons ----------------------------------- */
 
+	/**
+	 * Returns whether "this" and "other" are equal.
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_eq</li>
+	 *        </ul>
+	 * @param other temporal object to compare with
+	 * @return true if equal, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean equals(TemporalObject<?> other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_eq(this._inner,((TimestampSet) other).get_inner()) : false;
 		return result;
 	}
 
+	/**
+	 * Returns whether "this" and "other" are not equal.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_ne</li>
+	 *         </ul>
+	 * </p>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if not equal, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean notEquals(TemporalObject<?> other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_ne(this._inner,((TimestampSet) other).get_inner()) : true;
 		return result;
 	}
 
+
+	/**
+	 * Return whether "this" is less than "other".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_lt</li>
+	 *         </ul>
+	 * </p>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if less than, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean lessThan(TemporalObject<?> other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_lt(this._inner,((TimestampSet) other).get_inner());
@@ -399,6 +715,22 @@ public class TimestampSet extends Time {
 		}
 	}
 
+
+	/**
+	 * Return whether "this" is less than or equal to "other".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_le</li>
+	 *         </ul>
+	 *
+	 * </p>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if less than or equal, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_le(this._inner,((TimestampSet) other).get_inner());
@@ -408,6 +740,21 @@ public class TimestampSet extends Time {
 		}
 	}
 
+
+	/**
+	 * Return whether "this" is greater than "other".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_gt</li>
+	 *         </ul>
+	 * </p>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if greater than, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_gt(this._inner,((TimestampSet) other).get_inner());
@@ -418,6 +765,20 @@ public class TimestampSet extends Time {
 	}
 
 
+	/**
+	 * Return whether "this" is greater than or equal to "other".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>set_ge</li>
+	 *         </ul>
+	 * </p>
+	 *
+	 * @param other temporal object to compare with
+	 * @return true if greater than or equal, false otherwise
+	 * @throws SQLException
+	 */
 	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_ge(this._inner,((TimestampSet) other).get_inner());
