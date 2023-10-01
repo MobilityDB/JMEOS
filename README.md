@@ -12,10 +12,6 @@ MobilityDB is developed by the Computer & Decision Engineering Department of the
 More information about MobilityDB, including publications, presentations, etc., can be found in the MobilityDB [website](https://mobilitydb.com).
 
 
-# MobilityDB-JMEOS
-Java MEOS library for MobilityDB
-
-
 ## Dependencies:
 
 ### 1. MEOS library
