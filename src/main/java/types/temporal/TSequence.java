@@ -217,7 +217,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	/**
 	 * {@inheritDoc}
 	 */
-
+	/*
 	public boolean intersectsTimestamp(OffsetDateTime dateTime) {
 		try {
 			return period().contains(dateTime);
@@ -225,11 +225,13 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 			return false;
 		}
 	}
+
+	 */
 	
 	/**
 	 * {@inheritDoc}
 	 */
-
+	/*
 	public boolean intersectsPeriod(Period period) {
 		try {
 			return period().overlap(period);
@@ -237,6 +239,8 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 			return false;
 		}
 	}
+
+	 */
 	
 
 	public boolean equals(Object obj) {

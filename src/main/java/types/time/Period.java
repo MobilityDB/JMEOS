@@ -77,6 +77,7 @@ public class Period extends Time {
 		super();
 		this._inner = _inner;
 		String str = functions.period_out(this._inner);
+		System.out.println(str);
 		setValue(str);
 	}
 	
@@ -1014,7 +1015,8 @@ public class Period extends Time {
 	@Override
 	public void setValue(final String value) throws SQLException {
 		String[] values = value.split(",");
-		
+
+
 		if (values.length != 2) {
 			throw new SQLException("Could not parse period value.");
 		}
@@ -1034,7 +1036,7 @@ public class Period extends Time {
 		} else {
 			throw new SQLException("Upper bound flag must be either ']' or ')'.");
 		}
-		
+		System.out.println(values[0].substring(1).trim());
 		this.lower = DateTimeFormatHelper.getDateTimeFormat(values[0].substring(1).trim());
 		this.upper = DateTimeFormatHelper.getDateTimeFormat(values[1].substring(0, values[1].length() - 1).trim());
 		validate();

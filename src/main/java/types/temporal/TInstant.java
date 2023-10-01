@@ -253,6 +253,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
+	/*
 	public boolean intersectsPeriod(Period period) {
 		if (period == null) {
 			return false;
@@ -260,6 +261,8 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		
 		return period.contains(temporalValue.getTime());
 	}
+
+	 */
 	
 	/**
 	 * Gets the timestamp

@@ -1,11 +1,5 @@
 package utils;
 
-//import org.postgresql.geometric.PGgeometry;
-//import org.locationtech.jts.geom.Geometry;
-//import org.locationtech.jts.geom.Point;
-//import org.locationtech.jts.io.ParseException;
-//import org.locationtech.jts.io.WKTReader;
-
 import com.google.common.collect.BoundType;
 import functions.functions;
 import jnr.ffi.Pointer;
@@ -16,6 +10,7 @@ import types.temporal.TSequenceSet;
 import types.temporal.Temporal;
 import types.time.Period;
 
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -69,16 +64,16 @@ public class ConversionUtils {
 		return functions.pg_interval_out(p);
 	}
 
-	public static Pointer intrange_to_intspan(Range<Integer> intrange){
+	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {
 		boolean lower_inc = intrange.lowerBoundType() == BoundType.CLOSED ? true : false;
 		boolean upper_inc = intrange.upperBoundType() == BoundType.CLOSED ? true : false;
 		return functions.intspan_make(intrange.lowerEndpoint(),intrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
-	public static Range intspan_to_intrange(Period span){
-		BoundType lower_inc = span.isLowerInclusive() ? BoundType.CLOSED : BoundType.OPEN;
-		BoundType upper_inc = span.isUpperInclusive() ? BoundType.CLOSED : BoundType.OPEN;
-		return Range.range(functions.intspan_lower(span.get_inner()), lower_inc, functions.intspan_upper(span.get_inner()), upper_inc);
+	public static Range intspan_to_intrange(Pointer span){
+		BoundType lower_inc = functions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		BoundType upper_inc = functions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		return Range.range(functions.intspan_lower(span), lower_inc, functions.intspan_upper(span), upper_inc);
 	}
 
 	public static Pointer floatrange_to_floatspan(Range<Float> floatrange){
@@ -87,10 +82,10 @@ public class ConversionUtils {
 		return functions.floatspan_make(floatrange.lowerEndpoint(),floatrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
-	public static Range floatspan_to_floatrange(Period span){
-		BoundType lower_inc = span.isLowerInclusive() ? BoundType.CLOSED : BoundType.OPEN;
-		BoundType upper_inc = span.isUpperInclusive() ? BoundType.CLOSED : BoundType.OPEN;
-		return Range.range(functions.floatspan_lower(span.get_inner()), lower_inc, functions.floatspan_upper(span.get_inner()), upper_inc);
+	public static Range floatspan_to_floatrange(Pointer span){
+		BoundType lower_inc = functions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		BoundType upper_inc = functions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		return Range.range(functions.floatspan_lower(span), lower_inc, functions.floatspan_upper(span), upper_inc);
 	}
 
 

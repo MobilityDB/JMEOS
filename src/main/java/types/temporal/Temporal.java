@@ -198,15 +198,21 @@ public abstract class Temporal<V extends Serializable> implements Serializable {
      * @param dateTime - the timestamp
      * @return true if the timestamp intersects, otherwise false
      */
+    /*
     public abstract boolean intersectsTimestamp(OffsetDateTime dateTime);
 
+
+     */
     /**
      * If the temporal value intersects the Period sent
      * @param period - the period
      * @return true if the period intersects, otherwise false
      */
+    /*
     public abstract boolean intersectsPeriod(Period period);
 
+
+     */
     /**
      * Gets the temporal type
      * @return a TemporalType

@@ -105,7 +105,7 @@ public abstract class TInstantSet<V extends Serializable> extends TemporalInstan
 	/**
 	 * {@inheritDoc}
 	 */
-
+	/*
 	public boolean intersectsPeriod(Period period) {
 		for (TInstant<V> instant : instantList) {
 			if (instant.intersectsPeriod(period)) {
@@ -114,7 +114,9 @@ public abstract class TInstantSet<V extends Serializable> extends TemporalInstan
 		}
 		return false;
 	}
-	
+
+
+	 */
 	/**
 	 * {@inheritDoc}
 	 */

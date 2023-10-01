@@ -20,7 +20,7 @@ public class ExamplePeriod {
         // Contains Period test
         Period test = new Period("[2021-04-08 05:04:45+06,2021-09-10 10:00:00+06]");
         //System.out.println(test.getValue());
-        System.out.println(test.to_string());
+        System.out.println(test.toString());
         //Period test2 = new Period("[2021-04-09 05:04:45+01,2021-04-20 10:00:00+01]");
         //PeriodSet pset = new PeriodSet("{(2020-01-01 00:00:00+00, 2020-01-31 00:00:00+00), (2021-01-01 00:00:00+00, 2021-10-31 00:00:00+00)}");
 

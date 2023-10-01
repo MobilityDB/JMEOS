@@ -420,7 +420,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 	/**
 	 * {@inheritDoc}
 	 */
-
+	/*
 	public boolean intersectsTimestamp(OffsetDateTime dateTime) {
 		for (TSequence<V> sequence : sequenceList) {
 			if (sequence.intersectsTimestamp(dateTime)) {
@@ -429,11 +429,13 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 		}
 		return false;
 	}
+
+	 */
 	
 	/**
 	 * {@inheritDoc}
 	 */
-
+	/*
 	public boolean intersectsPeriod(Period period) {
 		for (TSequence<V> sequence : sequenceList) {
 			if (sequence.intersectsPeriod(period)) {
@@ -442,6 +444,8 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 		}
 		return false;
 	}
+
+	 */
 	
 
 	public boolean equals(Object obj) {
