@@ -5,10 +5,10 @@ import types.TemporalObject;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
-import types.time.Period;
-import types.time.PeriodSet;
-import types.time.Time;
-import types.time.TimestampSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
+import types.collections.time.Time;
+import types.collections.time.TimestampSet;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;

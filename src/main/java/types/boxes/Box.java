@@ -2,7 +2,7 @@ package types.boxes;
 
 import jnr.ffi.Pointer;
 import types.TemporalObject;
-import types.time.Period;
+import types.collections.time.Period;
 
 import java.sql.SQLException;
 

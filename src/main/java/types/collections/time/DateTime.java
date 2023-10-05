@@ -1,4 +1,4 @@
-package types.time;
+package types.collections.time;
 
 import types.TemporalObject;
 

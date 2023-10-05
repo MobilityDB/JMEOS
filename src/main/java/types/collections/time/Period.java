@@ -1,4 +1,4 @@
-package types.time;
+package types.collections.time;
 
 import functions.functions;
 import jnr.ffi.Pointer;

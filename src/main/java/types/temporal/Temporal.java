@@ -1,7 +1,7 @@
 package types.temporal;
 
-import types.time.Period;
-import types.time.PeriodSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
 import java.sql.SQLException;
