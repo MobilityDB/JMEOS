@@ -13,9 +13,9 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
-import types.time.Period;
-import types.time.PeriodSet;
-import types.time.TimestampSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
+import types.collections.time.TimestampSet;
 
 
 /**
