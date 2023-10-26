@@ -1,11 +1,15 @@
 package types.collections.geo;
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.collections.base.Set;
 
 
-public abstract class GeoSet {
+public abstract class GeoSet extends Set {
     protected Pointer _inner;
-    protected GeoSet(){}
+    protected GeoSet(Pointer inner){
+        super();
+        this._inner = inner;
+    }
 
     /* ------------------------- Constructors ---------------------------------- */
 
@@ -83,6 +87,9 @@ public abstract class GeoSet {
 
     /* ------------------------- Topological Operations -------------------------------- */
 
+    public boolean contains(GeoSet other) throws Exception {
+        return super.contains(other);
+    }
 
     /* ------------------------- Set Operations -------------------------------- */
 

@@ -7,11 +7,11 @@ import java.util.List;
 
 
 public abstract class Set<T extends Object> extends Collection implements Base {
-    Pointer _inner = null;
+    private Pointer _inner = null;
 
 
     /** ------------------------- Constructors ---------------------------------- */
-
+    public Set(){};
     public Set(Pointer inner){
         this._inner = inner;
     }
@@ -35,9 +35,9 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      * <p>
      *         MEOS Functions:
      *             <li>set_span</li>
-     * @return A new :class:`Span` instance
+     * @return A new {@link Span} instance
      */
-    public abstract SpanSet to_span();
+    public abstract Span to_span();
 
     /** ------------------------- Accessors ------------------------------------- */
 
@@ -315,7 +315,7 @@ public abstract class Set<T extends Object> extends Collection implements Base {
         if (other instanceof Set<?>){
             return (float) functions.distance_set_set(this._inner, ((Set<?>) other)._inner);
         } else if (other instanceof Span<?>) {
-            return (float) functions.distance_span_span(functions.set_span(this._inner), ((Span<?>) other)._inner);
+            return (float) functions.distance_span_span(functions.set_span(this._inner), ((Span<?>) other).get_inner());
         } else if (other instanceof SpanSet<?>) {
             return (float) functions.distance_spanset_span(this._inner,((SpanSet<?>) other)._inner);
         }

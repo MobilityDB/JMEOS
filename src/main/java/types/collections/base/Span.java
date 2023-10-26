@@ -4,7 +4,7 @@ import jnr.ffi.Pointer;
 import functions.functions;
 
 public abstract class Span<T extends Object> extends Collection implements Base{
-    Pointer _inner = null;
+    private Pointer _inner = null;
 
 
     /** ------------------------- Constructors ---------------------------------- */
@@ -27,6 +27,12 @@ public abstract class Span<T extends Object> extends Collection implements Base{
 
 
     /** ------------------------- Accessors ------------------------------------- */
+
+
+    public Pointer get_inner(){
+        return _inner;
+    }
+
 
     /**
      * Returns the lower bound of a period
