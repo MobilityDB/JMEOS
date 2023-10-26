@@ -1,4 +1,7 @@
 package types.collections.base;
 
-public abstract class SpanSet<T extends Object> extends Collection {
+import jnr.ffi.Pointer;
+
+public abstract class SpanSet<T extends Object> extends Collection implements Base {
+    Pointer _inner = null;
 }
