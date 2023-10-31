@@ -115,7 +115,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.adjacent_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.adjacent_spanset_span(((SpanSet<?>) other)._inner,this._inner);
+            return functions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -141,7 +141,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.contained_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.contained_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.contained_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -170,7 +170,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.contains_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.contains_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.contains_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -196,7 +196,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.overlaps_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overlaps_spanset_span(((SpanSet<?>) other)._inner,this._inner);
+            return functions.overlaps_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -208,7 +208,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.span_eq(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.span_eq(this._inner,functions.spanset_span(((SpanSet<?>) other)._inner));
+            return functions.span_eq(this._inner,functions.spanset_span(((SpanSet<?>) other).get_inner()));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -236,7 +236,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.left_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.left_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.left_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -262,7 +262,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.overleft_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overleft_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.overleft_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -288,7 +288,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.right_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.right_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.right_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -319,7 +319,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return functions.overright_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overright_span_spanset(this._inner, ((SpanSet<?>) other)._inner);
+            return functions.overright_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -347,7 +347,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return (float) functions.distance_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return (float) functions.distance_spanset_span(((SpanSet<?>) other)._inner,this._inner);
+            return (float) functions.distance_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -377,7 +377,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_spanset_span(((SpanSet<?>) other)._inner,this._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -402,7 +402,7 @@ public abstract class Span<T extends Object> extends Collection implements Base{
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(((SpanSet<?>) other)._inner,this._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");

@@ -317,7 +317,7 @@ public abstract class Set<T extends Object> extends Collection implements Base {
         } else if (other instanceof Span<?>) {
             return (float) functions.distance_span_span(functions.set_span(this._inner), ((Span<?>) other).get_inner());
         } else if (other instanceof SpanSet<?>) {
-            return (float) functions.distance_spanset_span(this._inner,((SpanSet<?>) other)._inner);
+            return (float) functions.distance_spanset_span(this._inner,((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
