@@ -4,9 +4,11 @@ import jnr.ffi.Pointer;
 import functions.functions;
 import types.TemporalObject;
 
-public abstract class SpanSet<T extends Object> extends Collection implements Base {
+public class SpanSet<T extends Object> extends Collection implements Base {
     private Pointer _inner = null;
 
+
+    public SpanSet(){}
     public SpanSet(Pointer inner){
         this._inner = inner;
     }
@@ -25,7 +27,9 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      *             <li>spanset_span</li>
      * @return A new :class:`Span` instance
      */
-    public abstract Span to_span();
+    public Span to_span(){
+        return new Span(functions.spanset_span(this._inner));
+    }
 
 
     /** ------------------------- Accessors ------------------------------------- */
@@ -56,7 +60,9 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      *
      * @return A {@link Span} instance
      */
-    public abstract Span start_span();
+    public Span start_span(){
+        return new Span(functions.spanset_start_span(this._inner));
+    }
 
     /**
      * Returns the last span in "this".
@@ -67,7 +73,9 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      *
      * @return A {@link Span} instance
      */
-    public abstract Span end_span();
+    public Span end_span(){
+        return new Span(functions.spanset_end_span(this._inner));
+    }
 
 
     /**
@@ -79,7 +87,9 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      * @param n number of Span
      * @return A {@link Span} instance
      */
-    public abstract Span span_n(int n);
+    public Span span_n(int n){
+        return new Span(functions.spanset_span_n(this._inner,n));
+    }
 
 
     /**
@@ -402,7 +412,7 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      */
     public Base minus(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_spanset_span(this._inner, ((Span<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_spanset_span(this._inner, ((Span<?>) other).get_inner()));
         } else if (other instanceof SpanSet<?>) {
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_spanset_spanset(this._inner,((SpanSet<?>) other).get_inner()));
         }
@@ -430,7 +440,7 @@ public abstract class SpanSet<T extends Object> extends Collection implements Ba
      */
     public Base union(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(this._inner, ((Span<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(this._inner, ((Span<?>) other).get_inner()));
         } else if (other instanceof SpanSet<?>) {
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_spanset(((SpanSet<?>) other).get_inner(),this._inner));
         }

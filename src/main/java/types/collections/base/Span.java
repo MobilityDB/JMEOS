@@ -3,12 +3,12 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 
-public abstract class Span<T extends Object> extends Collection implements Base{
+public class Span<T extends Object> extends Collection implements Base{
     private Pointer _inner = null;
 
 
     /** ------------------------- Constructors ---------------------------------- */
-
+    public Span(){}
     public Span(Pointer inner){
         this._inner = inner;
     }
@@ -22,7 +22,9 @@ public abstract class Span<T extends Object> extends Collection implements Base{
      *             <li>span_to_spanset</li>
      * @return A new {@link SpanSet} instance
      */
-    public abstract SpanSet to_spanset();
+    public SpanSet to_spanset(){
+        return new SpanSet(functions.span_to_spanset(this._inner));
+    }
 
 
 
@@ -38,14 +40,18 @@ public abstract class Span<T extends Object> extends Collection implements Base{
      * Returns the lower bound of a period
      * @return T type
      */
-    public abstract T lower();
+    public T lower(){
+        return null;
+    }
 
 
     /**
      * Returns the upper bound of a period
      * @return T type
      */
-    public abstract T upper();
+    public T upper(){
+        return null;
+    }
 
     /**
      * Returns whether the lower bound of the period is inclusive or not

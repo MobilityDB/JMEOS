@@ -6,7 +6,7 @@ import functions.functions;
 import java.util.List;
 
 
-public abstract class Set<T extends Object> extends Collection implements Base {
+public class Set<T extends Object> extends Collection implements Base {
     private Pointer _inner = null;
 
 
@@ -28,7 +28,9 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      *             <li>set_to_spanset</li>
      * @return A new {@link SpanSet} instance
      */
-    public abstract SpanSet to_spanset();
+    public SpanSet to_spanset(){
+        return new SpanSet(functions.set_to_spanset(this._inner));
+    }
 
     /**
      * Returns a span that encompasses "this".
@@ -37,7 +39,9 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      *             <li>set_span</li>
      * @return A new {@link Span} instance
      */
-    public abstract Span to_span();
+    public Span to_span(){
+        return new Span(functions.set_span(this._inner));
+    }
 
     /** ------------------------- Accessors ------------------------------------- */
 
@@ -72,7 +76,9 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      *
      * @return A {@link T} instance
      */
-    public abstract T start_element();
+    public T start_element(){
+        return null;
+    }
 
 
     /**
@@ -80,7 +86,9 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      *
      * @return A {@link T} instance
      */
-    public abstract T end_element();
+    public T end_element(){
+        return null;
+    }
 
 
     /**
@@ -88,14 +96,23 @@ public abstract class Set<T extends Object> extends Collection implements Base {
      * @param n the n-th element
      * @return A {@link T} instance
      */
-    public abstract T element_n(int n);
+    public T element_n(int n) throws Exception {
+        if (n < 0 || n >= this.num_elements()){
+            throw new Exception("Index: " + Integer.toString(n)+ "out of bounds");
+        }
+        else {
+            return element().get(n);
+        }
+    }
 
 
     /**
      * Returns the list of distinct elements in "this".
      * @return A {@link List<T>} instance
      */
-    public abstract List<T> element();
+    public List<T> element(){
+        return null;
+    }
 
     /**
      * Return the hash representation of "this".
