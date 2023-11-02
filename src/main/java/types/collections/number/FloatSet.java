@@ -130,7 +130,7 @@ public class FloatSet extends Set<Float> implements Number{
      *             <li>floatset_value_n</li>
      *
      * @param n The 0-based index of the element to return.
-     * @return A :class:`float` instance
+     * @return A {@link Float} instance
      * @throws Exception
      */
     /*
@@ -231,7 +231,7 @@ public class FloatSet extends Set<Float> implements Number{
             return super.contains((Base)other);
         }
     }
-    
+
      */
 
 
