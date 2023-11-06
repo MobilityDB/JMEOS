@@ -42,25 +42,14 @@ public class TextSet extends Set<String> {
     }
 
 
-    /** ------------------------- Conversions ----------------------------------- */
-    @Override
-    public Span to_spanset(){
-        Span sp = new Span(functions.set_to_spanset(_inner));
-        return sp;
-    }
-
-    @Override
-    public Set to_span() {
-        return null;
-    }
-
-
     /** ------------------------- Accessors ------------------------------------- */
 
-    @Override
+    /*
     public String start_element() {
         return functions.textset_start_value(this._inner);
     }
+
+     */
 
     @Override
     public String end_element() {

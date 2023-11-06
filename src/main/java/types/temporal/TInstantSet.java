@@ -2,8 +2,8 @@ package types.temporal;
 
 import types.temporal.delegates.CompareValueFunction;
 import types.temporal.delegates.GetTemporalInstantFunction;
-import types.time.Period;
-import types.time.PeriodSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
 import java.sql.SQLException;

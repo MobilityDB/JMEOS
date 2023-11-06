@@ -3,8 +3,8 @@ package types.temporal;
 import jnr.ffi.Pointer;
 import types.temporal.delegates.CompareValueFunction;
 import types.temporal.delegates.GetTemporalSequenceFunction;
-import types.time.Period;
-import types.time.PeriodSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
 import java.sql.SQLException;

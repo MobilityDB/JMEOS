@@ -3,7 +3,7 @@ package utils;
 import com.google.common.collect.Range;
 import jnr.ffi.Pointer;
 import java.sql.SQLException;
-import types.time.Period;
+import types.collections.time.Period;
 
 import static utils.ConversionUtils.intrange_to_intspan;
 import static utils.ConversionUtils.intspan_to_intrange;

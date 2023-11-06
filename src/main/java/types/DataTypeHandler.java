@@ -11,9 +11,9 @@ import types.boxes.STBox;
 import types.boxes.TBox;
 import types.core.DataType;
 import types.core.TypeName;
-import types.time.Period;
-import types.time.PeriodSet;
-import types.time.TimestampSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
+import types.collections.time.TimestampSet;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

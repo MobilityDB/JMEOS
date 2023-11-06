@@ -1,8 +1,8 @@
 package types.temporal;
 
 import types.temporal.delegates.GetSingleTemporalValueFunction;
-import types.time.Period;
-import types.time.PeriodSet;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
 import functions.functions;
 
 import java.io.Serializable;

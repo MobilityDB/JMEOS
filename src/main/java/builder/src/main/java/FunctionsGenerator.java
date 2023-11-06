@@ -124,6 +124,7 @@ public class FunctionsGenerator {
 			line = line.replaceAll("static inline ", "");
 			
 			/* Changing types with * */
+			line = line.replaceAll("char\\s\\*\\*", "**char ");
 			line = line.replaceAll("char\\s\\*", "*char ");
 			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
@@ -149,6 +150,7 @@ public class FunctionsGenerator {
 		HashMap<String, String> types = new HashMap<>();
 		types.put("\\*", "Pointer");
 		types.put("\\*char", "String");
+		types.put("\\*\\*char", "Pointer");
 		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
 		types.put("bool", "boolean");
 		types.put("float", "float");
@@ -176,6 +178,7 @@ public class FunctionsGenerator {
 		types.put("uintptr_t", "long");
 		types.put("size_t", "long");
 		types.put("interpType", "int"); // enum in C
+		//types.put("\\char **","Pointer");
 		
 		return types;
 	}
@@ -295,7 +298,10 @@ public class FunctionsGenerator {
 			}
 		}
 		functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
-		
+		System.out.println("MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
+
+		System.out.println(getFunctionTypes(signature));
+
 		/* Manage the return process : if there is something to return */
 		if (!getFunctionTypes(signature).get(0).equals("void")) {
 			var classReturnType = BuilderUtils.extractFunctionTypes(signature).get(0);
@@ -363,6 +369,8 @@ public class FunctionsGenerator {
 				
 				/* Generate the returning process */
 				var typesNamesList = BuilderUtils.extractPairKeys(conversionProcess);
+				System.out.println(line);
+				System.out.println(typesNamesList);
 				var returnProcessContent = this.generateReturnProcess(line, typesNamesList);
 				
 				/* Add all the different parts in the function body builder */

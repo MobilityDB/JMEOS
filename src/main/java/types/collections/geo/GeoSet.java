@@ -6,6 +6,9 @@ import types.collections.base.Set;
 
 public abstract class GeoSet extends Set {
     protected Pointer _inner;
+
+    protected GeoSet(){}
+
     protected GeoSet(Pointer inner){
         super();
         this._inner = inner;
