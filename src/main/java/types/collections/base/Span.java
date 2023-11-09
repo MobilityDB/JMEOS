@@ -390,6 +390,11 @@ public class Span<T extends Object> extends Collection implements Base{
         }
     }
 
+
+
+
+
+
     /**
      * Returns the temporal union of "this" and "other".
      *

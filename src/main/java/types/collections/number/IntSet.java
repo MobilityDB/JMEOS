@@ -131,12 +131,13 @@ public class IntSet extends Set<Integer> implements Number{
      * @throws Exception
      */
     /*
-    public Float element_n(int n) throws Exception {
+    public Integer element_n(int n) throws Exception {
         super.element_n(n);
         return functions.intset_value_n(this._inner,n);
     }
-
      */
+
+
 
     /*
     public List<Float> elements(){
@@ -148,23 +149,72 @@ public class IntSet extends Set<Integer> implements Number{
 
     /** ------------------------- Transformations ------------------------------------ */
 
+    /**
+     * Returns a new "IntSet" instance with all elements shifted by "delta".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intset_shift_scale</li>
+     *
+     * @param delta The value to shift by.
+     * @return A new {@link IntSet} instance
+     */
+    public IntSet shift(int delta){
+        return this.shift_scale(delta,0);
+    }
+
+    /**
+     * Returns a new "IntSet" instance with all elements scaled to so that the encompassing
+     *         span has width "width".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intset_shift_scale</li>
+     *
+     * @param width The new width.
+     * @return A new {@link IntSet} instance
+     */
+    public IntSet scale(int width){
+        return this.shift_scale(0,width);
+    }
+
+
+    /**
+     * Returns a new "IntSet" instance with all elements shifted by
+     *         "delta" and scaled to so that the encompassing span has width
+     *         "width".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intset_shift_scale</li>
+     *
+     * @param delta The value to shift by.
+     * @param width The new width.
+     * @return A new {@link IntSet} instance
+     */
+    public IntSet shift_scale(int delta, int width){
+        return new IntSet(functions.intset_shift_scale(this._inner, delta,width,delta != 0, width != 0));
+    }
 
 
 
     /** ------------------------- Topological Operations -------------------------------- */
 
 
-    /*
+
     public boolean contains(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.contains_intset_int(this._inner, (float) other);
+            return functions.contains_intset_int(this._inner, (int) other);
         }
         else {
             return super.contains((Base) other);
         }
     }
 
-     */
+
 
 
 
@@ -174,7 +224,14 @@ public class IntSet extends Set<Integer> implements Number{
 
     /** ------------------------- Distance Operations --------------------------- */
 
-
+    public float distance(Object other) throws Exception {
+        if (other instanceof Integer){
+            return (float) functions.distance_intset_int(this._inner, (int) other);
+        }
+        else {
+            return super.distance((Base) other);
+        }
+    }
 
     /** ------------------------- Set Operations -------------------------------- */
 

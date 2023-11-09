@@ -347,6 +347,8 @@ public class FunctionsGenerator {
 							
 				import jnr.ffi.Pointer;
 				import utils.JarLibraryLoader;
+				import utils.MeosCatalog.MeosEnums.meosType;
+				import utils.MeosCatalog.MeosEnums.meosOper;
 				
 				import java.time.*;
 				""";

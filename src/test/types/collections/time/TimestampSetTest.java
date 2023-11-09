@@ -1,4 +1,4 @@
-package types.time;
+package types.collections.time;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

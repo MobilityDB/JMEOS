@@ -80,11 +80,11 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A new {@link FloatSpanSet} instance
      */
-    /*
-    public IntSpanSet to_floatspanset(){
+
+    public FloatSpanSet to_floatspanset(){
         return new FloatSpanSet(functions.intspanset_floatspanset(this._inner));
     }
-     */
+
 
 
 
@@ -108,7 +108,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      * @return A `float` representing the duration of the spanset
      */
     public float width(boolean ignore_gaps){
-        return (float) functions.spanset_width(this._inner);
+        return (float) functions.spanset_width(this._inner,ignore_gaps);
     }
 
     /**
@@ -166,12 +166,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      * @param delta The value to shift by
      * @return A new {@link IntSpanSet} instance
      */
-    /*
-    public IntSpanSet shif(int delta){
+
+    public IntSpanSet shift(int delta){
         return this.shift_scale(delta,0);
     }
 
-     */
+
 
     /**
      * Return a new "IntSpanSet" with the lower and upper bounds scaled so
@@ -184,12 +184,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      * @param width The new width
      * @return a new {@link IntSpanSet} instance
      */
-    /*
+
     public IntSpanSet scale(int width){
         return this.shift_scale(0,width);
     }
 
-     */
+
 
     /**
      * Return a new "IntSpanSet" with the lower and upper bounds shifted by
@@ -203,12 +203,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      * @param width v
      * @return a new {@link IntSpanSet} instance
      */
-    /*
+
     public IntSpanSet shift_scale(int delta, int width){
-        return new IntSpanSet(functions.floatspanset_shift_scale(this._inner,delta,width));
+        return new IntSpanSet(functions.floatspanset_shift_scale(this._inner,delta,width,delta != 0,width!=0));
     }
 
-     */
+
 
 
 
@@ -234,7 +234,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean is_adjacent(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.adjacent_intspanset_int(this._inner, (int) other);
+            answer = functions.adjacent_intspanset_int(this._inner, (int) other);
         }
         else{
             answer = super.is_adjacent((Base)other);
@@ -259,7 +259,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean contains(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.contains_intspanset_int(this._inner, (int) other);
+            answer = functions.contains_intspanset_int(this._inner, (int) other);
         }
         else{
             answer = super.contains((Base)other);
@@ -312,7 +312,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean is_left(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.left_intspanset_int(this._inner,(int) other);
+            answer = functions.left_intspanset_int(this._inner,(int) other);
         }
         else{
             answer = super.is_left((Base)other);
@@ -339,7 +339,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean is_over_or_left(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.overleft_intspanset_int(this._inner,(int) other);
+            answer = functions.overleft_intspanset_int(this._inner,(int) other);
         }
         else{
             answer = super.is_over_or_left((Base)other);
@@ -366,7 +366,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean is_right(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.right_intspanset_int(this._inner,(int) other);
+            answer = functions.right_intspanset_int(this._inner,(int) other);
         }
         else{
             answer = super.is_right((Base)other);
@@ -394,7 +394,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public boolean is_over_or_right(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.overright_intspanset_int(this._inner,(int) other);
+            answer = functions.overright_intspanset_int(this._inner,(int) other);
         }
         else{
             answer = super.is_over_or_right((Base)other);
@@ -422,7 +422,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public float distance(Object other) throws Exception {
         float answer = 0;
         if (other instanceof Integer){
-            //answer = functions.distance_intspanset_int(this._inner,(int) other);
+            answer = (float) functions.distance_intspanset_int(this._inner,(int) other);
         }
         else{
             answer = super.distance((Base)other);
@@ -459,10 +459,11 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     public IntSpanSet minus(Object other) throws Exception {
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            //result = functions.minus_intspanset_int(this._inner, (float) other);
+            result = functions.minus_intspanset_int(this._inner, (int) other);
         }
         else{
-            //result = super.minus((Base) other)
+            IntSpanSet tmp = (IntSpanSet) super.minus((Base) other);
+            result = tmp.get_inner();
         }
         return new IntSpanSet(result);
     }
@@ -481,20 +482,21 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      * @param other object to merge with
      * @return A {@link IntSpanSet} instance.
      */
-    /*
-    public IntSpanSet union(Object other){
-        IntSpanSet result = null;
+
+    public IntSpanSet union(Object other) throws Exception {
+        Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            //result = functions.union_intspanset_int(this._inner, (float) other);
+            result = functions.union_intspanset_int(this._inner, (int) other);
         }
         else{
-            //result = super.minus((Base) other)
+            IntSpanSet tmp = (IntSpanSet) super.minus((Base) other);
+            result = tmp.get_inner();
         }
         return new IntSpanSet(result);
 
     }
 
-     */
+
 
 
 

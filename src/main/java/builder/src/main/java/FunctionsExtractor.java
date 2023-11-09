@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @since 27/06/2023
  */
 public class FunctionsExtractor {
-	private static final String FUNCTION_PATTERN = "extern (static inline )?[a-zA-Z0-9_]+ [a-zA-Z0-9_*]+\\([a-zA-Z0-9_* ,]+\\);"; // RegEx model for recognizing a function in the meos.h file
+	private static final String FUNCTION_PATTERN = "extern (static |inline |const )?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);"; // RegEx model for recognizing a function in the meos.h file
 	private static final String TYPES_PATTERN = "typedef\\s(?!struct|enum)\\w+\\s\\w+;"; // Type recognition RegEx pattern in meos.h file
 	private final Path inputFilePath;
 	private final Path outputFunctionsFilePath;
@@ -105,7 +105,6 @@ public class FunctionsExtractor {
 				}
 			}
 		}
-		
 		return filteredTypes;
 	}
 }

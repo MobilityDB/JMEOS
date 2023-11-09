@@ -106,6 +106,7 @@ public class BuilderUtils {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = pattern.matcher(line);
+
 				if (matcher.find()) {
 					lines.add(matcher.group());
 				}

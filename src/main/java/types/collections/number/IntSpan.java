@@ -78,11 +78,11 @@ public class IntSpan extends Span<Integer> implements Number{
      *
      * @return A new :class:`FloatSpan` instance
      */
-    /*
+
     public FloatSpan tofloatspan(){
         return new FloatSpan(functions.intspan_floatspan(this._inner));
     }
-    */
+
 
 
 
@@ -366,9 +366,6 @@ public class IntSpan extends Span<Integer> implements Number{
         else if (other instanceof IntSpanSet) {
             result = functions.minus_spanset_span(((IntSpanSet) other).get_inner(), this._inner);
         }
-        else {
-            //result = super.minus(other);
-        }
         return new IntSpanSet(result);
     }
 
@@ -386,7 +383,7 @@ public class IntSpan extends Span<Integer> implements Number{
      * @param other object to merge with
      * @return A {@link IntSpanSet} instance.
      */
-    public IntSpanSet union(Object other){
+    public IntSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
             //result = functions.union_intspan_int(this._inner,other);
@@ -398,17 +395,11 @@ public class IntSpan extends Span<Integer> implements Number{
             result = functions.union_spanset_span(((IntSpanSet) other).get_inner(), this._inner);
         }
         else {
-            //result = super.union(other);
+            IntSpanSet tmp = (IntSpanSet) super.union((Base)other);
+            result = tmp.get_inner();
         }
         return new IntSpanSet(result);
     }
-
-
-
-
-
-
-
 
 
 }
