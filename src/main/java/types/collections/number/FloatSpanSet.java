@@ -84,11 +84,10 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A new {@link IntSpanSet} instance
      */
-    /*
     public IntSpanSet to_intspanset(){
         return new IntSpanSet(functions.floatspanset_intspanset(this._inner));
     }
-     */
+
 
 
     /** ------------------------- Accessors ------------------------------------- */
@@ -110,7 +109,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @return A `float` representing the duration of the spanset
      */
     public float width(boolean ignore_gaps){
-        return (float) functions.spanset_width(this._inner);
+        return (float) functions.spanset_width(this._inner, ignore_gaps);
     }
 
     /**
@@ -166,12 +165,11 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @param delta The value to shift by
      * @return A new {@link FloatSpanSet} instance
      */
-    /*
     public FloatSpanSet shif(int delta){
         return this.shift_scale(delta,0);
     }
 
-     */
+
 
     /**
      * Return a new "FloatSpanSet" with the lower and upper bounds scaled so
@@ -184,12 +182,11 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @param width The new width
      * @return a new {@link FloatSpanSet} instance
      */
-    /*
+
     public FloatSpanSet scale(int width){
         return this.shift_scale(0,width);
     }
 
-     */
 
     /**
      * Return a new "FloatSpanSet" with the lower and upper bounds shifted by
@@ -203,12 +200,10 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @param width v
      * @return a new {@link FloatSpanSet} instance
      */
-    /*
     public FloatSpanSet shift_scale(int delta, int width){
-        return new FloatSpanSet(functions.floatspanset_shift_scale(this._inner,delta,width));
+        return new FloatSpanSet(functions.floatspanset_shift_scale(this._inner,delta,width,delta != 0, width != 0));
     }
 
-     */
 
 
 
@@ -233,7 +228,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public boolean is_adjacent(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.adjacent_floatspanset_float(this._inner, (float) other);
+            answer = functions.adjacent_floatspanset_float(this._inner, (float) other);
         }
         else{
             answer = super.is_adjacent((Base)other);
@@ -308,7 +303,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public boolean is_left(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.left_floatspanset_float(this._inner,(float) other);
+            answer = functions.left_floatspanset_float(this._inner,(float) other);
         }
         else{
             answer = super.is_left((Base)other);
@@ -335,7 +330,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public boolean is_over_or_left(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.overleft_floatspanset_float(this._inner,(float) other);
+            answer = functions.overleft_floatspanset_float(this._inner,(float) other);
         }
         else{
             answer = super.is_over_or_left((Base)other);
@@ -362,7 +357,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public boolean is_right(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.right_floatspanset_float(this._inner,(float) other);
+            answer = functions.right_floatspanset_float(this._inner,(float) other);
         }
         else{
             answer = super.is_right((Base)other);
@@ -390,7 +385,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public boolean is_over_or_right(Object other) throws Exception {
         boolean answer = false;
         if (other instanceof Integer){
-            //answer = functions.overright_floatspanset_float(this._inner,(float) other);
+            answer = functions.overright_floatspanset_float(this._inner,(float) other);
         }
         else{
             answer = super.is_over_or_right((Base)other);
@@ -418,7 +413,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public float distance(Object other) throws Exception {
         float answer = 0;
         if (other instanceof Integer){
-            //answer = functions.distance_floatspanset_float(this._inner,(float) other);
+            answer = (float) functions.distance_floatspanset_float(this._inner,(float) other);
         }
         else{
             answer= super.distance((Base)other);
@@ -429,8 +424,47 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
     /** ------------------------- Set Operations -------------------------------- */
 
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_floatspanset_float</li>
+     *
+     * @param other object to intersect with
+     * @return An boolean value
+     * @throws Exception
+     */
+    public boolean intersection(java.lang.Number other){
+        Pointer result = null;
+        boolean answer = false;
+        if ((other instanceof Integer)||(other instanceof Float)){
+            answer = functions.intersection_floatspanset_float(this._inner,(double) other, result);
+        }
+        return answer;
+    }
 
-    //TODO: intersection
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_floatspanset_float</li>
+     *             <li>intersection_spanset_spanset</li>
+     *             <li>intersection_spanset_span</li>
+     *
+     * @param other object to intersect with
+     * @return An int or a {@link FloatSpanSet} instance. The actual class depends on "other".
+     * @throws Exception
+     */
+    public FloatSpanSet intersection(FloatSpanSet other) throws Exception {
+        Pointer result = null;
+        FloatSpanSet tmp = (FloatSpanSet) super.intersection((Base)other);
+        result = tmp.get_inner();
+        return new FloatSpanSet(result);
+    }
 
 
     /**
@@ -450,10 +484,11 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     public FloatSpanSet minus(Object other) throws Exception {
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            //result = functions.minus_floatspanset_float(this._inner, (float) other);
+            result = functions.minus_floatspanset_float(this._inner, (float) other);
         }
         else{
-            //result = super.minus((Base) other)
+            FloatSpanSet tmp = (FloatSpanSet) super.minus((Base) other);
+            result = tmp.get_inner();
         }
         return new FloatSpanSet(result);
     }
@@ -472,13 +507,14 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @param other object to merge with
      * @return A {@link FloatSpanSet} instance.
      */
-    public FloatSpanSet union(Object other){
+    public FloatSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            //result = functions.union_floatspanset_float(this._inner, (float) other);
+            result = functions.union_floatspanset_float(this._inner, (float) other);
         }
         else{
-            //result = super.minus((Base) other)
+            FloatSpanSet tmp = (FloatSpanSet) super.union((Base) other);
+            result = tmp.get_inner();
         }
         return new FloatSpanSet(result);
 

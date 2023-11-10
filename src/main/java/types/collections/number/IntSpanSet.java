@@ -439,7 +439,11 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     /** ------------------------- Set Operations -------------------------------- */
 
 
-    //TODO: intersection
+    public boolean intersection(int other){
+        Pointer result = null;
+        return functions.intersection_intspanset_int(this._inner,other,result);
+    }
+
 
 
     /**

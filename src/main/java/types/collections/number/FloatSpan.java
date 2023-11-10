@@ -73,8 +73,27 @@ public class FloatSpan extends Span<Float> implements Number{
         return new FloatSpanSet(super.to_spanset().get_inner());
     }
 
+    /**
+     * Converts "this" to a {@link IntSpan} instance.
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>floatspan_intspan</li>
+     *
+     * @return A new {@link IntSpan} instance
+     */
+    public IntSpan to_intspan(){
+        return new IntSpan(functions.floatspan_intspan(this._inner));
+    }
+
 
     /** ------------------------- Accessors ------------------------------------- */
+
+
+    public Pointer get_inner(){
+        return this._inner;
+    }
 
 
     /**
@@ -126,7 +145,56 @@ public class FloatSpan extends Span<Float> implements Number{
 
     /** ------------------------- Transformations ------------------------------- */
 
-    //TODO: make the shift tscale functions
+    /**
+     * Return a new "FloatSpan" with the lower and upper bounds shifted by
+     *         "delta".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspan_shift_scale</li>
+     *
+     *
+     * @param delta The value to shift by
+     * @return A new {@link FloatSpan} instance
+     */
+    public FloatSpan shif(int delta){
+        return this.shift_scale(delta,0);
+    }
+
+
+
+    /**
+     * Return a new "FloatSpan" with the lower and upper bounds scaled so
+     *         that the width is "width".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspan_shift_scale</li>
+     *
+     * @param width The new width
+     * @return a new {@link FloatSpan} instance
+     */
+
+    public FloatSpan scale(int width){
+        return this.shift_scale(0,width);
+    }
+
+
+    /**
+     * Return a new "FloatSpan" with the lower and upper bounds shifted by
+     *         "delta" and scaled so that the width is "width".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspan_shift_scale</li>
+     *
+     * @param delta The value to shift by
+     * @param width value to compare with
+     * @return a new {@link FloatSpan} instance
+     */
+    public FloatSpan shift_scale(int delta, int width){
+        return new FloatSpan(functions.floatspan_shift_scale(this._inner,delta,width,delta != 0, width != 0));
+    }
 
 
     /** ------------------------- Topological Operations -------------------------------- */
@@ -331,15 +399,66 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
     /** ------------------------- Set Operations -------------------------------- */
-    //TODO: intersection
 
-    public Float intersection(Object other) throws Exception {
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_span_span</li>
+     *             <li>intersection_spanset_span</li>
+     *             <li>intersection_floatset_float</li>
+     *
+     * @param other object to intersect with
+     * @return A {@link java.lang.Number}. The actual class depends on
+     *      *            "other".
+     */
+    public boolean intersection(java.lang.Number other) throws Exception {
+        Pointer result = null;
+        boolean answer = false;
         if ((other instanceof Integer) || (other instanceof Float)){
-            return (float) functions.distance_floatspan_float(this._inner, (float) other);
+            answer = functions.intersection_floatspan_float(this._inner, (float) other, result);
         }
-        else {
-            return super.distance((Base) other);
-        }
+        return answer;
+    }
+
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_span_span</li>
+     *             <li>intersection_spanset_span</li>
+     *             <li>intersection_floatset_float</li>
+     *
+     * @param other object to intersect with
+     * @return A {@link FloatSpan}. The actual class depends on
+     *      *            "other".
+     */
+    public FloatSpan intersection(FloatSpan other){
+        return new FloatSpan(functions.intersection_span_span(this._inner, ((FloatSpan)other).get_inner() ));
+    }
+
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_span_span</li>
+     *             <li>intersection_spanset_span</li>
+     *             <li>intersection_floatset_float</li>
+     *
+     * @param other object to intersect with
+     * @return A {@link FloatSpanSet}. The actual class depends on
+     *      *            "other".
+     */
+    public FloatSpanSet intersection(FloatSpanSet other){
+        return new FloatSpanSet(functions.intersection_spanset_span(this._inner, ((FloatSpanSet)other).get_inner() ));
     }
 
 
@@ -360,7 +479,7 @@ public class FloatSpan extends Span<Float> implements Number{
     public FloatSpanSet minus(Object other){
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            //result = functions.minus_floatspan_float(this._inner,other);
+            result = functions.minus_floatspan_float(this._inner, (double)other);
         }
         else if (other instanceof FloatSpan) {
             result = functions.minus_span_span(this._inner,((FloatSpan) other).get_inner());
@@ -391,7 +510,7 @@ public class FloatSpan extends Span<Float> implements Number{
     public FloatSpanSet union(Object other){
         Pointer result = null;
         if (other instanceof Integer){
-            //result = functions.union_floatspan_float(this._inner,other);
+            result = functions.union_floatspan_float(this._inner, (double) other);
         }
         else if (other instanceof FloatSpan) {
             result = functions.union_span_span(this._inner,((FloatSpan) other).get_inner());

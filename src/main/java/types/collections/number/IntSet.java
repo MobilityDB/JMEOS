@@ -218,12 +218,244 @@ public class IntSet extends Set<Integer> implements Number{
 
 
 
+
+
+
     /** ------------------------- Position Operations -------------------------------- */
+
+
+    /**
+     * Returns whether "this" is strictly to the left of "other". That is,
+     *         "this" ends before "other" starts.
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>left_set_set</li>
+     *             <li>left_intset_int</li>
+     *
+     * @param other object to compare with
+     * @return True if left, False otherwise
+     * @throws Exception
+     */
+    public boolean is_left(Object other) throws Exception {
+        if (other instanceof Integer){
+            return functions.left_intset_int(this._inner, (int) other);
+        }
+        else{
+            return super.is_left((Base) other);
+        }
+    }
+
+    /**
+     * Returns whether "this" is to the left of "other" allowing overlap.
+     *         That is, "this" ends before "other" ends (or at the same value).
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>overleft_set_set</li>
+     *             <li>overleft_intset_int</li>
+     *
+     * @param other object to compare with
+     * @return True if is over or left, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_left(Object other) throws Exception {
+        if (other instanceof Integer){
+            return functions.overleft_intset_int(this._inner, (int) other);
+        }
+        else{
+            return super.is_over_or_left((Base) other);
+        }
+    }
+
+
+    /**
+     * Returns whether "this" is strictly to the right of "other". That is,
+     *         "this" ends after "other" starts.
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>right_set_set</li>
+     *             <li>right_intset_int</li>
+     *
+     * @param other object to compare with
+     * @return True if right, False otherwise
+     * @throws Exception
+     */
+    public boolean is_right(Object other) throws Exception {
+        if (other instanceof Integer){
+            return functions.right_intset_int(this._inner, (int) other);
+        }
+        else{
+            return super.is_right((Base) other);
+        }
+    }
+
+
+    /**
+     * Returns whether "this" is to the right of "other" allowing overlap.
+     *         That is, "this" starts before "other" ends (or at the same value).
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>overright_set_set</li>
+     *             <li>overright_intset_int</li>
+     *
+     * @param other object to compare with
+     * @return True if is over or right, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_right(Object other) throws Exception {
+        if (other instanceof Integer){
+            return functions.overright_intset_int(this._inner, (int) other);
+        }
+        else{
+            return super.is_over_or_right((Base) other);
+        }
+    }
+
+
+
+    /** ------------------------- Set Operations -------------------------------- */
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_set_set</li>
+     *             <li>intersection_intset_int</li>
+     *
+     * @param other A {@link IntSet} or {@link Integer} instance
+     * @return An object of the same type as "other" or "None" if the
+     *      *             intersection is empty.
+     * @throws Exception
+     */
+    public boolean intersection(Integer other) throws Exception{
+        Pointer result = null;
+        return functions.intersection_intset_int(this._inner, (int) other, result);
+    }
+
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_set_set</li>
+     *             <li>intersection_intset_int</li>
+     *
+     * @param other A {@link IntSet} or {@link Integer} instance
+     * @return An object of the same type as "other" or "None" if the
+     *      *             intersection is empty.
+     * @throws Exception
+     */
+    public IntSet intersection(IntSet other) throws Exception {
+        Pointer result = null;
+        if(other instanceof IntSet){
+            result = functions.intersection_set_set(this._inner, ((IntSet) other)._inner);
+        }
+
+        return new IntSet(result);
+    }
+
+
+    /**
+     * Returns the difference of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>minus_set_set</li>
+     *             <li>minus_intset_int</li>
+     *
+     * @param other A :class:`IntSet` or :class:`int` instance
+     * @return A {@link IntSet} instance or "None" if the difference is empty.
+     * @throws Exception
+     */
+    public IntSet minus(Object other) throws Exception {
+        Pointer result = null;
+        if (other instanceof Integer){
+            result = functions.minus_intset_int(this._inner, (int) other);
+        }
+        else if(other instanceof IntSet){
+            result = functions.minus_set_set(this._inner, ((IntSet) other)._inner);
+        }
+
+        return new IntSet(result);
+    }
+
+
+    /**
+     * Returns the difference of "other" and "this".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>minus_int_intset</li>
+     *
+     *
+     * @param other A {@link Integer} instance
+     * @return A {@link Integer} instance or "None" if the difference is empty.
+     */
+    public boolean subtract_from(int other){
+        Pointer result = null;
+        return functions.minus_int_intset(other,this._inner,result);
+
+    }
+
+
+    /**
+     * Returns the union of "this" and "other".
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>union_set_set</li>
+     *             <li>union_intset_int</li>
+     *
+     * @param other A {@link IntSet} or {@link Integer} instance
+     * @return A {@link IntSet} instance.
+     * @throws Exception
+     */
+    public IntSet union(Object other) throws Exception {
+        Pointer result = null;
+        if (other instanceof Integer){
+            result = functions.union_intset_int(this._inner, (int) other);
+        }
+        else if(other instanceof IntSet){
+            result = functions.union_set_set(this._inner, ((IntSet) other)._inner);
+        }
+
+        return new IntSet(result);
+    }
+
+
 
 
 
     /** ------------------------- Distance Operations --------------------------- */
 
+
+    /**
+     * /**
+     * Returns the distance between "this" and "other".
+     * <p>
+     *
+     *      MEOS functions:
+     *          <li>distance_intset_int</li>
+     *
+     *
+     * @param other object to compare with
+     * @return A float value
+     * @throws Exception
+     */
     public float distance(Object other) throws Exception {
         if (other instanceof Integer){
             return (float) functions.distance_intset_int(this._inner, (int) other);
@@ -232,25 +464,6 @@ public class IntSet extends Set<Integer> implements Number{
             return super.distance((Base) other);
         }
     }
-
-    /** ------------------------- Set Operations -------------------------------- */
-
-
-
-
-
-
-
-
-
-
-
-    /** ------------------------- Accessors ------------------------------------- */
-
-
-
-
-
 
 
 
