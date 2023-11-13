@@ -6,7 +6,7 @@ import functions.functions;
 import java.util.List;
 
 
-public class Set<T extends Object> extends Collection implements Base {
+public class Set<T extends Object> implements Collection, Base {
     private Pointer _inner = null;
 
 

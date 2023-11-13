@@ -1,7 +1,7 @@
 package types.collections.base;
 
 
-public abstract class Collection<T extends Object> {
+public interface Collection<T extends Object> {
 
 
     /** ------------------------- Topological Operations ------------------------ */

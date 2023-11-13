@@ -160,12 +160,12 @@ public class FloatSet extends Set<Float> implements Number{
      * @param delta The value to shift by.
      * @return A new {@link FloatSet} instance
      */
-    /*
+
     public FloatSet shift(float delta){
         return shift_scale(delta,0);
     }
 
-     */
+
 
 
     /**
@@ -180,12 +180,12 @@ public class FloatSet extends Set<Float> implements Number{
      * @param new_width The new width.
      * @return A new {@link FloatSet} instance
      */
-    /*
+
     public FloatSet scale(float new_width){
         return shift_scale(0, new_width);
     }
 
-     */
+
 
 
     /**
@@ -200,12 +200,12 @@ public class FloatSet extends Set<Float> implements Number{
      * @param new_width The new width.
      * @return A new {@link FloatSet} instance
      */
-    /*
+
     public FloatSet shift_scale(float delta, float new_width){
-        return new FloatSet(functions.floatset_shift_scale);
+        return new FloatSet(functions.floatset_shift_scale(this._inner,delta,new_width,delta != 0, new_width != 0));
     }
 
-     */
+
 
 
     /** ------------------------- Topological Operations -------------------------------- */
@@ -222,26 +222,260 @@ public class FloatSet extends Set<Float> implements Number{
      * @param other object to compare with
      * @return True if contains, False otherwise
      */
-    /*
+
     public boolean contains(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.contains_floatset_float(this._inner, other);
+            return functions.contains_floatset_float(this._inner, (float) other);
         }
         else{
             return super.contains((Base)other);
         }
     }
 
+
+
+    /** ------------------------- Position Operations -------------------------------- */
+
+    /**
+     * Returns whether "this" is strictly to the left of "other". That is,
+     *         "this" ends before "other" starts.
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>left_set_set</li>
+     *             <li>left_floatset_float</li>
+     *
+     * @param other object to compare with
+     * @return True if left, False otherwise
+     * @throws Exception
      */
+    public boolean is_left(Object other) throws Exception {
+        if (other instanceof Float){
+            return functions.left_floatset_float(this._inner, (float) other);
+        }
+        else{
+            return super.is_left((Base) other);
+        }
+    }
+
+    /**
+     * Returns whether "this" is to the left of "other" allowing overlap.
+     *         That is, "this" ends before "other" ends (or at the same value).
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>overleft_set_set</li>
+     *             <li>overleft_floatset_float</li>
+     *
+     * @param other object to compare with
+     * @return True if is over or left, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_left(Object other) throws Exception {
+        if (other instanceof Float){
+            return functions.overleft_floatset_float(this._inner, (float) other);
+        }
+        else{
+            return super.is_over_or_left((Base) other);
+        }
+    }
+
+
+    /**
+     * Returns whether "this" is strictly to the right of "other". That is,
+     *         "this" ends after "other" starts.
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>right_set_set</li>
+     *             <li>right_floatset_float</li>
+     *
+     * @param other object to compare with
+     * @return True if right, False otherwise
+     * @throws Exception
+     */
+    public boolean is_right(Object other) throws Exception {
+        if (other instanceof Float){
+            return functions.right_floatset_float(this._inner, (float) other);
+        }
+        else{
+            return super.is_right((Base) other);
+        }
+    }
+
+
+    /**
+     * Returns whether "this" is to the right of "other" allowing overlap.
+     *         That is, "this" starts before "other" ends (or at the same value).
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>overright_set_set</li>
+     *             <li>overright_floatset_float</li>
+     *
+     * @param other object to compare with
+     * @return True if is over or right, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_right(Object other) throws Exception {
+        if (other instanceof Float){
+            return functions.overright_floatset_float(this._inner, (float) other);
+        }
+        else{
+            return super.is_over_or_right((Base) other);
+        }
+    }
+
+
+    /** ------------------------- Set Operations -------------------------------- */
+
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_set_set</li>
+     *             <li>intersection_floatset_float</li>
+     *
+     * @param other A {@link FloatSet} or {@link Float} instance
+     * @return An object of the same type as "other" or "None" if the
+     *      *             intersection is empty.
+     * @throws Exception
+     */
+    public boolean intersection(Float other) throws Exception{
+        Pointer result = null;
+        return functions.intersection_floatset_float(this._inner, (float) other, result);
+    }
+
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>intersection_set_set</li>
+     *             <li>intersection_floatset_float</li>
+     *
+     * @param other A {@link FloatSet} or {@link Float} instance
+     * @return An object of the same type as "other" or "None" if the
+     *      *             intersection is empty.
+     * @throws Exception
+     */
+    public FloatSet intersection(FloatSet other) throws Exception {
+        Pointer result = null;
+        if(other instanceof FloatSet){
+            result = functions.intersection_set_set(this._inner, ((FloatSet) other)._inner);
+        }
+
+        return new FloatSet(result);
+    }
 
 
 
+    /**
+     * Returns the difference of "this" and "other".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>minus_set_set</li>
+     *             <li>minus_floatset_float</li>
+     *
+     * @param other A {@link FloatSet} or {@link Float}instance
+     * @return A {@link FloatSet} instance or "None" if the difference is empty.
+     * @throws Exception
+     */
+    public FloatSet minus(Object other) throws Exception {
+        Pointer result = null;
+        if (other instanceof Float){
+            result = functions.minus_floatset_float(this._inner, (float) other);
+        }
+        else if(other instanceof FloatSet){
+            result = functions.minus_set_set(this._inner, ((FloatSet) other)._inner);
+        }
+
+        return new FloatSet(result);
+    }
 
 
 
+    /**
+     * Returns the difference of "other" and "this".
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>minus_float_floatset</li>
+     *
+     *
+     * @param other A {@link Float} instance
+     * @return A {@link Float} instance or "None" if the difference is empty.
+     */
+    public boolean subtract_from(float other){
+        Pointer result = null;
+        return functions.minus_float_floatset(other,this._inner,result);
+
+    }
+
+
+    /**
+     * Returns the union of "this" and "other".
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>union_set_set</li>
+     *             <li>union_floatset_float</li>
+     *
+     * @param other A {@link FloatSet} or {@link Float} instance
+     * @return A {@link FloatSet} instance.
+     * @throws Exception
+     */
+    public FloatSet union(Object other) throws Exception {
+        Pointer result = null;
+        if (other instanceof Float){
+            result = functions.union_floatset_float(this._inner, (float) other);
+        }
+        else if(other instanceof FloatSet){
+            result = functions.union_set_set(this._inner, ((FloatSet) other)._inner);
+        }
+
+        return new FloatSet(result);
+    }
 
 
 
+    /** ------------------------- Distance Operations --------------------------- */
+
+
+    /**
+     * /**
+     * Returns the distance between "this" and "other".
+     * <p>
+     *
+     *      MEOS functions:
+     *          <li>distance_floatset_float</li>
+     *
+     *
+     * @param other object to compare with
+     * @return A float value
+     * @throws Exception
+     */
+    public float distance(Object other) throws Exception {
+        if (other instanceof Float){
+            return (float) functions.distance_floatset_float(this._inner, (float) other);
+        }
+        else {
+            return super.distance((Base) other);
+        }
+    }
 
 
 

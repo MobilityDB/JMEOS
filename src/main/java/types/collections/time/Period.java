@@ -10,6 +10,7 @@ import types.core.TypeName;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import types.collections.base.Span;
 
 /**
  * Class for representing sets of contiguous timestamps between a lower and
@@ -34,7 +35,7 @@ import java.time.OffsetDateTime;
  * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
  */
 @TypeName(name = "period")
-public class Period extends Time {
+public class Period extends Span<DateTime> implements Time, TimeCollection{
 	private static final String LOWER_INCLUSIVE = "[";
 	private static final String LOWER_EXCLUSIVE = "(";
 	private static final String UPPER_INCLUSIVE = "]";
@@ -43,6 +44,7 @@ public class Period extends Time {
 	private OffsetDateTime upper;
 	private boolean lowerInclusive = true;
 	private boolean upperInclusive = false;
+	private Pointer _inner;
 
 
 	/**
@@ -216,6 +218,12 @@ public class Period extends Time {
 	/**
 	 * ------------------------ Accessors ------------------------
 	 */
+
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
+
 
 
 	/**
@@ -519,7 +527,6 @@ public class Period extends Time {
 	/**
 	 * ------------------------ Position Operations ------------------------
 	 */
-
 
 	/**
 	 * Returns whether "this" is strictly before "other". That is, "this" ends before "other" starts.

@@ -157,7 +157,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @param delta The value to shift by
      * @return A new {@link FloatSpan} instance
      */
-    public FloatSpan shif(int delta){
+    public FloatSpan shift(int delta){
         return this.shift_scale(delta,0);
     }
 

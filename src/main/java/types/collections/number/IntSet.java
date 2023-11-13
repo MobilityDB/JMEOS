@@ -375,7 +375,7 @@ public class IntSet extends Set<Integer> implements Number{
      *             <li>minus_set_set</li>
      *             <li>minus_intset_int</li>
      *
-     * @param other A :class:`IntSet` or :class:`int` instance
+     * @param other A {@link IntSet} or {@link Integer} instance
      * @return A {@link IntSet} instance or "None" if the difference is empty.
      * @throws Exception
      */

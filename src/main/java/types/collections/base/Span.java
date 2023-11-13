@@ -3,7 +3,7 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 
-public class Span<T extends Object> extends Collection implements Base{
+public class Span<T extends Object> implements Collection, Base{
     private Pointer _inner = null;
 
 

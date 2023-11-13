@@ -2,6 +2,8 @@ package types.collections.time;
 
 import jnr.ffi.Pointer;
 import types.TemporalObject;
+import types.collections.base.Set;
+import types.collections.base.Span;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
@@ -36,8 +38,9 @@ import functions.functions;
  * @since 10/09/2023
  */
 @TypeName(name = "timestampset")
-public class TimestampSet extends Time {
+public class TimestampSet extends Set<DateTime> implements Time, TimeCollection {
 	private final List<OffsetDateTime> dateTimeList;
+	private Pointer _inner;
 
 
 	/** ------------------------- Constructors ---------------------------------- */
@@ -148,6 +151,12 @@ public class TimestampSet extends Time {
 	}
 
 	/** ------------------------- Accessors ------------------------------------- */
+
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
+
 
 	/**
 	 * Returns a period that encompasses "this".

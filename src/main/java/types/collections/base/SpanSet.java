@@ -4,7 +4,7 @@ import jnr.ffi.Pointer;
 import functions.functions;
 import types.TemporalObject;
 
-public class SpanSet<T extends Object> extends Collection implements Base {
+public class SpanSet<T extends Object> implements Collection, Base {
     private Pointer _inner = null;
 
 

@@ -3,6 +3,8 @@ package types.collections.time;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.TemporalObject;
+import types.collections.base.Span;
+import types.collections.base.SpanSet;
 import types.core.TypeName;
 
 import types.boxes.*;
@@ -39,8 +41,10 @@ import java.util.stream.Collectors;
  * @since 10/09/2023
  */
 @TypeName(name = "periodset")
-public class PeriodSet extends Time {
+public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection {
 	private final List<Period> periodList;
+	private Pointer _inner;
+
 	/* ------------------------- Constructors ---------------------------------- */
 	/**
 	 * The default constructor
@@ -142,6 +146,10 @@ public class PeriodSet extends Time {
 
 	/** ------------------------- Accessors ------------------------------------- */
 
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
 
 	/**
 	 * Gets the interval on which the temporal value is defined

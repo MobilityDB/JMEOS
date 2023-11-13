@@ -26,13 +26,12 @@ public abstract class GeoSet extends Set {
      *             <li>geoset_out</li>
      * @return A new {@link String} instance
      */
-    /*
     public String toString(){
         int max_decimals = 15;
         return functions.geoset_out(this._inner,max_decimals);
     }
 
-     */
+
 
     /**
      * Returns the EWKT representation of "this".
