@@ -218,7 +218,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if adjacent, false otherwise
      * @throws SQLException
      */
-	public boolean isAdjacent(TemporalObject<?> other) throws SQLException {
+	public boolean isAdjacent(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_span_span(functions.set_span(this._inner), p.get_inner());
@@ -255,7 +255,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if contained, false otherwise
      * @throws SQLException
      */
-	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+	public boolean is_contained_in(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.contained_span_span(functions.set_span(this._inner), p.get_inner());
@@ -290,7 +290,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if contains, false otherwise
      * @throws SQLException
      */
-	public boolean contains(TemporalObject<?> other) throws SQLException {
+	public boolean contains(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case TimestampSet ts -> returnValue = functions.contains_set_set(this._inner, ts.get_inner());
@@ -325,7 +325,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if overlaps, false otherwise
      * @throws SQLException
      */
-	public boolean overlaps(TemporalObject<?> other) throws SQLException {
+	public boolean overlaps(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overlaps_span_span(functions.set_span(this._inner), p.get_inner());
@@ -344,12 +344,12 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * Returns whether the bounding period of "this" is the same as the bounding period of "other".
      *
      *         See Also:
-     *             {@link Period#is_same(TemporalObject)}
+     *             {@link Period#is_same(Time)}
      * @param other A time or temporal object to compare to `self`.
      * @return true if same, false otherwise.
      * @throws SQLException
      */
-	public boolean is_same(TemporalObject<?> other) throws SQLException {
+	public boolean is_same(Time other) throws SQLException {
 		return this.period().is_same(other);
 	}
 
@@ -384,7 +384,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if after, false otherwise
      * @throws SQLException
      */
-	public boolean is_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_after(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.right_span_span(functions.set_span(this._inner), p.get_inner());
@@ -422,7 +422,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if before, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_before(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.left_span_span(functions.set_span(this._inner), p.get_inner());
@@ -460,7 +460,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if overlapping or after, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_after(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overright_span_span(functions.set_span(this._inner), p.get_inner());
@@ -498,7 +498,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if before, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_before(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overleft_span_span(functions.set_span(this._inner), p.get_inner());
@@ -531,7 +531,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public Time intersection(TemporalObject<?> other) throws SQLException {
+	public Time intersection(Time other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.intersection_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
@@ -558,7 +558,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public Time mul(TemporalObject<?> other) throws SQLException {
+	public Time mul(Time other) throws SQLException {
 		return this.intersection(other);
 	}
 
@@ -579,7 +579,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public Time minus(TemporalObject<?> other) throws SQLException {
+	public Time minus(Time other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.minus_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
@@ -609,7 +609,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public Time sub(TemporalObject<?> other) throws SQLException {
+	public Time sub(Time other) throws SQLException {
 		return this.minus(other);
 	}
 
@@ -628,7 +628,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public Time union(TemporalObject<?> other) throws SQLException {
+	public Time union(Time other) throws SQLException {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new Period(functions.union_spanset_span(functions.set_to_spanset(this._inner),p.get_inner()));
@@ -656,7 +656,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a Time instance. The actual class depends on "other".
 	 * @throws SQLException
 	 */
-	public TemporalObject<?> add(TemporalObject<?> other) throws SQLException {
+	public Time add(Time other) throws SQLException {
 		return this.union(other);
 	}
 
@@ -674,7 +674,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean equals(TemporalObject<?> other) throws SQLException{
+	public boolean equals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_eq(this._inner,((TimestampSet) other).get_inner()) : false;
 		return result;
@@ -694,7 +694,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if not equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+	public boolean notEquals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_ne(this._inner,((TimestampSet) other).get_inner()) : true;
 		return result;
@@ -715,7 +715,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if less than, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+	public boolean lessThan(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_lt(this._inner,((TimestampSet) other).get_inner());
 		}
@@ -740,7 +740,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if less than or equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean lessThanOrEqual(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_le(this._inner,((TimestampSet) other).get_inner());
 		}
@@ -764,7 +764,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if greater than, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThan(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_gt(this._inner,((TimestampSet) other).get_inner());
 		}
@@ -788,7 +788,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if greater than or equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThanOrEqual(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_ge(this._inner,((TimestampSet) other).get_inner());
 		}
@@ -801,14 +801,12 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 
 
 	
-	@Override
 	public String getValue() {
 		return String.format("{%s}", dateTimeList.stream()
 				.map(DateTimeFormatHelper::getStringFormat)
 				.collect(Collectors.joining(", ")));
 	}
 	
-	@Override
 	public void setValue(String value) throws SQLException {
 		String trimmed = value.trim();
 		

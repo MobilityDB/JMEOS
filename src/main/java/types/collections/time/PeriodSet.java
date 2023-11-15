@@ -250,7 +250,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @param other temporal object to compare with
 	 * @return True if adjacent, False otherwise
 	 */
-	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {
+	public boolean is_adjacent(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_spanset_span(this._inner, p.get_inner());
@@ -287,7 +287,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if contained, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+	public boolean is_contained_in(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.contained_spanset_span(this._inner, p.get_inner());
@@ -322,7 +322,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if contains, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean contains(TemporalObject<?> other) throws SQLException {
+	public boolean contains(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.contains_spanset_span(this._inner, p.get_inner());
@@ -357,7 +357,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if overlaps, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean overlaps(TemporalObject<?> other) throws SQLException {
+	public boolean overlaps(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overlaps_spanset_span(this._inner, p.get_inner());
@@ -377,12 +377,12 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 *<p>
 	 *
 	 *         See Also:
-	 * 				{@link Period#is_same(TemporalObject)}
+	 * 				{@link Period#is_same(Time)}
 	 * @param other A time or temporal object to compare to "this".
 	 * @return True if same, False otherwise.
 	 * @throws SQLException
 	 */
-	public boolean is_same(TemporalObject<?> other) throws SQLException {
+	public boolean is_same(Time other) throws SQLException {
 		return this.to_period().is_same(other);
 	}
 
@@ -412,7 +412,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if before, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_before(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.left_spanset_span(this._inner, p.get_inner());
@@ -452,7 +452,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if before, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_before(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overleft_spanset_span(this._inner, p.get_inner());
@@ -488,7 +488,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if after, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_after(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.right_spanset_span(this._inner, p.get_inner());
@@ -526,7 +526,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if overlapping or after, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_after(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overright_spanset_span(this._inner, p.get_inner());
@@ -560,7 +560,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a Time instance. The actual class depends on "other"
 	 * @throws SQLException
 	 */
-	public Time intersection(TemporalObject<?> other) throws SQLException {
+	public Time intersection(Time other) throws SQLException {
 		Time returnValue;
 		switch (other) {
 			case Period p -> returnValue = new Period(functions.intersection_spanset_span(this._inner,p.get_inner()));
@@ -585,7 +585,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a Time instance. The actual class depends on "other"
 	 * @throws SQLException
 	 */
-	public Time mul(TemporalObject<?> other) throws SQLException {
+	public Time mul(Time other) throws SQLException {
 		return this.intersection(other);
 	}
 
@@ -604,7 +604,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a PeriodSet instance
 	 * @throws SQLException
 	 */
-	public PeriodSet minus(TemporalObject<?> other) throws SQLException {
+	public PeriodSet minus(Time other) throws SQLException {
 		PeriodSet returnValue;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.minus_spanset_span(this._inner,p.get_inner()));
@@ -631,7 +631,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a PeriodSet instance
 	 * @throws SQLException
 	 */
-	public PeriodSet sub(TemporalObject<?> other) throws SQLException {
+	public PeriodSet sub(Time other) throws SQLException {
 		return this.minus(other);
 	}
 
@@ -650,7 +650,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a PeriodSet instance
 	 * @throws SQLException
 	 */
-	public PeriodSet union(TemporalObject<?> other) throws SQLException {
+	public PeriodSet union(Time other) throws SQLException {
 		PeriodSet returnValue;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.union_spanset_span(this._inner,p.get_inner()));
@@ -678,7 +678,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return a PeriodSet instance
 	 * @throws SQLException
 	 */
-	public PeriodSet add(TemporalObject<?> other) throws SQLException {
+	public PeriodSet add(Time other) throws SQLException {
 		return this.union(other);
 	}
 
@@ -698,7 +698,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if equal, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean equals(TemporalObject<?> other) throws SQLException{
+	public boolean equals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof PeriodSet ? functions.spanset_eq(this._inner,((PeriodSet) other).get_inner()) : false;
 		return result;
@@ -715,7 +715,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if not equal, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+	public boolean notEquals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof PeriodSet ? functions.spanset_ne(this._inner,((PeriodSet) other).get_inner()) : true;
 		return result;
@@ -733,7 +733,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if less than, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+	public boolean lessThan(Time other) throws SQLException{
 		if (other instanceof PeriodSet){
 			return functions.spanset_lt(this._inner,((PeriodSet) other).get_inner());
 		}
@@ -752,7 +752,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if less than or equal, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean lessThanOrEqual(Time other) throws SQLException{
 		if (other instanceof PeriodSet){
 			return functions.spanset_le(this._inner,((PeriodSet) other).get_inner());
 		}
@@ -772,7 +772,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if greater than, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThan(Time other) throws SQLException{
 		if (other instanceof PeriodSet){
 			return functions.spanset_gt(this._inner,((PeriodSet) other).get_inner());
 		}
@@ -791,7 +791,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @return True if greater than or equal, False otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThanOrEqual(Time other) throws SQLException{
 		if (other instanceof PeriodSet){
 			return functions.spanset_ge(this._inner,((PeriodSet) other).get_inner());
 		}
@@ -802,12 +802,10 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 
 
 	
-	@Override
 	public String getValue() {
 		return String.format("{%s}", periodList.stream().map(Period::toString).collect(Collectors.joining(", ")));
 	}
-	
-	@Override
+
 	public void setValue(String value) throws SQLException {
 		String trimmed = value.trim();
 		

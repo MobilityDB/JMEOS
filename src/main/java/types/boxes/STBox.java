@@ -4,6 +4,7 @@ import functions.functions;
 import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
 import types.TemporalObject;
+import types.collections.time.Time;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
@@ -41,7 +42,7 @@ import types.collections.time.TimestampSet;
  * @since 10/09/2023
  */
 @TypeName(name = "stbox")
-public class STBox extends Box {
+public class STBox implements Box {
 	private Point pMin = null;
 	private Point pMax = null;
 	private OffsetDateTime tMin = null;
@@ -57,7 +58,7 @@ public class STBox extends Box {
 		return this._get_box(other,true,false);
 	}
 
-	public STBox _get_box(TemporalObject<?> other, boolean allow_space_only, boolean allow_time_only) throws SQLException {
+	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only) throws SQLException {
 		STBox other_box=null;
 
 		if (other instanceof STBox){
@@ -405,10 +406,13 @@ public class STBox extends Box {
 	 * @return a new STBox instance
 	 * @throws SQLException
 	 */
+	/*
 	public static STBox from_geometry(Geometry geom, boolean geodetic) throws SQLException {
 		Pointer gs = functions.gserialized_in(geom.toString(), -1);
 		return new STBox(functions.geo_to_stbox(gs));
 	}
+
+	 */
 
 
 
@@ -438,7 +442,7 @@ public class STBox extends Box {
 	 * @return a new STBox instance
 	 * @throws SQLException
 	 */
-	public static STBox from_time(TemporalObject<?> other) throws SQLException{
+	public static STBox from_time(Time other) throws SQLException{
 		STBox returnValue;
 		switch (other){
 			case Period p -> returnValue = new STBox(functions.period_to_stbox(p.get_inner()));
@@ -633,6 +637,10 @@ public class STBox extends Box {
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
         return functions.stbox_tmax(this._inner, result);
     }
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
 
 
 	/** ------------------------- Spatial Reference System ---------------------- */
@@ -1033,13 +1041,13 @@ public class STBox extends Box {
 	 *
 	 * <p>
 	 *         See Also:
-	 * 				{@link Period#is_before(TemporalObject)}
+	 * 				{@link Period#is_before(Time)}
 	 * 	<p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly before "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean is_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_before(TemporalObject<?> other) throws Exception {
 		return this.to_period().is_before(other);
 	}
 
@@ -1050,13 +1058,13 @@ public class STBox extends Box {
 	 *
 	 * <p>
 	 *     See Also:
-	 * 	 			{@link Period#is_over_or_before(TemporalObject)}
+	 * 	 			{@link Period#is_over_or_before(Time)}
 	 * 	 </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_before(TemporalObject<?> other) throws Exception {
 		return this.to_period().is_over_or_before(other);
 	}
 
@@ -1066,13 +1074,13 @@ public class STBox extends Box {
 	 *
 	 * <p>
 	 *      See Also:
-	 * 	 			{@link Period#is_after(TemporalObject)}
+	 * 	 			{@link Period#is_after(Time)}
 	 *     </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly after "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean is_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_after(TemporalObject<?> other) throws Exception {
 		return this.to_period().is_after(other);
 	}
 
@@ -1083,13 +1091,13 @@ public class STBox extends Box {
 	 *
 	 *  <p>
 	 *      See Also:
-	 * 				{@link Period#is_over_or_after(TemporalObject)}
+	 * 				{@link Period#is_over_or_after(Time)}
 	 *      </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_after(TemporalObject<?> other) throws Exception {
 		return this.to_period().is_over_or_after(other);
 	}
 
@@ -1109,10 +1117,13 @@ public class STBox extends Box {
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
+	/*
 	public float nearest_approach_distance_geom(Geometry other) {
 		Pointer gs = functions.gserialized_in(other.toString(), -1);
 		return (float) functions.nad_stbox_geo(this._inner, gs);
 	}
+
+	 */
 	
 	public float nearest_approach_distance_stbox(STBox other) {
 		return (float) functions.nad_stbox_stbox(this._inner, other._inner);
@@ -1132,7 +1143,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is equal to "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean equals(TemporalObject<?> other) throws SQLException{
+	public boolean equals(Box other) throws SQLException{
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
 		return result;
@@ -1149,7 +1160,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is not equal to "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+	public boolean notEquals(Box other) throws SQLException{
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
 		return result;
@@ -1166,7 +1177,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is less than "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+	public boolean lessThan(Box other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
 		}
@@ -1187,7 +1198,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is less than or equal "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean lessThanOrEqual(Box other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_le(this._inner,((STBox) other).get_inner());
 		}
@@ -1208,7 +1219,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is greater "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThan(Box other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
 		}
@@ -1228,7 +1239,7 @@ public class STBox extends Box {
 	 * @return "true" if "this" is greater or equal "other", "false" otherwise.
 	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThanOrEqual(Box other) throws SQLException{
 		if (other instanceof STBox){
 			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
 		}
@@ -1237,17 +1248,6 @@ public class STBox extends Box {
 		}
 	}
 
-
-
-
-
-
-
-
-
-	
-	
-	@Override
 	public String getValue() {
 		String sridPrefix = "";
 		if (srid != 0) {
@@ -1259,8 +1259,7 @@ public class STBox extends Box {
 			return getNonGeodeticValue(sridPrefix);
 		}
 	}
-	
-	@Override
+
 	public void setValue(String value) throws SQLException {
 		boolean hasZ;
 		boolean hasT;

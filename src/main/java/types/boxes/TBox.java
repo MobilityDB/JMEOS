@@ -37,7 +37,7 @@ import java.time.OffsetDateTime;
  *     floatrange (if it only has the numeric dimension).
  */
 @TypeName(name = "tbox")
-public class TBox extends Box {
+public class TBox implements Box {
 	private double xmin = 0.0f;
 	private double xmax = 0.0f;
 	private OffsetDateTime tmin;
@@ -721,8 +721,8 @@ public class TBox extends Box {
 	 * @return a {@link TBox} instance
 	 * @throws SQLException
 	 */
-	public TBox union(TBox other) throws SQLException {
-		return new TBox(functions.union_tbox_tbox(this._inner, other._inner));
+	public TBox union(TBox other, boolean strict) throws SQLException {
+		return new TBox(functions.union_tbox_tbox(this._inner, other._inner,strict));
 	}
 
 
@@ -736,8 +736,8 @@ public class TBox extends Box {
 	 * @return a {@link TBox} instance
 	 * @throws SQLException
 	 */
-	public TBox add(TBox other) throws SQLException {
-		return this.union(other);
+	public TBox add(TBox other, boolean strict) throws SQLException {
+		return this.union(other,strict);
 	}
 
 	/**
@@ -800,7 +800,7 @@ public class TBox extends Box {
 	 * @return true if equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean equals(TemporalObject<?> other) throws SQLException{
+	public boolean equals(Box other) throws SQLException{
 		boolean result;
 		result = other instanceof TBox ? functions.tbox_eq(this._inner,((TBox) other).get_inner()) : false;
 		return result;
@@ -818,7 +818,7 @@ public class TBox extends Box {
 	 * @return true if not equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+	public boolean notEquals(Box other) throws SQLException{
 		boolean result;
 		result = other instanceof TBox ? functions.stbox_ne(this._inner,((TBox) other).get_inner()) : true;
 		return result;
@@ -838,7 +838,7 @@ public class TBox extends Box {
 	 * @return true if less than, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+	public boolean lessThan(Box other) throws SQLException{
 		if (other instanceof TBox){
 			return functions.tbox_lt(this._inner,((TBox) other).get_inner());
 		}
@@ -861,7 +861,7 @@ public class TBox extends Box {
 	 * @return true if less than or equal to, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean lessThanOrEqual(Box other) throws SQLException{
 		if (other instanceof TBox){
 			return functions.tbox_le(this._inner,((TBox) other).get_inner());
 		}
@@ -884,7 +884,7 @@ public class TBox extends Box {
 	 * @return true if greater than, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThan(Box other) throws SQLException{
 		if (other instanceof TBox){
 			return functions.tbox_gt(this._inner,((TBox) other).get_inner());
 		}
@@ -906,7 +906,7 @@ public class TBox extends Box {
 	 * @return true if greater than or equal to, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThanOrEqual(Box other) throws SQLException{
 		if (other instanceof TBox){
 			return functions.tbox_ge(this._inner,((TBox) other).get_inner());
 		}
@@ -922,9 +922,7 @@ public class TBox extends Box {
 
 
 
-	
-	
-	@Override
+
 	public String getValue() {
 		if (xmin != 0.0f && tmin != null) {
 			return String.format("TBOX((%f, %s), (%f, %s))",
@@ -942,8 +940,7 @@ public class TBox extends Box {
 		}
 		
 	}
-	
-	@Override
+
 	public void setValue(String value) throws SQLException {
 		value = value.replace("TBOX", "")
 				.replace("(", "")

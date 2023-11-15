@@ -10,10 +10,10 @@ import java.sql.SQLException;
  * Abstract class to define a box from which STbox and TBox are inherited.
  */
 
-public abstract class Box extends TemporalObject<Pointer> {
+public interface Box{
 
-    abstract public boolean get_tmin_inc();
-    abstract public boolean get_tmax_inc();
-    abstract public Period to_period() throws SQLException;
+    public boolean get_tmin_inc();
+    public boolean get_tmax_inc();
+    public Period to_period() throws SQLException;
 
 }
