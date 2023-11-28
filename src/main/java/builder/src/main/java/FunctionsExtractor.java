@@ -1,3 +1,5 @@
+package main.java;
+
 import utils.BuilderUtils;
 
 import java.io.BufferedReader;
@@ -5,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,9 +26,9 @@ import java.util.regex.Pattern;
 public class FunctionsExtractor {
 	private static final String FUNCTION_PATTERN = "extern (static |inline |const )?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);"; // RegEx model for recognizing a function in the meos.h file
 	private static final String TYPES_PATTERN = "typedef\\s(?!struct|enum)\\w+\\s\\w+;"; // Type recognition RegEx pattern in meos.h file
-	private final Path inputFilePath;
-	private final Path outputFunctionsFilePath;
-	private final Path outputTypesFilePath;
+	private Path inputFilePath = null;
+	private Path outputFunctionsFilePath = null;
+	private Path outputTypesFilePath = null;
 	
 	/**
 	 * Constructor of {@link FunctionsExtractor}.
@@ -33,7 +36,10 @@ public class FunctionsExtractor {
 	 * @throws URISyntaxException thrown when resources not found
 	 */
 	public FunctionsExtractor() throws URISyntaxException {
-		this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("meos.h")).toURI());
+
+		String absolute = "src/main/java/builder/src/main/resources/meos.h";
+		this.inputFilePath = Paths.get(absolute);
+		//this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/meos.h")).toURI());
 		this.outputFunctionsFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_functions.h"));
 		this.outputTypesFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_types.h"));
 	}

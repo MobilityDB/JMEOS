@@ -4,6 +4,11 @@ import com.google.common.collect.BoundType;
 import functions.functions;
 import jnr.ffi.Pointer;
 import com.google.common.collect.Range;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.geom.Point;
 import types.temporal.TInstant;
 import types.temporal.TSequence;
 import types.temporal.TSequenceSet;
@@ -90,54 +95,72 @@ public class ConversionUtils {
 
 
 
-		public static TInstant asTInstant(Temporal temporal) {
+	public static TInstant asTInstant(Temporal temporal) {
 			return (TInstant) temporal;
 		}
 
-		public static TSequence asTSequence(Temporal temporal) {
+	public static TSequence asTSequence(Temporal temporal) {
 			return (TSequence) temporal;
 		}
 
-		public static TSequenceSet asTSequenceSet(Temporal temporal) {
+	public static TSequenceSet asTSequenceSet(Temporal temporal) {
 			return (TSequenceSet) temporal;
 		}
 
 
+	public static Pointer geo_to_gserialized(Geometry geom, boolean geodetic){
+		if (geodetic){
+			return geography_to_gserialized(geom);
+		}
+		else{
+			return geometry_to_gserialized(geom);
+		}
+	}
 
-	
-	//	public static Pointer geometryToGserialized(Geometry geom, Boolean geodetic) {
-	//		String text;
-	//		if (geom instanceof PGgeometry) {
-	//			text = ((PGgeometry) geom).getValue();
-	//			if (geom.getSRID() > 0) {
-	//				text = "SRID=" + geom.getSRID() + ";" + text;
-	//			}
-	//		} else if (geom instanceof Geometry) {
-	//			text = geom.toText();
-	//			if (geom.getSRID() > 0) {
-	//				text = "SRID=" + geom.getSRID() + ";" + text;
-	//			}
-	//		} else {
-	//			throw new IllegalArgumentException("Parameter geom must be either a PostGIS Geometry or a JTS Geometry");
-	//		}
-	//		GSERIALIZED gs = gserialized_in(text.getBytes(), -1);
-	//		if (geodetic != null) {
-	//			int geodeticFlag = geodetic ? 0x08 : 0x00;
-	//			gs.gflags(gs.gflags() | geodeticFlag);
-	//		}
-	//		return gs;
-	//	}
-	
-	//	public static Point gserializedToShapelyPoint(Pointer geom, int precision) throws ParseException {
-	//		String wktText = gserialized_as_text(geom, precision);
-	//		WKTReader wktReader = new WKTReader();
-	//		return (Point) wktReader.read(wktText);
-	//	}
-	
-	//	public static Geometry gserializedToShapelyGeometry(Pointer geom, int precision) throws ParseException {
-	//		String wktText = gserialized_as_text(geom, precision);
-	//		WKTReader wktReader = new WKTReader();
-	//		return wktReader.read(wktText);
-	//	}
+
+	public static Pointer geometry_to_gserialized(Geometry geom){
+		WKTWriter wktWriter = new WKTWriter();
+		String text = wktWriter.write(geom);
+		if (geom.getSRID() > 0){
+			text = "SRID="+geom.getSRID()+";"+text;
+		}
+		Pointer ptr = functions.pgis_geometry_in(text,-1);
+		return ptr;
+	}
+
+
+	public static Pointer geography_to_gserialized(Geometry geom){
+		WKTWriter wktWriter = new WKTWriter();
+		String text = wktWriter.write(geom);
+		if (geom.getSRID() > 0){
+			text = "SRID="+geom.getSRID()+";"+text;
+		}
+		Pointer ptr = functions.pgis_geography_in(text,-1);
+		return ptr;
+	}
+
+	public static Point gserialized_to_shapely_point(Pointer geom, int precision) throws ParseException {
+		String text = functions.gserialized_as_text(geom,precision);
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(text);
+		int srid = functions.lwgeom_get_srid(geom);
+		if (srid > 0){
+			geometry.setSRID(srid);
+		}
+		return (Point) geometry;
+	}
+
+
+	public static Geometry gserialized_to_shapely_geometry(Pointer geom, int precision) throws ParseException {
+		String text = functions.gserialized_as_text(geom,precision);
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(text);
+		int srid = functions.lwgeom_get_srid(geom);
+		if (srid > 0){
+			geometry.setSRID(srid);
+		}
+		return geometry;
+	}
+
 
 }

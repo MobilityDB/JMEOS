@@ -1,4 +1,4 @@
-package types.collections.time;
+package collections.time;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.stream.Stream;
+import types.collections.time.PeriodSet;
+import types.collections.time.Period;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -179,8 +181,8 @@ class PeriodSetTest {
 		PeriodSet periodSet = new PeriodSet(value);
 		Period[] periods = periodSet.periods();
 		assertEquals(periodSet.numPeriods(), periods.length);
-		assertEquals(periodSet.startPeriod(), periods[0]);
-		assertEquals(periodSet.endPeriod(), periods[periods.length - 1]);
+		assertEquals(periodSet.start_period(), periods[0]);
+		assertEquals(periodSet.end_period(), periods[periods.length - 1]);
 		assertEquals(periodSet.periodN(0), periods[0]);
 	}
 	
@@ -192,8 +194,8 @@ class PeriodSetTest {
 		assertNull(periodSet.period());
 		assertNull(periodSet.startTimestamp());
 		assertNull(periodSet.endTimestamp());
-		assertNull(periodSet.startPeriod());
-		assertNull(periodSet.endPeriod());
+		assertNull(periodSet.start_period());
+		assertNull(periodSet.end_period());
 	}
 	
 	@Test
@@ -227,7 +229,7 @@ class PeriodSetTest {
 		PeriodSet periodSet = new PeriodSet(value);
 		OffsetDateTime[] timestamps = periodSet.timestamps();
 		assertEquals(3, timestamps.length);
-		assertEquals(periodSet.numTimestamps(), timestamps.length);
+		assertEquals(periodSet.num_timestamps(), timestamps.length);
 		assertEquals(periodSet.startTimestamp(), timestamps[0]);
 		assertEquals(periodSet.timestampN(1), timestamps[1]);
 		assertEquals(periodSet.endTimestamp(), timestamps[2]);

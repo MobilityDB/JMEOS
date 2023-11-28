@@ -1,4 +1,4 @@
-package types.basic;
+package basic;
 
 public class TBoolTest {
 }

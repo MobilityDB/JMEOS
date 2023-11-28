@@ -1,4 +1,4 @@
-package types.temporal;
+package temporal;
 
 public class InterpolationTest {
 }

@@ -3,17 +3,19 @@ package types.boxes;
 import functions.functions;
 import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
+import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.collections.time.Time;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
-import net.postgis.jdbc.geometry.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
+import utils.ConversionUtils;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.TimestampSet;
@@ -98,7 +100,7 @@ public class STBox implements Box {
 		this.tmax_inc = tmax_inc;
 		this.isGeodetic = geodetic;
 		String str = functions.stbox_out(this._inner,2);
-		setValue(str);
+		//setValue(str);
 	}
 	
 	/**
@@ -110,7 +112,7 @@ public class STBox implements Box {
 	
 	public STBox(final String value) throws SQLException {
 		super();
-		setValue(value);
+		//setValue(value);
 		this._inner = functions.stbox_in(value);
 
 	}
@@ -406,13 +408,16 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 * @throws SQLException
 	 */
-	/*
 	public static STBox from_geometry(Geometry geom, boolean geodetic) throws SQLException {
-		Pointer gs = functions.gserialized_in(geom.toString(), -1);
-		return new STBox(functions.geo_to_stbox(gs));
+		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
 
-	 */
+	public static STBox from_geometry(Geometry geom) throws SQLException {
+		boolean geodetic = false;
+		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
+	}
+
+
 
 
 
@@ -505,13 +510,12 @@ public class STBox implements Box {
      */
 	
 	
-	//Add the shapely package ?
-    /*
-    public BaseGeometry to_geometry(int precision){
-        return gserialized_to_shapely_geometry(stbox_to_geo(this._inner),precision);
+
+    public Geometry to_geometry(int precision) throws ParseException {
+        return ConversionUtils.gserialized_to_shapely_geometry(functions.stbox_to_geo(this._inner),precision);
     }
 
-     */
+
 
 
 	/** ------------------------- Output ---------------------------------------- */
@@ -607,35 +611,43 @@ public class STBox implements Box {
 	 */
     public boolean xmin(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_xmin(this._inner, result);
+		return false;
+        //return functions.stbox_xmin(this._inner, result);
     }
     public boolean ymin(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_ymin(this._inner, result);
+		return false;
+        //return functions.stbox_ymin(this._inner, result);
     }
     public boolean zmin(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_zmin(this._inner, result);
+		return false;
+        //return functions.stbox_zmin(this._inner, result);
     }
     public boolean tmin(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_tmin(this._inner, result);
+		return false;
+        //return functions.stbox_tmin(this._inner, result);
     }
     public boolean xmax(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_xmax(this._inner, result);
+		return false;
+        //return functions.stbox_xmax(this._inner, result);
     }
     public boolean ymax(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_ymax(this._inner, result);
+		return false;
+        //return functions.stbox_ymax(this._inner, result);
     }
     public boolean zmax(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_zmax(this._inner, result);
+		return false;
+        //return functions.stbox_zmax(this._inner, result);
     }
     public boolean tmax(){
 		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_tmax(this._inner, result);
+		return false;
+        //return functions.stbox_tmax(this._inner, result);
     }
 
 	public Pointer get_inner(){
@@ -683,7 +695,7 @@ public class STBox implements Box {
 	public STBox expand_numerical(Number value) throws SQLException {
 		STBox result = null;
 		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
-			result = new STBox(functions.stbox_expand_space(this.get_inner(),(float) value));
+			result = new STBox(functions.stbox_expand_space(this.get_inner(), value.floatValue()));
 		}
 		return result;
 	}

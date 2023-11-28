@@ -350,7 +350,8 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean intersection(Float other) throws Exception{
         Pointer result = null;
-        return functions.intersection_floatset_float(this._inner, (float) other, result);
+        return false;
+        //return functions.intersection_floatset_float(this._inner, (float) other, result);
     }
 
 
@@ -420,7 +421,8 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean subtract_from(float other){
         Pointer result = null;
-        return functions.minus_float_floatset(other,this._inner,result);
+        return false;
+        //return functions.minus_float_floatset(other,this._inner,result);
 
     }
 

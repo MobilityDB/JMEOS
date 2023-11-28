@@ -1,4 +1,4 @@
-package types.collections.number;
+package collections.number;
 
 
 import org.junit.jupiter.api.Test;

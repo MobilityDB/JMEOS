@@ -418,7 +418,7 @@ public class FloatSpan extends Span<Float> implements Number{
         Pointer result = null;
         boolean answer = false;
         if ((other instanceof Integer) || (other instanceof Float)){
-            answer = functions.intersection_floatspan_float(this._inner, (float) other, result);
+            //answer = functions.intersection_floatspan_float(this._inner, (float) other, result);
         }
         return answer;
     }

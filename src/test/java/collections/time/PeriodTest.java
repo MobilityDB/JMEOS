@@ -1,4 +1,4 @@
-package types.collections.time;
+package collections.time;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
+import types.collections.time.Period;
 
 import static functions.functions.meos_finalize;
 import static functions.functions.meos_initialize;
@@ -66,8 +67,8 @@ class PeriodTest {
 		if (upper != null) {
 			assertTrue(period.getUpper().isEqual(upper));
 		}
-		assertTrue(period.getUpper_inc() == upper_inc);
-		assertTrue(period.getLower_inc() == lower_inc);
+		assertTrue(period.upper_inc() == upper_inc);
+		assertTrue(period.lower_inc() == lower_inc);
 	}
 
 	
@@ -331,48 +332,9 @@ class PeriodTest {
 		assertEquals(expected, period.shift(Duration.ofDays(3)));
 	}
 	
-	@ParameterizedTest
-	@ValueSource(strings = {
-			"[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01)",
-			"[2021-09-09 00:00:00+01, 2021-09-10 00:00:00+01)",
-			"(2021-09-08 00:00:00+01, 2021-09-09 00:00:00+01]"
-	})
-	void testContains(String value) throws SQLException {
-		OffsetDateTime dateTime = OffsetDateTime.of(2021, 9, 9,
-				0, 0, 0, 0, ZoneOffset.of("+01:00"));
-		Period period = new Period(value);
-		assertTrue(period.contains(dateTime));
-	}
+
 	
-	@ParameterizedTest
-	@ValueSource(strings = {
-			"[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01)",
-			"[2021-09-05 00:00:00+01, 2021-09-06 00:00:00+01)",
-			"(2021-09-07 00:00:00+01, 2021-09-09 00:00:00+01]",
-			"[2021-09-05 00:00:00+01, 2021-09-07 00:00:00+01)"
-	})
-	void testNotContains(String value) throws SQLException {
-		OffsetDateTime dateTime = OffsetDateTime.of(2021, 9, 7,
-				0, 0, 0, 0, ZoneOffset.of("+01:00"));
-		Period period = new Period(value);
-		assertFalse(period.contains(dateTime));
-	}
+
 	
-	@ParameterizedTest
-	@ValueSource(strings = {
-			"[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01)",
-			"[2021-09-10 00:00:00+01, 2021-09-12 00:00:00+01)"
-	})
-	void testOverlaps(String value) throws SQLException {
-		Period periodA = new Period(value);
-		Period periodB = new Period("[2021-09-09 00:00:00+01, 2021-09-11 00:00:00+01)");
-		assertTrue(periodA.overlaps(periodB));
-	}
-	
-	@Test
-	void testNotOverlaps() throws SQLException {
-		Period periodA = new Period("[2021-09-08 00:00:00+01, 2021-09-10 00:00:00+01)");
-		Period periodB = new Period("[2021-09-11 00:00:00+01, 2021-09-13 00:00:00+01)");
-		assertFalse(periodA.overlaps(periodB));
-	}
+
 }

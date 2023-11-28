@@ -440,7 +440,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
         Pointer result = null;
         boolean answer = false;
         if ((other instanceof Integer)||(other instanceof Float)){
-            answer = functions.intersection_floatspanset_float(this._inner,(double) other, result);
+            //answer = functions.intersection_floatspanset_float(this._inner,(double) other, result);
         }
         return answer;
     }

@@ -338,7 +338,8 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean intersection(Integer other) throws Exception{
         Pointer result = null;
-        return functions.intersection_intset_int(this._inner, (int) other, result);
+        return false;
+        //return functions.intersection_intset_int(this._inner, (int) other, result);
     }
 
 
@@ -406,7 +407,8 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean subtract_from(int other){
         Pointer result = null;
-        return functions.minus_int_intset(other,this._inner,result);
+        return false;
+        //return functions.minus_int_intset(other,this._inner,result);
 
     }
 

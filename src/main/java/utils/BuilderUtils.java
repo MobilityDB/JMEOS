@@ -69,6 +69,7 @@ public class BuilderUtils {
 	public static void readBuilderLines(StringBuilder builder, Consumer<String> line) {
 		String[] lines = builder.toString().split("\n");
 		for (String builderLine : lines) {
+
 			line.accept(builderLine);
 		}
 	}

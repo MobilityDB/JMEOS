@@ -1,4 +1,4 @@
-package types.collections.time;
+package collections.time;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.stream.Stream;
+import types.collections.time.TimestampSet;
+import types.collections.time.Period;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;

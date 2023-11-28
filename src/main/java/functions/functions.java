@@ -1,6 +1,8 @@
 package functions;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.Memory;
+import jnr.ffi.Runtime;
 import utils.JarLibraryLoader;
 import utils.MeosCatalog.MeosEnums.meosType;
 import utils.MeosCatalog.MeosEnums.meosOper;
@@ -3707,8 +3709,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean bigintset_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.bigintset_value_n(s, n, result);
+	public static Pointer bigintset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.bigintset_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3747,8 +3753,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean floatset_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.floatset_value_n(s, n, result);
+	public static Pointer floatset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.floatset_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3792,8 +3802,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean geoset_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.geoset_value_n(s, n, result);
+	public static Pointer geoset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.geoset_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3812,8 +3826,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intset_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.intset_value_n(s, n, result);
+	public static Pointer intset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intset_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3892,8 +3910,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean periodset_timestamp_n(Pointer ps, int n, Pointer result) {
-		return MeosLibrary.meos.periodset_timestamp_n(ps, n, result);
+	public static Pointer periodset_timestamp_n(Pointer ps, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.periodset_timestamp_n(ps, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4024,8 +4046,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean textset_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.textset_value_n(s, n, result);
+	public static Pointer textset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.textset_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4048,8 +4074,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean timestampset_timestamp_n(Pointer ts, int n, Pointer result) {
-		return MeosLibrary.meos.timestampset_timestamp_n(ts, n, result);
+	public static Pointer timestampset_timestamp_n(Pointer ts, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.timestampset_timestamp_n(ts, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4189,65 +4219,113 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_bigintset_bigint(Pointer s, long i, Pointer result) {
-		return MeosLibrary.meos.intersection_bigintset_bigint(s, i, result);
+	public static Pointer intersection_bigintset_bigint(Pointer s, long i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_bigintset_bigint(s, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_bigintspan_bigint(Pointer s, long i, Pointer result) {
-		return MeosLibrary.meos.intersection_bigintspan_bigint(s, i, result);
+	public static Pointer intersection_bigintspan_bigint(Pointer s, long i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_bigintspan_bigint(s, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_bigintspanset_bigint(Pointer ss, long i, Pointer result) {
-		return MeosLibrary.meos.intersection_bigintspanset_bigint(ss, i, result);
+	public static Pointer intersection_bigintspanset_bigint(Pointer ss, long i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_bigintspanset_bigint(ss, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_floatset_float(Pointer s, double d, Pointer result) {
-		return MeosLibrary.meos.intersection_floatset_float(s, d, result);
+	public static Pointer intersection_floatset_float(Pointer s, double d) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_floatset_float(s, d, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_floatspan_float(Pointer s, double d, Pointer result) {
-		return MeosLibrary.meos.intersection_floatspan_float(s, d, result);
+	public static Pointer intersection_floatspan_float(Pointer s, double d) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_floatspan_float(s, d, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_floatspanset_float(Pointer ss, double d, Pointer result) {
-		return MeosLibrary.meos.intersection_floatspanset_float(ss, d, result);
+	public static Pointer intersection_floatspanset_float(Pointer ss, double d) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_floatspanset_float(ss, d, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_geoset_geo(Pointer s, Pointer gs, Pointer result) {
-		return MeosLibrary.meos.intersection_geoset_geo(s, gs, result);
+	public static Pointer intersection_geoset_geo(Pointer s, Pointer gs) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_geoset_geo(s, gs, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_intset_int(Pointer s, int i, Pointer result) {
-		return MeosLibrary.meos.intersection_intset_int(s, i, result);
+	public static Pointer intersection_intset_int(Pointer s, int i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_intset_int(s, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_intspan_int(Pointer s, int i, Pointer result) {
-		return MeosLibrary.meos.intersection_intspan_int(s, i, result);
+	public static Pointer intersection_intspan_int(Pointer s, int i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_intspan_int(s, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_intspanset_int(Pointer ss, int i, Pointer result) {
-		return MeosLibrary.meos.intersection_intspanset_int(ss, i, result);
+	public static Pointer intersection_intspanset_int(Pointer ss, int i) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_intspanset_int(ss, i, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_period_timestamp(Pointer s, OffsetDateTime t, Pointer result) {
+	public static Pointer intersection_period_timestamp(Pointer s, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_period_timestamp(s, t_new, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_period_timestamp(s, t_new, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_periodset_timestamp(Pointer ss, OffsetDateTime t, Pointer result) {
+	public static Pointer intersection_periodset_timestamp(Pointer ss, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_periodset_timestamp(ss, t_new, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_periodset_timestamp(ss, t_new, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4271,29 +4349,49 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_textset_text(Pointer s, Pointer txt, Pointer result) {
-		return MeosLibrary.meos.intersection_textset_text(s, txt, result);
+	public static Pointer intersection_textset_text(Pointer s, Pointer txt) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_textset_text(s, txt, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_timestampset_timestamp(Pointer s, OffsetDateTime t, Pointer result) {
+	public static Pointer intersection_timestampset_timestamp(Pointer s, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.intersection_timestampset_timestamp(s, t_new, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_timestampset_timestamp(s, t_new, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_bigint_bigintset(long i, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_bigint_bigintset(i, s, result);
+	public static Pointer minus_bigint_bigintset(long i, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_bigint_bigintset(i, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_bigint_bigintspan(long i, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_bigint_bigintspan(i, s, result);
+	public static Pointer minus_bigint_bigintspan(long i, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_bigint_bigintspan(i, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_bigint_bigintspanset(long i, Pointer ss, Pointer result) {
-		return MeosLibrary.meos.minus_bigint_bigintspanset(i, ss, result);
+	public static Pointer minus_bigint_bigintspanset(long i, Pointer ss) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_bigint_bigintspanset(i, ss, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4312,18 +4410,30 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_float_floatset(double d, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_float_floatset(d, s, result);
+	public static Pointer minus_float_floatset(double d, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_float_floatset(d, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_float_floatspan(double d, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_float_floatspan(d, s, result);
+	public static Pointer minus_float_floatspan(double d, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_float_floatspan(d, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_float_floatspanset(double d, Pointer ss, Pointer result) {
-		return MeosLibrary.meos.minus_float_floatspanset(d, ss, result);
+	public static Pointer minus_float_floatspanset(double d, Pointer ss) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_float_floatspanset(d, ss, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4342,8 +4452,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_geo_geoset(Pointer gs, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_geo_geoset(gs, s, result);
+	public static Pointer minus_geo_geoset(Pointer gs, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_geo_geoset(gs, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4352,18 +4466,30 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_int_intset(int i, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_int_intset(i, s, result);
+	public static Pointer minus_int_intset(int i, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_int_intset(i, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_int_intspan(int i, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_int_intspan(i, s, result);
+	public static Pointer minus_int_intspan(int i, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_int_intspan(i, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_int_intspanset(int i, Pointer ss, Pointer result) {
-		return MeosLibrary.meos.minus_int_intspanset(i, ss, result);
+	public static Pointer minus_int_intspanset(int i, Pointer ss) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_int_intspanset(i, ss, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4419,8 +4545,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_text_textset(Pointer txt, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_text_textset(txt, s, result);
+	public static Pointer minus_text_textset(Pointer txt, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_text_textset(txt, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4429,21 +4559,33 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_timestamp_period(OffsetDateTime t, Pointer s, Pointer result) {
+	public static Pointer minus_timestamp_period(OffsetDateTime t, Pointer s) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestamp_period(t_new, s, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_timestamp_period(t_new, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_timestamp_periodset(OffsetDateTime t, Pointer ss, Pointer result) {
+	public static Pointer minus_timestamp_periodset(OffsetDateTime t, Pointer ss) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestamp_periodset(t_new, ss, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_timestamp_periodset(t_new, ss, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_timestamp_timestampset(OffsetDateTime t, Pointer s, Pointer result) {
+	public static Pointer minus_timestamp_timestampset(OffsetDateTime t, Pointer s) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.minus_timestamp_timestampset(t_new, s, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_timestamp_timestampset(t_new, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -5995,53 +6137,93 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_tmax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_tmax(box, result);
+	public static Pointer stbox_tmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_tmax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_tmax_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_tmax_inc(box, result);
+	public static Pointer stbox_tmax_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_tmax_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_tmin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_tmin(box, result);
+	public static Pointer stbox_tmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_tmin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_tmin_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_tmin_inc(box, result);
+	public static Pointer stbox_tmin_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_tmin_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_xmax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_xmax(box, result);
+	public static Pointer stbox_xmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_xmax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_xmin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_xmin(box, result);
+	public static Pointer stbox_xmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_xmin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_ymax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_ymax(box, result);
+	public static Pointer stbox_ymax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_ymax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_ymin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_ymin(box, result);
+	public static Pointer stbox_ymin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_ymin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_zmax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_zmax(box, result);
+	public static Pointer stbox_zmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_zmax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean stbox_zmin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.stbox_zmin(box, result);
+	public static Pointer stbox_zmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.stbox_zmin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6055,43 +6237,75 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_tmax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_tmax(box, result);
+	public static Pointer tbox_tmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_tmax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_tmax_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_tmax_inc(box, result);
+	public static Pointer tbox_tmax_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_tmax_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_tmin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_tmin(box, result);
+	public static Pointer tbox_tmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_tmin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_tmin_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_tmin_inc(box, result);
+	public static Pointer tbox_tmin_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_tmin_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_xmax(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_xmax(box, result);
+	public static Pointer tbox_xmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_xmax(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_xmax_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_xmax_inc(box, result);
+	public static Pointer tbox_xmax_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_xmax_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_xmin(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_xmin(box, result);
+	public static Pointer tbox_xmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_xmin(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tbox_xmin_inc(Pointer box, Pointer result) {
-		return MeosLibrary.meos.tbox_xmin_inc(box, result);
+	public static Pointer tbox_xmin_inc(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tbox_xmin_inc(box, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6160,8 +6374,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean inter_tbox_tbox(Pointer box1, Pointer box2, Pointer result) {
-		return MeosLibrary.meos.inter_tbox_tbox(box1, box2, result);
+	public static Pointer inter_tbox_tbox(Pointer box1, Pointer box2) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.inter_tbox_tbox(box1, box2, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6175,8 +6393,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean inter_stbox_stbox(Pointer box1, Pointer box2, Pointer result) {
-		return MeosLibrary.meos.inter_stbox_stbox(box1, box2, result);
+	public static Pointer inter_stbox_stbox(Pointer box1, Pointer box2) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.inter_stbox_stbox(box1, box2, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6824,8 +7046,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean temporal_timestamp_n(Pointer temp, int n, Pointer result) {
-		return MeosLibrary.meos.temporal_timestamp_n(temp, n, result);
+	public static Pointer temporal_timestamp_n(Pointer temp, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.temporal_timestamp_n(temp, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7942,18 +8168,30 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean shortestline_tpoint_geo(Pointer temp, Pointer gs, Pointer result) {
-		return MeosLibrary.meos.shortestline_tpoint_geo(temp, gs, result);
+	public static Pointer shortestline_tpoint_geo(Pointer temp, Pointer gs) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.shortestline_tpoint_geo(temp, gs, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean shortestline_tpoint_tpoint(Pointer temp1, Pointer temp2, Pointer result) {
-		return MeosLibrary.meos.shortestline_tpoint_tpoint(temp1, temp2, result);
+	public static Pointer shortestline_tpoint_tpoint(Pointer temp1, Pointer temp2) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.shortestline_tpoint_tpoint(temp1, temp2, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean bearing_point_point(Pointer gs1, Pointer gs2, Pointer result) {
-		return MeosLibrary.meos.bearing_point_point(gs1, gs2, result);
+	public static Pointer bearing_point_point(Pointer gs1, Pointer gs2) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.bearing_point_point(gs1, gs2, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7987,8 +8225,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tpoint_direction(Pointer temp, Pointer result) {
-		return MeosLibrary.meos.tpoint_direction(temp, result);
+	public static Pointer tpoint_direction(Pointer temp) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tpoint_direction(temp, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -8740,8 +8982,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean set_value_n(Pointer s, int n, Pointer result) {
-		return MeosLibrary.meos.set_value_n(s, n, result);
+	public static Pointer set_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.set_value_n(s, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -8765,8 +9011,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void floatspan_round_int(Pointer span, long size, Pointer result) {
-		MeosLibrary.meos.floatspan_round_int(span, size, result);
+	public static void floatspan_round_int(Pointer span, long size) {
 	}
 	
 	@SuppressWarnings("unused")
@@ -8980,23 +9225,39 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean inter_span_span(Pointer s1, Pointer s2, Pointer result) {
-		return MeosLibrary.meos.inter_span_span(s1, s2, result);
+	public static Pointer inter_span_span(Pointer s1, Pointer s2) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.inter_span_span(s1, s2, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_set_value(Pointer s, long d, meosType basetype, Pointer result) {
-		return MeosLibrary.meos.intersection_set_value(s, d, basetype, result);
+	public static Pointer intersection_set_value(Pointer s, long d, meosType basetype) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_set_value(s, d, basetype, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_span_value(Pointer s, long d, meosType basetype, Pointer result) {
-		return MeosLibrary.meos.intersection_span_value(s, d, basetype, result);
+	public static Pointer intersection_span_value(Pointer s, long d, meosType basetype) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_span_value(s, d, basetype, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean intersection_spanset_value(Pointer ss, long d, meosType basetype, Pointer result) {
-		return MeosLibrary.meos.intersection_spanset_value(ss, d, basetype, result);
+	public static Pointer intersection_spanset_value(Pointer ss, long d, meosType basetype) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.intersection_spanset_value(ss, d, basetype, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -9015,18 +9276,30 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_value_set(long d, meosType basetype, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_value_set(d, basetype, s, result);
+	public static Pointer minus_value_set(long d, meosType basetype, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_value_set(d, basetype, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_value_span(long d, meosType basetype, Pointer s, Pointer result) {
-		return MeosLibrary.meos.minus_value_span(d, basetype, s, result);
+	public static Pointer minus_value_span(long d, meosType basetype, Pointer s) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_value_span(d, basetype, s, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean minus_value_spanset(long d, meosType basetype, Pointer ss, Pointer result) {
-		return MeosLibrary.meos.minus_value_spanset(d, basetype, ss, result);
+	public static Pointer minus_value_spanset(long d, meosType basetype, Pointer ss) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.minus_value_spanset(d, basetype, ss, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -9193,8 +9466,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void bbox_union_span_span(Pointer s1, Pointer s2, Pointer result) {
-		MeosLibrary.meos.bbox_union_span_span(s1, s2, result);
+	public static void bbox_union_span_span(Pointer s1, Pointer s2) {
 	}
 	
 	@SuppressWarnings("unused")
@@ -9679,9 +9951,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tinstant_value_at_timestamp(Pointer inst, OffsetDateTime t, Pointer result) {
+	public static Pointer tinstant_value_at_timestamp(Pointer inst, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.tinstant_value_at_timestamp(inst, t_new, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tinstant_value_at_timestamp(inst, t_new, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -9779,9 +10055,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tsequence_value_at_timestamp(Pointer seq, OffsetDateTime t, boolean strict, Pointer result) {
+	public static Pointer tsequence_value_at_timestamp(Pointer seq, OffsetDateTime t, boolean strict) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.tsequence_value_at_timestamp(seq, t_new, strict, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tsequence_value_at_timestamp(seq, t_new, strict, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -9879,8 +10159,12 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tsequenceset_timestamp_n(Pointer ss, int n, Pointer result) {
-		return MeosLibrary.meos.tsequenceset_timestamp_n(ss, n, result);
+	public static Pointer tsequenceset_timestamp_n(Pointer ss, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tsequenceset_timestamp_n(ss, n, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -9889,9 +10173,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean tsequenceset_value_at_timestamp(Pointer ss, OffsetDateTime t, boolean strict, Pointer result) {
+	public static Pointer tsequenceset_value_at_timestamp(Pointer ss, OffsetDateTime t, boolean strict) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.tsequenceset_value_at_timestamp(ss, t_new, strict, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.tsequenceset_value_at_timestamp(ss, t_new, strict, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -10086,9 +10374,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static boolean temporal_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict, Pointer result) {
+	public static Pointer temporal_value_at_timestamp(Pointer temp, OffsetDateTime t, boolean strict) {
 		var t_new = t.toEpochSecond();
-		return MeosLibrary.meos.temporal_value_at_timestamp(temp, t_new, strict, result);
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = MeosLibrary.meos.temporal_value_at_timestamp(temp, t_new, strict, result);
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
