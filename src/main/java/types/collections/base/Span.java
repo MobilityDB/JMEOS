@@ -3,15 +3,47 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 
-public class Span<T extends Object> implements Collection, Base{
-    private Pointer _inner = null;
+import java.lang.reflect.InvocationTargetException;
+
+public abstract class Span<T extends Object> implements Collection, Base{
+    private Pointer _inner;
 
 
     /** ------------------------- Constructors ---------------------------------- */
-    public Span(){}
+    public Span(){};
     public Span(Pointer inner){
-        this._inner = inner;
+        this._inner = createInner(inner);
     }
+    public Span(String str){
+        this._inner = createStringInner(str);
+    }
+
+    public Span(int lower, int upper, boolean lower_inc, boolean upper_inc){
+        this._inner = createIntInt(lower, upper, lower_inc, upper_inc);
+    }
+    public Span(int lower, String upper, boolean lower_inc, boolean upper_inc){
+        this._inner = createIntStr(lower, upper, lower_inc, upper_inc);
+    }
+    public Span(String lower, String upper, boolean lower_inc, boolean upper_inc){
+        this._inner = createStrStr(lower, upper, lower_inc, upper_inc);
+    }
+    public Span(String lower, int upper, boolean lower_inc, boolean upper_inc){
+        this._inner = createStrInt(lower,upper, lower_inc, upper_inc);
+    }
+    public Span(int lower, int upper){
+        this._inner = createIntIntNb(lower, upper);
+    }
+
+    public abstract Pointer get_inner();
+    public abstract Pointer createInner(Pointer inner);
+    public abstract Pointer createStringInner(String str);
+    public abstract Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createIntIntNb(int lower, int upper);
+
+
 
     /** ------------------------- Conversions ----------------------------------- */
 
@@ -22,18 +54,16 @@ public class Span<T extends Object> implements Collection, Base{
      *             <li>span_to_spanset</li>
      * @return A new {@link SpanSet} instance
      */
+    /*
     public SpanSet to_spanset(){
         return new SpanSet(functions.span_to_spanset(this._inner));
     }
 
+     */
+
 
 
     /** ------------------------- Accessors ------------------------------------- */
-
-
-    public Pointer get_inner(){
-        return _inner;
-    }
 
 
     /**

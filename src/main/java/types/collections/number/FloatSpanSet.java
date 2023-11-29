@@ -23,7 +23,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
     private Pointer _inner;
 
-
+    /** ------------------------- Constructors ---------------------------------- */
 
     public FloatSpanSet(Pointer inner){
         this._inner = inner;
@@ -33,9 +33,15 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
         this._inner = functions.floatspanset_in(str);
     }
 
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.intspanset_in(str);
+    }
 
-
-    /** ------------------------- Constructors ---------------------------------- */
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
 
 
     /** ------------------------- Output ---------------------------------------- */
@@ -70,10 +76,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A new {@link FloatSpan} instance
      */
+    /*
     public FloatSpan to_span(){
         return new FloatSpan(super.to_span().get_inner());
     }
 
+
+     */
     /**
      * Returns an intspanset that encompasses "this".
      *
@@ -92,6 +101,10 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
     /** ------------------------- Accessors ------------------------------------- */
 
+
+    public Pointer get_inner(){
+        return _inner;
+    }
 
     /**
      * Returns the width of the spanset. By default, i.e., when the second
@@ -120,10 +133,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A {@link FloatSpan} instance
      */
+    /*
     public FloatSpan start_span(){
         return new FloatSpan(super.start_span().get_inner());
     }
 
+
+     */
 
     /**
      * Returns the last span in "this".
@@ -133,10 +149,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A {@link FloatSpan} instance
      */
+    /*
     public FloatSpan end_span(){
         return new FloatSpan(super.end_span().get_inner());
     }
 
+
+     */
 
     /**
      * Returns the n-th span in "this".
@@ -146,9 +165,12 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A {@link FloatSpan} instance
      */
+    /*
     public FloatSpan span_n(int n){
         return new FloatSpan(super.span_n(n).get_inner());
     }
+
+     */
 
     /** ------------------------- Transformations ------------------------------- */
 

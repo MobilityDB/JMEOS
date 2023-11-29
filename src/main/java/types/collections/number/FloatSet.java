@@ -24,11 +24,13 @@ public class FloatSet extends Set<Float> implements Number{
     private Pointer _inner;
 
     public FloatSet(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public FloatSet(String str){
-        this._inner = functions.floatset_in(str);
+        super(str);
+        _inner = functions.floatset_in(str);
     }
 
     @Override
@@ -76,9 +78,12 @@ public class FloatSet extends Set<Float> implements Number{
      *
      * @return A new {@link FloatSpanSet} instance
      */
+    /*
     public FloatSpanSet to_spanset(){
         return new FloatSpanSet(super.to_spanset().get_inner());
     }
+
+     */
 
     /**
      * Returns a span that encompasses "this".
@@ -90,9 +95,12 @@ public class FloatSet extends Set<Float> implements Number{
      *
      * @return A new {@link FloatSpan} instance
      */
+    /*
     public FloatSpan to_span(){
         return new FloatSpan(super.to_span().get_inner());
     }
+
+     */
 
     /*
     public IntSet to_intset(){}
@@ -146,13 +154,13 @@ public class FloatSet extends Set<Float> implements Number{
      * @return A {@link Float} instance
      * @throws Exception
      */
-    /*
     public Float element_n(int n) throws Exception {
         super.element_n(n);
-        return functions.floatset_value_n(this._inner,n);
+        System.out.println(functions.floatset_value_n(this._inner,n).getDouble(0));
+        return 2.0f;
     }
 
-     */
+
 
     /*
     public List<Float> elements(){
@@ -387,7 +395,6 @@ public class FloatSet extends Set<Float> implements Number{
         if(other instanceof FloatSet){
             result = functions.intersection_set_set(this._inner, ((FloatSet) other)._inner);
         }
-
         return new FloatSet(result);
     }
 

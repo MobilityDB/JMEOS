@@ -4,15 +4,23 @@ import jnr.ffi.Pointer;
 import functions.functions;
 import types.TemporalObject;
 
-public class SpanSet<T extends Object> implements Collection, Base {
+public abstract class SpanSet<T extends Object> implements Collection, Base {
     private Pointer _inner = null;
 
+    /** ------------------------- Constructor ----------------------------------- */
 
-    public SpanSet(){}
+    public SpanSet(){};
     public SpanSet(Pointer inner){
-        this._inner = inner;
+        this._inner = createInner(inner);
+    }
+    public SpanSet(String str){
+        this._inner = createStringInner(str);
     }
 
+
+    public abstract Pointer get_inner();
+    public abstract Pointer createInner(Pointer inner);
+    public abstract Pointer createStringInner(String str);
 
 
     /** ------------------------- Conversions ----------------------------------- */
@@ -27,17 +35,16 @@ public class SpanSet<T extends Object> implements Collection, Base {
      *             <li>spanset_span</li>
      * @return A new :class:`Span` instance
      */
+    /*
     public Span to_span(){
         return new Span(functions.spanset_span(this._inner));
     }
 
+     */
+
 
     /** ------------------------- Accessors ------------------------------------- */
 
-
-    public Pointer get_inner(){
-        return this._inner;
-    }
 
     /**
      * Returns the number of spans in "this".
@@ -60,9 +67,12 @@ public class SpanSet<T extends Object> implements Collection, Base {
      *
      * @return A {@link Span} instance
      */
+    /*
     public Span start_span(){
         return new Span(functions.spanset_start_span(this._inner));
     }
+
+     */
 
     /**
      * Returns the last span in "this".
@@ -73,9 +83,12 @@ public class SpanSet<T extends Object> implements Collection, Base {
      *
      * @return A {@link Span} instance
      */
+    /*
     public Span end_span(){
         return new Span(functions.spanset_end_span(this._inner));
     }
+
+     */
 
 
     /**
@@ -87,9 +100,12 @@ public class SpanSet<T extends Object> implements Collection, Base {
      * @param n number of Span
      * @return A {@link Span} instance
      */
+    /*
     public Span span_n(int n){
         return new Span(functions.spanset_span_n(this._inner,n));
     }
+
+     */
 
 
     /**
@@ -227,7 +243,8 @@ public class SpanSet<T extends Object> implements Collection, Base {
      * @throws Exception
      */
     public boolean is_same(Base other) throws Exception {
-        return this.to_span().is_same(other);
+        return true;
+        //return this.to_span().is_same(other);
     }
 
 

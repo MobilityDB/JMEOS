@@ -114,9 +114,8 @@ public class TextSet extends Set<String> {
      * @throws Exception
      */
     public String element_n(int n) throws Exception {
+        super.element_n(n);
         return functions.text2cstring(functions.textset_value_n(this._inner,n));
-        //return functions.text2cstring(functions.textset_value_n(this._inner,n));
-
     }
 
     /** ------------------------- Topological Operations -------------------------------- */

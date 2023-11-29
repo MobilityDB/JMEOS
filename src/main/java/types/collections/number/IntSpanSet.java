@@ -23,6 +23,9 @@ import jnr.ffi.Pointer;
 public class IntSpanSet extends SpanSet<Integer> implements Number{
     private Pointer _inner;
 
+
+    /** ------------------------- Constructors ---------------------------------- */
+
     public IntSpanSet(Pointer inner){
         this._inner = inner;
     }
@@ -32,8 +35,15 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     }
 
 
-    /** ------------------------- Constructors ---------------------------------- */
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.intspanset_in(str);
+    }
 
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
 
     /** ------------------------- Output ---------------------------------------- */
 
@@ -66,10 +76,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A new {@link IntSpan} instance
      */
+    /*
     public IntSpan to_span(){
         return new IntSpan(super.to_span().get_inner());
     }
 
+
+     */
     /**
      * Returns an intspanset that encompasses "this".
      *
@@ -91,6 +104,10 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
     /** ------------------------- Accessors ------------------------------------- */
 
+
+    public Pointer get_inner(){
+        return _inner;
+    }
 
     /**
      * Returns the width of the spanset. By default, i.e., when the second
@@ -119,10 +136,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A {@link IntSpan} instance
      */
+    /*
     public IntSpan start_span(){
         return new IntSpan(super.start_span().get_inner());
     }
 
+
+     */
 
     /**
      * Returns the last span in "this".
@@ -132,10 +152,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A {@link IntSpan} instance
      */
+    /*
     public IntSpan end_span(){
         return new IntSpan(super.end_span().get_inner());
     }
 
+
+     */
 
     /**
      * Returns the n-th span in "this".
@@ -145,9 +168,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A {@link IntSpan} instance
      */
+    /*
     public IntSpan span_n(int n){
         return new IntSpan(super.span_n(n).get_inner());
     }
+
+     */
 
 
 

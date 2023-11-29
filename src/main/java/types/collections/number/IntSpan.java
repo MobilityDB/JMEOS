@@ -24,12 +24,112 @@ import jnr.ffi.Pointer;
 public class IntSpan extends Span<Integer> implements Number{
     private Pointer _inner;
 
+    /** ------------------------- Constructor ---------------------------------------- */
+
     public IntSpan(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public IntSpan(String str){
-        this._inner = functions.intspan_in(str);
+        super(str);
+        _inner = functions.intspan_in(str);
+    }
+
+    public IntSpan(int lower, int upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        _inner = functions.intspan_make(lower,upper,lower_inc,upper_inc);
+    }
+
+    public IntSpan(int lower, String upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_upper = Integer.parseInt(upper);
+        _inner = functions.intspan_make(lower,new_upper,lower_inc,upper_inc);
+    }
+
+    public IntSpan(String lower, String upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_upper = Integer.parseInt(upper);
+        int new_lower = Integer.parseInt(lower);
+        _inner = functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
+    }
+
+    public IntSpan(String lower, int upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_lower = Integer.parseInt(lower);
+        _inner = functions.intspan_make(new_lower,upper,lower_inc,upper_inc);
+    }
+
+    public IntSpan(int lower, int upper){
+        super(lower,upper,true,false);
+        _inner = functions.intspan_make(lower,upper,true,false);
+    }
+
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.intspan_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
+
+    @Override
+    public Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc){
+        return functions.intspan_make(lower,upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc){
+        int new_upper = Integer.parseInt(upper);
+        return functions.intspan_make(lower,new_upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
+        int new_upper = Integer.parseInt(upper);
+        int new_lower = Integer.parseInt(lower);
+        return functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc){
+        int new_lower = Integer.parseInt(lower);
+        return functions.intspan_make(new_lower,upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createIntIntNb(int lower, int upper){
+        return functions.intspan_make(lower,upper,true,false);
+    }
+
+    /**
+     * Return a copy of "this".
+     * <p>
+     *         MEOS Functions:
+     *             <li>span_copy</li>
+     * @return a new IntSpan instance
+     */
+    public IntSpan copy(){
+        return new IntSpan(functions.span_copy(this._inner));
+    }
+    /*
+    public IntSpan from_wkb(Byte b){
+        return new IntSpan(functions.span_from_wkb(b));
+    }
+
+     */
+
+    /**
+     * Returns a Period from its WKB representation in hex-encoded ASCII.
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>span_from_hexwkb</li>
+     *
+     * @param str WKB representation in hex-encoded ASCII
+     * @return a new {@link types.collections.time.Period} instance
+     */
+    public IntSpan from_hexwkb(String str){
+        return new IntSpan(functions.span_from_hexwkb(str));
     }
 
     /** ------------------------- Output ---------------------------------------- */
@@ -63,9 +163,12 @@ public class IntSpan extends Span<Integer> implements Number{
      *
      * @return A new {@link IntSpanSet} instance
      */
+    /*
     public IntSpanSet to_spanset(){
         return new IntSpanSet(super.to_spanset().get_inner());
     }
+
+     */
 
 
     /**
@@ -87,6 +190,11 @@ public class IntSpan extends Span<Integer> implements Number{
 
 
     /** ------------------------- Accessors ------------------------------------- */
+
+    @Override
+    public Pointer get_inner(){
+        return _inner;
+    }
 
 
     /**
@@ -358,7 +466,7 @@ public class IntSpan extends Span<Integer> implements Number{
     public IntSpanSet minus(Object other){
         Pointer result = null;
         if (other instanceof Integer){
-            //result = functions.minus_intspan_int(this._inner,other);
+            result = functions.minus_intspan_int(this._inner,(int)other);
         }
         else if (other instanceof IntSpan) {
             result = functions.minus_span_span(this._inner,((IntSpan) other).get_inner());
@@ -386,7 +494,7 @@ public class IntSpan extends Span<Integer> implements Number{
     public IntSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            //result = functions.union_intspan_int(this._inner,other);
+            result = functions.union_intspan_int(this._inner,(int)other);
         }
         else if (other instanceof IntSpan) {
             result = functions.union_span_span(this._inner,((IntSpan) other).get_inner());
@@ -400,6 +508,7 @@ public class IntSpan extends Span<Integer> implements Number{
         }
         return new IntSpanSet(result);
     }
+
 
 
 }

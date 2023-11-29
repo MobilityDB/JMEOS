@@ -86,6 +86,16 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 		validate();
 	}
 
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.intspanset_in(str);
+	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return _inner;
+	}
+
 	/**
 	 * Return a copy of "this".
 	 * <p>

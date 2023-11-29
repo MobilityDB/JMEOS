@@ -26,6 +26,8 @@ import types.collections.base.SpanSet;
 public class FloatSpan extends Span<Float> implements Number{
     private Pointer _inner;
 
+    /** ------------------------- Constructors ---------------------------------- */
+
     public FloatSpan(Pointer inner){
         this._inner = inner;
     }
@@ -34,7 +36,43 @@ public class FloatSpan extends Span<Float> implements Number{
         this._inner = functions.floatspan_in(str);
     }
 
-    /** ------------------------- Constructors ---------------------------------- */
+
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.floatspan_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
+
+
+    @Override
+    public Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc){
+        return functions.intspan_make(lower,upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc){
+        int new_upper = Integer.parseInt(upper);
+        return functions.intspan_make(lower,new_upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
+        int new_upper = Integer.parseInt(upper);
+        int new_lower = Integer.parseInt(lower);
+        return functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc){
+        int new_lower = Integer.parseInt(lower);
+        return functions.intspan_make(new_lower,upper,lower_inc,upper_inc);
+    }
+    @Override
+    public Pointer createIntIntNb(int lower, int upper){
+        return functions.intspan_make(lower,upper,true,false);
+    }
+
 
 
     /** ------------------------- Output ---------------------------------------- */
@@ -69,9 +107,12 @@ public class FloatSpan extends Span<Float> implements Number{
      *
      * @return A new {@link FloatSpanSet} instance
      */
+    /*
     public FloatSpanSet to_spanset(){
         return new FloatSpanSet(super.to_spanset().get_inner());
     }
+
+     */
 
     /**
      * Converts "this" to a {@link IntSpan} instance.
@@ -91,8 +132,9 @@ public class FloatSpan extends Span<Float> implements Number{
     /** ------------------------- Accessors ------------------------------------- */
 
 
+    @Override
     public Pointer get_inner(){
-        return this._inner;
+        return _inner;
     }
 
 

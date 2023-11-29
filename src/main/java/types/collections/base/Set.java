@@ -34,9 +34,12 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *             <li>set_to_spanset</li>
      * @return A new {@link SpanSet} instance
      */
+    /*
     public SpanSet to_spanset(){
         return new SpanSet(functions.set_to_spanset(this._inner));
     }
+
+     */
 
     /**
      * Returns a span that encompasses "this".
@@ -45,9 +48,12 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *             <li>set_span</li>
      * @return A new {@link Span} instance
      */
+    /*
     public Span to_span(){
         return new Span(functions.set_span(this._inner));
     }
+
+     */
 
     /** ------------------------- Accessors ------------------------------------- */
 
@@ -61,7 +67,6 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return An {@link Integer}
      */
     public int num_elements(){
-        System.out.println(this._inner);
         return functions.set_num_values(this._inner);
     }
 
@@ -108,18 +113,10 @@ public abstract class Set<T extends Object> implements Collection, Base {
             throw new Exception("Index: " + Integer.toString(n)+ "out of bounds");
         }
         else {
-            return element().get(n);
+            return null;
         }
     }
 
-
-    /**
-     * Returns the list of distinct elements in "this".
-     * @return A {@link List<T>} instance
-     */
-    public List<T> element(){
-        return null;
-    }
 
     /**
      * Return the hash representation of "this".

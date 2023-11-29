@@ -21,11 +21,13 @@ public class IntSet extends Set<Integer> implements Number{
     private Pointer _inner;
 
     public IntSet(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public IntSet(String str){
-        this._inner = functions.intset_in(str);
+        super(str);
+        _inner = functions.intset_in(str);
     }
 
     @Override
@@ -70,9 +72,12 @@ public class IntSet extends Set<Integer> implements Number{
      *
      * @return A new {@link IntSpanSet} instance
      */
+    /*
     public IntSpanSet to_spanset(){
         return new IntSpanSet(super.to_spanset().get_inner());
     }
+
+     */
 
     /**
      * Returns a span that encompasses "this".
@@ -84,9 +89,12 @@ public class IntSet extends Set<Integer> implements Number{
      *
      * @return A {@link IntSpan} instance
      */
+    /*
     public IntSpan to_span(){
         return new IntSpan(super.to_span().get_inner());
     }
+
+     */
 
     /*
     public FloatSet to_floatset(){

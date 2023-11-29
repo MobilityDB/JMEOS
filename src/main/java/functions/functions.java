@@ -3758,7 +3758,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.floatset_value_n(s, n, result);
-		return out ? result : null ;
+        Pointer vv = result.getPointer(0);
+		return out ? vv : null ;
 	}
 	
 	@SuppressWarnings("unused")
