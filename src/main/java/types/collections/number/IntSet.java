@@ -28,6 +28,16 @@ public class IntSet extends Set<Integer> implements Number{
         this._inner = functions.intset_in(str);
     }
 
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.intset_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
+
     /** ------------------------- Constructors ---------------------------------- */
 
 
@@ -87,7 +97,10 @@ public class IntSet extends Set<Integer> implements Number{
 
     /** ------------------------- Accessors ------------------------------------- */
 
-
+    @Override
+    public Pointer get_inner(){
+        return this._inner;
+    }
 
     /**
      * Returns the first element in "this".

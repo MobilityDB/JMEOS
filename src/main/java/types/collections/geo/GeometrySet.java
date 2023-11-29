@@ -9,5 +9,19 @@ public class GeometrySet extends GeoSet{
         super();
         this._inner = functions.geomset_in(str);
     }
+    @Override
+    public Pointer get_inner(){
+        return this._inner;
+    }
+
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.geomset_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
 
 }

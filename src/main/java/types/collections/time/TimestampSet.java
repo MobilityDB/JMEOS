@@ -73,6 +73,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 		setValue(value);
 		this._inner = functions.timestampset_in(value);
 	}
+
 	
 	/**
 	 * The array of OffsetDateTime constructor
@@ -97,6 +98,16 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 */
 	public TimestampSet copy() throws SQLException {
 		return new TimestampSet(functions.set_copy(this._inner));
+	}
+
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.timestampset_in(str);
+	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return _inner;
 	}
 
 	/*
@@ -189,7 +200,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 *             <li>set_hash</li>
 	 * @return a new Integer instance
 	 */
-	public int hash(){
+	public long hash(){
 		return functions.set_hash(this._inner);
 	}
 

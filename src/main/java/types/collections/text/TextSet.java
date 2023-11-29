@@ -1,6 +1,7 @@
 package types.collections.text;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.provider.BoundedMemoryIO;
 import types.collections.base.Base;
 import types.collections.base.Set;
 import types.collections.base.Collection;
@@ -24,19 +25,32 @@ import java.util.List;
  *         >>> TextSet(elements=['a', 'b', 'c', 'def'])
  */
 public class TextSet extends Set<String> {
-    Pointer _inner;
+    private Pointer _inner;
 
 
 
     /** ------------------------- Constructors ---------------------------------- */
 
     public TextSet(String str){
+        super(str);
         _inner = functions.textset_in(str);
     }
 
     public TextSet(Pointer inner){
+        super(inner);
         _inner = inner;
     }
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.textset_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
+
+
 
     /** ------------------------- Output ---------------------------------------- */
 
@@ -71,7 +85,7 @@ public class TextSet extends Set<String> {
      * @return A {@link String} instance
      */
     public String start_element() {
-        return new TextSet(functions.textset_start_value(this._inner)).toString();
+        return functions.text2cstring(functions.textset_start_value(this._inner));
     }
 
     /**
@@ -84,7 +98,7 @@ public class TextSet extends Set<String> {
      * @return A {@link String} instance
      */
     public String end_element(){
-        return new TextSet(functions.textset_end_value(this._inner)).toString();
+        return functions.text2cstring(functions.textset_end_value(this._inner));
     }
 
     /**
@@ -100,10 +114,9 @@ public class TextSet extends Set<String> {
      * @throws Exception
      */
     public String element_n(int n) throws Exception {
-        Pointer result = null;
-        super.element_n(n);
-        return "";
-        //return new TextSet(functions.text2cstring(functions.textset_value_n(this._inner, n+1, result))).toString();
+        return functions.text2cstring(functions.textset_value_n(this._inner,n));
+        //return functions.text2cstring(functions.textset_value_n(this._inner,n));
+
     }
 
     /** ------------------------- Topological Operations -------------------------------- */

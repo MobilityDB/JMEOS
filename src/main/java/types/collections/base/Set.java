@@ -6,18 +6,24 @@ import functions.functions;
 import java.util.List;
 
 
-public class Set<T extends Object> implements Collection, Base {
-    private Pointer _inner = null;
+public abstract class Set<T extends Object> implements Collection, Base {
+    private Pointer _inner;
 
 
     /** ------------------------- Constructors ---------------------------------- */
     public Set(){};
     public Set(Pointer inner){
-        this._inner = inner;
+        this._inner = createInner(inner);
+    }
+    public Set(String str){
+        this._inner = createStringInner(str);
     }
 
-    /** ------------------------- Output ---------------------------------------- */
+    public abstract Pointer get_inner();
+    public abstract Pointer createInner(Pointer inner);
+    public abstract Pointer createStringInner(String str);
 
+    /** ------------------------- Output ----------------------------------------
 
     /** ------------------------- Conversions ----------------------------------- */
 
@@ -55,6 +61,7 @@ public class Set<T extends Object> implements Collection, Base {
      * @return An {@link Integer}
      */
     public int num_elements(){
+        System.out.println(this._inner);
         return functions.set_num_values(this._inner);
     }
 
@@ -121,7 +128,7 @@ public class Set<T extends Object> implements Collection, Base {
      *             <li>set_hash</li>
      * @return A new {@link Integer} instance
      */
-    public int hash(){
+    public long hash(){
         return functions.set_hash(this._inner);
     }
 

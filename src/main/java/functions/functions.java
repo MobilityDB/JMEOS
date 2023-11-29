@@ -360,7 +360,7 @@ public class functions {
 
 		long periodset_upper(Pointer ps);
 
-		int set_hash(Pointer s);
+		long set_hash(Pointer s);
 
 		long set_hash_extended(Pointer s, long seed);
 
@@ -3931,7 +3931,7 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static int set_hash(Pointer s) {
+	public static long set_hash(Pointer s) {
 		return MeosLibrary.meos.set_hash(s);
 	}
 	
@@ -4051,7 +4051,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.textset_value_n(s, n, result);
-		return out ? result : null ;
+		Pointer vv = result.getPointer(0);
+		return out ? vv : null ;
 	}
 	
 	@SuppressWarnings("unused")

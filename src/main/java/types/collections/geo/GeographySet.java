@@ -9,4 +9,18 @@ public class GeographySet extends GeoSet{
         super();
         this._inner = functions.geogset_in(str);
     }
+    @Override
+    public Pointer get_inner(){
+        return this._inner;
+    }
+
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.geogset_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
 }

@@ -31,6 +31,15 @@ public class FloatSet extends Set<Float> implements Number{
         this._inner = functions.floatset_in(str);
     }
 
+    @Override
+    public Pointer createStringInner(String str){
+        return functions.floatset_in(str);
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+        return _inner;
+    }
 
     /** ------------------------- Constructors ---------------------------------- */
 
@@ -91,6 +100,10 @@ public class FloatSet extends Set<Float> implements Number{
 
     /** ------------------------- Accessors ------------------------------------- */
 
+    @Override
+    public Pointer get_inner(){
+        return this._inner;
+    }
 
     /**
      * Returns the first element in "this".
