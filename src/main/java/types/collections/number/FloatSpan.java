@@ -29,12 +29,46 @@ public class FloatSpan extends Span<Float> implements Number{
     /** ------------------------- Constructors ---------------------------------- */
 
     public FloatSpan(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public FloatSpan(String str){
-        this._inner = functions.floatspan_in(str);
+        super(str);
+        _inner = functions.floatspan_in(str);
     }
+
+
+    public FloatSpan(float lower, float upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        _inner = functions.floatspan_make(lower,upper,lower_inc,upper_inc);
+    }
+
+    public FloatSpan(float lower, String upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_upper = Integer.parseInt(upper);
+        _inner = functions.floatspan_make(lower,new_upper,lower_inc,upper_inc);
+    }
+
+    public FloatSpan(String lower, String upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_upper = Integer.parseInt(upper);
+        int new_lower = Integer.parseInt(lower);
+        _inner = functions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
+    }
+
+    public FloatSpan(String lower, float upper, boolean lower_inc, boolean upper_inc){
+        super(lower,upper,lower_inc,upper_inc);
+        int new_lower = Integer.parseInt(lower);
+        _inner = functions.floatspan_make(new_lower,upper,lower_inc,upper_inc);
+    }
+
+    public FloatSpan(float lower, float upper){
+        super(lower,upper,true,false);
+        _inner = functions.floatspan_make(lower,upper,true,false);
+    }
+
+
 
 
     @Override
@@ -49,28 +83,28 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
     @Override
-    public Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc){
-        return functions.intspan_make(lower,upper,lower_inc,upper_inc);
+    public Pointer createIntInt(java.lang.Number lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
+        return functions.floatspan_make(lower.floatValue(),upper.floatValue(),lower_inc,upper_inc);
     }
     @Override
-    public Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc){
+    public Pointer createIntStr(java.lang.Number lower, String upper, boolean lower_inc, boolean upper_inc){
         int new_upper = Integer.parseInt(upper);
-        return functions.intspan_make(lower,new_upper,lower_inc,upper_inc);
+        return functions.floatspan_make(lower.floatValue(),new_upper,lower_inc,upper_inc);
     }
     @Override
     public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
         int new_upper = Integer.parseInt(upper);
         int new_lower = Integer.parseInt(lower);
-        return functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
+        return functions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
     }
     @Override
-    public Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc){
+    public Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
         int new_lower = Integer.parseInt(lower);
-        return functions.intspan_make(new_lower,upper,lower_inc,upper_inc);
+        return functions.floatspan_make(new_lower,upper.floatValue(),lower_inc,upper_inc);
     }
     @Override
-    public Pointer createIntIntNb(int lower, int upper){
-        return functions.intspan_make(lower,upper,true,false);
+    public Pointer createIntIntNb(java.lang.Number lower, java.lang.Number upper){
+        return functions.floatspan_make(lower.floatValue(),upper.floatValue(),true,false);
     }
 
 
@@ -107,12 +141,10 @@ public class FloatSpan extends Span<Float> implements Number{
      *
      * @return A new {@link FloatSpanSet} instance
      */
-    /*
     public FloatSpanSet to_spanset(){
-        return new FloatSpanSet(super.to_spanset().get_inner());
+        return new FloatSpanSet(functions.span_to_spanset(this._inner));
     }
 
-     */
 
     /**
      * Converts "this" to a {@link IntSpan} instance.

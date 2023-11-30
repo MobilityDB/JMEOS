@@ -230,7 +230,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 *             <li>spanset_hash
 	 * @return a new Integer instance
 	 */
-	public int hash(){
+	public long hash(){
 		return functions.spanset_hash(this._inner);
 	}
 

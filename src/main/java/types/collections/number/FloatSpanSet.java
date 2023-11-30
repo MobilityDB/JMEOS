@@ -26,16 +26,18 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     /** ------------------------- Constructors ---------------------------------- */
 
     public FloatSpanSet(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public FloatSpanSet(String str){
-        this._inner = functions.floatspanset_in(str);
+        super(str);
+        _inner = functions.floatspanset_in(str);
     }
 
     @Override
     public Pointer createStringInner(String str){
-        return functions.intspanset_in(str);
+        return functions.floatspanset_in(str);
     }
 
     @Override
@@ -76,13 +78,11 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      * @return A new {@link FloatSpan} instance
      */
-    /*
     public FloatSpan to_span(){
-        return new FloatSpan(super.to_span().get_inner());
+        return new FloatSpan(functions.spanset_span(this._inner));
     }
 
 
-     */
     /**
      * Returns an intspanset that encompasses "this".
      *

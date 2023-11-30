@@ -3,6 +3,7 @@ package collections.text;
 import org.junit.jupiter.api.Test;
 import types.collections.text.TextSet;
 import static org.junit.jupiter.api.Assertions.*;
+import functions.functions;
 
 import java.util.List;
 import java.util.Arrays;
@@ -23,6 +24,16 @@ public class TextSetTest {
         //TextSet ttset = new TextSet("{A, BB, ccc}");
         assertTextsetEquality(tset, List.of("Hello", "World", "Java"));
     }
+
+    @Test
+    public void testAsHex(){
+        TextSet tset = new TextSet("{A, BB, ccc}");
+        String pr = tset.as_hexwkb();
+        TextSet ttp = new TextSet(functions.set_from_hexwkb(pr));
+        System.out.println(ttp.toString());
+    }
+
+
 
     @Test
     public void testListConstructor(){}

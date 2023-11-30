@@ -1,5 +1,6 @@
 package main.java;
 
+import jnr.ffi.Pointer;
 import utils.BuilderUtils;
 import utils.Pair;
 
@@ -301,7 +302,7 @@ public class FunctionsGenerator {
 				paramNames = BuilderUtils.modifyList(paramNames, oldName, newName);
 			}
 		}
-		if (! paramNames.contains("result")){
+		if (! (paramNames.contains("result") || paramNames.contains("size_out"))){
 			functionCallingProcess.add("MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
 		}
 
@@ -338,7 +339,8 @@ public class FunctionsGenerator {
 					if (total > 1){
 						functionCallingProcess.add("Pointer result = Memory.allocateDirect(runtime, Long.BYTES);");
 						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
-						functionCallingProcess.add("return out ? result : null ;");
+						functionCallingProcess.add("Pointer new_result = result.getPointer(0);");
+						functionCallingProcess.add("return out ? new_result : null ;");
 					}
 					else if (signature.contains("int ")){
 						functionCallingProcess.add("Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);");
@@ -367,6 +369,12 @@ public class FunctionsGenerator {
 						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
 						functionCallingProcess.add("return out ? true : false ;");
 					}
+
+				}
+				else if (paramNames.contains("size_out")){
+					functionCallingProcess.add("Runtime runtime = Runtime.getSystemRuntime();");
+					functionCallingProcess.add("Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);");
+					functionCallingProcess.add("return MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
 
 				}
 				else{
@@ -437,6 +445,10 @@ public class FunctionsGenerator {
 						functionSignature2 = functionSignature2.replace("public static boolean","public static long");
 					}
 					functionSignature2 = functionSignature2.replace(", Pointer result","");
+				}
+
+				else if (functionSignature2.contains("as_hexwkb") || functionSignature2.contains("as_wkb")){
+					functionSignature2 = functionSignature2.replace(", Pointer size_out","");
 				}
 				/* Add all the different parts in the function body builder */
 				functionBodyBuilder.append("@SuppressWarnings(\"unused\")\n")

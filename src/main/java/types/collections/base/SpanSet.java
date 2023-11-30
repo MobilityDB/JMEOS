@@ -117,7 +117,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *
      * @return A new :class:`int` instance
      */
-    public int hash(){
+    public long hash(){
         return functions.spanset_hash(this._inner);
     }
 

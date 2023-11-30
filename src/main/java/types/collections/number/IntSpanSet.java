@@ -27,10 +27,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     /** ------------------------- Constructors ---------------------------------- */
 
     public IntSpanSet(Pointer inner){
-        this._inner = inner;
+        super(inner);
+        _inner = inner;
     }
 
     public IntSpanSet(String str){
+        super(str);
         this._inner = functions.intspanset_in(str);
     }
 
@@ -76,13 +78,10 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      * @return A new {@link IntSpan} instance
      */
-    /*
     public IntSpan to_span(){
-        return new IntSpan(super.to_span().get_inner());
+        return new IntSpan(functions.spanset_span(this._inner));
     }
 
-
-     */
     /**
      * Returns an intspanset that encompasses "this".
      *

@@ -337,7 +337,7 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 	 * </p>
 	 * @return integer instance
 	 */
-	public int hash(){
+	public long hash(){
 		return functions.span_hash(this._inner);
 	}
 

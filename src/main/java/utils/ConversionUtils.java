@@ -163,4 +163,21 @@ public class ConversionUtils {
 	}
 
 
+	public static String hexWKBToWKB(String hexWKB) {
+		if (hexWKB.length() % 2 != 0) {
+			System.err.println("Invalid HexWKB format.");
+			return null;
+		}
+
+		StringBuilder wkbStringBuilder = new StringBuilder();
+		for (int i = 0; i < hexWKB.length(); i += 2) {
+			String hexPair = hexWKB.substring(i, i + 2);
+			int hexValue = Integer.parseInt(hexPair, 16);
+			wkbStringBuilder.append((char) hexValue);
+		}
+
+		return wkbStringBuilder.toString();
+	}
+
+
 }

@@ -2,6 +2,7 @@ package types.collections.base;
 
 import jnr.ffi.Pointer;
 import functions.functions;
+import types.collections.number.Number;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -18,30 +19,30 @@ public abstract class Span<T extends Object> implements Collection, Base{
         this._inner = createStringInner(str);
     }
 
-    public Span(int lower, int upper, boolean lower_inc, boolean upper_inc){
+    public Span(java.lang.Number lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
         this._inner = createIntInt(lower, upper, lower_inc, upper_inc);
     }
-    public Span(int lower, String upper, boolean lower_inc, boolean upper_inc){
+    public Span(java.lang.Number lower, String upper, boolean lower_inc, boolean upper_inc){
         this._inner = createIntStr(lower, upper, lower_inc, upper_inc);
     }
     public Span(String lower, String upper, boolean lower_inc, boolean upper_inc){
         this._inner = createStrStr(lower, upper, lower_inc, upper_inc);
     }
-    public Span(String lower, int upper, boolean lower_inc, boolean upper_inc){
+    public Span(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
         this._inner = createStrInt(lower,upper, lower_inc, upper_inc);
     }
-    public Span(int lower, int upper){
+    public Span(java.lang.Number lower, java.lang.Number upper){
         this._inner = createIntIntNb(lower, upper);
     }
 
     public abstract Pointer get_inner();
     public abstract Pointer createInner(Pointer inner);
     public abstract Pointer createStringInner(String str);
-    public abstract Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc);
-    public abstract Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createIntInt(java.lang.Number lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createIntStr(java.lang.Number lower, String upper, boolean lower_inc, boolean upper_inc);
     public abstract Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc);
-    public abstract Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc);
-    public abstract Pointer createIntIntNb(int lower, int upper);
+    public abstract Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc);
+    public abstract Pointer createIntIntNb(java.lang.Number lower, java.lang.Number upper);
 
 
 
@@ -56,10 +57,12 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     /*
     public SpanSet to_spanset(){
-        return new SpanSet(functions.span_to_spanset(this._inner));
+        return (SpanSet.createfunctions.span_to_spanset(this._inner);
     }
 
      */
+
+
 
 
 
@@ -125,7 +128,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      *             <li>span_hash</li>
      * @return A new {@link Integer} instance
      */
-    public int hash(){
+    public long hash(){
         return functions.span_hash(this._inner);
     }
 

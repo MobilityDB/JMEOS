@@ -1,6 +1,8 @@
 package types.collections.text;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import jnr.ffi.provider.BoundedMemoryIO;
 import types.collections.base.Base;
 import types.collections.base.Set;
@@ -50,6 +52,11 @@ public class TextSet extends Set<String> {
         return _inner;
     }
 
+
+    public String as_hexwkb(){
+        String pr = functions.set_as_hexwkb(this.get_inner(),(byte) -1);
+        return pr;
+    }
 
 
     /** ------------------------- Output ---------------------------------------- */

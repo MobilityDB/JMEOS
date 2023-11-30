@@ -72,12 +72,10 @@ public class IntSet extends Set<Integer> implements Number{
      *
      * @return A new {@link IntSpanSet} instance
      */
-    /*
     public IntSpanSet to_spanset(){
-        return new IntSpanSet(super.to_spanset().get_inner());
+        return new IntSpanSet(functions.set_to_spanset(this._inner));
     }
 
-     */
 
     /**
      * Returns a span that encompasses "this".
@@ -89,12 +87,11 @@ public class IntSet extends Set<Integer> implements Number{
      *
      * @return A {@link IntSpan} instance
      */
-    /*
     public IntSpan to_span(){
-        return new IntSpan(super.to_span().get_inner());
+        return new IntSpan(functions.set_span(this._inner));
     }
 
-     */
+
 
     /*
     public FloatSet to_floatset(){
