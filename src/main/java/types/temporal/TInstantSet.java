@@ -56,8 +56,8 @@ public abstract class TInstantSet<V extends Serializable> extends TemporalInstan
 	 */
 
 	public Period period() throws SQLException {
-		return new Period(instantList.get(0).getTimestamp(),
-				instantList.get(instantList.size() - 1).getTimestamp(),
+		return new Period(instantList.get(0).getTimestamp().toLocalDateTime(),
+				instantList.get(instantList.size() - 1).getTimestamp().toLocalDateTime(),
 				true, true);
 	}
 	

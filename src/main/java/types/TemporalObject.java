@@ -9,9 +9,5 @@ import types.core.DataType;
  * @author Killian Monnier
  * @since 09/08/2023
  */
-public abstract class TemporalObject<T> extends DataType {
-	protected T _inner = null;
-	public T get_inner() {
-		return this._inner;
-	}
+public interface TemporalObject {
 }

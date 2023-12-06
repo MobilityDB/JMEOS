@@ -9,6 +9,7 @@ import types.core.TypeName;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import types.boxes.*;
 
 import functions.functions;
+import utils.ConversionUtils;
 
 
 /**
@@ -38,8 +40,8 @@ import functions.functions;
  * @since 10/09/2023
  */
 @TypeName(name = "timestampset")
-public class TimestampSet extends Set<DateTime> implements Time, TimeCollection {
-	private final List<OffsetDateTime> dateTimeList;
+public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollection {
+	private List<OffsetDateTime> dateTimeList = null;
 	private Pointer _inner;
 
 
@@ -50,15 +52,12 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * The default constructor
 	 */
 	public TimestampSet() {
-		super();
-		dateTimeList = new ArrayList<>();
 	}
 	
 	public TimestampSet(Pointer _inner) throws SQLException {
-		this();
+		super(_inner);
 		this._inner = _inner;
-		String str = functions.timestampset_out(this._inner);
-		setValue(str);
+		//String str = functions.timestampset_out(this._inner);
 	}
 	
 	
@@ -69,8 +68,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @throws SQLException
 	 */
 	public TimestampSet(String value) throws SQLException {
-		this();
-		setValue(value);
+		super(value);
 		this._inner = functions.timestampset_in(value);
 	}
 
@@ -81,11 +79,14 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @param dateTimes - an array of OffsetDateTime or OffsetDateTime separated by a comma
 	 * @throws SQLException
 	 */
+	/*
 	public TimestampSet(OffsetDateTime... dateTimes) throws SQLException {
-		this();
-		Collections.addAll(dateTimeList, dateTimes);
-		validate();
+		//functions.timestampset_make
 	}
+
+	 */
+
+
 
 
 	/**
@@ -107,7 +108,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 
 	@Override
 	public Pointer createInner(Pointer inner){
-		return _inner;
+		return inner;
 	}
 
 	/*
@@ -161,13 +162,17 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 		return new PeriodSet(functions.set_to_spanset(this.get_inner()));
 	}
 
-	/** ------------------------- Accessors ------------------------------------- */
-
-
-	public Pointer get_inner(){
-		return this._inner;
+	/**
+	 * Returns a period that encompasses "this".
+	 *<p>
+	 *         MEOS Functions:
+	 *             <li>set_span</li>
+	 * @return a new Period instance
+	 * @throws SQLException
+	 */
+	public Period to_span() throws SQLException {
+		return new Period(functions.set_span(this._inner));
 	}
-
 
 	/**
 	 * Returns a period that encompasses "this".
@@ -177,8 +182,19 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return a new Period instance
 	 * @throws SQLException
 	 */
-	public Period period() throws SQLException {
-		return new Period(functions.set_span(this._inner));
+	public Period to_period() throws SQLException {
+		return this.to_span();
+	}
+
+
+
+
+
+	/** ------------------------- Accessors ------------------------------------- */
+
+
+	public Pointer get_inner(){
+		return this._inner;
 	}
 
 
@@ -192,6 +208,33 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	public int num_timestamps(){
 		return functions.set_num_values(this._inner);
 	}
+
+	/**
+	 * Returns the first timestamp in "this".
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>timestampset_start_timestamp</li>
+	 *
+	 * @return a {@link LocalDateTime instance}
+	 */
+	public LocalDateTime start_element(){
+		return ConversionUtils.timestamptz_to_datetime(functions.timestampset_start_timestamp(this._inner));
+	}
+
+	/**
+	 * Returns the last timestamp in "this".
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>timestampset_end_timestamp</li>
+	 *
+	 * @return a {@link LocalDateTime instance}
+	 */
+	public LocalDateTime end_element(){
+		return ConversionUtils.timestamptz_to_datetime(functions.timestampset_end_timestamp(this._inner));
+	}
+
 
 	/**
 	 * Return the hash representation of "this".
@@ -266,6 +309,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if contained, false otherwise
      * @throws SQLException
      */
+	/*
 	public boolean is_contained_in(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -278,6 +322,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 		}
 		return returnValue;
 	}
+
+	 */
 
 
     /**
@@ -336,6 +382,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @return true if overlaps, false otherwise
      * @throws SQLException
      */
+	/*
 	public boolean overlaps(Time other) throws SQLException {
 		boolean returnValue;
 		switch (other) {
@@ -350,6 +397,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 		return returnValue;
 	}
 
+	 */
+
 
     /**
      * Returns whether the bounding period of "this" is the same as the bounding period of "other".
@@ -361,7 +410,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
      * @throws SQLException
      */
 	public boolean is_same(Time other) throws SQLException {
-		return this.period().is_same(other);
+		return this.to_period().is_same(other);
 	}
 
 
@@ -685,11 +734,14 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if equal, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean equals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_eq(this._inner,((TimestampSet) other).get_inner()) : false;
 		return result;
 	}
+
+	 */
 
 	/**
 	 * Returns whether "this" and "other" are not equal.
@@ -705,11 +757,14 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if not equal, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean notEquals(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_ne(this._inner,((TimestampSet) other).get_inner()) : true;
 		return result;
 	}
+
+	 */
 
 
 	/**
@@ -726,6 +781,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if less than, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean lessThan(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_lt(this._inner,((TimestampSet) other).get_inner());
@@ -734,6 +790,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 			throw new SQLException("Operation not supported with this type.");
 		}
 	}
+
+	 */
 
 
 	/**
@@ -751,6 +809,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if less than or equal, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean lessThanOrEqual(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_le(this._inner,((TimestampSet) other).get_inner());
@@ -759,6 +818,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 			throw new SQLException("Operation not supported with this type.");
 		}
 	}
+
+	 */
 
 
 	/**
@@ -775,6 +836,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if greater than, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean greaterThan(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_gt(this._inner,((TimestampSet) other).get_inner());
@@ -783,6 +845,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 			throw new SQLException("Operation not supported with this type.");
 		}
 	}
+
+	 */
 
 
 	/**
@@ -799,6 +863,7 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 	 * @return true if greater than or equal, false otherwise
 	 * @throws SQLException
 	 */
+	/*
 	public boolean greaterThanOrEqual(Time other) throws SQLException{
 		if (other instanceof TimestampSet){
 			return functions.set_ge(this._inner,((TimestampSet) other).get_inner());
@@ -807,6 +872,8 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 			throw new SQLException("Operation not supported with this type.");
 		}
 	}
+
+	 */
 
 
 
@@ -836,7 +903,6 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 			}
 		}
 		
-		validate();
 	}
 
 	
@@ -920,53 +986,6 @@ public class TimestampSet extends Set<DateTime> implements Time, TimeCollection 
 		return dateTimeList.toArray(new OffsetDateTime[0]);
 	}
 	
-	/**
-	 * Shifts the duration sent
-	 *
-	 * @param duration - the duration to shift
-	 */
-	public TimestampSet shift(Duration duration) throws SQLException {
-		ArrayList<OffsetDateTime> shifted = new ArrayList<>();
-		for (OffsetDateTime dateTime : dateTimeList) {
-			shifted.add(dateTime.plus(duration));
-		}
-		return new TimestampSet(shifted.toArray(new OffsetDateTime[0]));
-	}
-	
-	/**
-	 * Verifies that the received fields are valid
-	 *
-	 * @throws SQLException
-	 */
-	private void validate() throws SQLException {
-		if (dateTimeList == null || dateTimeList.isEmpty()) {
-			throw new SQLException("Timestamp set must contain at least one element.");
-		}
-		
-		for (int i = 0; i < dateTimeList.size(); i++) {
-			OffsetDateTime x = dateTimeList.get(i);
-			validateTimestamp(x);
-			
-			if (i + 1 < dateTimeList.size()) {
-				OffsetDateTime y = dateTimeList.get(i + 1);
-				validateTimestamp(y);
-				
-				if (x.isAfter(y) || x.isEqual(y)) {
-					throw new SQLException("The timestamps of a timestamp set must be in increasing order.");
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Checks if the timestamp is valid
-	 *
-	 * @param timestamp
-	 * @throws SQLException
-	 */
-	private void validateTimestamp(OffsetDateTime timestamp) throws SQLException {
-		if (timestamp == null) {
-			throw new SQLException("All timestamps should have a value.");
-		}
-	}
+
+
 }

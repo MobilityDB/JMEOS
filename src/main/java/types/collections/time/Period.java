@@ -9,8 +9,10 @@ import types.core.TypeName;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import types.collections.base.Span;
+import utils.ConversionUtils;
 
 /**
  * Class for representing sets of contiguous timestamps between a lower and
@@ -35,13 +37,13 @@ import types.collections.base.Span;
  * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
  */
 @TypeName(name = "period")
-public class Period extends Span<DateTime> implements Time, TimeCollection{
+public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	private static final String LOWER_INCLUSIVE = "[";
 	private static final String LOWER_EXCLUSIVE = "(";
 	private static final String UPPER_INCLUSIVE = "]";
 	private static final String UPPER_EXCLUSIVE = ")";
-	private OffsetDateTime lower;
-	private OffsetDateTime upper;
+	private LocalDateTime lower;
+	private LocalDateTime upper;
 	private boolean lowerInclusive = true;
 	private boolean upperInclusive = false;
 	private Pointer _inner;
@@ -79,7 +81,6 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 		this._inner = _inner;
 		String str = functions.period_out(this._inner);
 		System.out.println(str);
-		setValue(str);
 	}
 	
 	/**
@@ -90,28 +91,26 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 	 */
 	public Period(final String value) throws SQLException {
 		super(value);
-		this.setValue(value);
 		this._inner = functions.period_in(value);
 	}
-	
+
+
+
 	/**
-	 * The timestamps constructor
+	 * The timestamps without bounds constructor
 	 *
-	 * @param lower - a timestamp for the lower bound
-	 * @param upper - a timestamp for the upper bound
+	 * @param lower          - a timestamp for the lower bound
+	 * @param upper          - a timestamp for the upper bound
 	 * @throws SQLException sql exception
 	 */
-	public Period(OffsetDateTime lower, OffsetDateTime upper) throws SQLException {
+	public Period(String lower, String upper)
+			throws SQLException {
 		super();
-		this.lower = lower;
-		this.upper = upper;
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
-		OffsetDateTime lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
-		OffsetDateTime upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
+		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
+		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
-		validate();
-		
 	}
 	
 	/**
@@ -123,17 +122,83 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 	 * @param upperInclusive - if the upper bound is inclusive
 	 * @throws SQLException sql exception
 	 */
-	public Period(OffsetDateTime lower, OffsetDateTime upper, boolean lowerInclusive, boolean upperInclusive)
+	public Period(String lower, String upper, boolean lowerInclusive, boolean upperInclusive)
 			throws SQLException {
 		super();
-		this.lower = lower;
-		this.upper = upper;
-		this.lowerInclusive = lowerInclusive;
-		this.upperInclusive = upperInclusive;
-		OffsetDateTime lower_ts = functions.pg_timestamptz_in(this.lower.toString(), -1);
-		OffsetDateTime upper_ts = functions.pg_timestamptz_in(this.upper.toString(), -1);
+		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
+		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
+		this._inner = functions.period_make(lower_ts, upper_ts, lowerInclusive, upperInclusive);
+	}
+
+
+	/**
+	 * The timestamps without bounds constructor
+	 *
+	 * @param lower          - a timestamp for the lower bound
+	 * @param upper          - a timestamp for the upper bound
+	 * @throws SQLException sql exception
+	 */
+	public Period(LocalDateTime lower, LocalDateTime upper)
+			throws SQLException {
+		super();
+		this.lowerInclusive = true;
+		this.upperInclusive = false;
+		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
+		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
-		validate();
+	}
+
+
+	/**
+	 * The timestamps and bounds constructor
+	 *
+	 * @param lower          - a timestamp for the lower bound
+	 * @param upper          - a timestamp for the upper bound
+	 * @param lowerInclusive - if the lower bound is inclusive
+	 * @param upperInclusive - if the upper bound is inclusive
+	 * @throws SQLException sql exception
+	 */
+	public Period(LocalDateTime lower, LocalDateTime upper, boolean lowerInclusive, boolean upperInclusive)
+			throws SQLException {
+		super();
+		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
+		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
+		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
+	}
+
+
+	/**
+	 * The timestamps without bounds constructor
+	 *
+	 * @param lower          - a timestamp for the lower bound
+	 * @param upper          - a timestamp for the upper bound
+	 * @throws SQLException sql exception
+	 */
+	public Period(String lower, LocalDateTime upper)
+			throws SQLException {
+		super();
+		this.lowerInclusive = true;
+		this.upperInclusive = false;
+		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower,-1);
+		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
+		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
+	}
+
+	/**
+	 * The timestamps without bounds constructor
+	 *
+	 * @param lower          - a timestamp for the lower bound
+	 * @param upper          - a timestamp for the upper bound
+	 * @throws SQLException sql exception
+	 */
+	public Period(LocalDateTime lower, String upper)
+			throws SQLException {
+		super();
+		this.lowerInclusive = true;
+		this.upperInclusive = false;
+		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
+		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper,-1);
+		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 	}
 
 
@@ -148,13 +213,13 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 	}
 
 	@Override
-	public Pointer createIntInt(int lower, int upper, boolean lower_inc, boolean upper_inc){
-		return functions.intspan_make(lower,upper,lower_inc,upper_inc);
+	public Pointer createIntInt(java.lang.Number lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
+		return functions.intspan_make(lower.intValue(),upper.intValue(),lower_inc,upper_inc);
 	}
 	@Override
-	public Pointer createIntStr(int lower, String upper, boolean lower_inc, boolean upper_inc){
+	public Pointer createIntStr(java.lang.Number lower, String upper, boolean lower_inc, boolean upper_inc){
 		int new_upper = Integer.parseInt(upper);
-		return functions.intspan_make(lower,new_upper,lower_inc,upper_inc);
+		return functions.intspan_make(lower.intValue(),new_upper,lower_inc,upper_inc);
 	}
 	@Override
 	public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
@@ -163,13 +228,13 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 		return functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
 	}
 	@Override
-	public Pointer createStrInt(String lower, int upper, boolean lower_inc, boolean upper_inc){
+	public Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
 		int new_lower = Integer.parseInt(lower);
-		return functions.intspan_make(new_lower,upper,lower_inc,upper_inc);
+		return functions.intspan_make(new_lower,upper.intValue(),lower_inc,upper_inc);
 	}
 	@Override
-	public Pointer createIntIntNb(int lower, int upper){
-		return functions.intspan_make(lower,upper,true,false);
+	public Pointer createIntIntNb(java.lang.Number lower, java.lang.Number upper){
+		return functions.intspan_make(lower.intValue(),upper.intValue(),true,false);
 	}
 
 
@@ -288,12 +353,12 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 		return functions.span_upper_inc(this._inner);
 	}
 
-	public OffsetDateTime getLower() {
-		return lower;
+	public LocalDateTime lower() {
+		return ConversionUtils.timestamptz_to_datetime(functions.period_lower(this._inner));
 	}
 
-	public OffsetDateTime getUpper() {
-		return upper;
+	public LocalDateTime upper() {
+		return ConversionUtils.timestamptz_to_datetime(functions.period_upper(this._inner));
 	}
 
 	public boolean isLowerInclusive() {
@@ -1033,54 +1098,6 @@ public class Period extends Span<DateTime> implements Time, TimeCollection{
 		else{
 			throw new SQLException("Operation not supported with this type.");
 		}
-	}
-	
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getValue() {
-		if (lower == null || upper == null) {
-			return null;
-		}
-
-		return String.format("%s%s, %s%s",
-				lowerInclusive ? LOWER_INCLUSIVE : LOWER_EXCLUSIVE,
-				DateTimeFormatHelper.getStringFormat(lower),
-				DateTimeFormatHelper.getStringFormat(upper),
-				upperInclusive ? UPPER_INCLUSIVE : UPPER_EXCLUSIVE);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setValue(final String value) throws SQLException {
-		String[] values = value.split(",");
-
-
-		if (values.length != 2) {
-			throw new SQLException("Could not parse period value.");
-		}
-		
-		if (values[0].startsWith(LOWER_INCLUSIVE)) {
-			this.lowerInclusive = true;
-		} else if (values[0].startsWith(LOWER_EXCLUSIVE)) {
-			this.lowerInclusive = false;
-		} else {
-			throw new SQLException("Lower bound flag must be either '[' or '('.");
-		}
-		
-		if (values[1].endsWith(UPPER_INCLUSIVE)) {
-			this.upperInclusive = true;
-		} else if (values[1].endsWith(UPPER_EXCLUSIVE)) {
-			this.upperInclusive = false;
-		} else {
-			throw new SQLException("Upper bound flag must be either ']' or ')'.");
-		}
-		System.out.println(values[0].substring(1).trim());
-		this.lower = DateTimeFormatHelper.getDateTimeFormat(values[0].substring(1).trim());
-		this.upper = DateTimeFormatHelper.getDateTimeFormat(values[1].substring(0, values[1].length() - 1).trim());
-		validate();
 	}
 
 	

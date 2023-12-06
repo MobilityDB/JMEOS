@@ -3,6 +3,7 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 import types.TemporalObject;
+import types.collections.time.Period;
 
 public abstract class SpanSet<T extends Object> implements Collection, Base {
     private Pointer _inner = null;
@@ -16,11 +17,13 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     public SpanSet(String str){
         this._inner = createStringInner(str);
     }
+    public SpanSet(Period... periods){this._inner = createListInner(periods);}
 
 
     public abstract Pointer get_inner();
     public abstract Pointer createInner(Pointer inner);
     public abstract Pointer createStringInner(String str);
+    public abstract Pointer createListInner(Period... periods);
 
 
     /** ------------------------- Conversions ----------------------------------- */

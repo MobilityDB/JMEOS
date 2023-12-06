@@ -36,7 +36,8 @@ public class ConversionUtils {
 	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
-		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX"));
+		functions.meos_initialize("UTC");
+		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		return functions.pg_timestamptz_in(formattedDt, -1);
 	}
 
@@ -49,7 +50,9 @@ public class ConversionUtils {
 	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
 	 */
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
-		return ZonedDateTime.parse(functions.pg_timestamptz_out(ts)).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
+		// Parse the string to LocalDateTime
+		return LocalDateTime.parse(functions.pg_timestamptz_out(ts), formatter);
 	}
 
 

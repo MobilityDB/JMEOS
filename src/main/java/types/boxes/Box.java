@@ -7,10 +7,10 @@ import types.collections.time.Period;
 import java.sql.SQLException;
 
 /**
- * Abstract class to define a box from which STbox and TBox are inherited.
+ * Interface to define a box from which STbox and TBox are inherited.
  */
 
-public interface Box{
+public interface Box extends TemporalObject{
 
     public boolean get_tmin_inc();
     public boolean get_tmax_inc();

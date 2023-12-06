@@ -1,4 +1,4 @@
-package main.java;
+package builder;
 
 import utils.BuilderUtils;
 
@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class FunctionsExtractor {
 	 */
 	public FunctionsExtractor() throws URISyntaxException {
 
-		String absolute = "src/main/java/builder/src/main/resources/meos.h";
+		String absolute = "src/main/java/builder/resources/meos.h";
 		this.inputFilePath = Paths.get(absolute);
 		//this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/meos.h")).toURI());
 		this.outputFunctionsFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_functions.h"));

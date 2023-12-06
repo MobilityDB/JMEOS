@@ -72,7 +72,7 @@ public class IntSpan extends Span<Integer> implements Number{
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class IntSet extends Set<Integer> implements Number{
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
     /** ------------------------- Constructors ---------------------------------- */

@@ -22,29 +22,24 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	private TemporalValue<V> temporalValue = null;
 	private Pointer _inner = null;
 
-	
-	protected TInstant(String value, GetSingleTemporalValueFunction<V> getSingleTemporalValue) throws SQLException {
-		super(TemporalType.TEMPORAL_INSTANT);
-		temporalValue = getSingleTemporalValue.run(preprocessValue(value));
-		validate();
-	}
-	
-	protected TInstant(V value, OffsetDateTime time) throws SQLException {
-		super(TemporalType.TEMPORAL_INSTANT);
-		temporalValue = buildTemporalValue(value, time);
-		validate();
-	}
-	
-	protected TInstant(TemporalValue<V> value) throws SQLException {
-		super(TemporalType.TEMPORAL_INSTANT);
-		temporalValue = value;
-		validate();
+
+	public TInstant(){
+		super();
 	}
 
-	protected TInstant(Pointer inner){
-		super(TemporalType.TEMPORAL_INSTANT);
-		this._inner = inner;
+
+	public TInstant(Pointer inner){
+		super();
+		this._inner = createInner(inner);
 	}
+
+	public TInstant(String str){
+		super();
+		this._inner = createStringInner(str);
+	}
+
+	public abstract Pointer createStringInner(String str);
+	public abstract Pointer createInner(Pointer inner);
 
 
 	protected void validateTemporalDataType() throws SQLException {
@@ -171,7 +166,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	 * {@inheritDoc}
 	 */
 	public Period period() throws SQLException {
-		return new Period(temporalValue.getTime(), temporalValue.getTime(), true, true);
+		return new Period(temporalValue.getTime().toLocalDateTime(), temporalValue.getTime().toLocalDateTime(), true, true);
 	}
 	
 	/**
@@ -228,13 +223,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	public Duration duration() {
 		return Duration.ZERO;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public Duration timespan() {
-		return Duration.ZERO;
-	}
+
 	
 	/**
 	 * {@inheritDoc}

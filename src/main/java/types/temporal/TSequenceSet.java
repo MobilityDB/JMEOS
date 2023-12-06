@@ -321,7 +321,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 	public Period period() throws SQLException {
 		TSequence<V> first = sequenceList.get(0);
 		TSequence<V> last = sequenceList.get(sequenceList.size() - 1);
-		return new Period(first.startTimestamp(), last.endTimestamp(),
+		return new Period(first.startTimestamp().toLocalDateTime(), last.endTimestamp().toLocalDateTime(),
 				first.isLowerInclusive(), last.isUpperInclusive());
 	}
 	

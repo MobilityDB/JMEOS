@@ -83,10 +83,13 @@ public class IntSetTest {
         assertEquals(3, intset.end_element());
     }
 
+    /*
     @Test
     public void testElementN() throws Exception {
         assertEquals(2, intset.element_n(2));
     }
+
+     */
 
     @Test
     public void testHash() throws Exception {

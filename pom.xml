@@ -7,21 +7,11 @@
     <groupId>org.jmeos</groupId>
     <artifactId>jmeos</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <description>JMEOS is a Java library allowing MobilityDB users
         to perform MEOS native operations on MobilityDB data types.
     </description>
-
-    <modules>
-        <module>src/main/java/builder</module>
-    </modules>
-
-    <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
         <!-- For the version of the dependencies, see https://mvnrepository.com/ -->
@@ -29,6 +19,12 @@
             <groupId>com.github.jnr</groupId>
             <artifactId>jnr-ffi</artifactId>
             <version>2.2.14</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-plugin-plugin</artifactId>
+            <version>3.10.2</version>
         </dependency>
 
         <dependency>
@@ -60,6 +56,7 @@
     </dependencies>
 
     <build>
+        <finalName>JMEOS</finalName>
         <plugins>
             <!-- For the version of the plugins, see https://mvnrepository.com/ -->
             <plugin>
@@ -68,6 +65,50 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>install-meos</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/src/main/resources/lib/libmeos.so</file>
+                            <groupId>org.jmeos</groupId>
+                            <artifactId>meos</artifactId>
+                            <version>1.0</version>
+                            <packaging>so</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- https://maven.apache.org/plugins/maven-assembly-plugin/usage.html -->
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
 
             <plugin>
                 <!-- Copy the libmeos.so to target/classes/jmeos/lib -->
@@ -99,60 +140,13 @@
             <plugin>
                 <!-- https://maven.apache.org/plugins/maven-shade-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.10.2</version>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <shadedClassifierName>shaded</shadedClassifierName>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                    <dependencyReducedPomLocation>${project.basedir}/dependency-reduced-pom.xml
-                    </dependencyReducedPomLocation>
-                    <relocations>
-                        <!-- Relocate classes to jmeos package -->
-                        <relocation>
-                            <pattern>functions</pattern>
-                            <shadedPattern>jmeos.functions</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>types</pattern>
-                            <shadedPattern>jmeos.types</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>utils</pattern>
-                            <shadedPattern>jmeos.utils</shadedPattern>
-                        </relocation>
-                    </relocations>
-                    <artifactSet>
-                        <includes>
-                            <!-- Include only jmeos artifacts -->
-                            <include>org.jmeos:*</include>
-                        </includes>
-                    </artifactSet>
-                    <filters>
-                        <filter>
-                            <artifact>org.jmeos:jmeos</artifact>
-                            <!-- Exclude specific directory -->
-                            <excludes>
-                                <exclude>tutorials/**</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <transformers>
-                        <!-- Inclure le fichier libmeos.so dans le dossier lib du jar -->
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                            <resource>src/lib/libmeos.so</resource>
-                            <file>lib/libmeos.so</file>
-                        </transformer>
-                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
                         <configuration>
                             <finalName>JMEOS</finalName>
                             <outputDirectory>${project.build.directory}</outputDirectory>
@@ -164,8 +158,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.2</version>
                 <configuration>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
                     <show>private</show>
                     <nohelp>true</nohelp>
                 </configuration>
@@ -188,6 +183,17 @@
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <outputDirectory>jar</outputDirectory>
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </build>
 
@@ -196,7 +202,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.2</version>
                 <configuration>
                     <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
                     <show>public</show>
@@ -204,4 +210,8 @@
             </plugin>
         </plugins>
     </reporting>
+
+
+
+
 </project>

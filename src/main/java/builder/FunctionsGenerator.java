@@ -1,6 +1,5 @@
-package main.java;
+package builder;
 
-import jnr.ffi.Pointer;
 import utils.BuilderUtils;
 import utils.Pair;
 

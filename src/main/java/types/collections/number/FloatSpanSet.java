@@ -3,6 +3,7 @@ import functions.functions;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
+import types.collections.time.Period;
 
 /**
  * Class for representing lists of disjoint floatspans.
@@ -42,9 +43,14 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
+
+    @Override
+    public Pointer createListInner(Period... periods){
+        return null;
+    }
 
     /** ------------------------- Output ---------------------------------------- */
 

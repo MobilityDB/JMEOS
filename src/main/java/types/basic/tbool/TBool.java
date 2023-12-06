@@ -1,11 +1,14 @@
 package types.basic.tbool;
 
+import jnr.ffi.Pointer;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
+import types.collections.time.Time;
+import types.collections.time.TimestampSet;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
-import types.temporal.Temporal;
-import types.temporal.TemporalDataType;
-import types.temporal.TemporalType;
-import types.temporal.TemporalValue;
+import types.temporal.*;
+import functions.functions;
 
 import java.sql.SQLException;
 
@@ -14,86 +17,49 @@ import java.sql.SQLException;
  * Class that represents the MobilityDB type TBool
  */
 @TypeName(name = "tbool")
-public class TBool extends TemporalDataType<Boolean> {
-	
-	/**
-	 * The default constructor
-	 */
-	public TBool() {
-		super();
-	}
-	
-	/**
-	 * The string constructor
-	 *
-	 * @param value - the string with the TBool value
-	 * @throws SQLException
-	 */
-	public TBool(final String value) throws SQLException {
-		super(value);
-	}
-	
-	/**
-	 * The constructor for temporal types
-	 *
-	 * @param temporal - a TBoolInst, TBoolInstSet,TBoolSeq or a TBoolSeqSet
-	 */
-	public TBool(Temporal<Boolean> temporal) {
-		super();
-		this.temporal = temporal;
-	}
-	
-	/**
-	 * Method with compatible signature for delegate
-	 * {@link types.temporal.delegates.GetSingleTemporalValueFunction}
-	 *
-	 * @param value string representation of the value
-	 * @return Temporal value wrapper with the value parsed
-	 */
-	public static TemporalValue<Boolean> getSingleTemporalValue(String value) {
-		boolean b;
-		String[] values = value.trim().split("@");
-		if (values[0].length() == 1) {
-			b = values[0].equals("t");
-		} else {
-			b = Boolean.parseBoolean(values[0]);
-		}
-		return new TemporalValue<>(b, DateTimeFormatHelper.getDateTimeFormat(values[1]));
-	}
-	
-	/**
-	 * Compares two booleans
-	 *
-	 * @param first  - the first boolean to compare
-	 * @param second - the second boolean to compare
-	 * @return 0 is both booleans are equals, a positive value in case first is greater than second or a negative value
-	 * if first is less than second
-	 */
-	public static int compareValue(Boolean first, Boolean second) {
-		return first.compareTo(second);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setValue(final String value) throws SQLException {
-		TemporalType temporalType = TemporalType.getTemporalType(value, this.getClass().getSimpleName());
-		switch (temporalType) {
-			case TEMPORAL_INSTANT:
-				temporal = new TBoolInst(value);
-				break;
-			case TEMPORAL_INSTANT_SET:
-				temporal = new TBoolInstSet(value);
-				break;
-			case TEMPORAL_SEQUENCE:
-				temporal = new TBoolSeq(value);
-				break;
-			case TEMPORAL_SEQUENCE_SET:
-				temporal = new TBoolSeqSet(value);
-				break;
-		}
-	}
-	
+public interface TBool {
+    public String customType = "Boolean";
+    public Pointer getInner();
+	/** ------------------------- Constructors ---------------------------------- */
+
+
+    public default TBool from_base_temporal(boolean value, Temporal base){
+        return (TBool) Factory.create_temporal(functions.tbool_from_base_temp(value, base.getInner()),customType,base.getTemporalType());
+    }
+
+
+    public default Temporal from_base_time(boolean value, Time base){
+        if (base instanceof TimestampSet){
+            return new TBoolSeq(functions.tboolseq_from_base_timestampset(value,((TimestampSet) base).get_inner()));
+
+        } else if (base instanceof Period) {
+            return new TBoolSeq(functions.tboolseq_from_base_period(value,((Period) base).get_inner()));
+
+        } else if (base instanceof PeriodSet) {
+            return new TBoolSeqSet(functions.tboolseqset_from_base_periodset(value,((PeriodSet) base).get_inner()));
+        }
+
+        return null;
+    }
+
+    /*
+    public default String tostring(){
+        return functions.tbool_out();
+    }
+
+     */
+
+    /** ------------------------- Output ---------------------------------- */
+
+    public default String toString(Pointer inner){
+        return functions.tbool_out(inner);
+    }
+
+
+    /** ------------------------- Accessors ---------------------------------- */
+
+
+
+
 	
 }

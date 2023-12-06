@@ -40,7 +40,7 @@ public class FloatSet extends Set<Float> implements Number{
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
     /** ------------------------- Constructors ---------------------------------- */

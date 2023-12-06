@@ -73,18 +73,14 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns the lower bound of a period
      * @return T type
      */
-    public T lower(){
-        return null;
-    }
+    public abstract T lower();
 
 
     /**
      * Returns the upper bound of a period
      * @return T type
      */
-    public T upper(){
-        return null;
-    }
+    public abstract T upper();
 
     /**
      * Returns whether the lower bound of the period is inclusive or not
@@ -375,8 +371,11 @@ public abstract class Span<T extends Object> implements Collection, Base{
      *  <p>
      *
      *         MEOS Functions:
+     *         <ul>
      *             <li>distance_span_span</li>
      *             <li>distance_spanset_span</li>
+     *         </ul>
+     * </p>
      *
      * @param other object to compare with
      * @return A {@link Float} instance

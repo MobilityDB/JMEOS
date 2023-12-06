@@ -10,6 +10,7 @@ import types.core.TypeName;
 import types.boxes.*;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,8 +42,8 @@ import java.util.stream.Collectors;
  * @since 10/09/2023
  */
 @TypeName(name = "periodset")
-public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection {
-	private final List<Period> periodList;
+public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeCollection {
+	private List<Period> periodList = null;
 	private Pointer _inner;
 
 	/* ------------------------- Constructors ---------------------------------- */
@@ -50,15 +51,12 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * The default constructor
 	 */
 	public PeriodSet() {
-		super();
-		periodList = new ArrayList<>();
 	}
 	
 	public PeriodSet(Pointer _inner) throws SQLException {
-		this();
+		super(_inner);
 		this._inner = _inner;
 		String str = functions.periodset_out(this._inner);
-		setValue(str);
 	}
 	
 	/**
@@ -68,32 +66,36 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	 * @throws SQLException
 	 */
 	public PeriodSet(String value) throws SQLException {
-		this();
-		setValue(value);
+		super(value);
+		System.out.println("here");
 		this._inner = functions.periodset_in(value);
 	}
 	
 	/**
 	 * The array of Periods constructor
 	 *
-	 * @param periods - an array of Periods or Periods separated by a comma
+	 * @param periods - an array of Periods separated by a comma
 	 * @throws SQLException
 	 * TODO: create a string conversion method to integrate inner ?
 	 */
 	public PeriodSet(Period... periods) throws SQLException {
-		this();
-		Collections.addAll(periodList, periods);
-		validate();
+		super(periods);
+		periodList = new ArrayList<Period>();
 	}
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.intspanset_in(str);
+		return functions.periodset_in(str);
 	}
 
 	@Override
 	public Pointer createInner(Pointer inner){
 		return _inner;
+	}
+
+	@Override
+	public Pointer createListInner(Period... periods){
+		return null;
 	}
 
 	/**
@@ -811,25 +813,6 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 	}
 
 
-	
-	public String getValue() {
-		return String.format("{%s}", periodList.stream().map(Period::toString).collect(Collectors.joining(", ")));
-	}
-
-	public void setValue(String value) throws SQLException {
-		String trimmed = value.trim();
-		
-		if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-			Matcher m = Pattern.compile("[\\[|\\(].*?[^\\]\\)][\\]|\\)]").matcher(trimmed);
-			while (m.find()) {
-				periodList.add(new Period(m.group()));
-			}
-		} else {
-			throw new SQLException("Could not parse period set value.");
-		}
-		
-		validate();
-	}
 
 
 	
@@ -842,20 +825,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 		return periodList.toArray(new Period[0]);
 	}
 
-	
-	/**
-	 * Gets the interval on which the temporal
-	 * value is defined ignoring the potential time gaps
-	 *
-	 * @return a Duration
-	 */
-	public Duration timespan() {
-		if (periodList.isEmpty()) {
-			return Duration.ZERO;
-		}
-		
-		return Duration.between(startTimestamp(), endTimestamp());
-	}
+
 	
 	/**
 	 * Gets the period
@@ -871,61 +841,10 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 		Period first = periodList.get(0);
 		Period last = periodList.get(periodList.size() - 1);
 		
-		return new Period(first.getLower(), last.getUpper(), first.isLowerInclusive(), last.isUpperInclusive());
-	}
-	
-	/**
-	 * Get all timestamps
-	 *
-	 * @return an array with the timestamps
-	 */
-	public OffsetDateTime[] timestamps() {
-		LinkedHashSet<OffsetDateTime> timestamps = new LinkedHashSet<>();
-		
-		for (Period period : periodList) {
-			timestamps.add(period.getLower());
-			timestamps.add(period.getUpper());
-		}
-		
-		return timestamps.toArray(new OffsetDateTime[0]);
+		return new Period(first.lower(), last.upper(), first.isLowerInclusive(), last.isUpperInclusive());
 	}
 
-	
-	/**
-	 * Gets the first timestamp
-	 *
-	 * @return a timestamp
-	 */
-	public OffsetDateTime startTimestamp() {
-		if (periodList.isEmpty()) {
-			return null;
-		}
-		
-		return periodList.get(0).getLower();
-	}
-	
-	/**
-	 * Gets the last timestamp
-	 *
-	 * @return a timestamp
-	 */
-	public OffsetDateTime endTimestamp() {
-		if (periodList.isEmpty()) {
-			return null;
-		}
-		
-		return periodList.get(periodList.size() - 1).getUpper();
-	}
-	
-	/**
-	 * Gets the timestamp located at the index position
-	 *
-	 * @param n - the index
-	 * @return a timestamp
-	 */
-	public OffsetDateTime timestampN(int n) {
-		return timestamps()[n];
-	}
+
 	
 	/**
 	 * Gets the number of periods
@@ -961,45 +880,7 @@ public class PeriodSet extends SpanSet<DateTime> implements Time, TimeCollection
 		
 		return new PeriodSet(periods.toArray(new Period[0]));
 	}
-	
-	/**
-	 * Verifies that the received fields are valid
-	 *
-	 * @throws SQLException
-	 */
-	private void validate() throws SQLException {
-		if (periodList == null || periodList.isEmpty()) {
-			throw new SQLException("Period set must contain at least one element.");
-		}
-		
-		for (int i = 0; i < periodList.size(); i++) {
-			Period x = periodList.get(i);
-			
-			if (periodIsInvalid(x)) {
-				throw new SQLException("All periods should have a value.");
-			}
-			
-			if (i + 1 < periodList.size()) {
-				Period y = periodList.get(i + 1);
-				
-				if (periodIsInvalid(y)) {
-					throw new SQLException("All periods should have a value.");
-				}
-				
-				if (x.getUpper().isAfter(y.getLower()) || (x.getUpper().isEqual(y.getLower()) && x.isUpperInclusive() && y.isLowerInclusive())) {
-					throw new SQLException("The periods of a period set cannot overlap.");
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Checks if the Period is invalid
-	 *
-	 * @param period - a Period
-	 * @return true if the Period is invalid; otherwise false
-	 */
-	private boolean periodIsInvalid(Period period) {
-		return period == null || period.getValue() == null;
-	}
 }
+	
+
+

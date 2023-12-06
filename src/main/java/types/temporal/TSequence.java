@@ -177,8 +177,8 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 	 */
 
 	public Period period() throws SQLException {
-		return new Period(instantList.get(0).getTimestamp(),
-				instantList.get(instantList.size() - 1).getTimestamp(),
+		return new Period(instantList.get(0).getTimestamp().toLocalDateTime(),
+				instantList.get(instantList.size() - 1).getTimestamp().toLocalDateTime(),
 				lowerInclusive, upperInclusive);
 	}
 	
