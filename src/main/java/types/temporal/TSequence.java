@@ -201,18 +201,7 @@ public abstract class TSequence<V extends Serializable> extends TemporalInstants
 			return Duration.ZERO;
 		}
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 
-	public Duration timespan() {
-		try {
-			return period().duration();
-		} catch (SQLException ex) {
-			return Duration.ZERO;
-		}
-	}
 	
 	/**
 	 * {@inheritDoc}

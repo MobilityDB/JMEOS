@@ -23,7 +23,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 	protected TSequenceSet(String value,
 						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
 						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super();
 		this.compareValueFunction = compareValueFunction;
 		parseValue(value, getTemporalSequenceFunction);
 		validate();
@@ -33,7 +33,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 						   String value,
 						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
 						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super();
 		this.compareValueFunction = compareValueFunction;
 		parseValue(value, getTemporalSequenceFunction);
 		this.stepwise = stepwise;
@@ -44,7 +44,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 						   String[] values,
 						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
 						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super();
 		this.compareValueFunction = compareValueFunction;
 		this.stepwise = stepwise;
 		for (String val : values) {
@@ -57,7 +57,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 	protected TSequenceSet(boolean stepwise,
 						   TSequence<V>[] values,
 						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super();
 		this.compareValueFunction = compareValueFunction;
 		this.stepwise = stepwise;
 		sequenceList.addAll(Arrays.asList(values));
@@ -65,7 +65,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 	}
 
 	protected TSequenceSet(Pointer inner){
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super();
 		this._inner = inner;
 
 	}
@@ -398,14 +398,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 		}
 		return duration;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 
-	public Duration timespan() {
-		return Duration.between(startTimestamp(), endTimestamp());
-	}
 	
 	/**
 	 * {@inheritDoc}
