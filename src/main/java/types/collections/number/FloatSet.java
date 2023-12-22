@@ -153,7 +153,6 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public Float element_n(int n) throws Exception {
         super.element_n(n);
-        System.out.println(functions.floatset_value_n(this._inner,n).getDouble(0));
         return 2.0f;
     }
 

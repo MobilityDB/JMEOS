@@ -21,45 +21,14 @@ public class TGeomPoint extends TPoint {
 	public TGeomPoint() {
 		super();
 	}
-	
-	/**
-	 * The string constructor
-	 *
-	 * @param value - the string with the TGeomPoint value
-	 * @throws SQLException
-	 */
-	public TGeomPoint(String value) throws SQLException {
-		super(value);
+
+	@Override
+	public String getValue() {
+		return null;
 	}
-	
-	/**
-	 * The constructor for temporal types
-	 *
-	 * @param temporal - a TGeomPointInst, TGeomPointInstSet, TGeomPointSeq or a TGeomPointSeqSet
-	 */
-	public TGeomPoint(Temporal<Point> temporal) {
-		super(temporal);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
 	public void setValue(String value) throws SQLException {
-		TemporalType temporalType = getTemporalType(value);
-		switch (temporalType) {
-			case TEMPORAL_INSTANT:
-				temporal = new TGeomPointInst(value);
-				break;
-			case TEMPORAL_INSTANT_SET:
-				temporal = new TGeomPointInstSet(value);
-				break;
-			case TEMPORAL_SEQUENCE:
-				temporal = new TGeomPointSeq(value);
-				break;
-			case TEMPORAL_SEQUENCE_SET:
-				temporal = new TGeomPointSeqSet(value);
-				break;
-		}
+
 	}
 }

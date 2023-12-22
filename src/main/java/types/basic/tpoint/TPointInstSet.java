@@ -16,37 +16,7 @@ import java.sql.SQLException;
 public abstract class TPointInstSet extends TInstantSet<Point> {
 	private int srid;
 	
-	protected TPointInstSet(String value, GetTemporalInstantFunction<Point> getTemporalInstantFunction)
-			throws SQLException {
-		super(value, getTemporalInstantFunction, TPoint::compareValue);
-		this.srid = SRIDParser.applySRID(srid, getValues());
-	}
-	
-	protected TPointInstSet(int srid, String[] values, GetTemporalInstantFunction<Point> getTemporalInstantFunction)
-			throws SQLException {
-		super(values, getTemporalInstantFunction, TPoint::compareValue);
-		this.srid = SRIDParser.applySRID(srid, getValues());
-	}
-	
-	protected TPointInstSet(int srid, TInstant<Point>[] values) throws SQLException {
-		super(values, TPoint::compareValue);
-		this.srid = SRIDParser.applySRID(srid, getValues());
-	}
-	
-	/**
-	 * Parse the SRID value
-	 *
-	 * @param value - a string with the value
-	 * @return the string without SRID
-	 * @throws SQLException if it is invalid
-	 */
-	@Override
-	protected String preprocessValue(String value) throws SQLException {
-		String newString = super.preprocessValue(value);
-		SRIDParseResponse response = SRIDParser.parseSRID(newString);
-		srid = response.getSRID();
-		return response.getParsedValue();
-	}
+
 	
 	@Override
 	public boolean equals(Object obj) {

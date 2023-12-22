@@ -8,7 +8,8 @@ import types.collections.base.SpanSet;
 import types.core.TypeName;
 
 import types.boxes.*;
-import java.sql.SQLException;
+
+import javax.naming.OperationNotSupportedException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -53,7 +54,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	public PeriodSet() {
 	}
 	
-	public PeriodSet(Pointer _inner) throws SQLException {
+	public PeriodSet(Pointer _inner) {
 		super(_inner);
 		this._inner = _inner;
 		String str = functions.periodset_out(this._inner);
@@ -63,11 +64,9 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 * The string constructor
 	 *
 	 * @param value - a string with a PeriodSet value
-	 * @throws SQLException
 	 */
-	public PeriodSet(String value) throws SQLException {
+	public PeriodSet(String value) {
 		super(value);
-		System.out.println("here");
 		this._inner = functions.periodset_in(value);
 	}
 	
@@ -75,10 +74,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 * The array of Periods constructor
 	 *
 	 * @param periods - an array of Periods separated by a comma
-	 * @throws SQLException
-	 * TODO: create a string conversion method to integrate inner ?
 	 */
-	public PeriodSet(Period... periods) throws SQLException {
+	public PeriodSet(Period... periods)  {
 		super(periods);
 		periodList = new ArrayList<Period>();
 	}
@@ -106,10 +103,9 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *     <li>spanset_copy
 	 *
 	 * @return a new PeriodSet instance
-	 * @throws SQLException
 	 */
 
-	public PeriodSet copy() throws SQLException {
+	public PeriodSet copy()  {
 		return new PeriodSet(functions.spanset_copy(this._inner));
 	}
 
@@ -121,9 +117,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *             <li>spanset_from_hexwkb
 	 * @param str WKB representation in hex-encoded ASCII
 	 * @return a new PeriodSet instance
-	 * @throws SQLException
 	 */
-	public static PeriodSet from_hexwkb(String str) throws SQLException {
+	public static PeriodSet from_hexwkb(String str)  {
 		Pointer result = functions.spanset_from_hexwkb(str);
 		return new PeriodSet(result);
 	}
@@ -150,9 +145,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         MEOS Functions:
 	 *             <li>spanset_span
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-	public Period to_period() throws SQLException {
+	public Period to_period() {
 		return new Period(functions.spanset_span(this._inner));
 	}
 
@@ -207,9 +201,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         MEOS Functions:
 	 *             <li>periodset_lower
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-	public Period start_period() throws SQLException {
+	public Period start_period()  {
 		return new Period(functions.spanset_start_span(this._inner));
 	}
 
@@ -219,9 +212,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         MEOS Functions:
 	 *             <li>periodset_upper
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-	public Period end_period() throws SQLException {
+	public Period end_period() {
 		return new Period(functions.spanset_end_span(this._inner));
 	}
 
@@ -262,7 +254,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 * @param other temporal object to compare with
 	 * @return True if adjacent, False otherwise
 	 */
-	public boolean is_adjacent(Time other) throws SQLException {
+	public boolean is_adjacent(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_spanset_span(this._inner, p.get_inner());
@@ -297,9 +289,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if contained, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_contained_in(Time other) throws SQLException {
+	public boolean is_contained_in(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.contained_spanset_span(this._inner, p.get_inner());
@@ -332,9 +323,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if contains, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean contains(Time other) throws SQLException {
+	public boolean contains(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.contains_spanset_span(this._inner, p.get_inner());
@@ -367,9 +357,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if overlaps, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean overlaps(Time other) throws SQLException {
+	public boolean overlaps(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overlaps_spanset_span(this._inner, p.get_inner());
@@ -392,9 +381,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 * 				{@link Period#is_same(Time)}
 	 * @param other A time or temporal object to compare to "this".
 	 * @return True if same, False otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_same(Time other) throws SQLException {
+	public boolean is_same(Time other) {
 		return this.to_period().is_same(other);
 	}
 
@@ -422,9 +410,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if before, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_before(Time other) throws SQLException {
+	public boolean is_before(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.left_spanset_span(this._inner, p.get_inner());
@@ -462,9 +449,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if before, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(Time other) throws SQLException {
+	public boolean is_over_or_before(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overleft_spanset_span(this._inner, p.get_inner());
@@ -498,9 +484,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *          </ul>
 	 * @param other temporal object to compare with
 	 * @return True if after, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_after(Time other) throws SQLException {
+	public boolean is_after(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.right_spanset_span(this._inner, p.get_inner());
@@ -536,9 +521,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to compare with
 	 * @return True if overlapping or after, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(Time other) throws SQLException {
+	public boolean is_over_or_after(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overright_spanset_span(this._inner, p.get_inner());
@@ -570,9 +554,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to intersect with
 	 * @return a Time instance. The actual class depends on "other"
-	 * @throws SQLException
 	 */
-	public Time intersection(Time other) throws SQLException {
+	public Time intersection(Time other) {
 		Time returnValue;
 		switch (other) {
 			case Period p -> returnValue = new Period(functions.intersection_spanset_span(this._inner,p.get_inner()));
@@ -595,9 +578,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *         </ul>
 	 * @param other temporal object to intersect with
 	 * @return a Time instance. The actual class depends on "other"
-	 * @throws SQLException
 	 */
-	public Time mul(Time other) throws SQLException {
+	public Time mul(Time other) {
 		return this.intersection(other);
 	}
 
@@ -614,9 +596,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to diff with
 	 * @return a PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet minus(Time other) throws SQLException {
+	public PeriodSet minus(Time other) {
 		PeriodSet returnValue;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.minus_spanset_span(this._inner,p.get_inner()));
@@ -641,9 +622,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to diff with
 	 * @return a PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet sub(Time other) throws SQLException {
+	public PeriodSet sub(Time other) {
 		return this.minus(other);
 	}
 
@@ -660,9 +640,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to merge with
 	 * @return a PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet union(Time other) throws SQLException {
+	public PeriodSet union(Time other) {
 		PeriodSet returnValue;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.union_spanset_span(this._inner,p.get_inner()));
@@ -688,9 +667,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to merge with
 	 * @return a PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet add(Time other) throws SQLException {
+	public PeriodSet add(Time other) {
 		return this.union(other);
 	}
 
@@ -708,9 +686,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *             <li>spanset_eq </li>
 	 * @param other temporal object to compare with
 	 * @return True if equal, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean equals(Time other) throws SQLException{
+	public boolean equals(Time other) {
 		boolean result;
 		result = other instanceof PeriodSet ? functions.spanset_eq(this._inner,((PeriodSet) other).get_inner()) : false;
 		return result;
@@ -725,9 +702,8 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to compare with
 	 * @return True if not equal, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean notEquals(Time other) throws SQLException{
+	public boolean notEquals(Time other) {
 		boolean result;
 		result = other instanceof PeriodSet ? functions.spanset_ne(this._inner,((PeriodSet) other).get_inner()) : true;
 		return result;
@@ -743,14 +719,13 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to compare with
 	 * @return True if less than, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean lessThan(Time other) throws SQLException{
+	public boolean lessThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof PeriodSet){
 			return functions.spanset_lt(this._inner,((PeriodSet) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -762,14 +737,13 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *             <li>spanset_le</li>
 	 * @param other temporal object to compare with
 	 * @return True if less than or equal, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(Time other) throws SQLException{
+	public boolean lessThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof PeriodSet){
 			return functions.spanset_le(this._inner,((PeriodSet) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -782,14 +756,13 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *             <li>spanset_gt</li>
 	 * @param other temporal object to compare with
 	 * @return True if greater than, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean greaterThan(Time other) throws SQLException{
+	public boolean greaterThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof PeriodSet){
 			return functions.spanset_gt(this._inner,((PeriodSet) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -801,14 +774,13 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @param other temporal object to compare with
 	 * @return True if greater than or equal, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(Time other) throws SQLException{
+	public boolean greaterThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof PeriodSet){
 			return functions.spanset_ge(this._inner,((PeriodSet) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -824,26 +796,6 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	public Period[] periods() {
 		return periodList.toArray(new Period[0]);
 	}
-
-
-	
-	/**
-	 * Gets the period
-	 *
-	 * @return a Period
-	 * @throws SQLException
-	 */
-	public Period period() throws SQLException {
-		if (periodList.isEmpty()) {
-			return null;
-		}
-		
-		Period first = periodList.get(0);
-		Period last = periodList.get(periodList.size() - 1);
-		
-		return new Period(first.lower(), last.upper(), first.isLowerInclusive(), last.isUpperInclusive());
-	}
-
 
 	
 	/**
@@ -865,21 +817,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	public Period periodN(int n) {
 		return periodList.get(n);
 	}
-	
-	/**
-	 * Shifts the duration sent
-	 *
-	 * @param duration - the duration to shift
-	 */
-	public PeriodSet shift(Duration duration) throws SQLException {
-		ArrayList<Period> periods = new ArrayList<>();
-		
-		for (Period period : periodList) {
-			periods.add(period.shift(duration));
-		}
-		
-		return new PeriodSet(periods.toArray(new Period[0]));
-	}
+
 }
 	
 

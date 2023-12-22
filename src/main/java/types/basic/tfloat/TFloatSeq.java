@@ -1,121 +1,71 @@
 package types.basic.tfloat;
 
+import functions.functions;
 import jnr.ffi.Pointer;
 import types.temporal.TSequence;
+import types.temporal.TemporalType;
 
-import java.sql.SQLException;
+import java.util.List;
 
-public class TFloatSeq extends TSequence<Float> {
+public class TFloatSeq extends TSequence<Float> implements TFloat {
+	private Pointer inner;
+	private String customType = "Float";
+	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+
 
 	public TFloatSeq(Pointer inner){
 		super(inner);
+		this.inner = inner;
+	}
+
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TFloatSeq value
+	 */
+	public TFloatSeq(String value, int interpolation)   {
+		super(value);
+		this.inner = functions.tfloatseq_in(value, interpolation);
 	}
 
 
 	/**
 	 * The string constructor
 	 *
-	 * @param value - the string with the TFloatSeq value
-	 * @throws SQLException
 	 */
-	public TFloatSeq(String value) throws SQLException {
-		super(value, TFloatInst::new, TFloat::compareValue);
+	public TFloatSeq(List<String> list, boolean lower_inc, boolean upper_inc, int interpolation, boolean normalize)  {
+		super();
 	}
-	
-	/**
-	 * The string array constructor
-	 *
-	 * @param values - an array of strings
-	 * @throws SQLException
-	 */
-	public TFloatSeq(String[] values) throws SQLException {
-		super(false, values, TFloatInst::new, TFloat::compareValue);
+
+
+
+
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.tfloat_in(str);
 	}
-	
-	/**
-	 * The string array and stepwise constructor
-	 *
-	 * @param isStepwise - if it is stepwise
-	 * @param values     - an array of strings
-	 * @throws SQLException
-	 */
-	public TFloatSeq(boolean isStepwise, String[] values) throws SQLException {
-		super(isStepwise, values, TFloatInst::new, TFloat::compareValue);
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
 	}
-	
-	/**
-	 * The string array and bounds constructor
-	 *
-	 * @param values         - an array of strings
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TFloatSeq(String[] values, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
-		super(false, values, lowerInclusive, upperInclusive, TFloatInst::new, TFloat::compareValue);
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
 	}
-	
-	/**
-	 * The string array, stepwise and bounds constructor
-	 *
-	 * @param isStepwise     - if it is stepwise
-	 * @param values         - an array of strings
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TFloatSeq(boolean isStepwise, String[] values, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
-		super(isStepwise, values, lowerInclusive, upperInclusive, TFloatInst::new, TFloat::compareValue);
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
 	}
-	
-	/**
-	 * The TFloatInst array constructor
-	 *
-	 * @param values - an array of TFloatInst
-	 * @throws SQLException
-	 */
-	public TFloatSeq(TFloatInst[] values) throws SQLException {
-		super(false, values, TFloat::compareValue);
+
+	@Override
+	public Pointer getNumberInner(){
+		return inner;
 	}
-	
-	/**
-	 * The TFloatInst array and stepwise constructor
-	 *
-	 * @param isStepwise - if it is stepwise
-	 * @param values     - an array of TFloatInst
-	 * @throws SQLException
-	 */
-	public TFloatSeq(boolean isStepwise, TFloatInst[] values) throws SQLException {
-		super(isStepwise, values, TFloat::compareValue);
-	}
-	
-	/**
-	 * The TFloatInst array and bounds constructor
-	 *
-	 * @param values         - an array of TFloatInst
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TFloatSeq(TFloatInst[] values, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
-		super(false, values, lowerInclusive, upperInclusive, TFloat::compareValue);
-	}
-	
-	/**
-	 * The TFloatInst array, stepwise and bounds constructor
-	 *
-	 * @param isStepwise     - if it is stepwise
-	 * @param values         - an array of TFloatInst
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TFloatSeq(boolean isStepwise, TFloatInst[] values, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
-		super(isStepwise, values, lowerInclusive, upperInclusive, TFloat::compareValue);
-	}
+
+
+
 	
 }

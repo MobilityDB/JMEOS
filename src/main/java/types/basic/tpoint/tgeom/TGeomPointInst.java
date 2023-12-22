@@ -3,6 +3,7 @@ package types.basic.tpoint.tgeom;
 import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import net.postgis.jdbc.geometry.Point;
+import types.temporal.TemporalType;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -14,24 +15,26 @@ public class TGeomPointInst extends TInstant<Point> {
 		super(inner);
 	}
 
-	/**
-	 * The string constructor
-	 *
-	 * @param value - the string with the TGeomPointInst value
-	 * @throws SQLException
-	 */
-	public TGeomPointInst(String value) throws SQLException {
-		super(value, TGeomPoint::getSingleTemporalValue);
+
+	@Override
+	public Pointer createStringInner(String str) {
+		return null;
 	}
-	
-	/**
-	 * The value and timestamp constructor
-	 *
-	 * @param value - a Point
-	 * @param time  - a timestamp
-	 * @throws SQLException
-	 */
-	public TGeomPointInst(Point value, OffsetDateTime time) throws SQLException {
-		super(value, time);
+
+	@Override
+	public Pointer createInner(Pointer inner) {
+		return null;
 	}
+
+	@Override
+	public String getCustomType() {
+		return null;
+	}
+
+	@Override
+	public TemporalType getTemporalType() {
+		return null;
+	}
+
+
 }

@@ -7,12 +7,13 @@ import types.boxes.Box;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import types.collections.base.Span;
 import utils.ConversionUtils;
+
+import javax.naming.OperationNotSupportedException;
 
 /**
  * Class for representing sets of contiguous timestamps between a lower and
@@ -34,7 +35,7 @@ import utils.ConversionUtils;
  * @author Nidhal Mareghni
  * @since 07/09/2023
  *
- * TODO: Add datetime in constructor, Modify the SQLException, Modify the timestampTZ
+ * TODO: Add datetime in constructor, Modify the timestampTZ
  */
 @TypeName(name = "period")
 public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
@@ -64,9 +65,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * Constructor by copy
 	 *
 	 * @param other period instace
-	 * @throws SQLException sql exception
 	 */
-	public Period(Period other) throws SQLException {
+	public Period(Period other){
 		this(other.get_inner());
 	}
 	
@@ -74,22 +74,19 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * Constructor through Meos (C) inner object
 	 *
 	 * @param _inner Pointer to C object
-	 * @throws SQLException sql exception
 	 */
-	public Period(Pointer _inner) throws SQLException {
+	public Period(Pointer _inner) {
 		super(_inner);
 		this._inner = _inner;
 		String str = functions.period_out(this._inner);
-		System.out.println(str);
 	}
 	
 	/**
 	 * The string constructor
 	 *
 	 * @param value - a string with a Period value
-	 * @throws SQLException sql exception
 	 */
-	public Period(final String value) throws SQLException {
+	public Period(final String value){
 		super(value);
 		this._inner = functions.period_in(value);
 	}
@@ -101,10 +98,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param lower          - a timestamp for the lower bound
 	 * @param upper          - a timestamp for the upper bound
-	 * @throws SQLException sql exception
 	 */
-	public Period(String lower, String upper)
-			throws SQLException {
+	public Period(String lower, String upper) {
 		super();
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
@@ -120,10 +115,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 * @param lowerInclusive - if the lower bound is inclusive
 	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException sql exception
 	 */
-	public Period(String lower, String upper, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
+	public Period(String lower, String upper, boolean lowerInclusive, boolean upperInclusive) {
 		super();
 		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
 		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
@@ -136,10 +129,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param lower          - a timestamp for the lower bound
 	 * @param upper          - a timestamp for the upper bound
-	 * @throws SQLException sql exception
 	 */
-	public Period(LocalDateTime lower, LocalDateTime upper)
-			throws SQLException {
+	public Period(LocalDateTime lower, LocalDateTime upper) {
 		super();
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
@@ -156,10 +147,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 * @param lowerInclusive - if the lower bound is inclusive
 	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException sql exception
 	 */
-	public Period(LocalDateTime lower, LocalDateTime upper, boolean lowerInclusive, boolean upperInclusive)
-			throws SQLException {
+	public Period(LocalDateTime lower, LocalDateTime upper, boolean lowerInclusive, boolean upperInclusive) {
 		super();
 		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
 		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
@@ -172,10 +161,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param lower          - a timestamp for the lower bound
 	 * @param upper          - a timestamp for the upper bound
-	 * @throws SQLException sql exception
 	 */
-	public Period(String lower, LocalDateTime upper)
-			throws SQLException {
+	public Period(String lower, LocalDateTime upper) {
 		super();
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
@@ -189,10 +176,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param lower          - a timestamp for the lower bound
 	 * @param upper          - a timestamp for the upper bound
-	 * @throws SQLException sql exception
 	 */
-	public Period(LocalDateTime lower, String upper)
-			throws SQLException {
+	public Period(LocalDateTime lower, String upper){
 		super();
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
@@ -247,9 +232,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *          </ul
 	 * </p>
 	 * @return Instance of Period class
-	 * @throws SQLException
 	 */
-    public Period copy() throws SQLException {
+    public Period copy(){
         return new Period(functions.span_copy(this._inner));
     }
 
@@ -265,9 +249,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param hexwkb: WKB representation in hex-encoded ASCII
 	 * @return Instance of Period class
-	 * @throws SQLException
 	 */
-	public static Period from_hexwkb(String hexwkb) throws SQLException {
+	public static Period from_hexwkb(String hexwkb) {
 		Pointer result = functions.span_from_hexwkb(hexwkb);
 		return new Period(result);
 	}
@@ -308,9 +291,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *          </ul>
 	 *  </p>
 	 * @return PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet to_periodset() throws SQLException {
+	public PeriodSet to_periodset() {
 		return new PeriodSet(functions.span_to_spanset(this._inner));
 	}
 
@@ -427,9 +409,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other period instance needed to expand the object
 	 * @return Period instance
-	 * @throws SQLException
 	 */
-	public Period expand(Period other) throws SQLException {
+	public Period expand(Period other) {
 		Pointer copy = functions.span_copy(this._inner);
 		functions.span_expand(other._inner, copy);
 		return new Period(copy);
@@ -465,9 +446,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if adjacent, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_adjacent(Time other) throws SQLException {
+	public boolean is_adjacent(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_span_span(this._inner, p.get_inner());
@@ -504,9 +484,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if contained, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_contained_in(Time other) throws SQLException{
+	public boolean is_contained_in(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.contained_span_span(this._inner,p.get_inner());
@@ -542,9 +521,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if contains, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean contains(Time other) throws SQLException{
+	public boolean contains(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.contains_span_span(this._inner,p.get_inner());
@@ -579,9 +557,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *          </ul>
 	 * @param other temporal object to compare with
 	 * @return true if overlaps, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean overlaps(Time other) throws SQLException{
+	public boolean overlaps(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overlaps_span_span(this._inner,p.get_inner());
@@ -608,9 +585,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_same(Time other) throws SQLException{
+	public boolean is_same(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.span_eq(this._inner,p.get_inner());
@@ -652,9 +628,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_before(Time other) throws SQLException{
+	public boolean is_before(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.left_span_span(this._inner,p.get_inner());
@@ -691,9 +666,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *			</ul>
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(Time other) throws SQLException{
+	public boolean is_over_or_before(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overleft_span_span(this._inner,p.get_inner());
@@ -729,9 +703,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if after, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_after(Time other) throws SQLException{
+	public boolean is_after(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.right_span_span(this._inner,p.get_inner());
@@ -770,9 +743,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overlapping or after, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(Time other) throws SQLException{
+	public boolean is_over_or_after(Time other) {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overright_span_span(this._inner,p.get_inner());
@@ -808,9 +780,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return a timedelta instance
-	 * @throws SQLException
 	 */
-	public double distance(Time other) throws SQLException{
+	public double distance(Time other) {
 		double returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.distance_span_span(this._inner,p.get_inner());
@@ -842,9 +813,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to intersect with
 	 * @return {@link Time} instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-    public Time intersection(Time other) throws SQLException{
+    public Time intersection(Time other) {
         Time returnValue = null;
         switch (other){
             case Period p -> returnValue = new Period(functions.intersection_span_span(this._inner,p.get_inner()));
@@ -870,9 +840,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to intersect with
 	 * @return {@link Time} instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-    public Time mul(Time other) throws SQLException {
+    public Time mul(Time other)  {
         return this.intersection(other);
     }
 
@@ -890,9 +859,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to diff with
 	 * @return {@link PeriodSet} instance
-	 * @throws SQLException
 	 */
-	public PeriodSet minus(Time other) throws SQLException{
+	public PeriodSet minus(Time other)  {
 		PeriodSet returnValue;
 		switch (other){
 			case Period p -> returnValue = new PeriodSet(functions.minus_span_span(this._inner,p.get_inner()));
@@ -918,9 +886,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to diff with
 	 * @return {@link PeriodSet} instance
-	 * @throws SQLException
 	 */
-    public PeriodSet sub(Time other) throws SQLException {
+    public PeriodSet sub(Time other)  {
         return this.minus(other);
     }
 
@@ -938,9 +905,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to merge with
 	 * @return a {@link PeriodSet} instance.
-	 * @throws SQLException
 	 */
-	public PeriodSet union(Time other) throws SQLException{
+	public PeriodSet union(Time other)  {
 		PeriodSet returnValue;
 		switch (other){
 			case Period p -> returnValue = new PeriodSet(functions.union_span_span(this._inner,p.get_inner()));
@@ -965,9 +931,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to merge with
 	 * @return a {@link PeriodSet} instance.
-	 * @throws SQLException
 	 */
-	public PeriodSet add(Time other) throws SQLException {
+	public PeriodSet add(Time other)  {
 		return this.union(other);
 	}
 
@@ -987,9 +952,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean equals(Time other) throws SQLException{
+	public boolean equals(Time other) {
 		boolean result;
 		result = other instanceof Period ? functions.span_eq(this._inner,((Period) other).get_inner()) : false;
 		return result;
@@ -1004,9 +968,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * </p>
 	 * @param other temporal object to compare with
 	 * @return true if not equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean notEquals(Time other) throws SQLException{
+	public boolean notEquals(Time other) {
 		boolean result;
 		result = other instanceof Period ? functions.span_ne(this._inner,((Period) other).get_inner()) : true;
 		return result;
@@ -1025,14 +988,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if less than, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean lessThan(Time other) throws SQLException{
+	public boolean lessThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof Period){
 			return functions.span_lt(this._inner,((Period) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1047,14 +1009,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if less than or equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(Time other) throws SQLException{
+	public boolean lessThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof Period){
 			return functions.span_le(this._inner,((Period) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1068,14 +1029,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * </p>
 	 * @param other temporal object to compare with
 	 * @return true if greater than, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean greaterThan(Time other) throws SQLException{
+	public boolean greaterThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof Period){
 			return functions.span_gt(this._inner,((Period) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1089,43 +1049,14 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * </p>
 	 * @param other temporal object to compare with
 	 * @return true if greater than or equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(Time other) throws SQLException{
+	public boolean greaterThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof Period){
 			return functions.span_ge(this._inner,((Period) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
-	
-	/**
-	 * Shifts the duration sent
-	 *
-	 * @param duration - the duration to shift
-	 */
-	public Period shift(Duration duration) throws SQLException {
-		return new Period(lower.plus(duration), upper.plus(duration), lowerInclusive, upperInclusive);
-	}
-
-	/**
-	 * Verifies that the received fields are valid
-	 *
-	 * @throws SQLException sql exception
-	 */
-	private void validate() throws SQLException {
-		if (lower == null || upper == null) {
-			throw new SQLException("The lower and upper bounds must be defined.");
-		}
-		
-		if (lower.isAfter(upper)) {
-			throw new SQLException("The lower bound must be less than or equal to the upper bound.");
-		}
-		
-		if (lower.isEqual(upper) && (!lowerInclusive || !upperInclusive)) {
-			throw new SQLException("The lower and upper bounds must be inclusive for an instant period.");
-		}
-	}
 }

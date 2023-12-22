@@ -114,7 +114,6 @@ public class STBoxTest {
 		functions.meos_initialize("UTC");
 		STBox stb = new STBox(str);
 		assertTrue(stb.equals(box));
-
 	}
 
 

@@ -1,77 +1,81 @@
 package types.basic.ttext;
 
+import functions.functions;
 import types.temporal.TSequence;
 
-import java.sql.SQLException;
+import java.util.List;
+
 import jnr.ffi.Pointer;
+import types.temporal.TemporalType;
 
 /**
  * By Default Interpolation is stepwise
  */
-public class TTextSeq extends TSequence<String> {
-	private Pointer _inner;
+public class TTextSeq extends TSequence<String> implements TText{
+	private Pointer inner;
+	private String customType = "String";
+	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+
+
+	public TTextSeq(Pointer inner){
+		super(inner);
+		this.inner = inner;
+	}
+
 
 	/**
 	 * The string constructor
 	 *
-	 * @param value - the string with the TTextSeq value
-	 * @throws SQLException
+	 * @param value - the string with the TBoolInst value
 	 */
-	public TTextSeq(String value) throws SQLException {
-		super(true, value, TTextInst::new, TText::compareValue);
-	}
-	
-	/**
-	 * The string array constructor
-	 *
-	 * @param values - an array of strings
-	 * @throws SQLException
-	 */
-	public TTextSeq(String[] values) throws SQLException {
-		super(true, values, TTextInst::new, TText::compareValue);
-	}
-	
-	/**
-	 * The string array and bounds constructor
-	 *
-	 * @param values         - an array of strings
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TTextSeq(String[] values, boolean lowerInclusive, boolean upperInclusive) throws SQLException {
-		super(true, values, lowerInclusive, upperInclusive, TTextInst::new, TText::compareValue);
-	}
-	
-	/**
-	 * The TTextInst array constructor
-	 *
-	 * @param values - an array of TTextInst
-	 * @throws SQLException
-	 */
-	public TTextSeq(TTextInst[] values) throws SQLException {
-		super(true, values, TText::compareValue);
-	}
-	
-	/**
-	 * The TTextInst array and bounds constructor
-	 *
-	 * @param values         - an array of TTextInst
-	 * @param lowerInclusive - if the lower bound is inclusive
-	 * @param upperInclusive - if the upper bound is inclusive
-	 * @throws SQLException
-	 */
-	public TTextSeq(TTextInst[] values, boolean lowerInclusive, boolean upperInclusive) throws SQLException {
-		super(true, values, lowerInclusive, upperInclusive, TText::compareValue);
+	public TTextSeq(String value){
+		this(value,2);
 	}
 
-	public TTextSeq(Pointer inner){
-		super(inner);
-		this._inner = inner;
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TBoolInst value
+	 */
+	public TTextSeq(String value, int interpolation)  {
+		super(value);
+		this.inner = functions.ttext_in(value);
 	}
-	
+
+
+	/**
+	 * The string constructor
+	 *
+	 */
+	public TTextSeq(List<String> list, boolean lower_inc, boolean upper_inc, int interpolation, boolean normalize) {
+		super();
+	}
+
+
+
 	@Override
-	protected boolean explicitInterpolation() {
-		return false;
+	public Pointer createStringInner(String str){
+		return functions.ttext_in(str);
 	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
+	}
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
+	}
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
+	}
+
+	@Override
+	public Pointer getTextInner(){
+		return inner;
+	}
+
 }

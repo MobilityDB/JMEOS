@@ -6,7 +6,6 @@ import types.collections.time.PeriodSet;
 import functions.functions;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -29,28 +28,18 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 
 
 	public TInstant(Pointer inner){
-		super();
+		super(inner);
 		this._inner = createInner(inner);
 	}
 
 	public TInstant(String str){
-		super();
+		super(str);
 		this._inner = createStringInner(str);
 	}
 
 	public abstract Pointer createStringInner(String str);
 	public abstract Pointer createInner(Pointer inner);
 
-
-	protected void validateTemporalDataType() throws SQLException {
-		if (temporalValue == null) {
-			throw new SQLException("Temporal value cannot be null.");
-		}
-		
-		if (temporalValue.getTime() == null) {
-			throw new SQLException("Timestamp cannot be null.");
-		}
-	}
 	
 
 	public String buildValue() {
@@ -140,17 +129,6 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public OffsetDateTime timestampN(int n) throws SQLException {
-		if (n == 0) {
-			return temporalValue.getTime();
-		}
-		
-		throw new SQLException("There is no timestamp at this index.");
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 	public OffsetDateTime startTimestamp() {
 		return temporalValue.getTime();
 	}
@@ -162,19 +140,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		return temporalValue.getTime();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	public Period period() throws SQLException {
-		return new Period(temporalValue.getTime().toLocalDateTime(), temporalValue.getTime().toLocalDateTime(), true, true);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public PeriodSet getTime() throws SQLException {
-		return new PeriodSet(period());
-	}
+
 	
 	/**
 	 * {@inheritDoc}
@@ -196,17 +162,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	public TInstant<V> endInstant() {
 		return this;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public TInstant<V> instantN(int n) throws SQLException {
-		if (n == 0) {
-			return this;
-		}
-		
-		throw new SQLException("There is no instant at this index.");
-	}
+
 	
 	/**
 	 * {@inheritDoc}

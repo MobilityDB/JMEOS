@@ -23,7 +23,17 @@ public class TGeogPoint extends TPoint {
 	public TGeogPoint() {
 		super();
 	}
-	
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void setValue(String value) throws SQLException {
+
+	}
+
 	/**
 	 * The string constructor
 	 *
@@ -59,26 +69,5 @@ public class TGeogPoint extends TPoint {
 		
 		return temporalValue;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setValue(String value) throws SQLException {
-		TemporalType temporalType = getTemporalType(value);
-		switch (temporalType) {
-			case TEMPORAL_INSTANT:
-				temporal = new TGeogPointInst(value);
-				break;
-			case TEMPORAL_INSTANT_SET:
-				temporal = new TGeogPointInstSet(value);
-				break;
-			case TEMPORAL_SEQUENCE:
-				temporal = new TGeogPointSeq(value);
-				break;
-			case TEMPORAL_SEQUENCE_SET:
-				temporal = new TGeogPointSeqSet(value);
-				break;
-		}
-	}
+
 }

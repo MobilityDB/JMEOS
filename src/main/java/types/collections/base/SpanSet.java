@@ -238,7 +238,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *  <p>
      *
      *         See Also:
-     *              {@link types.collections.time.Period#is_same(TemporalObject)}
+     *              {@link types.collections.time.Period#is_same(Base)}
      *
      *             
      * @param other A time or temporal object to compare to "this".

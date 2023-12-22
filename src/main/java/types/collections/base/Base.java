@@ -1,4 +1,6 @@
 package types.collections.base;
 
-public interface Base {
+import types.TemporalObject;
+
+public interface Base extends TemporalObject {
 }

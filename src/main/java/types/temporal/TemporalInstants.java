@@ -18,15 +18,6 @@ public abstract class TemporalInstants<V extends Serializable> extends Temporal<
 	protected final ArrayList<TInstant<V>> instantList = new ArrayList<>();
 	private CompareValueFunction<V> compareValueFunction;
 	
-	protected TemporalInstants(TemporalType temporalType, CompareValueFunction<V> compareValueFunction) {
-		super(temporalType);
-		this.compareValueFunction = compareValueFunction;
-	}
-
-	protected TemporalInstants(TemporalType temporalType){
-		super(temporalType);
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */

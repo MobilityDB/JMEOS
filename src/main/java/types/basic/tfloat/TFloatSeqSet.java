@@ -1,65 +1,56 @@
 package types.basic.tfloat;
 
+import functions.functions;
 import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
-import java.sql.SQLException;
+import types.temporal.TemporalType;
 
-public class TFloatSeqSet extends TSequenceSet<Float> {
-
+public class TFloatSeqSet extends TSequenceSet<Float> implements TFloat {
+	private Pointer inner;
+	private String customType = "Float";
+	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 	public TFloatSeqSet(Pointer inner){
 		super(inner);
+		this.inner = inner;
 	}
 
 	/**
 	 * The string constructor
 	 *
 	 * @param value - the string with the TFloatSeqSet value
-	 * @throws SQLException
 	 */
-	public TFloatSeqSet(String value) throws SQLException {
-		super(value, TFloatSeq::new, TFloat::compareValue);
+	public TFloatSeqSet(String value)  {
+		super(value);
+		this.inner = functions.tfloat_in(value);
 	}
-	
-	/**
-	 * The string array constructor
-	 *
-	 * @param values - an array of strings
-	 * @throws SQLException
-	 */
-	public TFloatSeqSet(String[] values) throws SQLException {
-		super(false, values, TFloatSeq::new, TFloat::compareValue);
+
+
+
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.tfloat_in(str);
 	}
-	
-	/**
-	 * The string array and stepwise constructor
-	 *
-	 * @param stepwise - if it is stepwise
-	 * @param values   - an array of strings
-	 * @throws SQLException
-	 */
-	public TFloatSeqSet(boolean stepwise, String[] values) throws SQLException {
-		super(stepwise, values, TFloatSeq::new, TFloat::compareValue);
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
 	}
-	
-	/**
-	 * The TFloatSeq array constructor
-	 *
-	 * @param values - an array of TFloatSeq
-	 * @throws SQLException
-	 */
-	public TFloatSeqSet(TFloatSeq[] values) throws SQLException {
-		super(false, values, TFloat::compareValue);
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
 	}
-	
-	/**
-	 * The TFloatSeq array and stepwise constructor
-	 *
-	 * @param stepwise - if it is stepwise
-	 * @param values   - an array of TFloatSeq
-	 * @throws SQLException
-	 */
-	public TFloatSeqSet(boolean stepwise, TFloatSeq[] values) throws SQLException {
-		super(stepwise, values, TFloat::compareValue);
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
 	}
+
+	@Override
+	public Pointer getNumberInner(){
+		return inner;
+	}
+
+
 }

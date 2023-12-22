@@ -40,13 +40,6 @@ public abstract class TemporalDataType<V extends Serializable> extends DataType 
 		return temporal.getTemporalType();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getValue() {
-		return temporal.buildValue();
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

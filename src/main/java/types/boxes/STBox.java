@@ -11,7 +11,6 @@ import types.core.TypeName;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.geom.Geometry;
 
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
@@ -19,6 +18,8 @@ import utils.ConversionUtils;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.TimestampSet;
+
+import javax.naming.OperationNotSupportedException;
 
 
 /**
@@ -56,11 +57,11 @@ public class STBox implements Box {
 	private boolean tmax_inc = true;
 	private Runtime runtime = Runtime.getSystemRuntime();
 
-	public STBox _get_box(TemporalObject<?> other) throws SQLException {
+	public STBox _get_box(TemporalObject other){
 		return this._get_box(other,true,false);
 	}
 
-	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only) throws SQLException {
+	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only){
 		STBox other_box=null;
 
 		if (other instanceof STBox){
@@ -89,11 +90,11 @@ public class STBox implements Box {
 		super();
 	}
 	
-	public STBox(Pointer inner) throws SQLException {
+	public STBox(Pointer inner){
 		this(inner, true, true, false);
 	}
 	
-	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic) throws SQLException {
+	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
 		super();
 		this._inner = inner;
 		this.tmin_inc = tmin_inc;
@@ -107,10 +108,9 @@ public class STBox implements Box {
 	 * The string constructor
 	 *
 	 * @param value - STBox value
-	 * @throws SQLException
 	 */
 	
-	public STBox(final String value) throws SQLException {
+	public STBox(final String value){
 		super();
 		//setValue(value);
 		this._inner = functions.stbox_in(value);
@@ -122,13 +122,11 @@ public class STBox implements Box {
 	 *
 	 * @param pMin - coordinates for minimum bound
 	 * @param pMax - coordinates for maximum bound
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, Point pMax, Pointer inner) throws SQLException {
+	public STBox(Point pMin, Point pMax, Pointer inner){
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -141,15 +139,13 @@ public class STBox implements Box {
 	 * @param tMin - minimum time dimension
 	 * @param pMax - coordinates for maximum bound
 	 * @param tMax - maximum time dimension
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, Pointer inner) throws SQLException {
+	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, Pointer inner){
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.tMin = tMin;
 		this.tMax = tMax;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -160,13 +156,11 @@ public class STBox implements Box {
 	 *
 	 * @param tMin - minimum time dimension
 	 * @param tMax - maximum time dimension
-	 * @throws SQLException
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, Pointer inner) throws SQLException {
+	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, Pointer inner) {
 		super();
 		this.tMin = tMin;
 		this.tMax = tMax;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -178,14 +172,12 @@ public class STBox implements Box {
 	 * @param pMin       - coordinates for minimum bound
 	 * @param pMax       - coordinates for maximum bound
 	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, Pointer inner) throws SQLException {
+	public STBox(Point pMin, Point pMax, boolean isGeodetic, Pointer inner){
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.isGeodetic = isGeodetic;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -199,17 +191,15 @@ public class STBox implements Box {
 	 * @param pMax       - coordinates for maximum bound
 	 * @param tMax       - maximum time dimension
 	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
 	 */
 	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, Pointer inner)
-			throws SQLException {
+			{
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.tMin = tMin;
 		this.tMax = tMax;
 		this.isGeodetic = isGeodetic;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -221,14 +211,12 @@ public class STBox implements Box {
 	 * @param tMin       - minimum time dimension
 	 * @param tMax       - maximum time dimension
 	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, Pointer inner) throws SQLException {
+	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, Pointer inner) {
 		super();
 		this.tMin = tMin;
 		this.tMax = tMax;
 		this.isGeodetic = isGeodetic;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -240,14 +228,12 @@ public class STBox implements Box {
 	 * @param pMin - coordinates for minimum bound
 	 * @param pMax - coordinates for maximum bound
 	 * @param srid - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, Point pMax, int srid, Pointer inner) throws SQLException {
+	public STBox(Point pMin, Point pMax, int srid, Pointer inner) {
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -261,16 +247,14 @@ public class STBox implements Box {
 	 * @param pMax - coordinates for maximum bound
 	 * @param tMax - maximum time dimension
 	 * @param srid - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
+	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid, Pointer inner) {
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.tMin = tMin;
 		this.tMax = tMax;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -282,14 +266,12 @@ public class STBox implements Box {
 	 * @param tMin - minimum time dimension
 	 * @param tMax - maximum time dimension
 	 * @param srid - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
+	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid, Pointer inner)  {
 		super();
 		this.tMin = tMin;
 		this.tMax = tMax;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -302,15 +284,13 @@ public class STBox implements Box {
 	 * @param pMax       - coordinates for maximum bound
 	 * @param isGeodetic - if the coordinates are spherical
 	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
+	public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid, Pointer inner) {
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
 		this.isGeodetic = isGeodetic;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -325,10 +305,8 @@ public class STBox implements Box {
 	 * @param tMax       - maximum time dimension
 	 * @param isGeodetic - if the coordinates are spherical
 	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner)
-			throws SQLException {
+	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner) {
 		super();
 		this.pMin = pMin;
 		this.pMax = pMax;
@@ -336,7 +314,6 @@ public class STBox implements Box {
 		this.tMax = tMax;
 		this.isGeodetic = isGeodetic;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -349,15 +326,13 @@ public class STBox implements Box {
 	 * @param tMax       - maximum time dimension
 	 * @param isGeodetic - if the coordinates are spherical
 	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
+	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner)  {
 		super();
 		this.tMin = tMin;
 		this.tMax = tMax;
 		this.isGeodetic = isGeodetic;
 		this.srid = srid;
-		validate();
 		if (inner != null) {
 			this._inner = inner;
 		}
@@ -369,9 +344,8 @@ public class STBox implements Box {
 	 *         MEOS Functions:
 	 *             <li>stbox_copy</li>
 	 * @return a STBox instance
-	 * @throws SQLException
 	 */
-	public STBox copy() throws SQLException {
+	public STBox copy() {
 		return new STBox(functions.stbox_copy(this._inner));
 	}
 
@@ -382,9 +356,8 @@ public class STBox implements Box {
 	 *             <li>stbox_from_hexwkb</li>
 	 * @param hexwkb WKB representation in hex-encoded ASCII
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_hexwkb(String hexwkb) throws SQLException {
+	public static STBox from_hexwkb(String hexwkb) {
 		Pointer result = functions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
 	}
@@ -406,13 +379,12 @@ public class STBox implements Box {
 	 * @param geom A `Geometry` instance.
 	 * @param geodetic Whether to create a geodetic or geometric `STBox`.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_geometry(Geometry geom, boolean geodetic) throws SQLException {
+	public static STBox from_geometry(Geometry geom, boolean geodetic) {
 		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
 
-	public static STBox from_geometry(Geometry geom) throws SQLException {
+	public static STBox from_geometry(Geometry geom) {
 		boolean geodetic = false;
 		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
@@ -445,9 +417,8 @@ public class STBox implements Box {
 	 *         </ul>
 	 * @param other a Time instance
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_time(Time other) throws SQLException{
+	public static STBox from_time(Time other) {
 		STBox returnValue;
 		switch (other){
 			case Period p -> returnValue = new STBox(functions.period_to_stbox(p.get_inner()));
@@ -542,9 +513,8 @@ public class STBox implements Box {
 	 *         MEOS Functions:
 	 *             <li>stbox_to_period</li>
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-    public Period to_period() throws SQLException {
+    public Period to_period() {
         Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }
@@ -676,9 +646,8 @@ public class STBox implements Box {
 	 *             <li>stbox_set_srid</li>
 	 * @param value The new SRID.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox set_srid(int value) throws SQLException {
+	public STBox set_srid(int value) {
 		return new STBox(functions.stbox_set_srid(this._inner,value));
 	}
 	
@@ -686,13 +655,13 @@ public class STBox implements Box {
 	/** ------------------------- Transformations ------------------------------- */
 
 
-	public STBox expand_stbox(STBox stbox, STBox other) throws SQLException {
+	public STBox expand_stbox(STBox stbox, STBox other) {
 		Pointer result = functions.stbox_copy(this._inner);
 		functions.stbox_expand(other._inner, result);
 		return new STBox(result);
 	}
 
-	public STBox expand_numerical(Number value) throws SQLException {
+	public STBox expand_numerical(Number value) {
 		STBox result = null;
 		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
 			result = new STBox(functions.stbox_expand_space(this.get_inner(), value.floatValue()));
@@ -718,9 +687,8 @@ public class STBox implements Box {
 	 *
 	 * @param maxdd Maximum number of decimal digits.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox round(int maxdd) throws SQLException {
+	public STBox round(int maxdd) {
 		Pointer new_inner = functions.stbox_copy(this._inner);
 		functions.stbox_round(new_inner,maxdd);
 		return new STBox(new_inner);
@@ -742,9 +710,8 @@ public class STBox implements Box {
 	 * @param other spatiotemporal box to merge with
 	 * @param strict included or not
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox union(STBox other, boolean strict) throws SQLException {
+	public STBox union(STBox other, boolean strict) {
 		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
@@ -756,9 +723,8 @@ public class STBox implements Box {
 	 *             <li>union_stbox_stbox</li>
 	 * @param other spatiotemporal box to merge with
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox add(STBox other) throws SQLException {
+	public STBox add(STBox other) {
 		return this.union(other, true);
 	}
 
@@ -771,9 +737,8 @@ public class STBox implements Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
-	 * @throws SQLException
 	 */
-	public STBox intersection(STBox other) throws SQLException {
+	public STBox intersection(STBox other) {
 		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
 	}
 
@@ -786,9 +751,8 @@ public class STBox implements Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
-	 * @throws SQLException
 	 */
-	public STBox mul(STBox other) throws SQLException {
+	public STBox mul(STBox other) {
 		return this.intersection(other);
 	}
 
@@ -803,9 +767,8 @@ public class STBox implements Box {
 	 *             <li>adjacent_stbox_stbox</li>
 	 * @param other The other spatiotemporal object to check adjacency with "this".
 	 * @return "true" if "this" and "other" are adjacent, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {
+	public boolean is_adjacent(TemporalObject other) {
 		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -817,9 +780,8 @@ public class STBox implements Box {
 	 *             <li>contained_stbox_stbox</li>
 	 * @param other The spatiotemporal object to check containment with "this.
 	 * @return "true" if "this" is contained in "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+	public boolean is_contained_in(TemporalObject other) {
 		return functions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -833,9 +795,8 @@ public class STBox implements Box {
 	 *             <li>contains_stbox_stbox </li>
 	 * @param other The spatiotemporal object to check containment with "this".
 	 * @return "true" if "this" contains "other", "false otherwise.
-	 * @throws SQLException
 	 */
-	public boolean contains(TemporalObject<?> other) throws SQLException {
+	public boolean contains(TemporalObject other) {
 		return functions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -847,9 +808,8 @@ public class STBox implements Box {
 	 *             <li>overlaps_stbox_stbox </li>
 	 * @param other The spatiotemporal object to check overlap with "this".
 	 * @return "true" if "this" overlaps "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean overlaps(TemporalObject<?> other) throws SQLException {
+	public boolean overlaps(TemporalObject other)  {
 		return functions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -861,9 +821,8 @@ public class STBox implements Box {
 	 *             <li>same_stbox_stbox</li>
 	 * @param other The spatiotemporal object to check equality with "this".
 	 * @return "true" if "this" is the same as "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_same(TemporalObject<?> other) throws SQLException {
+	public boolean is_same(TemporalObject other) {
 		return functions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -875,9 +834,8 @@ public class STBox implements Box {
 	 *             <li>left_stbox_stbox </li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly to the left of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_left(TemporalObject<?> other) throws SQLException {
+	public boolean is_left(TemporalObject other) {
 		return functions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -889,9 +847,8 @@ public class STBox implements Box {
 	 *             <li>overleft_stbox_stbox, tpoint_to_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is to the left of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_left(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_left(TemporalObject other) {
 		return functions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -903,9 +860,8 @@ public class STBox implements Box {
 	 *             <li>right_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly to the right of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_right(TemporalObject<?> other) throws SQLException {
+	public boolean is_right(TemporalObject other) {
 		return functions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -918,9 +874,8 @@ public class STBox implements Box {
 	 *             <li>overright_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is to the right of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_right(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_right(TemporalObject other) {
 		return functions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -932,9 +887,8 @@ public class STBox implements Box {
 	 *             <li>below_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly below of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_below(TemporalObject<?> other) throws SQLException {
+	public boolean is_below(TemporalObject other) {
 		return functions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -948,9 +902,8 @@ public class STBox implements Box {
 	 *             <li>overbelow_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is below "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_below(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_below(TemporalObject other) {
 		return functions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -963,9 +916,8 @@ public class STBox implements Box {
 	 *             <li>above_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly above of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_above(TemporalObject<?> other) throws SQLException {
+	public boolean is_above(TemporalObject other) {
 		return functions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -979,9 +931,8 @@ public class STBox implements Box {
 	 *             <li>overabove_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is above "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_above(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_above(TemporalObject other) {
 		return functions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -994,9 +945,8 @@ public class STBox implements Box {
 	 *             <li>front_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly in front of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_front(TemporalObject<?> other) throws SQLException {
+	public boolean is_front(TemporalObject other) {
 		return functions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1010,9 +960,8 @@ public class STBox implements Box {
 	 *             <li>overfront_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is in front of "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_front(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_front(TemporalObject other) {
 		return functions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1025,9 +974,8 @@ public class STBox implements Box {
 	 *             <li>back_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly behind of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_behind(TemporalObject<?> other) throws SQLException {
+	public boolean is_behind(TemporalObject other) {
 		return functions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1041,9 +989,8 @@ public class STBox implements Box {
 	 *             <li>overback_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is behind of "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_behind(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_behind(TemporalObject other) {
 		return functions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1057,9 +1004,8 @@ public class STBox implements Box {
 	 * 	<p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly before "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_before(TemporalObject<?> other) throws Exception {
+	public boolean is_before(TemporalObject other) throws Exception {
 		return this.to_period().is_before(other);
 	}
 
@@ -1074,9 +1020,8 @@ public class STBox implements Box {
 	 * 	 </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(TemporalObject<?> other) throws Exception {
+	public boolean is_over_or_before(TemporalObject other) throws Exception {
 		return this.to_period().is_over_or_before(other);
 	}
 
@@ -1090,9 +1035,8 @@ public class STBox implements Box {
 	 *     </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly after "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_after(TemporalObject<?> other) throws Exception {
+	public boolean is_after(TemporalObject other) throws Exception {
 		return this.to_period().is_after(other);
 	}
 
@@ -1107,9 +1051,8 @@ public class STBox implements Box {
 	 *      </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(TemporalObject<?> other) throws Exception {
+	public boolean is_over_or_after(TemporalObject other) throws Exception {
 		return this.to_period().is_over_or_after(other);
 	}
 
@@ -1153,9 +1096,8 @@ public class STBox implements Box {
 	 *             <li>stbox_eq</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is equal to "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean equals(Box other) throws SQLException{
+	public boolean equals(Box other) {
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
 		return result;
@@ -1170,9 +1112,8 @@ public class STBox implements Box {
 	 *             <li>stbox_ne</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is not equal to "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean notEquals(Box other) throws SQLException{
+	public boolean notEquals(Box other) {
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
 		return result;
@@ -1187,14 +1128,13 @@ public class STBox implements Box {
 	 *             <li>stbox_lt</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is less than "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean lessThan(Box other) throws SQLException{
+	public boolean lessThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1208,14 +1148,13 @@ public class STBox implements Box {
 	 *             <li>stbox_le</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is less than or equal "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(Box other) throws SQLException{
+	public boolean lessThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_le(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1229,14 +1168,13 @@ public class STBox implements Box {
 	 *             <li>stbox_gt</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is greater "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean greaterThan(Box other) throws SQLException{
+	public boolean greaterThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1249,14 +1187,13 @@ public class STBox implements Box {
 	 *             <li>stbox_ge</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is greater or equal "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(Box other) throws SQLException{
+	public boolean greaterThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1270,62 +1207,6 @@ public class STBox implements Box {
 		} else {
 			return getNonGeodeticValue(sridPrefix);
 		}
-	}
-
-	public void setValue(String value) throws SQLException {
-		boolean hasZ;
-		boolean hasT;
-		if (value.startsWith("SRID")) {
-			String[] initialValues = value.split(";");
-			srid = Integer.parseInt(initialValues[0].split("=")[1]);
-			value = initialValues[1];
-		}
-		
-		if (value.contains("GEODSTBOX")) {
-			isGeodetic = true;
-			value = value.replace("GEODSTBOX", "");
-			hasZ = true;
-			hasT = value.contains("T");
-		} else if (value.startsWith("STBOX")) {
-			value = value.replace("STBOX", "");
-			hasZ = value.contains("Z");
-			hasT = value.contains("T");
-		} else {
-			throw new SQLException("Could not parse STBox value");
-		}
-		value = value.replace("Z", "")
-				.replace("T", "")
-				.replace("(", "")
-				.replace(")", "");
-		String[] values = value.split(",");
-		int nonEmpty = (int) Arrays.stream(values).filter(x -> !x.isEmpty()).count();
-		if (nonEmpty == 2) {
-			String[] removedNull = Arrays.stream(values)
-					.filter(x -> !x.isEmpty())
-					.toArray(String[]::new);
-			this.tMin = DateTimeFormatHelper.getDateTimeFormat(removedNull[0].trim());
-			this.tMax = DateTimeFormatHelper.getDateTimeFormat(removedNull[1].trim());
-		} else {
-			this.pMin = new Point();
-			this.pMax = new Point();
-			if (nonEmpty >= 4) {
-				this.pMin.setX(Double.parseDouble(values[0]));
-				this.pMax.setX(Double.parseDouble(values[nonEmpty / 2]));
-				this.pMin.setY(Double.parseDouble(values[1]));
-				this.pMax.setY(Double.parseDouble(values[1 + nonEmpty / 2]));
-			} else {
-				throw new SQLException("Could not parse STBox value, invalid number of parameters.");
-			}
-			if (hasZ) {
-				this.pMin.setZ(Double.parseDouble(values[2]));
-				this.pMax.setZ(Double.parseDouble(values[2 + nonEmpty / 2]));
-			}
-			if (hasT) {
-				this.tMin = DateTimeFormatHelper.getDateTimeFormat(values[nonEmpty / 2 - 1].trim());
-				this.tMax = DateTimeFormatHelper.getDateTimeFormat(values[(nonEmpty / 2 - 1) + nonEmpty / 2].trim());
-			}
-		}
-		validate();
 	}
 
 	
@@ -1407,35 +1288,7 @@ public class STBox implements Box {
 	public int getSrid() {
 		return srid;
 	}
-	
-	/**
-	 * Verifies that the received fields are valid
-	 *
-	 * @throws SQLException
-	 */
-	private void validate() throws SQLException {
-		if (tMin == null ^ tMax == null) {
-			throw new SQLException("Both tmin and tmax should have a value.");
-		}
-		
-		if (pMin != null && pMax != null) {
-			if ((pMin.getX() == null ^ pMax.getX() == null) ^ (pMin.getY() == null ^ pMax.getY() == null)) {
-				throw new SQLException("Both x and y coordinates should have a value.");
-			}
-			
-			if (pMin.getZ() == null ^ pMax.getZ() == null) {
-				throw new SQLException("Both zmax and zmin should have a value.");
-			}
-			
-			if (isGeodetic && pMin.getZ() == null) {
-				throw new SQLException("Geodetic coordinates need z value.");
-			}
-			
-			if (pMin.getX() == null && tMin == null) {
-				throw new SQLException("Could not parse STBox value, invalid number of arguments.");
-			}
-		}
-	}
+
 	
 	/**
 	 * Gets a string for geodetic values

@@ -7,7 +7,6 @@ import types.collections.base.Span;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -54,7 +53,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	public TimestampSet() {
 	}
 	
-	public TimestampSet(Pointer _inner) throws SQLException {
+	public TimestampSet(Pointer _inner)  {
 		super(_inner);
 		this._inner = _inner;
 		//String str = functions.timestampset_out(this._inner);
@@ -65,9 +64,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 * The string constructor
 	 *
 	 * @param value - a string with a TimestampSet value
-	 * @throws SQLException
 	 */
-	public TimestampSet(String value) throws SQLException {
+	public TimestampSet(String value) {
 		super(value);
 		this._inner = functions.timestampset_in(value);
 	}
@@ -95,9 +93,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         MEOS Functions:
 	 *             <li>set_copy</li>
 	 * @return a new TimestampSet instance
-	 * @throws SQLException
 	 */
-	public TimestampSet copy() throws SQLException {
+	public TimestampSet copy() {
 		return new TimestampSet(functions.set_copy(this._inner));
 	}
 
@@ -125,9 +122,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *             <li>set_from_hexwkb</li>
 	 * @param hexwkb WKB representation in hex-encoded ASCII
 	 * @return a new TimestampSet instance
-	 * @throws SQLException
 	 */
-	public static TimestampSet from_hexwkb(String hexwkb) throws SQLException {
+	public static TimestampSet from_hexwkb(String hexwkb) {
 		Pointer result = functions.set_from_hexwkb(hexwkb);
 		return new TimestampSet(result);
 	}
@@ -156,9 +152,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         MEOS Functions:
 	 *             <li>set_to_spanset</li>
 	 * @return a new PeriodSet instance
-	 * @throws SQLException
 	 */
-	public PeriodSet to_periodset() throws SQLException {
+	public PeriodSet to_periodset() {
 		return new PeriodSet(functions.set_to_spanset(this.get_inner()));
 	}
 
@@ -168,9 +163,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         MEOS Functions:
 	 *             <li>set_span</li>
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-	public Period to_span() throws SQLException {
+	public Period to_span() {
 		return new Period(functions.set_span(this._inner));
 	}
 
@@ -180,9 +174,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         MEOS Functions:
 	 *             <li>set_span</li>
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-	public Period to_period() throws SQLException {
+	public Period to_period() {
 		return this.to_span();
 	}
 
@@ -270,9 +263,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
      *         </ul>
      * @param other temporal object to compare with
      * @return true if adjacent, false otherwise
-     * @throws SQLException
      */
-	public boolean isAdjacent(Time other) throws SQLException {
+	public boolean isAdjacent(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_span_span(functions.set_span(this._inner), p.get_inner());
@@ -345,9 +337,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
      *         </ul>
      * @param other temporal object to compare with
      * @return true if contains, false otherwise
-     * @throws SQLException
      */
-	public boolean contains(Time other) throws SQLException {
+	public boolean contains(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case TimestampSet ts -> returnValue = functions.contains_set_set(this._inner, ts.get_inner());
@@ -407,9 +398,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
      *             {@link Period#is_same(Time)}
      * @param other A time or temporal object to compare to `self`.
      * @return true if same, false otherwise.
-     * @throws SQLException
      */
-	public boolean is_same(Time other) throws SQLException {
+	public boolean is_same(Time other) {
 		return this.to_period().is_same(other);
 	}
 
@@ -442,9 +432,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
      *
      * @param other temporal object to compare with
      * @return true if after, false otherwise
-     * @throws SQLException
      */
-	public boolean is_after(Time other) throws SQLException {
+	public boolean is_after(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.right_span_span(functions.set_span(this._inner), p.get_inner());
@@ -480,9 +469,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other: temporal object to compare with
 	 * @return true if before, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_before(Time other) throws SQLException {
+	public boolean is_before(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.left_span_span(functions.set_span(this._inner), p.get_inner());
@@ -518,9 +506,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overlapping or after, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(Time other) throws SQLException {
+	public boolean is_over_or_after(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overright_span_span(functions.set_span(this._inner), p.get_inner());
@@ -556,9 +543,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(Time other) throws SQLException {
+	public boolean is_over_or_before(Time other) {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.overleft_span_span(functions.set_span(this._inner), p.get_inner());
@@ -589,9 +575,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to intersect with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time intersection(Time other) throws SQLException {
+	public Time intersection(Time other) {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.intersection_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
@@ -616,9 +601,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to intersect with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time mul(Time other) throws SQLException {
+	public Time mul(Time other) {
 		return this.intersection(other);
 	}
 
@@ -637,9 +621,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to diff with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time minus(Time other) throws SQLException {
+	public Time minus(Time other) {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new PeriodSet(functions.minus_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
@@ -667,9 +650,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *
 	 * @param other temporal object to diff with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time sub(Time other) throws SQLException {
+	public Time sub(Time other) {
 		return this.minus(other);
 	}
 
@@ -686,9 +668,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         </ul>
 	 * @param other temporal object to merge with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time union(Time other) throws SQLException {
+	public Time union(Time other) {
 		Time returnValue = null;
 		switch (other) {
 			case Period p -> returnValue = new Period(functions.union_spanset_span(functions.set_to_spanset(this._inner),p.get_inner()));
@@ -714,9 +695,8 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         </ul>
 	 * @param other temporal object to merge with
 	 * @return a Time instance. The actual class depends on "other".
-	 * @throws SQLException
 	 */
-	public Time add(Time other) throws SQLException {
+	public Time add(Time other) {
 		return this.union(other);
 	}
 
@@ -859,9 +839,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 *         </ul>
 	 * </p>
 	 *
-	 * @param other temporal object to compare with
 	 * @return true if greater than or equal, false otherwise
-	 * @throws SQLException
 	 */
 	/*
 	public boolean greaterThanOrEqual(Time other) throws SQLException{
@@ -885,25 +863,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 				.collect(Collectors.joining(", ")));
 	}
 	
-	public void setValue(String value) throws SQLException {
-		String trimmed = value.trim();
-		
-		if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
-			throw new SQLException("Could not parse timestamp set value.");
-		}
-		
-		trimmed = trimmed.substring(1, trimmed.length() - 1);
-		
-		if (!trimmed.isEmpty()) {
-			String[] values = trimmed.split(",");
-			
-			for (String v : values) {
-				OffsetDateTime date = DateTimeFormatHelper.getDateTimeFormat(v.trim());
-				dateTimeList.add(date);
-			}
-		}
-		
-	}
+
 
 	
 	@Override
@@ -961,21 +921,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 		
 		return dateTimeList.get(dateTimeList.size() - 1);
 	}
-	
-	/**
-	 * Gets the timestamp located at the index position
-	 *
-	 * @param n - the index
-	 * @return a timestamp
-	 * @throws SQLException
-	 */
-	public OffsetDateTime timestampN(int n) throws SQLException {
-		if (n >= dateTimeList.size()) {
-			throw new SQLException("There is no value at this index.");
-		}
-		
-		return dateTimeList.get(n);
-	}
+
 	
 	/**
 	 * Get all timestamps

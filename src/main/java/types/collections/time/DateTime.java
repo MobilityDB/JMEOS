@@ -10,25 +10,18 @@ import java.time.LocalDateTime;
  * @since 09/08/2023
  * @author Killian Monnier
  */
-public class DateTime extends TemporalObject<LocalDateTime> {
+public class DateTime implements TemporalObject {
 	
 	/**
 	 * The default constructor.
 	 */
 	public DateTime() {
-		super();
 	}
-	
-	public DateTime(LocalDateTime dateTime) {
-		this._inner = dateTime;
-	}
-	
-	@Override
+
 	public String getValue() {
 		return null;
 	}
 	
-	@Override
 	public void setValue(String value) throws SQLException {
 	
 	}

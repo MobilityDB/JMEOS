@@ -18,56 +18,17 @@ import java.util.StringJoiner;
  * Base abstract class for TGeomPointSeqSet and TGeogPointSeqSet
  * Contains logic for handling SRID
  */
-public class TPointSeqSet extends TSequenceSet<Point> {
+public abstract class TPointSeqSet extends TSequenceSet<Point> {
 	private int srid;
 	private Pointer _inner;
 	
-	protected TPointSeqSet(String value,
-						   GetTemporalSequenceFunction<Point> getTemporalSequenceFunction) throws SQLException {
-		super(value, getTemporalSequenceFunction, TPoint::compareValue);
-		applySRID();
-	}
-	
-	protected TPointSeqSet(int srid,
-						   boolean stepwise,
-						   String[] values,
-						   GetTemporalSequenceFunction<Point> getTemporalSequenceFunction) throws SQLException {
-		super(stepwise, values, getTemporalSequenceFunction, TPoint::compareValue);
-		this.srid = srid;
-		applySRID();
-	}
-	
-	protected TPointSeqSet(int srid,
-						   boolean stepwise,
-						   TSequence<Point>[] values) throws SQLException {
-		super(stepwise, values, TPoint::compareValue);
-		this.srid = srid;
-		applySRID();
-	}
+
 
 	protected TPointSeqSet(Pointer inner){
 		super(inner);
 		this._inner = inner;
 	}
-	
-	/**
-	 * Parses the SRID value
-	 *
-	 * @param value - a string with the value
-	 * @return the string without SRID
-	 * @throws SQLException if it is invalid
-	 */
-	@Override
-	protected String preprocessValue(String value) throws SQLException {
-		String newString = super.preprocessValue(value);
-		SRIDParseResponse response = SRIDParser.parseSRID(newString);
-		srid = response.getSRID();
-		return response.getParsedValue();
-	}
-	
-	public void applySRID() throws SQLException {
-		srid = SRIDParser.applySRID(srid, getValues());
-	}
+
 	
 	@Override
 	public boolean equals(Object obj) {

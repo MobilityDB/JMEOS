@@ -6,6 +6,7 @@ import jnr.ffi.Pointer;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Scanner;
 
 import static functions.functions.meos_finalize;
@@ -71,7 +72,6 @@ public class read_ais {
 				if (no_records % 1000 == 0) {
 					
 					String t_out = functions.pg_timestamp_out(rec.T);
-					System.out.println(t_out);
 					String str_pointbuffer;
 					str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude, t_out);
 					str_pointbuffer = str_pointbuffer.replaceAll(",", ".");
@@ -80,8 +80,7 @@ public class read_ais {
 					String inst1_out = functions.tpoint_as_text(inst1, 2);
 					
 					float rec_tmp = (float) rec.SOG;
-					
-					Pointer inst2 = functions.tfloatinst_make(rec_tmp, OffsetDateTime.from(rec.T));
+					Pointer inst2 = functions.tfloatinst_make(rec_tmp, rec.T.atOffset(ZoneOffset.UTC));
 					String inst2_out = functions.tfloat_out(inst2, 2);
 					
 					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);

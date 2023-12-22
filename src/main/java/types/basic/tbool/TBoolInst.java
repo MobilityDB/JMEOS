@@ -2,7 +2,6 @@ package types.basic.tbool;
 
 import types.temporal.TInstant;
 import jnr.ffi.Pointer;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import functions.functions;
 import types.temporal.TemporalType;
@@ -22,9 +21,8 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	 * The string constructor
 	 *
 	 * @param value - the string with the TBoolInst value
-	 * @throws SQLException
 	 */
-	public TBoolInst(String value) throws SQLException {
+	public TBoolInst(String value) {
 		super(value);
 		this.inner = functions.tboolinst_in(value);
 	}
@@ -32,17 +30,16 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	/**
 	 * The value and timestamp constructor
 	 *
-	 * @throws SQLException
 	 */
-	public TBoolInst(String str, boolean value) throws SQLException {
+	public TBoolInst(String str, boolean value)  {
 		super();
 	}
 
-	public TBoolInst(boolean value, String timemstamp) throws SQLException {
+	public TBoolInst(boolean value, String timemstamp)  {
 		super();
 	}
 
-	public TBoolInst(String str, boolean value, String timemstamp, Pointer inner) throws SQLException {
+	public TBoolInst(String str, boolean value, String timemstamp, Pointer inner)  {
 		super();
 	}
 
@@ -68,9 +65,10 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	}
 
 	@Override
-	public Pointer getInner(){
+	public Pointer getBoolInner(){
 		return inner;
 	}
+
 
 
 

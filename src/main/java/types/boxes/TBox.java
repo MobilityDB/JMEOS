@@ -236,7 +236,7 @@ public class TBox implements Box {
 	 * @return a {@link Period} instance
 	 */
 	@Override
-	public Period to_period() throws SQLException {
+	public Period to_period(){
 		return new Period(functions.tbox_to_period(this._inner));
 	}
 
@@ -272,7 +272,7 @@ public class TBox implements Box {
 
 	/**
 	 * Returns the result of expanding "this" with the "other". Depending on the type of "other", the expansion
-	 *         will be of the numeric dimension ({@link Float}), temporal ({@link timedelta}) or both
+	 *         will be of the numeric dimension ({@link Float}) or both
 	 *         ({@link TBox}).
 	 *
 	 * <p>
