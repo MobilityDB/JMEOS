@@ -17,6 +17,8 @@ public class TTextSeq extends TSequence<String> implements TText{
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
+	public TTextSeq(){}
+
 	public TTextSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;

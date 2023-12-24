@@ -68,7 +68,6 @@ public class TBox implements Box {
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
 		String str = functions.tbox_out(this._inner,2);
-		setValue(str);
 	}
 	
 	/**
@@ -79,8 +78,6 @@ public class TBox implements Box {
 	 */
 	public TBox(final String value) throws SQLException {
 		super();
-		setValue(value);
-		
 		this._inner = functions.tbox_in(value);
 	}
 	

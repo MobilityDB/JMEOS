@@ -20,6 +20,10 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 	private Pointer _inner;
 
 
+	public TSequenceSet(){
+		super();
+	}
+
 	protected TSequenceSet(Pointer inner){
 		super(inner);
 		this._inner = inner;

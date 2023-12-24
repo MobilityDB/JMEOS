@@ -12,6 +12,9 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	private String customType = "Float";
 	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
+
+	public TFloatInst(){}
+
 	public TFloatInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

@@ -1,21 +1,35 @@
 package types.basic.tpoint.tgeog;
 
 import jnr.ffi.Pointer;
+import functions.functions;
 import types.basic.tpoint.TPointSeq;
-import types.basic.tpoint.helpers.TPointConstants;
 import types.temporal.TemporalType;
 
 import java.sql.SQLException;
 
-public class TGeogPointSeq extends TPointSeq {
+public class TGeogPointSeq extends TPointSeq implements TGeogPoint {
+
+	private Pointer inner;
+	private String customType = "Geog";
+	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+
+
+	public TGeogPointSeq(){}
 
 	public TGeogPointSeq(Pointer inner){
 		super(inner);
+		this.inner = inner;
 	}
+
+	public TGeogPointSeq(String value){
+		super(value);
+		this.inner = functions.tgeogpoint_in(value);
+	}
+
 
 	@Override
 	public Pointer createStringInner(String str) {
-		return null;
+		return functions.tgeogpoint_in(str);
 	}
 
 	@Override
@@ -25,13 +39,17 @@ public class TGeogPointSeq extends TPointSeq {
 
 	@Override
 	public String getCustomType() {
-		return null;
+		return this.customType;
 	}
 
 	@Override
 	public TemporalType getTemporalType() {
-		return null;
+		return this.temporalType;
 	}
 
+	@Override
+	public Pointer getPointInner(){
+		return this.inner;
+	}
 
 }

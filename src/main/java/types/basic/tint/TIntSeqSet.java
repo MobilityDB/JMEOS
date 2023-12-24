@@ -11,6 +11,10 @@ public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	private String customType = "Integer";
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
+
+	public TIntSeqSet(){
+	}
+
 	public TIntSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

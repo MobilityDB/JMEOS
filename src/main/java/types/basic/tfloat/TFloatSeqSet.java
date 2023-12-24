@@ -10,6 +10,11 @@ public class TFloatSeqSet extends TSequenceSet<Float> implements TFloat {
 	private String customType = "Float";
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
+
+	public TFloatSeqSet(){
+
+	}
+
 	public TFloatSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

@@ -72,7 +72,7 @@ public interface TInt extends TNumber {
 	 * @param interpolation Interpolation of the temporal int.
 	 * @return A new temporal float.
 	 */
-	public default TInt from_base_time(int value, Time base, TInterpolation interpolation){
+	public static TInt from_base_time(int value, Time base, TInterpolation interpolation){
 		if (base instanceof TimestampSet) {
 			return new TIntSeq(functions.tintseq_from_base_timestampset(value, ((TimestampSet) base).get_inner()));
 		} else if (base instanceof Period) {
@@ -129,7 +129,7 @@ public interface TInt extends TNumber {
 	 * @return A new temporal float.
 	 */
 	public default TFloat to_tfloat(){
-		return (TFloat) Factory.create_temporal(functions.tint_to_tfloat(getNumberInner()),getCustomType(),getTemporalType());
+		return (TFloat) Factory.create_temporal(functions.tint_to_tfloat(getNumberInner()),"Float",getTemporalType());
 	}
 
 

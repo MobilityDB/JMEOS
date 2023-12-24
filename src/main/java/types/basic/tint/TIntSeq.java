@@ -15,6 +15,9 @@ public class TIntSeq extends TSequence<Integer> implements TInt {
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
+	public TIntSeq(){
+	}
+
 	public TIntSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;
@@ -25,9 +28,18 @@ public class TIntSeq extends TSequence<Integer> implements TInt {
 	 *
 	 * @param value - the string with the TIntSeq value
 	 */
+	public TIntSeq(String value){
+		this(value,2);
+	}
+
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TIntSeq value
+	 */
 	public TIntSeq(String value, int interpolation) {
 		super(value);
-		this.inner = functions.tintseq_in(value, interpolation);
+		this.inner = functions.tint_in(value);
 	}
 
 

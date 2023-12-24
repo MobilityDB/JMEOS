@@ -11,6 +11,9 @@ public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 	private String customType = "Boolean";
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
+
+	public TBoolSeqSet(){}
+
 	public TBoolSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

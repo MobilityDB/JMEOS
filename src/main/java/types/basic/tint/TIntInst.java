@@ -12,6 +12,8 @@ public class TIntInst extends TInstant<Integer> implements TInt{
 	private String customType = "Integer";
 	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
+	public TIntInst(){}
+
 	public TIntInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

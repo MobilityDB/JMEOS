@@ -64,7 +64,7 @@ public interface TFloat extends TNumber {
 	 * @param interpolation Interpolation of the temporal float.
 	 * @return A new temporal float.
 	 */
-	public default TFloat from_base_time(float value, Time base, TInterpolation interpolation){
+	public static TFloat from_base_time(float value, Time base, TInterpolation interpolation){
 		if (base instanceof TimestampSet) {
 			return new TFloatSeq(functions.tfloatseq_from_base_timestampset(value, ((TimestampSet) base).get_inner()));
 		} else if (base instanceof Period) {

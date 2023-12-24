@@ -11,6 +11,9 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	private String customType = "Boolean";
 	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
+
+	public TBoolInst(){}
+
 	public TBoolInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

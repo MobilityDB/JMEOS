@@ -13,10 +13,23 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
+	public TFloatSeq(){}
+
 	public TFloatSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;
 	}
+
+
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TFloatSeq value
+	 */
+	public TFloatSeq(String value){
+		this(value,3);
+	}
+
 
 	/**
 	 * The string constructor

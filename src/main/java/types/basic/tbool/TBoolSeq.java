@@ -16,6 +16,10 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
+	public TBoolSeq(){
+
+	}
+
 	public TBoolSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;

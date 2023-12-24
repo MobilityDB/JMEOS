@@ -1,49 +1,55 @@
 package types.basic.tpoint.tgeog;
 
 import jnr.ffi.Pointer;
+import types.basic.tpoint.TPointInst;
+import functions.functions;
 import types.temporal.TInstant;
-import types.basic.tpoint.helpers.TPointConstants;
 import types.temporal.TemporalType;
 import types.temporal.TemporalValue;
-import net.postgis.jdbc.geometry.Point;
 
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
-public class TGeogPointInst extends TInstant<Point> {
+public class TGeogPointInst extends TPointInst implements TGeogPoint {
+	private Pointer inner;
+	private String customType = "Geog";
+	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
+
+	public TGeogPointInst(){}
 
 	public TGeogPointInst(Pointer inner){
 		super(inner);
 	}
 
+	public TGeogPointInst(String value){
+		super(value);
+		this.inner = functions.tgeompointinst_in(value);
+	}
+
 	@Override
 	public Pointer createStringInner(String str) {
-		return null;
+		return functions.tgeompointinst_in(str);
 	}
 
 	@Override
 	public Pointer createInner(Pointer inner) {
-		return null;
+		return inner;
 	}
 
 	@Override
 	public String getCustomType() {
-		return null;
+		return this.customType;
 	}
 
 	@Override
 	public TemporalType getTemporalType() {
-		return null;
+		return this.temporalType;
 	}
-
 
 	@Override
-	protected TemporalValue<Point> buildTemporalValue(Point value, OffsetDateTime time) {
-		if (value.getSrid() == TPointConstants.EMPTY_SRID) {
-			value.setSrid(TPointConstants.DEFAULT_SRID);
-		}
-		
-		return super.buildTemporalValue(value, time);
+	public Pointer getPointInner(){
+		return this.inner;
 	}
+
 }

@@ -12,6 +12,9 @@ public class TTextSeqSet extends TSequenceSet<String> implements TText{
 	private String customType = "String";
 	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
+
+	public TTextSeqSet(){}
+
 	public TTextSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;
