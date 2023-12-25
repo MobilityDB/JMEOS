@@ -40,10 +40,10 @@ public class IntSet extends Set<Integer> implements Number{
         return inner;
     }
 
-    /** ------------------------- Constructors ---------------------------------- */
+    /* ------------------------- Constructors ---------------------------------- */
 
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
     /**
      * Return the string representation of the content of "this".
@@ -59,7 +59,7 @@ public class IntSet extends Set<Integer> implements Number{
         return functions.intset_out(this._inner);
     }
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -136,15 +136,15 @@ public class IntSet extends Set<Integer> implements Number{
         return functions.intset_end_value(this._inner);
     }
 
-    /**
-     * Returns the "n"-th element in "this".
-     *
-     *  <p>
-     *
-     *         MEOS Functions:
-     *             <li>intset_value_n</li>
-     *
-     * @param n The 0-based index of the element to return.
+    /*
+      Returns the "n"-th element in "this".
+
+       <p>
+
+              MEOS Functions:
+                  <li>intset_value_n</li>
+
+      @param n The 0-based index of the element to return.
      * @return A {@link Integer} instance
      * @throws Exception
      */
@@ -165,7 +165,7 @@ public class IntSet extends Set<Integer> implements Number{
 
 
 
-    /** ------------------------- Transformations ------------------------------------ */
+    /* ------------------------- Transformations ------------------------------------ */
 
     /**
      * Returns a new "IntSet" instance with all elements shifted by "delta".
@@ -239,7 +239,7 @@ public class IntSet extends Set<Integer> implements Number{
 
 
 
-    /** ------------------------- Position Operations -------------------------------- */
+    /* ------------------------- Position Operations -------------------------------- */
 
 
     /**
@@ -338,7 +338,7 @@ public class IntSet extends Set<Integer> implements Number{
 
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
     /**
      * Returns the intersection of "this" and "other".
@@ -460,7 +460,7 @@ public class IntSet extends Set<Integer> implements Number{
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**

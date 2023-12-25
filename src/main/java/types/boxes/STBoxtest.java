@@ -1,14 +1,8 @@
 package types.boxes;
 
-import com.google.common.collect.Range;
 import functions.functions;
-import jnr.ffi.Pointer;
-import types.collections.time.Period;
 
 import java.sql.SQLException;
-
-import static utils.ConversionUtils.intrange_to_intspan;
-import static utils.ConversionUtils.intspan_to_intrange;
 
 public class STBoxtest {
     public static void main(String[] args) throws SQLException {

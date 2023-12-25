@@ -9,7 +9,6 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import types.temporal.*;
 import functions.functions;
@@ -20,10 +19,10 @@ import functions.functions;
  */
 @TypeName(name = "tfloat")
 public interface TFloat extends TNumber {
-	public String customType = "Float";
-	public Pointer getNumberInner();
-	public String getCustomType();
-	public TemporalType getTemporalType();
+	String customType = "Float";
+	Pointer getNumberInner();
+	String getCustomType();
+	TemporalType getTemporalType();
 
 	
 	/* ------------------------- Constructors ---------------------------------- */
@@ -42,7 +41,7 @@ public interface TFloat extends TNumber {
 	 * @param interp Interpolation of the temporal float.
 	 * @return A new {@link Float} object.
 	 */
-	public default TFloat from_base_temporal(float value, Temporal base, TInterpolation interp){
+	default TFloat from_base_temporal(float value, Temporal base, TInterpolation interp){
 		return (TFloat) Factory.create_temporal(functions.tfloat_from_base_temp(value,base.getInner()),getCustomType(),getTemporalType());
 	}
 
@@ -64,7 +63,7 @@ public interface TFloat extends TNumber {
 	 * @param interpolation Interpolation of the temporal float.
 	 * @return A new temporal float.
 	 */
-	public static TFloat from_base_time(float value, Time base, TInterpolation interpolation){
+	static TFloat from_base_time(float value, Time base, TInterpolation interpolation){
 		if (base instanceof TimestampSet) {
 			return new TFloatSeq(functions.tfloatseq_from_base_timestampset(value, ((TimestampSet) base).get_inner()));
 		} else if (base instanceof Period) {
@@ -76,7 +75,7 @@ public interface TFloat extends TNumber {
 	}
 
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
 	/**
@@ -88,8 +87,8 @@ public interface TFloat extends TNumber {
 	 * @param max_decimals
 	 * @return A string representation of "this".
 	 */
-	public default String tostring(int max_decimals){
-		return functions.tfloat_out(getNumberInner(), 15);
+	default String tostring(int max_decimals){
+		return functions.tfloat_out(getNumberInner(), max_decimals);
 	}
 
 	/**
@@ -101,7 +100,7 @@ public interface TFloat extends TNumber {
 	 * @param max_decimals
 	 * @return A string representation of "this".
 	 */
-	public default String as_wkt(int max_decimals){
+	default String as_wkt(int max_decimals){
 		return functions.tfloat_out(getNumberInner(),15);
 	}
 
@@ -110,24 +109,23 @@ public interface TFloat extends TNumber {
 
 
 	/**
-	 * Returns a new temporal integer with the values of "this" floored.
-	 *         This operation can only be performed when the interpolation is stepwise
-	 *         or discrete.
-	 * <p>
-	 *
-	 *         MEOS Functions:
-	 *             <li>tfloat_to_tint</li>
-	 *
-	 *         Raises:
-	 *             ValueError: If the interpolation is linear.
-	 * @return A new temporal integer.
+	  Returns a new temporal integer with the values of "this" floored.
+	          This operation can only be performed when the interpolation is stepwise
+	          or discrete.
+	  <p>
+
+	          MEOS Functions:
+	              <li>tfloat_to_tint</li>
+
+	          Raises:
+	              ValueError: If the interpolation is linear.
+	  @return A new temporal integer.
 	 */
-	/*
-	public default TInt to_tint(){
-		return (TInt) Factory.create_temporal(functions.tfloat_to_tint(getNumberInner()),getCustomType(),getTemporalType());
+	default TInt to_tint(){
+		return (TInt) Factory.create_temporal(functions.tfloat_to_tint(getNumberInner()),"Integer",getTemporalType());
 	}
 
-	 */
+
 
 
 	/**
@@ -140,12 +138,12 @@ public interface TFloat extends TNumber {
 	 *
 	 * @return An {@link FloatSpan} with the value span of "this".
 	 */
-	public default FloatSpan to_floatrange(){
+	default FloatSpan to_floatrange(){
 		return new FloatSpan(functions.tnumber_to_span(getNumberInner()));
 	}
 
 
-	/** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 
 	/**
@@ -157,7 +155,7 @@ public interface TFloat extends TNumber {
 	 *             <li>tnumber_to_span</li>
 	 * @return An {@link FloatSpan} with the value span of `self`.
 	 */
-	public default FloatSpan value_span(){
+	default FloatSpan value_span(){
 		return to_floatrange();
 	}
 
@@ -171,7 +169,7 @@ public interface TFloat extends TNumber {
 	 *             tnumber_valuespans
 	 * @return
 	 */
-	public default FloatSpanSet value_spans(){
+	default FloatSpanSet value_spans(){
 		return new FloatSpanSet(functions.tnumber_valuespans(getNumberInner()));
 	}
 
@@ -184,7 +182,7 @@ public interface TFloat extends TNumber {
 	 *             <li>tfloat_start_value</li>
 	 * @return A {@link Float} with the start value.
 	 */
-	public default float start_value(){
+	default float start_value(){
 		return (float) functions.tfloat_start_value(getNumberInner());
 	}
 
@@ -196,7 +194,7 @@ public interface TFloat extends TNumber {
 	 *             <li>tfloat_end_value</li>
 	 * @return A {@link Float} with the end value.
 	 */
-	public default float end_value(){
+	default float end_value(){
 		return (float) functions.tfloat_end_value(getNumberInner());
 	}
 
@@ -209,7 +207,7 @@ public interface TFloat extends TNumber {
 	 *             <li>tfloat_min_value</li>
 	 * @return A {@link Float} with the minimum value.
 	 */
-	public default float min_value(){
+	default float min_value(){
 		return (float) functions.tfloat_min_value(getNumberInner());
 	}
 
@@ -222,12 +220,12 @@ public interface TFloat extends TNumber {
 	 *             <li>tfloat_max_value</li>
 	 * @return A {@link Float} with the maximum value.
 	 */
-	public default float max_value(){
+	default float max_value(){
 		return (float) functions.tfloat_max_value(getNumberInner());
 	}
 
 
-	/** ------------------------- Ever and Always Comparisons ------------------- */
+    /* ------------------------- Ever and Always Comparisons ------------------- */
 
 
 	/**
@@ -241,7 +239,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always equal to "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean always_equal(float value){
+	default boolean always_equal(float value){
 		return functions.tfloat_always_eq(getNumberInner(),value);
 	}
 
@@ -256,7 +254,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always not equal to "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean always_not_equal(float value){
+	default boolean always_not_equal(float value){
 		return ! (functions.tfloat_ever_eq(getNumberInner(),value));
 	}
 
@@ -272,7 +270,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always less than "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean always_less(float value){
+	default boolean always_less(float value){
 		return functions.tfloat_always_lt(getNumberInner(),value);
 	}
 
@@ -289,7 +287,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always less than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean always_less_or_equal(float value){
+	default boolean always_less_or_equal(float value){
 		return functions.tfloat_always_le(getNumberInner(),value);
 	}
 
@@ -305,7 +303,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always greater than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean always_greater_or_equal(float value){
+	default boolean always_greater_or_equal(float value){
 		return ! (functions.tfloat_ever_lt(getNumberInner(),value));
 	}
 
@@ -320,7 +318,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are always greater than "value",
 	 * 	 *            " `False`" otherwise.
 	 */
-	public default boolean always_greater(float value){
+	default boolean always_greater(float value){
 		return ! (functions.tfloat_ever_le(getNumberInner(),value));
 	}
 
@@ -335,7 +333,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever less than "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean ever_less(float value){
+	default boolean ever_less(float value){
 		return functions.tfloat_ever_lt(getNumberInner(),value);
 	}
 
@@ -352,7 +350,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever less than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean ever_less_or_equal(float value){
+	default boolean ever_less_or_equal(float value){
 		return functions.tfloat_ever_le(getNumberInner(),value);
 	}
 
@@ -368,7 +366,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever equal to "value", "False"
 	 * 	 *             otherwise.
 	 */
-	public default boolean ever_equal(float value){
+	default boolean ever_equal(float value){
 		return functions.tfloat_ever_eq(getNumberInner(),value);
 	}
 
@@ -383,7 +381,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever not equal to "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean ever_not_equal(float value){
+	default boolean ever_not_equal(float value){
 		return ! (functions.tfloat_always_eq(getNumberInner(),value));
 	}
 
@@ -400,7 +398,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever greater than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean ever_greater_or_equal(float value){
+	default boolean ever_greater_or_equal(float value){
 		return ! (functions.tfloat_always_lt(getNumberInner(),value));
 	}
 
@@ -415,7 +413,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are ever greater than "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean ever_greater(float value){
+	default boolean ever_greater(float value){
 		return ! (functions.tfloat_always_le(getNumberInner(),value));
 	}
 
@@ -430,7 +428,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are never equal to "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean never_equal(float value){
+	default boolean never_equal(float value){
 		return ! (functions.tfloat_ever_eq(getNumberInner(),value));
 	}
 
@@ -446,7 +444,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are never not equal to "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean never_not_equal(float value){
+	default boolean never_not_equal(float value){
 		return functions.tfloat_always_eq(getNumberInner(),value);
 	}
 
@@ -461,7 +459,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are never less than "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean never_less(float value){
+	default boolean never_less(float value){
 		return ! (functions.tfloat_ever_lt(getNumberInner(),value));
 	}
 
@@ -478,7 +476,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are never less than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean never_less_or_equal(float value){
+	default boolean never_less_or_equal(float value){
 		return ! (functions.tfloat_ever_le(getNumberInner(),value));
 	}
 
@@ -494,7 +492,7 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this "are never greater than or equal to
 	 * 	 *             "value", "False" otherwise.
 	 */
-	public default boolean never_greater_or_equal(float value){
+	default boolean never_greater_or_equal(float value){
 		return functions.tfloat_always_lt(getNumberInner(),value);
 	}
 
@@ -509,12 +507,12 @@ public interface TFloat extends TNumber {
 	 * @return "True" if the values of "this" are never greater than "value",
 	 * 	 *             "False" otherwise.
 	 */
-	public default boolean never_greater(float value){
+	default boolean never_greater(float value){
 		return functions.tfloat_always_le(getNumberInner(),value);
 	}
 
 
-	/** ------------------------- Temporal Comparisons -------------------------- */
+    /* ------------------------- Temporal Comparisons -------------------------- */
 
 
 	/**
@@ -529,7 +527,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_equal_number(Number other){
+	default Temporal temporal_equal_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.teq_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -553,7 +551,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_not_equal_number(Number other){
+	default Temporal temporal_not_equal_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.tne_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -578,7 +576,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_less_number(Number other){
+	default Temporal temporal_less_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.tlt_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -603,7 +601,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_less_or_equal_number(Number other){
+	default Temporal temporal_less_or_equal_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.tle_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -627,7 +625,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_greater_or_equal_number(Number other){
+	default Temporal temporal_greater_or_equal_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.tge_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -650,7 +648,7 @@ public interface TFloat extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	public default Temporal temporal_greater_number(Number other){
+	default Temporal temporal_greater_number(Number other){
 		if ((other instanceof Float) || (other instanceof Integer)){
 			return Factory.create_temporal(functions.tgt_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());
 		}
@@ -660,7 +658,7 @@ public interface TFloat extends TNumber {
 	}
 
 
-	/** ------------------------- Restrictions ---------------------------------- */
+    /* ------------------------- Restrictions ---------------------------------- */
 
 
 

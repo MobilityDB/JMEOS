@@ -4,8 +4,6 @@ import jnr.ffi.Pointer;
 import types.temporal.TSequence;
 import net.postgis.jdbc.geometry.Point;
 
-import java.sql.SQLException;
-
 /**
  * Base abstract class for TGeomPointSeq and TGeogPointSeq
  * Contains logic for handling SRID

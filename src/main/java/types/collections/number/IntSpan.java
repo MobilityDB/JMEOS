@@ -132,7 +132,7 @@ public class IntSpan extends Span<Integer> implements Number{
         return new IntSpan(functions.span_from_hexwkb(str));
     }
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
     /**
      * Return the string representation of the content of "this".
@@ -150,7 +150,7 @@ public class IntSpan extends Span<Integer> implements Number{
 
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -241,7 +241,7 @@ public class IntSpan extends Span<Integer> implements Number{
 
 
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
     /**
      * Returns whether "this" is adjacent to "other". That is, they share
@@ -315,7 +315,7 @@ public class IntSpan extends Span<Integer> implements Number{
 
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -418,7 +418,7 @@ public class IntSpan extends Span<Integer> implements Number{
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**
@@ -445,7 +445,7 @@ public class IntSpan extends Span<Integer> implements Number{
     }
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
     /**

@@ -3,12 +3,7 @@ package types.basic.tpoint.tgeog;
 import jnr.ffi.Pointer;
 import types.basic.tpoint.TPointInst;
 import functions.functions;
-import types.temporal.TInstant;
 import types.temporal.TemporalType;
-import types.temporal.TemporalValue;
-
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
 
 public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	private Pointer inner;

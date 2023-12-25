@@ -1,5 +1,5 @@
-package utils.MeosCatalog;
-import utils.MeosCatalog.MeosEnums.meosType;
+package utils.meosCatalog;
+import utils.meosCatalog.MeosEnums.meosType;
 
 public class SpantypeCatalogStruct {
     private meosType spantype;

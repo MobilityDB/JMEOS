@@ -6,13 +6,11 @@ import jnr.ffi.Runtime;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.collections.time.Time;
-import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.geom.Geometry;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 
 import utils.ConversionUtils;
 import types.collections.time.Period;
@@ -80,7 +78,7 @@ public class STBox implements Box {
 		return other_box;
 	}
 
-	/** ------------------------- Constructors ---------------------------------- */
+    /* ------------------------- Constructors ---------------------------------- */
 
 
 	/**
@@ -489,7 +487,7 @@ public class STBox implements Box {
 
 
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 	/**
 	 *  Returns a string representation of "this".
@@ -505,7 +503,7 @@ public class STBox implements Box {
 
 
 
-	/** ------------------------- Conversions ---------------------------------- */
+    /* ------------------------- Conversions ---------------------------------- */
 
 	/**
 	 * Returns the temporal dimension of "this" as a "Period" instance.
@@ -520,7 +518,7 @@ public class STBox implements Box {
     }
 
 
-	/** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 	/**
 	 * Returns whether "this" has a spatial (XY) dimension.
@@ -625,7 +623,7 @@ public class STBox implements Box {
 	}
 
 
-	/** ------------------------- Spatial Reference System ---------------------- */
+    /* ------------------------- Spatial Reference System ---------------------- */
 
 	/**
 	 * Returns the SRID of "this".
@@ -699,7 +697,7 @@ public class STBox implements Box {
 
 
 
-	/** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
 	/**
@@ -1056,7 +1054,7 @@ public class STBox implements Box {
 		return this.to_period().is_over_or_after(other);
 	}
 
-	/** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
 	/**
@@ -1086,7 +1084,7 @@ public class STBox implements Box {
 
 
 
-	/** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 	/**
 	 * Returns whether "this" is equal to "other".

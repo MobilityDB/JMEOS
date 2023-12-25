@@ -52,7 +52,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
         return null;
     }
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
     /**
@@ -71,7 +71,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     }
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -131,13 +131,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
         return (float) functions.spanset_width(this._inner, ignore_gaps);
     }
 
-    /**
-     * Returns the first span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_start_span</li>
-     *
-     * @return A {@link FloatSpan} instance
+    /*
+      Returns the first span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_start_span</li>
+
+      @return A {@link FloatSpan} instance
      */
     /*
     public FloatSpan start_span(){
@@ -147,13 +147,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
      */
 
-    /**
-     * Returns the last span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_end_span</li>
-     *
-     * @return A {@link FloatSpan} instance
+    /*
+      Returns the last span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_end_span</li>
+
+      @return A {@link FloatSpan} instance
      */
     /*
     public FloatSpan end_span(){
@@ -163,13 +163,13 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
      */
 
-    /**
-     * Returns the n-th span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_span_n</li>
-     *
-     * @return A {@link FloatSpan} instance
+    /*
+      Returns the n-th span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_span_n</li>
+
+      @return A {@link FloatSpan} instance
      */
     /*
     public FloatSpan span_n(int n){
@@ -178,7 +178,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
      */
 
-    /** ------------------------- Transformations ------------------------------- */
+    /* ------------------------- Transformations ------------------------------- */
 
 
     /**
@@ -235,7 +235,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
 
     /**
@@ -311,7 +311,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
     /**
      * Returns whether "this" is strictly left of "other". That is,
@@ -423,7 +423,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
     /**
      * Returns the distance between "this" and "other".
@@ -450,7 +450,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
     }
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
     /**
      * Returns the intersection of "this" and "other".

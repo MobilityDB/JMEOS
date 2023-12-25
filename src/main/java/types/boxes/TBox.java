@@ -1,7 +1,6 @@
 package types.boxes;
 
 import functions.functions;
-import types.TemporalObject;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import jnr.ffi.Pointer;
@@ -195,7 +194,7 @@ public class TBox implements Box {
 		return tbox;
 	}
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
 	/**
@@ -222,7 +221,7 @@ public class TBox implements Box {
 	}
 
 
-	/** ------------------------- Conversions ---------------------------------- */
+    /* ------------------------- Conversions ---------------------------------- */
 
 
 	/**
@@ -237,7 +236,7 @@ public class TBox implements Box {
 		return new Period(functions.tbox_to_period(this._inner));
 	}
 
-	/** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 	/**
 	 * Returns whether "this" has a numeric dimension.
@@ -264,7 +263,7 @@ public class TBox implements Box {
 		return functions.tbox_hast(this._inner);
 	}
 
-	/** ------------------------- Transformation -------------------------------- */
+    /* ------------------------- Transformation -------------------------------- */
 
 
 	/**
@@ -335,7 +334,7 @@ public class TBox implements Box {
 
      */
 
-	/** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 	/**
 	 * Returns whether "this" is adjacent to "other". That is, they share only the temporal or numerical bound
@@ -491,7 +490,7 @@ public class TBox implements Box {
 	}
 
 
-	/** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 	/**
 	 * Returns whether "this" is strictly to the left of "other".
@@ -705,7 +704,7 @@ public class TBox implements Box {
 		return result;
 	}
 
-	/** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 	/**
 	 * Returns the union of "this" with "other". Fails if the union is not contiguous.
@@ -763,8 +762,8 @@ public class TBox implements Box {
 	public TBox mul(TBox other) throws SQLException {
 		return this.intersection(other);
 	}
-	
-	/** ------------------------- Distance Operations --------------------------- */
+
+    /* ------------------------- Distance Operations --------------------------- */
 
 	/**
 	 * Returns the distance between the nearest points of "this" and "other".
@@ -783,7 +782,7 @@ public class TBox implements Box {
 
 
 
-	/** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 	/**
 	 * Returns whether "this" is equal to "other".

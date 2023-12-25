@@ -4,8 +4,6 @@ import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.Set;
 
-import java.util.List;
-
 
 /**
  * Class for representing a set of text values.
@@ -43,10 +41,10 @@ public class FloatSet extends Set<Float> implements Number{
         return inner;
     }
 
-    /** ------------------------- Constructors ---------------------------------- */
+    /* ------------------------- Constructors ---------------------------------- */
 
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
     /**
@@ -65,7 +63,7 @@ public class FloatSet extends Set<Float> implements Number{
     }
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -164,7 +162,7 @@ public class FloatSet extends Set<Float> implements Number{
 
      */
 
-    /** ------------------------- Transformations ------------------------------------ */
+    /* ------------------------- Transformations ------------------------------------ */
 
     /**
      * Returns a new "FloatSet" instance with all elements shifted by "delta".
@@ -225,7 +223,7 @@ public class FloatSet extends Set<Float> implements Number{
 
 
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
     /**
      * Returns whether "this" contains "content".
@@ -251,7 +249,7 @@ public class FloatSet extends Set<Float> implements Number{
 
 
 
-    /** ------------------------- Position Operations -------------------------------- */
+    /* ------------------------- Position Operations -------------------------------- */
 
     /**
      * Returns whether "this" is strictly to the left of "other". That is,
@@ -348,7 +346,7 @@ public class FloatSet extends Set<Float> implements Number{
     }
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
     /**
@@ -470,7 +468,7 @@ public class FloatSet extends Set<Float> implements Number{
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**

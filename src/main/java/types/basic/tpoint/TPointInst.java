@@ -2,7 +2,6 @@ package types.basic.tpoint;
 
 import jnr.ffi.Pointer;
 import org.locationtech.jts.io.ParseException;
-import types.basic.tfloat.TFloatInst;
 import types.temporal.TInstant;
 import org.locationtech.jts.geom.Point;
 

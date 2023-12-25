@@ -1,17 +1,13 @@
 package types.collections.time;
 
 import jnr.ffi.Pointer;
-import types.TemporalObject;
 import types.collections.base.Set;
-import types.collections.base.Span;
 import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import types.boxes.*;
@@ -44,7 +40,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	private Pointer _inner;
 
 
-	/** ------------------------- Constructors ---------------------------------- */
+    /* ------------------------- Constructors ---------------------------------- */
 
 
 	/**
@@ -71,10 +67,10 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 	
-	/**
-	 * The array of OffsetDateTime constructor
-	 *
-	 * @param dateTimes - an array of OffsetDateTime or OffsetDateTime separated by a comma
+	/*
+	  The array of OffsetDateTime constructor
+
+	  @param dateTimes - an array of OffsetDateTime or OffsetDateTime separated by a comma
 	 * @throws SQLException
 	 */
 	/*
@@ -128,7 +124,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 		return new TimestampSet(result);
 	}
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
 	/**
@@ -143,7 +139,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-	/** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
 	/**
@@ -241,7 +237,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-	/** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 
     /**
@@ -278,26 +274,26 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-    /**
-     * Returns whether "this" is temporally contained in "other".
-     *<pre>
-     *         Examples:
-     *             >>> TimestampSet('{2012-01-02, 2012-01-03}').is_contained_in(Period('[2012-01-01, 2012-01-04]'))
-     *             >>> True
-     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('[2012-01-01, 2012-01-02]'))
-     *             >>> True
-     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('(2012-01-01, 2012-01-02)'))
-     *             >>> False
-     *</pre>
-     *         MEOS Functions:
-     *         <ul>
-     *              <li>contained_span_span</li>
-     *              <li>contained_span_spanset</li>
-     *              <li>contained_set_set</li>
-     *              <li>contained_spanset_spanset</li>
-     *         </ul>
-     *
-     * @param other temporal object to compare with
+    /*
+      Returns whether "this" is temporally contained in "other".
+     <pre>
+              Examples:
+                  >>> TimestampSet('{2012-01-02, 2012-01-03}').is_contained_in(Period('[2012-01-01, 2012-01-04]'))
+                  >>> True
+                  >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('[2012-01-01, 2012-01-02]'))
+                  >>> True
+                  >>> TimestampSet('{2012-01-01, 2012-01-02}').is_contained_in(Period('(2012-01-01, 2012-01-02)'))
+                  >>> False
+     </pre>
+              MEOS Functions:
+              <ul>
+                   <li>contained_span_span</li>
+                   <li>contained_span_spanset</li>
+                   <li>contained_set_set</li>
+                   <li>contained_spanset_spanset</li>
+              </ul>
+
+      @param other temporal object to compare with
      * @return true if contained, false otherwise
      * @throws SQLException
      */
@@ -350,26 +346,26 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-    /**
-     * Returns whether "this" temporally overlaps "other". That is, both share at least an instant
-     * <pre>
-     *         Examples:
-     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(TimestampSet('{2012-01-02, 2012-01-03}'))
-     *             >>> True
-     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('[2012-01-02, 2012-01-03]'))
-     *             >>> True
-     *             >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('(2012-01-02, 2012-01-03]'))
-     *             >>> False
-     *</pre>
-     *
-     *         MEOS Functions:
-     *         <ul>
-     *              <li>overlaps_set_set</li>
-     *              <li>overlaps_span_span</li>
-     *              <li>overlaps_spanset_spanset</li>
-     *         </ul>
-     *
-     * @param other temporal object to compare with
+    /*
+      Returns whether "this" temporally overlaps "other". That is, both share at least an instant
+      <pre>
+              Examples:
+                  >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(TimestampSet('{2012-01-02, 2012-01-03}'))
+                  >>> True
+                  >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('[2012-01-02, 2012-01-03]'))
+                  >>> True
+                  >>> TimestampSet('{2012-01-01, 2012-01-02}').overlaps(Period('(2012-01-02, 2012-01-03]'))
+                  >>> False
+     </pre>
+
+              MEOS Functions:
+              <ul>
+                   <li>overlaps_set_set</li>
+                   <li>overlaps_span_span</li>
+                   <li>overlaps_spanset_spanset</li>
+              </ul>
+
+      @param other temporal object to compare with
      * @return true if overlaps, false otherwise
      * @throws SQLException
      */
@@ -404,7 +400,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -558,10 +554,10 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 		return returnValue;
 	}
 
-	/** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
-	/** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 	/**
 	 * Returns the temporal intersection of "this" and "other".
@@ -701,16 +697,16 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
-	/** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
-	/**
-	 * Returns whether "this" and "other" are equal.
-	 *
-	 *         MEOS Functions:
-	 *         <ul>
-	 *             <li>set_eq</li>
-	 *        </ul>
-	 * @param other temporal object to compare with
+	/*
+	  Returns whether "this" and "other" are equal.
+
+	          MEOS Functions:
+	          <ul>
+	              <li>set_eq</li>
+	         </ul>
+	  @param other temporal object to compare with
 	 * @return true if equal, false otherwise
 	 * @throws SQLException
 	 */
@@ -723,17 +719,17 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 
 	 */
 
-	/**
-	 * Returns whether "this" and "other" are not equal.
-	 *
-	 * <p>
-	 *         MEOS Functions:
-	 *         <ul>
-	 *             <li>set_ne</li>
-	 *         </ul>
-	 * </p>
-	 *
-	 * @param other temporal object to compare with
+	/*
+	  Returns whether "this" and "other" are not equal.
+
+	  <p>
+	          MEOS Functions:
+	          <ul>
+	              <li>set_ne</li>
+	          </ul>
+	  </p>
+
+	  @param other temporal object to compare with
 	 * @return true if not equal, false otherwise
 	 * @throws SQLException
 	 */
@@ -747,17 +743,17 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 
 
-	/**
-	 * Return whether "this" is less than "other".
-	 *
-	 * <p>
-	 *         MEOS Functions:
-	 *         <ul>
-	 *             <li>set_lt</li>
-	 *         </ul>
-	 * </p>
-	 *
-	 * @param other temporal object to compare with
+	/*
+	  Return whether "this" is less than "other".
+
+	  <p>
+	          MEOS Functions:
+	          <ul>
+	              <li>set_lt</li>
+	          </ul>
+	  </p>
+
+	  @param other temporal object to compare with
 	 * @return true if less than, false otherwise
 	 * @throws SQLException
 	 */
@@ -774,18 +770,18 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 
 
-	/**
-	 * Return whether "this" is less than or equal to "other".
-	 *
-	 * <p>
-	 *         MEOS Functions:
-	 *         <ul>
-	 *             <li>set_le</li>
-	 *         </ul>
-	 *
-	 * </p>
-	 *
-	 * @param other temporal object to compare with
+	/*
+	  Return whether "this" is less than or equal to "other".
+
+	  <p>
+	          MEOS Functions:
+	          <ul>
+	              <li>set_le</li>
+	          </ul>
+
+	  </p>
+
+	  @param other temporal object to compare with
 	 * @return true if less than or equal, false otherwise
 	 * @throws SQLException
 	 */
@@ -802,17 +798,17 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 
 
-	/**
-	 * Return whether "this" is greater than "other".
-	 *
-	 * <p>
-	 *         MEOS Functions:
-	 *         <ul>
-	 *             <li>set_gt</li>
-	 *         </ul>
-	 * </p>
-	 *
-	 * @param other temporal object to compare with
+	/*
+	  Return whether "this" is greater than "other".
+
+	  <p>
+	          MEOS Functions:
+	          <ul>
+	              <li>set_gt</li>
+	          </ul>
+	  </p>
+
+	  @param other temporal object to compare with
 	 * @return true if greater than, false otherwise
 	 * @throws SQLException
 	 */

@@ -5,8 +5,6 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
-import java.time.OffsetDateTime;
-
 public class TTextInst extends TInstant<String> implements TText {
 
 

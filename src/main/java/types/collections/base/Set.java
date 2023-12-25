@@ -3,8 +3,6 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 
-import java.util.List;
-
 
 public abstract class Set<T extends Object> implements Collection, Base {
     private Pointer _inner;
@@ -23,16 +21,16 @@ public abstract class Set<T extends Object> implements Collection, Base {
     public abstract Pointer createInner(Pointer inner);
     public abstract Pointer createStringInner(String str);
 
-    /** ------------------------- Output ----------------------------------------
+    /* ------------------------- Output ----------------------------------------
 
     /** ------------------------- Conversions ----------------------------------- */
 
-    /**
-     * Returns a SpanSet that contains a Span for each element in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>set_to_spanset</li>
-     * @return A new {@link SpanSet} instance
+    /*
+      Returns a SpanSet that contains a Span for each element in "this".
+      <p>
+              MEOS Functions:
+                  <li>set_to_spanset</li>
+      @return A new {@link SpanSet} instance
      */
     /*
     public SpanSet to_spanset(){
@@ -41,12 +39,12 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
      */
 
-    /**
-     * Returns a span that encompasses "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>set_span</li>
-     * @return A new {@link Span} instance
+    /*
+      Returns a span that encompasses "this".
+      <p>
+              MEOS Functions:
+                  <li>set_span</li>
+      @return A new {@link Span} instance
      */
     /*
     public Span to_span(){
@@ -55,7 +53,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
      */
 
-    /** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 
     /**
@@ -131,7 +129,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
 
 
-    /** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 
     /**
@@ -209,7 +207,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
     }
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -315,7 +313,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
     }
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
     /**
      * Returns the distance between "this" and "other".
@@ -346,11 +344,11 @@ public abstract class Set<T extends Object> implements Collection, Base {
     }
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
 
-    /** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 
     /**

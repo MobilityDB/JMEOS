@@ -2,9 +2,6 @@ package types.collections.base;
 
 import jnr.ffi.Pointer;
 import functions.functions;
-import types.collections.number.Number;
-
-import java.lang.reflect.InvocationTargetException;
 
 public abstract class Span<T extends Object> implements Collection, Base{
     private Pointer _inner;
@@ -46,14 +43,14 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
-    /**
-     * Returns a SpanSet that contains a Span for each element in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>span_to_spanset</li>
-     * @return A new {@link SpanSet} instance
+    /*
+      Returns a SpanSet that contains a Span for each element in "this".
+      <p>
+              MEOS Functions:
+                  <li>span_to_spanset</li>
+      @return A new {@link SpanSet} instance
      */
     /*
     public SpanSet to_spanset(){
@@ -66,7 +63,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
 
 
-    /** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 
     /**
@@ -129,7 +126,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
     }
 
 
-    /** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 
     /**
@@ -251,7 +248,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
     }
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
     /**
      * Returns whether "this" is strictly before "other". That is,
@@ -362,7 +359,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
     }
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**
@@ -393,7 +390,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
     }
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
     /**
@@ -454,7 +451,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
 
 
-    /** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 
     /**

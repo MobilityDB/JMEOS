@@ -14,11 +14,11 @@ import javax.naming.OperationNotSupportedException;
 import java.sql.SQLException;
 
 public interface TNumber {
-    public Pointer getNumberInner();
-    public String getCustomType();
-    public TemporalType getTemporalType();
+    Pointer getNumberInner();
+    String getCustomType();
+    TemporalType getTemporalType();
 
-    /** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 
     /**
@@ -30,7 +30,7 @@ public interface TNumber {
      *             <li>tbox_tnumber</li>
      * @return The bounding box of "this".
      */
-    public default TBox bounding_tbox() throws SQLException {
+    default TBox bounding_tbox() throws SQLException {
         return new TBox(functions.tnumber_to_tbox(getNumberInner()));
     }
 
@@ -43,7 +43,7 @@ public interface TNumber {
      *             <li>tnumber_integral</li>
      * @return The integral of "this".
      */
-    public default float integral(){
+    default float integral(){
         return (float) functions.tnumber_integral(getNumberInner());
     }
 
@@ -56,12 +56,12 @@ public interface TNumber {
      *             <li>tnumber_twavg</li>
      * @return The time weighted average of "this".
      */
-    public default float time_weighted_average(){
+    default float time_weighted_average(){
         return (float) functions.tnumber_twavg(getNumberInner());
     }
 
 
-    /** ------------------------- Restrictions ---------------------------------- */
+    /* ------------------------- Restrictions ---------------------------------- */
 
 
     /**
@@ -86,7 +86,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber at(Object other) throws OperationNotSupportedException {
+    default TNumber at(Object other) throws OperationNotSupportedException {
         if (other instanceof IntSet){
             return (TNumber) Factory.create_temporal(functions.temporal_at_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSet) {
@@ -132,7 +132,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber minus(Object other) throws OperationNotSupportedException {
+    default TNumber minus(Object other) throws OperationNotSupportedException {
         if (other instanceof IntSet){
             return (TNumber) Factory.create_temporal(functions.temporal_minus_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSet) {
@@ -163,7 +163,7 @@ public interface TNumber {
 
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -176,7 +176,7 @@ public interface TNumber {
      * @return True if left, False otherwise.
      * @throws SQLException
      */
-    public default boolean is_left(TemporalObject other) throws SQLException {
+    default boolean is_left(TemporalObject other) throws SQLException {
         return this.bounding_tbox().is_left(other);
     }
 
@@ -191,7 +191,7 @@ public interface TNumber {
      * @return True if over or left, False otherwise.
      * @throws SQLException
      */
-    public default boolean is_over_or_left(TemporalObject other) throws SQLException {
+    default boolean is_over_or_left(TemporalObject other) throws SQLException {
         return this.bounding_tbox().is_over_or_left(other);
     }
 
@@ -206,7 +206,7 @@ public interface TNumber {
      * @return True if right, False otherwise.
      * @throws SQLException
      */
-    public default boolean is_right(TemporalObject other) throws SQLException {
+    default boolean is_right(TemporalObject other) throws SQLException {
         return this.bounding_tbox().is_right(other);
     }
 
@@ -220,13 +220,13 @@ public interface TNumber {
      * @return True if over or right, False otherwise.
      * @throws SQLException
      */
-    public default boolean is_over_or_right(TemporalObject other) throws SQLException {
+    default boolean is_over_or_right(TemporalObject other) throws SQLException {
         return this.bounding_tbox().is_over_or_right(other);
     }
 
 
 
-    /** ------------------------- Mathematical Operations ------------------------- */
+    /* ------------------------- Mathematical Operations ------------------------- */
 
 
     /**
@@ -244,7 +244,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber add(Object other) throws OperationNotSupportedException {
+    default TNumber add(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.add_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -272,7 +272,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber radd(Object other) throws OperationNotSupportedException {
+    default TNumber radd(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.add_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -300,7 +300,7 @@ public interface TNumber {
      * @return  A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber sub(Object other) throws OperationNotSupportedException {
+    default TNumber sub(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.sub_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -328,7 +328,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber rsub(Object other) throws OperationNotSupportedException {
+    default TNumber rsub(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.sub_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -356,7 +356,7 @@ public interface TNumber {
      * @return  A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber mul(Object other) throws OperationNotSupportedException {
+    default TNumber mul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.mult_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -385,7 +385,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber rmul(Object other) throws OperationNotSupportedException {
+    default TNumber rmul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.mult_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -415,7 +415,7 @@ public interface TNumber {
      * @return  A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber div(Object other) throws OperationNotSupportedException {
+    default TNumber div(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.div_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -446,7 +446,7 @@ public interface TNumber {
      * @return A new temporal object of the same subtype as "this".
      * @throws OperationNotSupportedException
      */
-    public default TNumber rdiv(Object other) throws OperationNotSupportedException {
+    default TNumber rdiv(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
             return (TNumber) Factory.create_temporal(functions.div_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
@@ -467,7 +467,7 @@ public interface TNumber {
      *             <li>tnumber_abs</li>
      * @return A new {@link TNumber} instance.
      */
-    public default TNumber abs(){
+    default TNumber abs(){
         return (TNumber) Factory.create_temporal(functions.tnumber_abs(getNumberInner()),getCustomType(),getTemporalType());
     }
 
@@ -480,12 +480,12 @@ public interface TNumber {
      *             <li>tnumber_delta_value</li>
      * @return A new {@link TNumber} instance.
      */
-    public default TNumber delta_value(){
+    default TNumber delta_value(){
         return (TNumber) Factory.create_temporal(functions.tnumber_delta_value(getNumberInner()),getCustomType(),getTemporalType());
     }
 
 
-    /** ------------------------- Distance Operations -------------------------- */
+    /* ------------------------- Distance Operations -------------------------- */
 
 
     /**
@@ -503,7 +503,7 @@ public interface TNumber {
      * @return A {@link TFloat} with the distance between "this" and "other".
      * @throws OperationNotSupportedException
      */
-    public default TFloat distance(Object other) throws OperationNotSupportedException {
+    default TFloat distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
             return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((other instanceof Float)) {
@@ -532,7 +532,7 @@ public interface TNumber {
      *      *             and "other".
      * @throws OperationNotSupportedException
      */
-    public default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
+    default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
             return (float) functions.nad_tfloat_float(getNumberInner(),(float)((Integer) other).intValue());
         } else if ((other instanceof Float)) {

@@ -1,17 +1,9 @@
 package types.collections.text;
 
-import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
-import jnr.ffi.Runtime;
-import jnr.ffi.provider.BoundedMemoryIO;
 import types.collections.base.Base;
 import types.collections.base.Set;
-import types.collections.base.Collection;
 import functions.functions;
-import types.collections.base.SpanSet;
-import types.collections.base.Span;
-
-import java.util.List;
 
 
 /**
@@ -59,7 +51,7 @@ public class TextSet extends Set<String> {
     }
 
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
     /**
      * Return the string representation of the content of ``self``.
@@ -125,7 +117,7 @@ public class TextSet extends Set<String> {
         return functions.text2cstring(functions.textset_value_n(this._inner,n));
     }
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
     /**
      * Returns whether "this" contains "content".
@@ -151,7 +143,7 @@ public class TextSet extends Set<String> {
     }
 
 
-    /** ------------------------- Transformations -------------------------------- */
+    /* ------------------------- Transformations -------------------------------- */
 
 
     /**
@@ -183,7 +175,7 @@ public class TextSet extends Set<String> {
 
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
     //TODO: intersection
 

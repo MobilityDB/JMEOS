@@ -1,20 +1,13 @@
 package types.temporal;
 
 import jnr.ffi.Pointer;
-import types.temporal.delegates.CompareValueFunction;
-import types.temporal.delegates.GetTemporalSequenceFunction;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
-	private CompareValueFunction<V> compareValueFunction;
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();
 	protected boolean stepwise;
 	private Pointer _inner;
@@ -64,16 +57,16 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 
 
 	
-	/**
-	 * {@inheritDoc}
+	/*
+	  {@inheritDoc}
 	 */
 
 
 
 	
 
-	/**
-	 * {@inheritDoc}
+	/*
+	  {@inheritDoc}
 	 */
 	/*
 	public boolean intersectsTimestamp(OffsetDateTime dateTime) {

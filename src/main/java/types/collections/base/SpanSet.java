@@ -2,7 +2,6 @@ package types.collections.base;
 
 import jnr.ffi.Pointer;
 import functions.functions;
-import types.TemporalObject;
 import types.collections.time.Period;
 
 public abstract class SpanSet<T extends Object> implements Collection, Base {
@@ -26,17 +25,17 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     public abstract Pointer createListInner(Period... periods);
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
-    /**
-     * Returns a span that encompasses "this".
-     *
-     * <p>
-     *
-     *         MEOS Functions:
-     *             <li>spanset_span</li>
-     * @return A new :class:`Span` instance
+    /*
+      Returns a span that encompasses "this".
+
+      <p>
+
+              MEOS Functions:
+                  <li>spanset_span</li>
+      @return A new :class:`Span` instance
      */
     /*
     public Span to_span(){
@@ -46,7 +45,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      */
 
 
-    /** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 
     /**
@@ -61,14 +60,14 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
         return functions.spanset_num_spans(this._inner);
     }
 
-    /**
-     * Returns the first span in "this".
-     * <p>
-     *
-     *         MEOS Functions:
-     *             <li>spanset_start_span</li>
-     *
-     * @return A {@link Span} instance
+    /*
+      Returns the first span in "this".
+      <p>
+
+              MEOS Functions:
+                  <li>spanset_start_span</li>
+
+      @return A {@link Span} instance
      */
     /*
     public Span start_span(){
@@ -77,14 +76,14 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
      */
 
-    /**
-     * Returns the last span in "this".
-     * <p>
-     *
-     *         MEOS Functions:
-     *             <li>spanset_end_span</li>
-     *
-     * @return A {@link Span} instance
+    /*
+      Returns the last span in "this".
+      <p>
+
+              MEOS Functions:
+                  <li>spanset_end_span</li>
+
+      @return A {@link Span} instance
      */
     /*
     public Span end_span(){
@@ -94,13 +93,13 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      */
 
 
-    /**
-     * Returns the n-th span in "this".
-     *  <p>
-     *         MEOS Functions:
-     *             <li>spanset_span_n</li>
-     *
-     * @param n number of Span
+    /*
+      Returns the n-th span in "this".
+       <p>
+              MEOS Functions:
+                  <li>spanset_span_n</li>
+
+      @param n number of Span
      * @return A {@link Span} instance
      */
     /*
@@ -124,10 +123,10 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
         return functions.spanset_hash(this._inner);
     }
 
-    /** ------------------------- Transformations ------------------------------- */
+    /* ------------------------- Transformations ------------------------------- */
 
 
-    /** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 
     /**
@@ -251,7 +250,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     }
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -359,7 +358,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**
@@ -388,7 +387,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
     /**
      * Returns the intersection of "this" and "other".
@@ -471,7 +470,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
 
 
-    /** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 
     /**

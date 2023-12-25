@@ -1,11 +1,6 @@
 package tutorials;
 
-import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
-import jnr.ffi.Runtime;
-import net.postgis.jdbc.geometry.Point;
-import types.basic.tpoint.TPoint;
-import types.temporal.TemporalValue;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;

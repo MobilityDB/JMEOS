@@ -3,7 +3,6 @@ package types.collections.time;
 import types.TemporalObject;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 /**
  * Class that represent a DateTime.

@@ -5,8 +5,6 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
-import java.time.OffsetDateTime;
-
 public class TIntInst extends TInstant<Integer> implements TInt{
 	private Pointer inner;
 	private String customType = "Integer";

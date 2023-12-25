@@ -1,18 +1,10 @@
 package types.temporal;
 
 import jnr.ffi.Pointer;
-import types.temporal.delegates.CompareValueFunction;
-import types.temporal.delegates.GetTemporalInstantFunction;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 
 public abstract class TSequence<V extends Serializable> extends Temporal<V> {
 	protected boolean stepwise;
@@ -53,7 +45,7 @@ public abstract class TSequence<V extends Serializable> extends Temporal<V> {
 
 
 
-	/** To delete */
+    /* To delete */
 
 
 

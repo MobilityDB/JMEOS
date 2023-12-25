@@ -10,31 +10,25 @@ import types.basic.tpoint.tgeom.TGeomPoint;
 import types.boxes.STBox;
 import types.collections.geo.GeoSet;
 import types.collections.time.Time;
-import types.core.DateTimeFormatHelper;
 import types.temporal.*;
-import types.temporal.delegates.GetSingleTemporalValueFunction;
 import functions.functions;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.geom.Point;
 import utils.ConversionUtils;
-import utils.ConversionUtils.*;
 
 import javax.naming.OperationNotSupportedException;
-import java.sql.SQLException;
 
 /**
  * Base abstract class for TGeomPoint and TGeogPoint
  * Contains logic for handling SRID
  */
 public interface TPoint {
-	public Pointer getPointInner();
-	public String getCustomType();
-	public TemporalType getTemporalType();
+	Pointer getPointInner();
+	String getCustomType();
+	TemporalType getTemporalType();
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 	/**
 	 * Returns the string representation of the temporal point.
@@ -45,7 +39,7 @@ public interface TPoint {
 	 *
 	 * @return A new {@link String} representing the temporal point.
 	 */
-	public default String tostring(){
+	default String tostring(){
 		return functions.tpoint_as_text(getPointInner(),15);
 	}
 
@@ -61,7 +55,7 @@ public interface TPoint {
 	 * @param decimals The precision of the returned geometry.
 	 * @return A new {@link String} representing the temporal point.
 	 */
-	public default String as_wkt(int decimals){
+	default String as_wkt(int decimals){
 		return functions.tpoint_as_text(getPointInner(),decimals);
 	}
 
@@ -77,7 +71,7 @@ public interface TPoint {
 	 * @param decimals The precision of the returned geometry.
 	 * @return A new {@link String} representing the temporal point.
 	 */
-	public default String as_ewkt(int decimals){
+	default String as_ewkt(int decimals){
 		return functions.tpoint_as_ewkt(getPointInner(),decimals);
 	}
 
@@ -95,7 +89,7 @@ public interface TPoint {
 	 * @param srs The spatial reference system of the returned geometry.
 	 * @return A new GeoJSON string representing the trajectory of the temporal point.
 	 */
-	public default String as_geojson(int option, int precision, String srs){
+	default String as_geojson(int option, int precision, String srs){
 		return functions.gserialized_as_geojson(functions.tpoint_trajectory(getPointInner()),option,precision,srs);
 	}
 
@@ -113,12 +107,12 @@ public interface TPoint {
 	 * 	 *             trajectory.
 	 * @throws ParseException
 	 */
-	public default Geometry to_shapely_geometry(int precision) throws ParseException {
+	default Geometry to_shapely_geometry(int precision) throws ParseException {
 		return ConversionUtils.gserialized_to_shapely_geometry(getPointInner(),precision);
 	}
 
 
-	/** ------------------------- Accessors ------------------------------------- */
+    /* ------------------------- Accessors ------------------------------------- */
 
 	/**
 	 * Returns the bounding box of the "this".
@@ -128,7 +122,7 @@ public interface TPoint {
 	 *             <li>tpoint_to_stbox</li>
 	 * @return An {@link STBox} representing the bounding box.
 	 */
-	public default STBox bounding_box_point(){
+	default STBox bounding_box_point(){
 		return new STBox(functions.tpoint_to_stbox(getPointInner()));
 	}
 
@@ -142,7 +136,7 @@ public interface TPoint {
 	 * @return A {@link Point} with the start value.
 	 * @throws ParseException
 	 */
-	public default Point start_value(int precision) throws ParseException {
+	default Point start_value(int precision) throws ParseException {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);
 	}
 
@@ -157,7 +151,7 @@ public interface TPoint {
 	 * @return A {@link Point} with the end value.
 	 * @throws ParseException
 	 */
-	public default Point end_value(int precision) throws ParseException {
+	default Point end_value(int precision) throws ParseException {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);
 	}
 
@@ -171,7 +165,7 @@ public interface TPoint {
 	 *             <li>tpoint_length</li>
 	 * @return A {@link Float} with the length of the trajectory.
 	 */
-	public default float length(){
+	default float length(){
 		return (float) functions.tpoint_length(getPointInner());
 	}
 
@@ -184,7 +178,7 @@ public interface TPoint {
 	 *             <li>tpoint_cumulative_length</li>
 	 * @return A {@link TFloat} with the cumulative length of the trajectory.
 	 */
-	public default TFloat cumulative_length(){
+	default TFloat cumulative_length(){
 		return (TFloat) Factory.create_temporal(functions.tpoint_cumulative_length(getPointInner()),"Float",getTemporalType());
 	}
 
@@ -197,7 +191,7 @@ public interface TPoint {
 	 *             <li>tpoint_speed</li>
 	 * @return A {@link TFloat} with the speed of the temporal point.
 	 */
-	public default TFloat speed(){
+	default TFloat speed(){
 		return (TFloat) Factory.create_temporal(functions.tpoint_speed(getPointInner()),"Float",getTemporalType());
 	}
 
@@ -210,7 +204,7 @@ public interface TPoint {
 	 *             <li>tpoint_get_x</li>
 	 * @return A {@link TFloat} with the x coordinate of the temporal point.
 	 */
-	public default TFloat x(){
+	default TFloat x(){
 		return (TFloat) Factory.create_temporal(functions.tpoint_get_x(getPointInner()),"Float",getTemporalType());
 
 	}
@@ -224,7 +218,7 @@ public interface TPoint {
 	 *             <li>tpoint_get_y</li>
 	 * @return A {@link TFloat} with the y coordinate of the temporal point.
 	 */
-	public default TFloat y(){
+	default TFloat y(){
 		return (TFloat) Factory.create_temporal(functions.tpoint_get_y(getPointInner()),"Float",getTemporalType());
 
 	}
@@ -238,7 +232,7 @@ public interface TPoint {
 	 *             <li>tpoint_get_z</li>
 	 * @return A {@link TFloat} with the z coordinate of the temporal point.
 	 */
-	public default TFloat z(){
+	default TFloat z(){
 		return (TFloat) Factory.create_temporal(functions.tpoint_get_z(getPointInner()),"Float",getTemporalType());
 
 	}
@@ -253,7 +247,7 @@ public interface TPoint {
 	 *             <li>tpoint_start_value</li>
 	 * @return A {@link Boolean} indicating whether the temporal point has a z coordinate.
 	 */
-	public default boolean has_z(){
+	default boolean has_z(){
 		return this.bounding_box_point().has_z();
 	}
 
@@ -267,7 +261,7 @@ public interface TPoint {
 	 *             <li>tpoint_is_simple</li>
 	 * @return A {@link Boolean} indicating whether the temporal point is simple.
 	 */
-	public default boolean is_simple(){
+	default boolean is_simple(){
 		return functions.tpoint_is_simple(getPointInner());
 	}
 
@@ -284,7 +278,7 @@ public interface TPoint {
 	 * @param other An object to check the bearing to.
 	 * @return A new {@link TFloat} indicating the temporal bearing between the temporal point and "other".
 	 */
-	public default TFloat bearing_point(TPoint other){
+	default TFloat bearing_point(TPoint other){
 		return (TFloat) Factory.create_temporal(functions.bearing_tpoint_tpoint(getPointInner(),other.getPointInner()),"Float",getTemporalType());
 
 	}
@@ -299,7 +293,7 @@ public interface TPoint {
 	 *             <li>tpoint_direction</li>
 	 * @return A new {@link TFloatSeqSet} indicating the direction of the temporal point.
 	 */
-	public default TFloatSeqSet direction(){
+	default TFloatSeqSet direction(){
 		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_direction(getPointInner()),"Float",getTemporalType());
 	}
 
@@ -313,7 +307,7 @@ public interface TPoint {
 	 *             <li>tpoint_azimuth</li>
 	 * @return A new {@link TFloatSeqSet} indicating the temporal azimuth of the temporal point.
 	 */
-	public default TFloatSeqSet azimuth(){
+	default TFloatSeqSet azimuth(){
 		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_azimuth(getPointInner()),"Float",getTemporalType());
 	}
 
@@ -327,7 +321,7 @@ public interface TPoint {
 	 *             <li>tpoint_angular_difference</li>
 	 * @return A new {@link TFloatSeqSet} indicating the temporal angular_difference of the temporal point.
 	 */
-	public default TFloatSeqSet angular_difference(){
+	default TFloatSeqSet angular_difference(){
 		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_angular_difference(getPointInner()),"Float",getTemporalType());
 	}
 
@@ -342,13 +336,13 @@ public interface TPoint {
 	 * @return A new {@link Geometry} indicating the time weighted centroid of the temporal point.
 	 * @throws ParseException
 	 */
-	public default Point time_weighted_centroid(int precision) throws ParseException {
+	default Point time_weighted_centroid(int precision) throws ParseException {
 		return (Point) ConversionUtils.gserialized_to_shapely_geometry(functions.tpoint_twcentroid(getPointInner()),precision);
 	}
 
 
 
-	/** ------------------------- Spatial Reference System ---------------------- */
+    /* ------------------------- Spatial Reference System ---------------------- */
 
 	/**
 	 * Returns the SRID.
@@ -358,7 +352,7 @@ public interface TPoint {
 	 *             <li>tpoint_srid</li>
 	 * @return An {@link Integer} representing the SRID.
 	 */
-	public default int srid(){
+	default int srid(){
 		return functions.tpoint_srid(getPointInner());
 	}
 
@@ -371,13 +365,13 @@ public interface TPoint {
 	 * @param srid int value
 	 * @return Returns a new TPoint with the given SRID.
 	 */
-	public default TPoint set_srid(int srid){
+	default TPoint set_srid(int srid){
 		return (TPoint) Factory.create_temporal(functions.tpoint_set_srid(getPointInner(),srid),getCustomType(),getTemporalType());
 	}
 
 
 
-	/** ------------------------- Transformations ------------------------------- */
+    /* ------------------------- Transformations ------------------------------- */
 
 
 	/**
@@ -390,7 +384,7 @@ public interface TPoint {
 	 * @param max_decimals number of decimals
 	 * @return A new {@link TPoint} object.
 	 */
-	public default TPoint round(int max_decimals){
+	default TPoint round(int max_decimals){
 		return (TPoint) Factory.create_temporal(functions.tpoint_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
 	}
 
@@ -406,13 +400,13 @@ public interface TPoint {
 	 * @param other The object to expand "this" with.
 	 * @return A new {@link STBox} instance.
 	 */
-	public default STBox expand(float other){
+	default STBox expand(float other){
 		return new STBox(functions.tpoint_expand_space(getPointInner(),other));
 	}
 
 
 
-	/** ------------------------- Restrictions ---------------------------------- */
+    /* ------------------------- Restrictions ---------------------------------- */
 
 
 	/**
@@ -434,7 +428,7 @@ public interface TPoint {
 	 * @return A new {@link TPoint} with the values of "this" restricted to "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TPoint at(Object other) throws OperationNotSupportedException {
+	default TPoint at(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
 			return (TPoint) Factory.create_temporal(functions.tpoint_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
@@ -466,7 +460,7 @@ public interface TPoint {
 	 * @return A {@link TPoint} with the values of "this" restricted to the complement of "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TPoint minus(Object other) throws OperationNotSupportedException {
+	default TPoint minus(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
 			return (TPoint) Factory.create_temporal(functions.tpoint_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
@@ -481,7 +475,7 @@ public interface TPoint {
 	}
 
 
-	/** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
 	/**
@@ -494,7 +488,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if left, False otherwise.
 	 */
-	public default boolean is_left(TemporalObject other){
+	default boolean is_left(TemporalObject other){
 		return this.bounding_box_point().is_left(other);
 	}
 
@@ -510,7 +504,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or left, False otherwise.
 	 */
-	public default boolean is_over_or_left(TemporalObject other){
+	default boolean is_over_or_left(TemporalObject other){
 		return this.bounding_box_point().is_over_or_left(other);
 	}
 
@@ -525,7 +519,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if right, False otherwise.
 	 */
-	public default boolean is_right(TemporalObject other){
+	default boolean is_right(TemporalObject other){
 		return this.bounding_box_point().is_right(other);
 	}
 
@@ -542,7 +536,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or right, False otherwise.
 	 */
-	public default boolean is_over_or_right(TemporalObject other){
+	default boolean is_over_or_right(TemporalObject other){
 		return this.bounding_box_point().is_over_or_right(other);
 	}
 
@@ -558,7 +552,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if below, False otherwise.
 	 */
-	public default boolean is_below(TemporalObject other){
+	default boolean is_below(TemporalObject other){
 		return this.bounding_box_point().is_below(other);
 	}
 
@@ -573,7 +567,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or below, False otherwise.
 	 */
-	public default boolean is_over_or_below(TemporalObject other){
+	default boolean is_over_or_below(TemporalObject other){
 		return this.bounding_box_point().is_over_or_below(other);
 	}
 
@@ -591,7 +585,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if above, False otherwise.
 	 */
-	public default boolean is_above(TemporalObject other){
+	default boolean is_above(TemporalObject other){
 		return this.bounding_box_point().is_above(other);
 	}
 
@@ -607,7 +601,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or above, False otherwise.
 	 */
-	public default boolean is_over_or_above(TemporalObject other){
+	default boolean is_over_or_above(TemporalObject other){
 		return this.bounding_box_point().is_over_or_above(other);
 	}
 
@@ -624,7 +618,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if front, False otherwise.
 	 */
-	public default boolean is_front(TemporalObject other){
+	default boolean is_front(TemporalObject other){
 		return this.bounding_box_point().is_front(other);
 	}
 
@@ -642,7 +636,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or front, False otherwise.
 	 */
-	public default boolean is_over_or_front(TemporalObject other){
+	default boolean is_over_or_front(TemporalObject other){
 		return this.bounding_box_point().is_over_or_front(other);
 	}
 
@@ -660,7 +654,7 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if behind, False otherwise.
 	 */
-	public default boolean is_behind(TemporalObject other){
+	default boolean is_behind(TemporalObject other){
 		return this.bounding_box_point().is_behind(other);
 	}
 
@@ -678,13 +672,13 @@ public interface TPoint {
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or behind, False otherwise.
 	 */
-	public default boolean is_over_or_behind(TemporalObject other){
+	default boolean is_over_or_behind(TemporalObject other){
 		return this.bounding_box_point().is_over_or_behind(other);
 	}
 
 
 
-	/** ------------------------- Ever Spatial Relationships -------------------- */
+    /* ------------------------- Ever Spatial Relationships -------------------- */
 
 
 	/**
@@ -697,7 +691,7 @@ public interface TPoint {
 	 * @return  A {@link Boolean} indicating whether the temporal point is ever contained by "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default boolean is_ever_contained_in(Object other) throws OperationNotSupportedException {
+	default boolean is_ever_contained_in(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return 1 == functions.econtains_geo_tpoint(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner());
 		} else if (other instanceof STBox) {
@@ -720,7 +714,7 @@ public interface TPoint {
 	 * @return  A {@link Boolean} indicating whether the temporal point is ever disjoint from "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default boolean is_ever_disjoint(Object other) throws OperationNotSupportedException {
+	default boolean is_ever_disjoint(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return 1 == functions.edisjoint_tpoint_geo(getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
@@ -746,7 +740,7 @@ public interface TPoint {
 	 * @return A {@link Boolean} indicating whether the temporal point is ever within "distance" of "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default boolean is_ever_within_distance(Object other, float distance) throws OperationNotSupportedException {
+	default boolean is_ever_within_distance(Object other, float distance) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return 1 == functions.edwithin_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance);
 		} else if (other instanceof STBox) {
@@ -771,7 +765,7 @@ public interface TPoint {
 	 * @return A {@link Boolean} indicating whether the temporal point ever intersects "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default boolean ever_intersects(Object other) throws OperationNotSupportedException {
+	default boolean ever_intersects(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return 1 == functions.eintersects_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
@@ -795,7 +789,7 @@ public interface TPoint {
 	 * @return A {@link Boolean} indicating whether the temporal point ever touches "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default boolean ever_touches(Object other) throws OperationNotSupportedException {
+	default boolean ever_touches(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return 1 == functions.etouches_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
@@ -806,7 +800,7 @@ public interface TPoint {
 	}
 
 
-	/** ------------------------- Temporal Spatial Relationships ---------------- */
+    /* ------------------------- Temporal Spatial Relationships ---------------- */
 
 
 	/**
@@ -820,7 +814,7 @@ public interface TPoint {
 	 * @return A {@link TBool} indicating whether the temporal point is contained by "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TBool is_spatially_contained_in(Object other) throws OperationNotSupportedException {
+	default TBool is_spatially_contained_in(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(functions.tcontains_geo_tpoint(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner(),false,false), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -842,7 +836,7 @@ public interface TPoint {
 	 * @return A {@link TBool} indicating whether the temporal point intersects "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TBool disjoint(Object other) throws OperationNotSupportedException {
+	default TBool disjoint(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(functions.tdisjoint_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -865,7 +859,7 @@ public interface TPoint {
 	 * @return A {@link TBool} indicating whether the temporal point is within "distance" of "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TBool within_distance(Object other, float distance) throws OperationNotSupportedException {
+	default TBool within_distance(Object other, float distance) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(functions.tdwithin_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance, false,false), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -889,7 +883,7 @@ public interface TPoint {
 	 * @return A {@link TBool} indicating whether the temporal point intersects "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TBool intersects(Object other) throws OperationNotSupportedException {
+	default TBool intersects(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(functions.tintersects_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -911,7 +905,7 @@ public interface TPoint {
 	 * @return A {@link TBool} indicating whether the temporal point touches "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TBool touches(Object other) throws OperationNotSupportedException {
+	default TBool touches(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(functions.ttouches_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -921,7 +915,7 @@ public interface TPoint {
 		}
 	}
 
-	/** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
 	/**
@@ -935,7 +929,7 @@ public interface TPoint {
 	 * @return A new {@link TFloat} indicating the temporal distance between the temporal point and "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TFloat distance(Object other) throws OperationNotSupportedException {
+	default TFloat distance(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TFloat) Factory.create_temporal(functions.distance_tpoint_point(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Float", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
@@ -960,7 +954,7 @@ public interface TPoint {
 	 * @return A {@link Float} indicating the nearest approach distance between the temporal point and "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
+	default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (float) functions.nad_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
@@ -984,7 +978,7 @@ public interface TPoint {
 	 * @return A new temporal instant indicating the nearest approach instant between the temporal point and "other".
 	 * @throws OperationNotSupportedException
 	 */
-	public default TInstant nearest_approach_instant(Object other) throws OperationNotSupportedException {
+	default TInstant nearest_approach_instant(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			return (TInstant) Factory.create_temporal(functions.nai_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), getCustomType(), getTemporalType() ) ;
 		} else if(other instanceof TPoint){

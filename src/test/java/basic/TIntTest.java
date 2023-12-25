@@ -2,16 +2,11 @@ package basic;
 import functions.functions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
-import types.basic.tbool.TBoolInst;
-import types.basic.tbool.TBoolSeq;
-import types.basic.tbool.TBoolSeqSet;
-import types.basic.tfloat.TFloat;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
@@ -19,6 +14,7 @@ import types.basic.tint.TInt;
 import types.basic.tint.TIntInst;
 import types.basic.tint.TIntSeq;
 import types.basic.tint.TIntSeqSet;
+import types.basic.tnumber.TNumber;
 import types.boxes.Box;
 import types.boxes.TBox;
 import types.collections.number.IntSpan;
@@ -285,6 +281,117 @@ public class TIntTest {
                 Arguments.of(new TIntSeqSet("{[1@2019-09-01]}"), "TIntSeqSet", new TIntInst("1@2019-09-01"))
         );
     }
+
+
+    private static Stream<Arguments> tosequence() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", TInterpolation.STEPWISE, new TIntSeq("[1@2019-09-01]")),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", TInterpolation.STEPWISE, new TIntSeq("[1@2019-09-01, 2@2019-09-02]")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02]}"), "TIntSeqSet", TInterpolation.STEPWISE, new TIntSeq("[1@2019-09-01, 2@2019-09-02]"))
+        );
+    }
+
+
+    private static Stream<Arguments> tosequenceset() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", TInterpolation.STEPWISE, new TIntSeqSet("{[1@2019-09-01]}")),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", TInterpolation.STEPWISE, new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02]}"), "TIntSeqSet", TInterpolation.STEPWISE, new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> insert() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntSeq("{1@2019-09-03}"), new TIntSeq("{1@2019-09-01, 1@2019-09-03}")),
+                Arguments.of(new TIntSeq("{[1@2019-09-01, 2@2019-09-02]}"), "TIntSeq", new TIntSeq("[1@2019-09-03]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02], [1@2019-09-03]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntSeq("[1@2019-09-06]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05],[1@2019-09-06]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> update() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("2@2019-09-01"), new TIntInst("2@2019-09-01")),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntInst("2@2019-09-01"), new TIntSeqSet("{[2@2019-09-01], (1@2019-09-01, 2@2019-09-02]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntInst("2@2019-09-01"), new TIntSeqSet("{[2@2019-09-01], (1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> append_sequence() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntSeq("[1@2019-09-03]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02], [1@2019-09-03]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntSeq("[1@2019-09-06]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05],[1@2019-09-06]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> abs() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("2@2019-09-01"), new TIntInst("2@2019-09-01")),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntInst("2@2019-09-01"), new TIntSeqSet("{[2@2019-09-01], (1@2019-09-01, 2@2019-09-02]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntInst("2@2019-09-01"), new TIntSeqSet("{[2@2019-09-01], (1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> delta_value() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntInst("2@2019-09-01"), new TIntSeq("[1@2019-09-01, 1@2019-09-02)")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntInst("2@2019-09-01"), new TIntSeqSet("{[1@2019-09-01, 1@2019-09-02),[0@2019-09-03, 0@2019-09-05)}"))
+        );
+    }
+
+
+
+    private static Stream<Arguments> always_equal() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, true ),
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 2, true ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 1, false ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 2, false ),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 1, false),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 2, false)
+        );
+    }
+
+
+
+    private static Stream<Arguments> ever_equal() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, true ),
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 2, true ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 1, true ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 2, true ),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 1, true),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 2, true)
+        );
+    }
+
+
+
+    private static Stream<Arguments> ever_greater() throws SQLException {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, false ),
+                Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 2, true ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 1, false ),
+                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", 2, false ),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 1, false),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", 2, false)
+        );
+    }
+
 
 
 
@@ -607,43 +714,157 @@ public class TIntTest {
 
     @ParameterizedTest(name ="Test to instant method")
     @MethodSource("toinstant")
-    void testtoinstant(Temporal source, String type, TIntInst expected) {
+    void testToinstant(Temporal source, String type, TIntInst expected) {
         functions.meos_initialize("UTC");
         TIntInst tmp = (TIntInst) source.to_instant();
         assertTrue(tmp instanceof TIntInst);
         assertEquals(tmp.tostring(),expected.tostring());
 
-        //to_sequence
-        //to_sequenceset
-        //set_interpolation
-        //insert
-        //update
-        //append_sequence
-        //add
-        //sub
-        //mul
-        //div
-        //delta_value
-        //atmin
-        //atmax
-        //minus min
-        //minus max
+    }
+
+
+
+    @ParameterizedTest(name ="Test to sequence method")
+    @MethodSource("tosequence")
+    void testTosequence(Temporal source, String type, TInterpolation interp, TIntSeq expected) {
+        functions.meos_initialize("UTC");
+        TIntSeq tmp = (TIntSeq) source.to_sequence(interp);
+        assertTrue(tmp instanceof TIntSeq);
+        assertEquals(tmp.tostring(),expected.tostring());
+
+    }
+
+
+    @ParameterizedTest(name ="Test to sequenceset method")
+    @MethodSource("tosequenceset")
+    void testTosequenceset(Temporal source, String type, TInterpolation interp, TIntSeqSet expected) {
+        functions.meos_initialize("UTC");
+        TIntSeqSet tmp = (TIntSeqSet) source.to_sequenceset(interp);
+        assertTrue(tmp instanceof TIntSeqSet);
+        assertEquals(tmp.tostring(),expected.tostring());
+
+    }
+
+
+
+    @ParameterizedTest(name ="Test insert method")
+    @MethodSource("insert")
+    void testInsert(Temporal source, String type, TIntSeq tseq, Temporal expected) {
+        functions.meos_initialize("UTC");
+        if(type == "TIntInst"){
+            TIntInst tmp = (TIntInst) source.insert(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeq)expected).tostring());
+        } else if (type == "TIntSeq") {
+            TIntSeq tmp = (TIntSeq) source.insert(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        } else if (type == "TIntSeqSet") {
+            TIntSeqSet tmp = (TIntSeqSet) source.insert(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        }
+    }
 
 
 
 
+    @ParameterizedTest(name ="Test update method")
+    @MethodSource("update")
+    void testUpdate(Temporal source, String type, TIntInst tseq, Temporal expected) {
+        functions.meos_initialize("UTC");
+        if(type == "TIntInst"){
+            TIntInst tmp = (TIntInst) source.update(tseq);
+            assertEquals(tmp.tostring(), ((TIntInst)expected).tostring());
+        } else if (type == "TIntSeq") {
+            TIntSeq tmp = (TIntSeq) source.update(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        } else if (type == "TIntSeqSet") {
+            TIntSeqSet tmp = (TIntSeqSet) source.update(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        }
+    }
+
+
+    @ParameterizedTest(name ="Test append sequence method")
+    @MethodSource("append_sequence")
+    void testAppendSequence(Temporal source, String type, TIntSeq tseq, Temporal expected) {
+        functions.meos_initialize("UTC");
+        if (type == "TIntSeq") {
+            TIntSeq tmp = (TIntSeq) source.append_sequence(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        } else if (type == "TIntSeqSet") {
+            TIntSeqSet tmp = (TIntSeqSet) source.append_sequence(tseq);
+            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+        }
     }
 
 
 
 
 
+    @ParameterizedTest(name ="Test abs method")
+    @MethodSource("abs")
+    void testAbs(Temporal source, String type, TIntInst tseq, Temporal expected) {
+        functions.meos_initialize("UTC");
+        if(type == "TIntInst"){
+            TNumber tmp = ((TNumber) source).abs();
+            assertEquals(((TIntInst)tmp).tostring(), ((TIntInst)source).tostring());
+        } else if (type == "TIntSeq") {
+            TNumber tmp = ((TNumber) source).abs();
+            assertEquals(((TIntSeq)tmp).tostring(), ((TIntSeq)source).tostring());
+        } else if (type == "TIntSeqSet") {
+            TNumber tmp = ((TNumber) source).abs();
+            assertEquals(((TIntSeqSet)tmp).tostring(), ((TIntSeqSet)source).tostring());
+        }
+    }
+
+
+    @ParameterizedTest(name ="Test delta value method")
+    @MethodSource("delta_value")
+    void testDeltaValue(Temporal source, String type, TIntInst tseq, Temporal expected) {
+        functions.meos_initialize("UTC");
+        if(type == "TIntInst"){
+            TNumber tmp = ((TNumber) source).delta_value();
+            assertEquals(((TIntInst)tmp).tostring(), ((TIntInst)expected).tostring());
+        } else if (type == "TIntSeq") {
+            TNumber tmp = ((TNumber) source).delta_value();
+            assertEquals(((TIntSeq)tmp).tostring(), ((TIntSeq)expected).tostring());
+        } else if (type == "TIntSeqSet") {
+            TNumber tmp = ((TNumber) source).delta_value();
+            assertEquals(((TIntSeqSet)tmp).tostring(), ((TIntSeqSet)expected).tostring());
+        }
+    }
+
+
+
+    @ParameterizedTest(name ="Test always equal method")
+    @MethodSource("always_equal")
+    void testAlwaysEqual(Temporal source, String type, int arg, boolean expected) {
+        functions.meos_initialize("UTC");
+        assertEquals(((TInt)source).always_equal(arg),expected);
+        assertEquals(((TInt)source).never_not_equal(arg),expected);
+        assertEquals(((TInt)source).ever_not_equal(arg),! expected);
+    }
 
 
 
 
+    @ParameterizedTest(name ="Test ever equal method")
+    @MethodSource("ever_equal")
+    void testEverEqual(Temporal source, String type, int arg, boolean expected) {
+        functions.meos_initialize("UTC");
+        assertEquals(((TInt)source).ever_equal(arg),expected);
+        assertEquals(((TInt)source).always_not_equal(arg),!expected);
+        assertEquals(((TInt)source).never_equal(arg),! expected);
+    }
 
 
+    @ParameterizedTest(name ="Test ever greater method")
+    @MethodSource("ever_greater")
+    void testEverGreater(Temporal source, String type, int arg, boolean expected) {
+        functions.meos_initialize("UTC");
+        assertEquals(((TInt)source).always_less(arg),expected);
+        assertEquals(((TInt)source).never_greater_or_equal(arg),expected);
+        assertEquals(((TInt)source).ever_greater_or_equal(arg),! expected);
+    }
 
 
 

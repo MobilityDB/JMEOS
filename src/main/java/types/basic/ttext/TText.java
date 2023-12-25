@@ -2,14 +2,10 @@ package types.basic.ttext;
 
 import functions.functions;
 import jnr.ffi.Pointer;
-import types.basic.tbool.TBool;
-import types.basic.tbool.TBoolSeq;
-import types.basic.tbool.TBoolSeqSet;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 import types.temporal.*;
 
@@ -19,11 +15,11 @@ import types.temporal.*;
  */
 @TypeName(name = "ttext")
 public interface TText {
-    public String customType = "String";
-    public Pointer getTextInner();
-    public String getCustomType();
-    public TemporalType getTemporalType();
-    /** ------------------------- Constructors ---------------------------------- */
+    String customType = "String";
+    Pointer getTextInner();
+    String getCustomType();
+    TemporalType getTemporalType();
+    /* ------------------------- Constructors ---------------------------------- */
 
 
     /**
@@ -39,7 +35,7 @@ public interface TText {
      * @param base Temporal object to use as time frame.
      * @return A new {@link TText} object.
      */
-    public static TText from_base_temporal(String value, Temporal base){
+    static TText from_base_temporal(String value, Temporal base){
         return (TText) Factory.create_temporal(functions.ttext_from_base_temp(functions.cstring2text(value), base.getInner()),customType,base.getTemporalType());
     }
 
@@ -59,7 +55,7 @@ public interface TText {
      * @param base Time object to use as temporal dimension.
      * @return A new temporal boolean.
      */
-    public static Temporal from_base_time(String value, Time base){
+    static Temporal from_base_time(String value, Time base){
         if (base instanceof TimestampSet){
             return new TTextSeq(functions.ttextseq_from_base_timestampset(functions.cstring2text(value),((TimestampSet) base).get_inner()));
 
@@ -74,7 +70,7 @@ public interface TText {
     }
 
 
-    /** ------------------------- Output ---------------------------------- */
+    /* ------------------------- Output ---------------------------------- */
 
 
     /**
@@ -84,7 +80,7 @@ public interface TText {
      *             <li>ttext_out</li>
      * @return Returns the string representation of "this"
      */
-    public default String tostring(){
+    default String tostring(){
         return functions.ttext_out(getTextInner());
     }
 
@@ -97,12 +93,12 @@ public interface TText {
      *             <li>ttext_out</li>
      * @return A string with the Well-Known Text representation of "this".
      */
-    public default String as_wkt(){
+    default String as_wkt(){
         return functions.ttext_out(getTextInner());
     }
 
 
-    /** ------------------------- Accessors ---------------------------------- */
+    /* ------------------------- Accessors ---------------------------------- */
 
 
     /**
@@ -114,7 +110,7 @@ public interface TText {
      *             <li>ttext_min_value</li>
      * @return A {@link String} with the minimum value.
      */
-    public default String min_value(){
+    default String min_value(){
         return functions.text2cstring(functions.ttext_min_value(getTextInner()));
     }
 
@@ -127,7 +123,7 @@ public interface TText {
      *             <li>ttext_max_value</li>
      * @return A {@link String} with the maximum value.
      */
-    public default String max_value(){
+    default String max_value(){
         return functions.text2cstring(functions.ttext_max_value(getTextInner()));
     }
 
@@ -139,7 +135,7 @@ public interface TText {
      *            <li>ttext_start_value</li>
      * @return Returns the starting value of "this".
      */
-    public default String start_value(){
+    default String start_value(){
         return functions.text2cstring(functions.ttext_start_value(getTextInner()));
     }
 
@@ -150,12 +146,12 @@ public interface TText {
      *             <li>ttext_end_value</li>
      * @return Returns the ending value of "this".
      */
-    public default String end_value(){
+    default String end_value(){
         return functions.text2cstring(functions.ttext_end_value(getTextInner()));
     }
 
 
-    /** ------------------------- Ever and Always Comparisons ------------------- */
+    /* ------------------------- Ever and Always Comparisons ------------------- */
 
 
     /**
@@ -169,7 +165,7 @@ public interface TText {
      * @return "True" if the values of "this" are always equal to "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean always_equal(String value){
+    default boolean always_equal(String value){
         return functions.ttext_always_eq(getTextInner(),functions.cstring2text(value));
     }
 
@@ -184,7 +180,7 @@ public interface TText {
      * @return "True" if the values of "this" are always not equal to "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean always_not_equal(String value){
+    default boolean always_not_equal(String value){
         return ! (functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -200,7 +196,7 @@ public interface TText {
      * @return "True" if the values of "this" are always less than "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean always_less(String value){
+    default boolean always_less(String value){
         return functions.ttext_always_lt(getTextInner(),functions.cstring2text(value));
     }
 
@@ -217,7 +213,7 @@ public interface TText {
      * @return "True" if the values of "this" are always less than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean always_less_or_equal(String value){
+    default boolean always_less_or_equal(String value){
         return functions.ttext_always_le(getTextInner(),functions.cstring2text(value));
     }
 
@@ -233,7 +229,7 @@ public interface TText {
      * @return "True" if the values of "this" are always greater than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean always_greater_or_equal(String value){
+    default boolean always_greater_or_equal(String value){
         return ! (functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -248,7 +244,7 @@ public interface TText {
      * @return "True" if the values of "this" are always greater than "value",
      * 	 *            " `False`" otherwise.
      */
-    public default boolean always_greater(String value){
+    default boolean always_greater(String value){
         return ! (functions.ttext_ever_le(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -263,7 +259,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever less than "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean ever_less(String value){
+    default boolean ever_less(String value){
         return functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value));
     }
 
@@ -280,7 +276,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever less than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean ever_less_or_equal(String value){
+    default boolean ever_less_or_equal(String value){
         return functions.ttext_ever_le(getTextInner(),functions.cstring2text(value));
     }
 
@@ -296,7 +292,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever equal to "value", "False"
      * 	 *             otherwise.
      */
-    public default boolean ever_equal(String value){
+    default boolean ever_equal(String value){
         return functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value));
     }
 
@@ -311,7 +307,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever not equal to "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean ever_not_equal(String value){
+    default boolean ever_not_equal(String value){
         return ! (functions.ttext_always_eq(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -327,7 +323,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever greater than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean ever_greater_or_equal(String value){
+    default boolean ever_greater_or_equal(String value){
         return ! (functions.ttext_always_lt(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -342,7 +338,7 @@ public interface TText {
      * @return "True" if the values of "this" are ever greater than "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean ever_greater(String value){
+    default boolean ever_greater(String value){
         return ! (functions.ttext_always_le(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -357,7 +353,7 @@ public interface TText {
      * @return "True" if the values of "this" are never equal to "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean never_equal(String value){
+    default boolean never_equal(String value){
         return ! (functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -373,7 +369,7 @@ public interface TText {
      * @return "True" if the values of "this" are never not equal to "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean never_not_equal(String value){
+    default boolean never_not_equal(String value){
         return functions.ttext_always_eq(getTextInner(),functions.cstring2text(value));
     }
 
@@ -388,7 +384,7 @@ public interface TText {
      * @return "True" if the values of "this" are never less than "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean never_less(String value){
+    default boolean never_less(String value){
         return ! (functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -405,7 +401,7 @@ public interface TText {
      * @return "True" if the values of "this" are never less than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean never_less_or_equal(String value){
+    default boolean never_less_or_equal(String value){
         return ! (functions.ttext_ever_le(getTextInner(),functions.cstring2text(value)));
     }
 
@@ -421,7 +417,7 @@ public interface TText {
      * @return "True" if the values of "this "are never greater than or equal to
      * 	 *             "value", "False" otherwise.
      */
-    public default boolean never_greater_or_equal(String value){
+    default boolean never_greater_or_equal(String value){
         return functions.ttext_always_lt(getTextInner(),functions.cstring2text(value));
     }
 
@@ -436,14 +432,14 @@ public interface TText {
      * @return "True" if the values of "this" are never greater than "value",
      * 	 *             "False" otherwise.
      */
-    public default boolean never_greater(String value){
+    default boolean never_greater(String value){
         return functions.ttext_always_le(getTextInner(),functions.cstring2text(value));
     }
 
 
 
 
-    /** ------------------------- Temporal Comparisons -------------------------- */
+    /* ------------------------- Temporal Comparisons -------------------------- */
 
     /**
      * Returns the temporal equality relation between "this" and "other".
@@ -457,7 +453,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_equal_string(String other){
+    default Temporal temporal_equal_string(String other){
         if ((other instanceof String)){
             return Factory.create_temporal(functions.teq_ttext_text(getTextInner(),functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -481,7 +477,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_not_equal_string(String other){
+    default Temporal temporal_not_equal_string(String other){
         if ((other instanceof String)){
             return Factory.create_temporal(functions.tne_ttext_text(getTextInner(), functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -504,7 +500,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_less_string(String other){
+    default Temporal temporal_less_string(String other){
         if ((other instanceof String)){
             return Factory.create_temporal(functions.tlt_ttext_text(getTextInner(),functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -528,7 +524,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_less_or_equal_string(String other){
+    default Temporal temporal_less_or_equal_string(String other){
         if ((other instanceof String)){
             return Factory.create_temporal(functions.tle_ttext_text(getTextInner(),functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -552,7 +548,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_greater_or_equal_string(String other){
+    default Temporal temporal_greater_or_equal_string(String other){
         if ((other instanceof String)){
             return Factory.create_temporal(functions.tge_ttext_text(getTextInner(),functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -575,7 +571,7 @@ public interface TText {
      * 	 *             compare to `self`.
      * @return A {@link Temporal} with the result of the temporal equality relation.
      */
-    public default Temporal temporal_greater_string(String other){
+    default Temporal temporal_greater_string(String other){
         if ((other instanceof String) ){
             return Factory.create_temporal(functions.tgt_ttext_text(getTextInner(),functions.cstring2text(other)), getCustomType(),getTemporalType());
         }
@@ -584,10 +580,10 @@ public interface TText {
         }
     }
 
-    /** ------------------------- Restrictions ---------------------------------- */
+    /* ------------------------- Restrictions ---------------------------------- */
 
 
 
-    /** ------------------------- Text Operations ------------------------------ */
+    /* ------------------------- Text Operations ------------------------------ */
 
 }

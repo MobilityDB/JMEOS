@@ -1,4 +1,4 @@
-package utils.MeosCatalog;
+package utils.meosCatalog;
 
 public class MeosEnums {
     public enum meosType {

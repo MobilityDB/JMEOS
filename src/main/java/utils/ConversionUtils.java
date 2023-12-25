@@ -13,7 +13,6 @@ import types.temporal.TInstant;
 import types.temporal.TSequence;
 import types.temporal.TSequenceSet;
 import types.temporal.Temporal;
-import types.collections.time.Period;
 
 import java.sql.SQLException;
 import java.time.*;

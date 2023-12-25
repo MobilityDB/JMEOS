@@ -2,9 +2,7 @@ package types.collections.time;
 
 import functions.functions;
 import jnr.ffi.Pointer;
-import types.TemporalObject;
 import types.boxes.Box;
-import types.core.DateTimeFormatHelper;
 import types.core.TypeName;
 
 import java.time.Duration;
@@ -49,8 +47,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	private boolean upperInclusive = false;
 	private Pointer _inner;
 
-	/**
-	 * ------------------------ Constructors ------------------------
+	/*
+	  ------------------------ Constructors ------------------------
 	 */
 
 
@@ -256,8 +254,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/**
-	 * ------------------------ Output ------------------------
+	/*
+	  ------------------------ Output ------------------------
 	 */
 
 
@@ -277,8 +275,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/**
-	 * ------------------------ Conversions ------------------------
+	/*
+	  ------------------------ Conversions ------------------------
 	 */
 
 
@@ -389,8 +387,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/**
-	 * ------------------------ Transformations ------------------------
+	/*
+	  ------------------------ Transformations ------------------------
 	 */
 
 
@@ -417,8 +415,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/**
-	 * ------------------------ Topological Operations ------------------------
+	/*
+	  ------------------------ Topological Operations ------------------------
 	 */
 
 
@@ -601,8 +599,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 
 
 
-	/**
-	 * ------------------------ Position Operations ------------------------
+	/*
+	  ------------------------ Position Operations ------------------------
 	 */
 
 	/**
@@ -760,8 +758,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 
 	//TODO: use Duration class from java.time instead
 
-	/**
-	 * ------------------------ Distance Operations ------------------------
+	/*
+	  ------------------------ Distance Operations ------------------------
 	 */
 
 
@@ -794,8 +792,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 		return returnValue;
 	}
 
-	/**
-	 * ------------------------ Set Operations ------------------------
+	/*
+	  ------------------------ Set Operations ------------------------
 	 */
 
 	/**
@@ -936,8 +934,8 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 		return this.union(other);
 	}
 
-	/**
-	 * ------------------------ Comparisons ------------------------
+	/*
+	  ------------------------ Comparisons ------------------------
 	 */
 
 

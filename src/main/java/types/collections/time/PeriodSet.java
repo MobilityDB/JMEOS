@@ -2,8 +2,6 @@ package types.collections.time;
 
 import functions.functions;
 import jnr.ffi.Pointer;
-import types.TemporalObject;
-import types.collections.base.Span;
 import types.collections.base.SpanSet;
 import types.core.TypeName;
 
@@ -12,16 +10,8 @@ import types.boxes.*;
 import javax.naming.OperationNotSupportedException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-
 
 
 /**
@@ -124,7 +114,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	}
 
 
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
 	/**
@@ -137,7 +127,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	public String toString(){
 		return functions.periodset_out(this._inner);
 	}
-	/** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 	/**
 	 * Returns a period that encompasses "this".
@@ -229,7 +219,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	}
 
 
-	/** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 	/**
 	 * Returns whether "this" is temporally adjacent to "other".
@@ -387,7 +377,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	}
 
 
-	/** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
 	/**
@@ -536,11 +526,11 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 		return returnValue;
 	}
 
-	/** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 	//TODO: Distance operator
 
 
-	/** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
 	/**
@@ -675,7 +665,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 
 
 
-	/** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 
 	/**

@@ -5,8 +5,6 @@ import functions.functions;
 import types.basic.tpoint.TPointSeqSet;
 import types.temporal.TemporalType;
 
-import java.sql.SQLException;
-
 public class TGeomPointSeqSet extends TPointSeqSet implements TGeomPoint{
 
 	private Pointer inner;

@@ -3,12 +3,7 @@ package types.basic.tpoint.tgeom;
 import jnr.ffi.Pointer;
 import functions.functions;
 import types.basic.tpoint.TPointInst;
-import types.temporal.TInstant;
-import net.postgis.jdbc.geometry.Point;
 import types.temporal.TemporalType;
-
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
 
 public class TGeomPointInst extends TPointInst implements TGeomPoint {
 	private Pointer inner;

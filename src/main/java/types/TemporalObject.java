@@ -1,8 +1,5 @@
 package types;
 
-import jnr.ffi.Pointer;
-import types.core.DataType;
-
 /**
  * Interface used to link multiple types to a temporal object.
  *

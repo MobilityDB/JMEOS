@@ -53,7 +53,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
         return null;
     }
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
     /**
@@ -71,7 +71,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     }
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -133,13 +133,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
         return (float) functions.spanset_width(this._inner,ignore_gaps);
     }
 
-    /**
-     * Returns the first span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_start_span</li>
-     *
-     * @return A {@link IntSpan} instance
+    /*
+      Returns the first span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_start_span</li>
+
+      @return A {@link IntSpan} instance
      */
     /*
     public IntSpan start_span(){
@@ -149,13 +149,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
      */
 
-    /**
-     * Returns the last span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_end_span</li>
-     *
-     * @return A {@link IntSpan} instance
+    /*
+      Returns the last span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_end_span</li>
+
+      @return A {@link IntSpan} instance
      */
     /*
     public IntSpan end_span(){
@@ -165,13 +165,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
      */
 
-    /**
-     * Returns the n-th span in "this".
-     * <p>
-     *         MEOS Functions:
-     *             <li>spanset_span_n</li>
-     *
-     * @return A {@link IntSpan} instance
+    /*
+      Returns the n-th span in "this".
+      <p>
+              MEOS Functions:
+                  <li>spanset_span_n</li>
+
+      @return A {@link IntSpan} instance
      */
     /*
     public IntSpan span_n(int n){
@@ -182,7 +182,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
 
 
-    /** ------------------------- Transformations ------------------------------- */
+    /* ------------------------- Transformations ------------------------------- */
 
 
     /**
@@ -244,7 +244,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
 
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
 
     /**
@@ -323,7 +323,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     }
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
     /**
      * Returns whether "this" is strictly left of "other". That is,
@@ -435,7 +435,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
 
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
     /**
      * Returns the distance between "this" and "other".

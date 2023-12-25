@@ -1,10 +1,5 @@
 package types.temporal;
 
-import types.temporal.delegates.GetSingleTemporalValueFunction;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
-import functions.functions;
-
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -195,8 +190,8 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 		return temporalValue.getTime().isEqual(dateTime);
 	}
 	
-	/**
-	 * {@inheritDoc}
+	/*
+	  {@inheritDoc}
 	 */
 	/*
 	public boolean intersectsPeriod(Period period) {

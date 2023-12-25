@@ -7,10 +7,9 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
+
 import functions.functions;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
@@ -92,7 +91,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 
 
@@ -277,7 +276,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return functions.temporal_hash(this.inner);
     }
 
-    /** ------------------------- Transformations ---------------------------------------- */
+    /* ------------------------- Transformations ---------------------------------------- */
 
     /**
      * Returns a new {@link Temporal} object equal to "this" with the given
@@ -336,7 +335,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
 
-    /** ------------------------- Modifications ---------------------------------------- */
+    /* ------------------------- Modifications ---------------------------------------- */
 
 
     /**
@@ -429,7 +428,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
-    /** ------------------------- Restrictions ---------------------------------- */
+    /* ------------------------- Restrictions ---------------------------------- */
 
 
     /**
@@ -555,7 +554,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(functions.temporal_minus_max(this.inner),this.getCustomType(),this.getTemporalType());
     }
 
-    /** ------------------------- Topological Operations ------------------------ */
+    /* ------------------------- Topological Operations ------------------------ */
 
 
     /**
@@ -706,7 +705,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -770,7 +769,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
 
-    /** ------------------------- Similarity Operations ------------------------- */
+    /* ------------------------- Similarity Operations ------------------------- */
 
     /**
      * Returns the Frechet distance between "this" and "other".
@@ -818,7 +817,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
 
-    /** ------------------------- Comparisons ----------------------------------- */
+    /* ------------------------- Comparisons ----------------------------------- */
 
 
     /**

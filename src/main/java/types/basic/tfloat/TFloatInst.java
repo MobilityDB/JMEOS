@@ -5,8 +5,6 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
-import java.time.OffsetDateTime;
-
 public class TFloatInst extends TInstant<Float> implements TFloat{
 	private Pointer inner;
 	private String customType = "Float";

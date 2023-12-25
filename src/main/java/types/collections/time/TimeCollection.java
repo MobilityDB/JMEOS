@@ -3,8 +3,6 @@ package types.collections.time;
 import types.collections.base.Base;
 import types.collections.base.Collection;
 
-import java.time.OffsetDateTime;
-
 public interface TimeCollection<T> extends Collection<T> {
 
     default boolean is_before(Object other) throws Exception {

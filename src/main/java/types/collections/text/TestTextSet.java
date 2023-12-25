@@ -1,9 +1,6 @@
 package types.collections.text;
 
 import functions.functions;
-import jnr.ffi.Pointer;
-import org.w3c.dom.Text;
-import types.boxes.STBox;
 
 import java.sql.SQLException;
 

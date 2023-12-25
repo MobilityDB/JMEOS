@@ -3,7 +3,6 @@ import functions.functions;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.Span;
-import types.collections.base.SpanSet;
 
 /**
  * Class for representing sets of contiguous float values between a lower and
@@ -109,7 +108,7 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
 
-    /** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
     /**
      * Return the string representation of the content of "this".
@@ -128,7 +127,7 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
 
-    /** ------------------------- Conversions ----------------------------------- */
+    /* ------------------------- Conversions ----------------------------------- */
 
 
     /**
@@ -217,7 +216,7 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
 
-    /** ------------------------- Transformations ------------------------------- */
+    /* ------------------------- Transformations ------------------------------- */
 
     /**
      * Return a new "FloatSpan" with the lower and upper bounds shifted by
@@ -271,7 +270,7 @@ public class FloatSpan extends Span<Float> implements Number{
     }
 
 
-    /** ------------------------- Topological Operations -------------------------------- */
+    /* ------------------------- Topological Operations -------------------------------- */
 
     /**
      * Returns whether "this" is adjacent to "other". That is, they share
@@ -343,7 +342,7 @@ public class FloatSpan extends Span<Float> implements Number{
         }
     }
 
-    /** ------------------------- Position Operations --------------------------- */
+    /* ------------------------- Position Operations --------------------------- */
 
 
     /**
@@ -444,7 +443,7 @@ public class FloatSpan extends Span<Float> implements Number{
         }
     }
 
-    /** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
     /**
@@ -472,7 +471,7 @@ public class FloatSpan extends Span<Float> implements Number{
 
 
 
-    /** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
     /**
      * Returns the intersection of "this" and "other".
