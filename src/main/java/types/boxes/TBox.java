@@ -1,8 +1,6 @@
 package types.boxes;
 
 import functions.functions;
-import types.core.DateTimeFormatHelper;
-import types.core.TypeName;
 import jnr.ffi.Pointer;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
@@ -35,7 +33,6 @@ import java.time.OffsetDateTime;
  *     equivalent to a {@link Period} (if it only has temporal dimension) or to a
  *     floatrange (if it only has the numeric dimension).
  */
-@TypeName(name = "tbox")
 public class TBox implements Box {
 	private double xmin = 0.0f;
 	private double xmax = 0.0f;
@@ -796,7 +793,7 @@ public class TBox implements Box {
 	 * @return true if equal, false otherwise
 	 * @throws SQLException
 	 */
-	public boolean equals(Box other) throws SQLException{
+	public boolean eq(Box other) throws SQLException{
 		boolean result;
 		result = other instanceof TBox ? functions.tbox_eq(this._inner,((TBox) other).get_inner()) : false;
 		return result;
@@ -911,69 +908,6 @@ public class TBox implements Box {
 		}
 	}
 
-
-
-
-
-
-
-
-
-	public String getValue() {
-		if (xmin != 0.0f && tmin != null) {
-			return String.format("TBOX((%f, %s), (%f, %s))",
-					xmin,
-					DateTimeFormatHelper.getStringFormat(tmin),
-					xmax,
-					DateTimeFormatHelper.getStringFormat(tmax));
-		} else if (xmin != 0.0f) {
-			return String.format("TBOX((%f, ), (%f, ))", xmin, xmax);
-		} else if (tmin != null) {
-			return String.format("TBOX((, %s), (, %s))", DateTimeFormatHelper.getStringFormat(tmin),
-					DateTimeFormatHelper.getStringFormat(tmax));
-		} else {
-			return null;
-		}
-		
-	}
-
-	public void setValue(String value) throws SQLException {
-		value = value.replace("TBOX", "")
-				.replace("(", "")
-				.replace(")", "");
-		String[] values = value.split(",", -1);
-		
-		if (values.length != 4) {
-			throw new SQLException("Could not parse TBox value, invalid number of arguments.");
-		}
-		if (values[0].trim().length() > 0) {
-			if (values[2].trim().length() > 0) {
-				this.xmin = Double.parseDouble(values[0]);
-				this.xmax = Double.parseDouble(values[2]);
-			} else {
-				throw new SQLException("Xmax should have a value.");
-			}
-		} else if (values[2].trim().length() > 0) {
-			throw new SQLException("Xmin should have a value.");
-		}
-		if (values[1].trim().length() > 0) {
-			if (values[3].trim().length() > 0) {
-				this.tmin = DateTimeFormatHelper.getDateTimeFormat(values[1].trim());
-				this.tmax = DateTimeFormatHelper.getDateTimeFormat(values[3].trim());
-			} else {
-				throw new SQLException("Tmax should have a value.");
-			}
-		} else if (values[3].trim().length() > 0) {
-			throw new SQLException("Tmin should have a value.");
-		}
-	}
-
-	
-	@Override
-	public int hashCode() {
-		String value = getValue();
-		return value != null ? value.hashCode() : 0;
-	}
 	
 	public double getXmin() {
 		return xmin;

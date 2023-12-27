@@ -45,22 +45,6 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     /* ------------------------- Conversions ----------------------------------- */
 
-    /*
-      Returns a SpanSet that contains a Span for each element in "this".
-      <p>
-              MEOS Functions:
-                  <li>span_to_spanset</li>
-      @return A new {@link SpanSet} instance
-     */
-    /*
-    public SpanSet to_spanset(){
-        return (SpanSet.createfunctions.span_to_spanset(this._inner);
-    }
-
-     */
-
-
-
 
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -465,7 +449,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @param other temporal object to compare with
      * @return True if equal, False otherwise
      */
-    public boolean equals(Base other){
+    public boolean eq(Base other){
         if (other instanceof Span<?>){
             return functions.span_eq(this._inner,((Span<?>) other)._inner);
         }

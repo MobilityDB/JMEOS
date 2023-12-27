@@ -2,25 +2,17 @@ package collections.time;
 
 import functions.functions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.SQLException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import types.collections.time.PeriodSet;
 import types.collections.time.TimestampSet;
 import types.collections.time.Period;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class TimestampSetTest {
     private TimestampSet tset = new TimestampSet("{2019-09-01 00:00:00+0, 2019-09-02 00:00:00+0, 2019-09-03 00:00:00+0}");
@@ -183,7 +175,7 @@ class TimestampSetTest {
     public void testComparisons() throws Exception {
         TimestampSet first = new TimestampSet("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}");
         TimestampSet second = new TimestampSet("{2020-01-02 00:00:00+0, 2020-03-31 00:00:00+0}");
-        assertFalse(first.equals(second));
+        assertFalse(first.eq(second));
         assertTrue(first.notEquals(second));
         assertTrue(first.lessThan(second));
         assertTrue(first.lessThanOrEqual(second));

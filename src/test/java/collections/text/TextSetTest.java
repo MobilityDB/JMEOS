@@ -75,7 +75,7 @@ public class TextSetTest {
 
     @Test
     public void testComparisons() throws Exception {
-        assertFalse(other2.equals(other));
+        assertFalse(other2.eq(other));
         assertTrue(other2.notEquals(other));
         assertFalse(other2.lessThan(other));
         assertFalse(other2.lessThanOrEqual(other));

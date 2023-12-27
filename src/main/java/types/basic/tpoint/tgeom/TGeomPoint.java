@@ -9,7 +9,6 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.TypeName;
 import types.temporal.Factory;
 import types.temporal.TInterpolation;
 import types.temporal.Temporal;
@@ -22,7 +21,6 @@ import utils.ConversionUtils;
 /**
  * Class that represents the MobilityDB type TGeomPoint
  */
-@TypeName(name = "tgeompoint")
 public interface TGeomPoint extends TPoint {
 	String customType = "Geom";
 	Pointer getPointInner();

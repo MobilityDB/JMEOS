@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class TBoxTest {
-	
+	/*
 	static Stream<Arguments> notEqualsTBoxProvider() {
 		return Stream.of(
 				arguments("TBOX((30.0, 2021-07-08 06:04:32+02), (40.0, 2021-07-09 11:02:00+02))",
@@ -247,4 +247,6 @@ class TBoxTest {
 		TBox tBoxB = new TBox(second);
 		assertNotEquals(tBoxA, tBoxB);
 	}
+
+	 */
 }

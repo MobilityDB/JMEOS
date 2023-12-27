@@ -28,22 +28,6 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     /* ------------------------- Conversions ----------------------------------- */
 
 
-    /*
-      Returns a span that encompasses "this".
-
-      <p>
-
-              MEOS Functions:
-                  <li>spanset_span</li>
-      @return A new :class:`Span` instance
-     */
-    /*
-    public Span to_span(){
-        return new Span(functions.spanset_span(this._inner));
-    }
-
-     */
-
 
     /* ------------------------- Accessors ------------------------------------- */
 
@@ -484,7 +468,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      * @param other temporal object to compare with
      * @return True if equal, False otherwise
      */
-    public boolean equals(Base other){
+    public boolean eq(Base other){
         if (other instanceof SpanSet<?>){
             return functions.spanset_eq(this._inner,((SpanSet<?>) other)._inner);
         }

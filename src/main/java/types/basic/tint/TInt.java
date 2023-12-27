@@ -10,14 +10,12 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.TypeName;
 import types.temporal.*;
 
 
 /**
  * Class that represents the MobilityDB type TInt
  */
-@TypeName(name = "tint")
 public interface TInt extends TNumber {
 	String customType = "Integer";
 	Pointer getNumberInner();
@@ -90,7 +88,7 @@ public interface TInt extends TNumber {
 	 *             <li>tint_out</li>
 	 * @return A string representation of "this".
 	 */
-	default String tostring(){
+	default String to_string(){
 		return functions.tint_out(getNumberInner());
 	}
 

@@ -3,7 +3,6 @@ package types.collections.time;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.collections.base.SpanSet;
-import types.core.TypeName;
 
 import types.boxes.*;
 
@@ -32,7 +31,6 @@ import java.util.List;
  * @author Nidhal Mareghni
  * @since 10/09/2023
  */
-@TypeName(name = "periodset")
 public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeCollection {
 	private List<Period> periodList = null;
 	private Pointer _inner;
@@ -677,7 +675,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 * @param other temporal object to compare with
 	 * @return True if equal, False otherwise
 	 */
-	public boolean equals(Time other) {
+	public boolean eq(Time other) {
 		boolean result;
 		result = other instanceof PeriodSet ? functions.spanset_eq(this._inner,((PeriodSet) other).get_inner()) : false;
 		return result;

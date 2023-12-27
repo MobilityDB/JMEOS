@@ -3015,6 +3015,7 @@ public class functions {
 
 	}
 
+	//To avoid flooding warnings
 	@SuppressWarnings("unused")
 	public static Pointer lwpoint_make(int srid, int hasz, int hasm, Pointer p) {
 		return MeosLibrary.meos.lwpoint_make(srid, hasz, hasm, p);

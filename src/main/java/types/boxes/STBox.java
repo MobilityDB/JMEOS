@@ -6,7 +6,6 @@ import jnr.ffi.Runtime;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.collections.time.Time;
-import types.core.TypeName;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.geom.Geometry;
 
@@ -42,7 +41,6 @@ import javax.naming.OperationNotSupportedException;
  * @author Nidhal Mareghni
  * @since 10/09/2023
  */
-@TypeName(name = "stbox")
 public class STBox implements Box {
 	private Point pMin = null;
 	private Point pMax = null;
@@ -110,7 +108,6 @@ public class STBox implements Box {
 	
 	public STBox(final String value){
 		super();
-		//setValue(value);
 		this._inner = functions.stbox_in(value);
 
 	}
@@ -1095,7 +1092,7 @@ public class STBox implements Box {
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is equal to "other", "false" otherwise.
 	 */
-	public boolean equals(Box other) {
+	public boolean eq(Box other) {
 		boolean result;
 		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
 		return result;
@@ -1231,12 +1228,6 @@ public class STBox implements Box {
 		}
 		
 		return tMinIsEqual && tMaxIsEqual;
-	}
-	
-	@Override
-	public int hashCode() {
-		String value = getValue();
-		return value != null ? value.hashCode() : 0;
 	}
 	
 	public Double getXmin() {

@@ -1,16 +1,11 @@
 package basic;
 import functions.functions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import types.basic.tbool.TBool;
 import types.basic.tbool.TBoolInst;
 import types.basic.tbool.TBoolSeq;
 import types.basic.tbool.TBoolSeqSet;
-import types.boxes.STBox;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
@@ -395,17 +390,17 @@ public class TBoolTest {
         if (type == "TBoolInst") {
             TBoolInst tb = new TBoolInst(value);
             assertTrue(tb instanceof TBoolInst);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeq") {
             TBoolSeq tb = new TBoolSeq(value);
             assertTrue(tb instanceof TBoolSeq);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeqSet") {
             TBoolSeqSet tb = new TBoolSeqSet(value);
             assertTrue(tb instanceof TBoolSeqSet);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         }
     }
@@ -436,13 +431,13 @@ public class TBoolTest {
         functions.meos_initialize("UTC");
         if (type == "TBoolInst") {
             TBoolInst tb = (TBoolInst) base.copy();
-            assertEquals(tb.tostring(),(((TBoolInst) base).tostring()));
+            assertEquals(tb.to_string(),(((TBoolInst) base).to_string()));
         } else if (type == "TBoolSeq") {
             TBoolSeq tb = (TBoolSeq) base.copy();
-            assertEquals(tb.tostring(),(((TBoolSeq) base).tostring()));
+            assertEquals(tb.to_string(),(((TBoolSeq) base).to_string()));
         } else if (type == "TBoolSeqSet") {
             TBoolSeqSet tb = (TBoolSeqSet) base.copy();
-            assertEquals(tb.tostring(),(((TBoolSeqSet) base).tostring()));
+            assertEquals(tb.to_string(),(((TBoolSeqSet) base).to_string()));
         }
     }
 
@@ -453,11 +448,11 @@ public class TBoolTest {
     public void testString(Temporal base, String type, String expected) {
         functions.meos_initialize("UTC");
         if (type == "TBoolInst") {
-            assertEquals(expected,(((TBoolInst) base).tostring()));
+            assertEquals(expected,(((TBoolInst) base).to_string()));
         } else if (type == "TBoolSeq") {
-            assertEquals(expected,(((TBoolSeq) base).tostring()));
+            assertEquals(expected,(((TBoolSeq) base).to_string()));
         } else if (type == "TBoolSeqSet") {
-            assertEquals(expected,(((TBoolSeqSet) base).tostring()));
+            assertEquals(expected,(((TBoolSeqSet) base).to_string()));
         }
     }
 
@@ -531,7 +526,7 @@ public class TBoolTest {
     @MethodSource("TBool_startinst")
     public void testStartInst(Temporal base, String type, TBoolInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TBoolInst)base.start_instant()).tostring(),expected.tostring());
+        assertEquals(((TBoolInst)base.start_instant()).to_string(),expected.to_string());
     }
 
 
@@ -539,7 +534,7 @@ public class TBoolTest {
     @MethodSource("TBool_endinst")
     public void testEndInst(Temporal base, String type, TBoolInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TBoolInst)base.end_instant()).tostring(),expected.tostring());
+        assertEquals(((TBoolInst)base.end_instant()).to_string(),expected.to_string());
     }
 
 
@@ -547,7 +542,7 @@ public class TBoolTest {
     @MethodSource("TBool_mininst")
     public void testMinInst(Temporal base, String type, TBoolInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TBoolInst)base.min_instant()).tostring(),expected.tostring());
+        assertEquals(((TBoolInst)base.min_instant()).to_string(),expected.to_string());
     }
 
 
@@ -555,14 +550,14 @@ public class TBoolTest {
     @MethodSource("TBool_maxinst")
     public void testMaxInst(Temporal base, String type, TBoolInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TBoolInst)base.max_instant()).tostring(),expected.tostring());
+        assertEquals(((TBoolInst)base.max_instant()).to_string(),expected.to_string());
     }
 
     @ParameterizedTest(name = "Test instn method.")
     @MethodSource("TBool_instn")
     public void testInstN(Temporal base, String type, int n, TBoolInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TBoolInst)base.instant_n(n)).tostring(),expected.tostring());
+        assertEquals(((TBoolInst)base.instant_n(n)).to_string(),expected.to_string());
     }
 
 
@@ -604,7 +599,7 @@ public class TBoolTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_instant();
         assertTrue(tmp instanceof TBoolInst);
-        assertEquals(((TBoolInst) tmp).tostring(), type.tostring());
+        assertEquals(((TBoolInst) tmp).to_string(), type.to_string());
     }
 
 
@@ -614,7 +609,7 @@ public class TBoolTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_sequence(type);
         assertTrue(tmp instanceof TBoolSeq);
-        assertEquals(((TBoolSeq) tmp).tostring(), tseq.tostring());
+        assertEquals(((TBoolSeq) tmp).to_string(), tseq.to_string());
     }
 
 
@@ -624,7 +619,7 @@ public class TBoolTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_sequenceset(type);
         assertTrue(tmp instanceof TBoolSeqSet);
-        assertEquals(((TBoolSeqSet) tmp).tostring(), tseqset.tostring());
+        assertEquals(((TBoolSeqSet) tmp).to_string(), tseqset.to_string());
     }
 
 
@@ -633,11 +628,11 @@ public class TBoolTest {
     public void testInsert(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TBoolInst") {
-            assertEquals(((TBoolInst)base.insert(base2)).tostring(), ((TBoolSeq) tseq).tostring());
+            assertEquals(((TBoolInst)base.insert(base2)).to_string(), ((TBoolSeq) tseq).to_string());
         } else if (type == "TBoolSeq") {
-            assertEquals(((TBoolSeq)base.insert(base2)).tostring(), ((TBoolSeq) tseq).tostring());
+            assertEquals(((TBoolSeq)base.insert(base2)).to_string(), ((TBoolSeq) tseq).to_string());
         } else if (type == "TBoolSeqSet") {
-            assertEquals(((TBoolSeqSet)base.insert(base2)).tostring(), ((TBoolSeqSet) tseq).tostring());
+            assertEquals(((TBoolSeqSet)base.insert(base2)).to_string(), ((TBoolSeqSet) tseq).to_string());
         }
     }
 
@@ -647,11 +642,11 @@ public class TBoolTest {
     public void testUpdate(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TBoolInst") {
-            assertEquals(((TBoolInst)base.update(base2)).tostring(), ((TBoolInst) tseq).tostring());
+            assertEquals(((TBoolInst)base.update(base2)).to_string(), ((TBoolInst) tseq).to_string());
         } else if (type == "TBoolSeq") {
-            assertEquals(((TBoolSeq)base.update(base2)).tostring(), ((TBoolSeq) tseq).tostring());
+            assertEquals(((TBoolSeq)base.update(base2)).to_string(), ((TBoolSeq) tseq).to_string());
         } else if (type == "TBoolSeqSet") {
-            assertEquals(((TBoolSeqSet)base.update(base2)).tostring(), ((TBoolSeqSet) tseq).tostring());
+            assertEquals(((TBoolSeqSet)base.update(base2)).to_string(), ((TBoolSeqSet) tseq).to_string());
         }
     }
 
@@ -661,9 +656,9 @@ public class TBoolTest {
     public void testAppendSeq(Temporal base, TSequence base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TBoolSeq") {
-            assertEquals(((TBoolSeq)base.append_sequence(base2)).tostring(), ((TBoolSeq) tseq).tostring());
+            assertEquals(((TBoolSeq)base.append_sequence(base2)).to_string(), ((TBoolSeq) tseq).to_string());
         } else if (type == "TBoolSeqSet") {
-            assertEquals(((TBoolSeqSet)base.append_sequence(base2)).tostring(), ((TBoolSeqSet) tseq).tostring());
+            assertEquals(((TBoolSeqSet)base.append_sequence(base2)).to_string(), ((TBoolSeqSet) tseq).to_string());
         }
     }
 

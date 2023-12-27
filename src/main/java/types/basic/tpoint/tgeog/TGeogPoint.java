@@ -4,7 +4,6 @@ import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tbool.TBool;
 import types.basic.tpoint.tgeom.TGeomPoint;
-import types.core.TypeName;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
@@ -22,7 +21,6 @@ import utils.ConversionUtils;
 /**
  * Class that represents the MobilityDB type TGeogPoint
  */
-@TypeName(name = "tgeogpoint")
 public interface TGeogPoint extends TPoint {
 	String customType = "Geog";
 	Pointer getPointInner();

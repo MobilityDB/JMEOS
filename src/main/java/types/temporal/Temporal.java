@@ -830,7 +830,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A temporal object to compare to "this".
      * @return A {@link Boolean} with the result of the equality relation.
      */
-    public boolean equals(Temporal other){
+    public boolean eq(Temporal other){
         return functions.temporal_eq(this.inner,other.getInner());
     }
 

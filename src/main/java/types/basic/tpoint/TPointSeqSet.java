@@ -2,14 +2,13 @@ package types.basic.tpoint;
 
 import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;
-import net.postgis.jdbc.geometry.Point;
 
 
 /**
  * Base abstract class for TGeomPointSeqSet and TGeogPointSeqSet
  * Contains logic for handling SRID
  */
-public abstract class TPointSeqSet extends TSequenceSet<Point> implements TPoint{
+public abstract class TPointSeqSet extends TSequenceSet<TPoint> implements TPoint{
     public Pointer inner;
 
     public TPointSeqSet(){

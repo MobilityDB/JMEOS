@@ -361,7 +361,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @param other object to compare with
      * @return True if equal, False otherwise
      */
-    public boolean equals(Base other){
+    public boolean eq(Base other){
         if (other instanceof Set<?>){
             return functions.set_eq(this._inner,((Set<?>) other)._inner);
         }

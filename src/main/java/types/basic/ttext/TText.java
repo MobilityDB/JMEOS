@@ -6,14 +6,12 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.TypeName;
 import types.temporal.*;
 
 
 /**
  * Class that represents the MobilityDB type TText
  */
-@TypeName(name = "ttext")
 public interface TText {
     String customType = "String";
     Pointer getTextInner();
@@ -80,7 +78,7 @@ public interface TText {
      *             <li>ttext_out</li>
      * @return Returns the string representation of "this"
      */
-    default String tostring(){
+    default String to_string(){
         return functions.ttext_out(getTextInner());
     }
 

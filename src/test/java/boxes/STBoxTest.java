@@ -1,19 +1,13 @@
 package boxes;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import functions.functions;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.stream.Stream;
 import types.boxes.*;
 import types.collections.time.*;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -22,7 +16,6 @@ import org.locationtech.jts.io.ParseException;
 
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class STBoxTest {
 	private STBox stbx;
@@ -113,7 +106,7 @@ public class STBoxTest {
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize("UTC");
 		STBox stb = new STBox(str);
-		assertTrue(stb.equals(box));
+		assertTrue(stb.eq(box));
 	}
 
 
@@ -122,7 +115,7 @@ public class STBoxTest {
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize("UTC");
 		STBox stb = box.copy();
-		assertTrue(stb.equals(box));
+		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());
 
 	}

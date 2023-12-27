@@ -18,12 +18,13 @@ import org.locationtech.jts.geom.Point;
 import utils.ConversionUtils;
 
 import javax.naming.OperationNotSupportedException;
+import java.io.Serializable;
 
 /**
  * Base abstract class for TGeomPoint and TGeogPoint
  * Contains logic for handling SRID
  */
-public interface TPoint {
+public interface TPoint extends Serializable {
 	Pointer getPointInner();
 	String getCustomType();
 	TemporalType getTemporalType();
@@ -39,7 +40,7 @@ public interface TPoint {
 	 *
 	 * @return A new {@link String} representing the temporal point.
 	 */
-	default String tostring(){
+	default String to_string(){
 		return functions.tpoint_as_text(getPointInner(),15);
 	}
 

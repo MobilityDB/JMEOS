@@ -9,7 +9,6 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.TypeName;
 import types.temporal.*;
 import functions.functions;
 
@@ -17,7 +16,6 @@ import functions.functions;
 /**
  * Class that represents the MobilityDB type TFloat
  */
-@TypeName(name = "tfloat")
 public interface TFloat extends TNumber {
 	String customType = "Float";
 	Pointer getNumberInner();
@@ -87,7 +85,7 @@ public interface TFloat extends TNumber {
 	 * @param max_decimals
 	 * @return A string representation of "this".
 	 */
-	default String tostring(int max_decimals){
+	default String to_string(int max_decimals){
 		return functions.tfloat_out(getNumberInner(), max_decimals);
 	}
 

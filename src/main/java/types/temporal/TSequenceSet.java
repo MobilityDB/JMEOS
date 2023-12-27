@@ -119,7 +119,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 			TSequence<V> thisVal = sequenceList.get(i);
 			TSequence<?> otherVal = otherTemporal.sequenceList.get(i);
 			
-			if (!thisVal.equals(otherVal)) {
+			if (!thisVal.eq(otherVal)) {
 				return false;
 			}
 		}

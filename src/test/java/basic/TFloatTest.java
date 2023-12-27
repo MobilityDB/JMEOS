@@ -20,7 +20,6 @@ import types.basic.tnumber.TNumber;
 import types.boxes.Box;
 import types.boxes.TBox;
 import types.collections.number.FloatSpan;
-import types.collections.number.IntSpan;
 import types.collections.number.IntSpanSet;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
@@ -471,19 +470,19 @@ public class TFloatTest {
             TFloatInst tinst = new TFloatInst(source);
             assertTrue(tinst instanceof TFloatInst);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
         }
         else if (type == "TFloatSeq") {
             TFloatSeq tinst = new TFloatSeq(source);
             assertTrue(tinst instanceof TFloatSeq);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
 
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tinst = new TFloatSeqSet(source);
             assertTrue(tinst instanceof TFloatSeqSet);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
         }
     }
 
@@ -496,15 +495,15 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TFloatInst tb = (TFloatInst)source.copy();
-            assertEquals(tb.tostring(15),(((TFloatInst) source).tostring(15)));
+            assertEquals(tb.to_string(15),(((TFloatInst) source).to_string(15)));
         }
         else if (type == "TFloatSeq") {
             TFloatSeq tb = (TFloatSeq) source.copy();
-            assertEquals(tb.tostring(15),(((TFloatSeq) source).tostring(15)));
+            assertEquals(tb.to_string(15),(((TFloatSeq) source).to_string(15)));
 
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tb = (TFloatSeqSet) source.copy();
-            assertEquals(tb.tostring(15),(((TFloatSeqSet) source).tostring(15)));
+            assertEquals(tb.to_string(15),(((TFloatSeqSet) source).to_string(15)));
         }
     }
 
@@ -516,15 +515,15 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TFloatInst tinst = new TFloatInst(source);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
         }
         else if (type == "TFloatSeq") {
             TFloatSeq tinst = new TFloatSeq(source);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
 
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tinst = new TFloatSeqSet(source);
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
         }
     }
 
@@ -535,17 +534,17 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TInt tinst = ((TFloatInst) source).to_tint();
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
         else if (type == "TFloatSeq") {
             TInt tinst = ((TFloatSeq) source).to_tint();
             System.out.println("here");
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
 
         } else if (type == "TFloatSeqSet") {
             TInt tinst = ((TFloatSeqSet) source).to_tint();
             System.out.println("here");
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
     }
 
@@ -656,7 +655,7 @@ public class TFloatTest {
     @MethodSource("start_instant")
     void testStartInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TFloatInst)source.start_instant()).tostring(15),((TFloatInst)expected.start_instant()).tostring(15));
+        assertEquals(((TFloatInst)source.start_instant()).to_string(15),((TFloatInst)expected.start_instant()).to_string(15));
     }
 
 
@@ -664,7 +663,7 @@ public class TFloatTest {
     @MethodSource("end_instant")
     void testEndInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TFloatInst)source.end_instant()).tostring(15),((TFloatInst)expected.end_instant()).tostring(15));
+        assertEquals(((TFloatInst)source.end_instant()).to_string(15),((TFloatInst)expected.end_instant()).to_string(15));
     }
 
 
@@ -673,7 +672,7 @@ public class TFloatTest {
     @MethodSource("start_instant")
     void testMinInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TFloatInst)source.min_instant()).tostring(15),((TFloatInst)expected.min_instant()).tostring(15));
+        assertEquals(((TFloatInst)source.min_instant()).to_string(15),((TFloatInst)expected.min_instant()).to_string(15));
     }
 
 
@@ -681,7 +680,7 @@ public class TFloatTest {
     @MethodSource("max_instant")
     void testMaxInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TFloatInst)source.max_instant()).tostring(15),((TFloatInst)expected.max_instant()).tostring(15));
+        assertEquals(((TFloatInst)source.max_instant()).to_string(15),((TFloatInst)expected.max_instant()).to_string(15));
     }
 
 
@@ -690,7 +689,7 @@ public class TFloatTest {
     @MethodSource("instant_n")
     void testInstant_n(Temporal source, int n, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TFloatInst)source.instant_n(n)).tostring(15),((TFloatInst)expected).tostring(15));
+        assertEquals(((TFloatInst)source.instant_n(n)).to_string(15),((TFloatInst)expected).to_string(15));
     }
 
 
@@ -732,7 +731,7 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         TFloatInst tmp = (TFloatInst) source.to_instant();
         assertTrue(tmp instanceof TFloatInst);
-        assertEquals(tmp.tostring(15),expected.tostring(15));
+        assertEquals(tmp.to_string(15),expected.to_string(15));
 
     }
 
@@ -744,7 +743,7 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         TFloatSeq tmp = (TFloatSeq) source.to_sequence(interp);
         assertTrue(tmp instanceof TFloatSeq);
-        assertEquals(tmp.tostring(15),expected.tostring(15));
+        assertEquals(tmp.to_string(15),expected.to_string(15));
 
     }
 
@@ -755,7 +754,7 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         TFloatSeqSet tmp = (TFloatSeqSet) source.to_sequenceset(interp);
         assertTrue(tmp instanceof TFloatSeqSet);
-        assertEquals(tmp.tostring(15),expected.tostring(15));
+        assertEquals(tmp.to_string(15),expected.to_string(15));
 
     }
 
@@ -767,13 +766,13 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TFloatInst tmp = (TFloatInst) source.insert(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeq)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeq)expected).to_string(15));
         } else if (type == "TFloatSeq") {
             TFloatSeq tmp = (TFloatSeq) source.insert(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tmp = (TFloatSeqSet) source.insert(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         }
     }
 
@@ -786,13 +785,13 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TFloatInst tmp = (TFloatInst) source.update(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatInst)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatInst)expected).to_string(15));
         } else if (type == "TFloatSeq") {
             TFloatSeq tmp = (TFloatSeq) source.update(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tmp = (TFloatSeqSet) source.update(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         }
     }
 
@@ -803,10 +802,10 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if (type == "TFloatSeq") {
             TFloatSeq tmp = (TFloatSeq) source.append_sequence(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet tmp = (TFloatSeqSet) source.append_sequence(tseq);
-            assertEquals(tmp.tostring(15), ((TFloatSeqSet)expected).tostring(15));
+            assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
         }
     }
 
@@ -820,13 +819,13 @@ public class TFloatTest {
         functions.meos_initialize("UTC");
         if(type == "TFloatInst"){
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TFloatInst)tmp).tostring(15), ((TFloatInst)source).tostring(15));
+            assertEquals(((TFloatInst)tmp).to_string(15), ((TFloatInst)source).to_string(15));
         } else if (type == "TFloatSeq") {
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TFloatSeq)tmp).tostring(15), ((TFloatSeq)source).tostring(15));
+            assertEquals(((TFloatSeq)tmp).to_string(15), ((TFloatSeq)source).to_string(15));
         } else if (type == "TFloatSeqSet") {
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TFloatSeqSet)tmp).tostring(15), ((TFloatSeqSet)source).tostring(15));
+            assertEquals(((TFloatSeqSet)tmp).to_string(15), ((TFloatSeqSet)source).to_string(15));
         }
     }
 

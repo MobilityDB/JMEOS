@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import types.boxes.STBox;
 import types.collections.number.FloatSet;
-import types.collections.number.FloatSpan;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -169,7 +166,7 @@ public class FloatSetTest {
 
     @Test
     public void testComparisons() throws Exception {
-        assertFalse(floatset.equals(other));
+        assertFalse(floatset.eq(other));
         assertTrue(floatset.notEquals(other));
         assertTrue(floatset.lessThan(other));
         assertTrue(floatset.lessThanOrEqual(other));

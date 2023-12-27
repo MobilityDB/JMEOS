@@ -5,7 +5,6 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-import types.core.TypeName;
 import types.temporal.*;
 import functions.functions;
 
@@ -13,7 +12,6 @@ import functions.functions;
 /**
  * Class that represents the MobilityDB type TBool
  */
-@TypeName(name = "tbool")
 public interface TBool {
     String customType = "Boolean";
     Pointer getBoolInner();
@@ -80,7 +78,7 @@ public interface TBool {
      *             <li>tbool_out</li>
      * @return Returns the string representation of "this"
      */
-    default String tostring(){
+    default String to_string(){
         return functions.tbool_out(getBoolInner());
     }
 

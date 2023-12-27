@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import types.collections.number.IntSet;
 import types.collections.number.IntSpan;
 import types.collections.number.IntSpanSet;
 
@@ -221,7 +220,7 @@ public class IntSpanTest {
         IntSpan other = new IntSpan("[5, 20)");
 
 
-        assertFalse(intspan2.equals(other));
+        assertFalse(intspan2.eq(other));
         assertTrue(intspan2.notEquals(other));
         assertTrue(intspan2.lessThan(other));
         assertTrue(intspan2.lessThanOrEqual(other));

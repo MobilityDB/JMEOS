@@ -5,15 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import types.collections.number.FloatSet;
-import types.collections.number.FloatSpan;
 import types.collections.number.IntSet;
-import types.collections.number.IntSpan;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -167,7 +162,7 @@ public class IntSetTest {
 
     @Test
     public void testComparisons() throws Exception {
-        assertFalse(intset.equals(other));
+        assertFalse(intset.eq(other));
         assertTrue(intset.notEquals(other));
         assertTrue(intset.lessThan(other));
         assertTrue(intset.lessThanOrEqual(other));

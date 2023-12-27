@@ -3,7 +3,6 @@ package types.collections.time;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.boxes.Box;
-import types.core.TypeName;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -35,7 +34,6 @@ import javax.naming.OperationNotSupportedException;
  *
  * TODO: Add datetime in constructor, Modify the timestampTZ
  */
-@TypeName(name = "period")
 public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	private static final String LOWER_INCLUSIVE = "[";
 	private static final String LOWER_EXCLUSIVE = "(";
@@ -951,7 +949,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if equal, false otherwise
 	 */
-	public boolean equals(Time other) {
+	public boolean eq(Time other) {
 		boolean result;
 		result = other instanceof Period ? functions.span_eq(this._inner,((Period) other).get_inner()) : false;
 		return result;

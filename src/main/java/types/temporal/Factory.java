@@ -29,7 +29,7 @@ public final class Factory{
 
     public static Temporal create_temporal(Pointer inner, String customType, TemporalType temporalType){
         Temporal tmp = null;
-        if(inner.equals(null)){
+        if(inner == null){
             tmp = null;
         }
         else{

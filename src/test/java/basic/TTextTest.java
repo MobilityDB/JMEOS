@@ -4,10 +4,6 @@ import functions.functions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import types.basic.tbool.TBool;
-import types.basic.tbool.TBoolInst;
-import types.basic.tbool.TBoolSeq;
-import types.basic.tbool.TBoolSeqSet;
 import types.basic.ttext.TText;
 import types.basic.ttext.TTextInst;
 import types.basic.ttext.TTextSeq;
@@ -324,17 +320,17 @@ public class TTextTest {
         if (type == "TTextInst") {
             TTextInst tb = new TTextInst(value);
             assertTrue(tb instanceof TTextInst);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TTextSeq") {
             TTextSeq tb = new TTextSeq(value);
             assertTrue(tb instanceof TTextSeq);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TTextSeqSet") {
             TTextSeqSet tb = new TTextSeqSet(value);
             assertTrue(tb instanceof TTextSeqSet);
-            assertEquals(tb.tostring(), repr);
+            assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         }
     }
@@ -368,13 +364,13 @@ public class TTextTest {
         functions.meos_initialize("UTC");
         if (type == "TTextInst") {
             TTextInst tb = (TTextInst) base.copy();
-            assertEquals(tb.tostring(),(((TTextInst) base).tostring()));
+            assertEquals(tb.to_string(),(((TTextInst) base).to_string()));
         } else if (type == "TTextSeq") {
             TTextSeq tb = (TTextSeq) base.copy();
-            assertEquals(tb.tostring(),(((TTextSeq) base).tostring()));
+            assertEquals(tb.to_string(),(((TTextSeq) base).to_string()));
         } else if (type == "TTextSeqSet") {
             TTextSeqSet tb = (TTextSeqSet) base.copy();
-            assertEquals(tb.tostring(),(((TTextSeqSet) base).tostring()));
+            assertEquals(tb.to_string(),(((TTextSeqSet) base).to_string()));
         }
     }
 
@@ -386,13 +382,13 @@ public class TTextTest {
         functions.meos_initialize("UTC");
         if (type == "TTextInst") {
             TTextInst tb = (TTextInst) base.copy();
-            assertEquals(tb.tostring(),expected);
+            assertEquals(tb.to_string(),expected);
         } else if (type == "TTextSeq") {
             TTextSeq tb = (TTextSeq) base.copy();
-            assertEquals(tb.tostring(),expected);
+            assertEquals(tb.to_string(),expected);
         } else if (type == "TTextSeqSet") {
             TTextSeqSet tb = (TTextSeqSet) base.copy();
-            assertEquals(tb.tostring(),expected);
+            assertEquals(tb.to_string(),expected);
         }
     }
 
@@ -465,7 +461,7 @@ public class TTextTest {
     @MethodSource("TText_startinst")
     public void testStartInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TTextInst)base.start_instant()).tostring(),expected.tostring());
+        assertEquals(((TTextInst)base.start_instant()).to_string(),expected.to_string());
     }
 
 
@@ -473,7 +469,7 @@ public class TTextTest {
     @MethodSource("TText_endinst")
     public void testEndInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TTextInst)base.end_instant()).tostring(),expected.tostring());
+        assertEquals(((TTextInst)base.end_instant()).to_string(),expected.to_string());
     }
 
 
@@ -481,7 +477,7 @@ public class TTextTest {
     @MethodSource("TText_mininst")
     public void testMinInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TTextInst)base.min_instant()).tostring(),expected.tostring());
+        assertEquals(((TTextInst)base.min_instant()).to_string(),expected.to_string());
     }
 
 
@@ -489,7 +485,7 @@ public class TTextTest {
     @MethodSource("TText_maxinst")
     public void testMaxInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TTextInst)base.max_instant()).tostring(),expected.tostring());
+        assertEquals(((TTextInst)base.max_instant()).to_string(),expected.to_string());
     }
 
 
@@ -497,7 +493,7 @@ public class TTextTest {
     @MethodSource("TText_instn")
     public void testInstN(Temporal base, String type, int n, TTextInst expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TTextInst)base.instant_n(n)).tostring(),expected.tostring());
+        assertEquals(((TTextInst)base.instant_n(n)).to_string(),expected.to_string());
     }
 
 
@@ -539,7 +535,7 @@ public class TTextTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_instant();
         assertTrue(tmp instanceof TTextInst);
-        assertEquals(((TTextInst) tmp).tostring(), type.tostring());
+        assertEquals(((TTextInst) tmp).to_string(), type.to_string());
     }
 
 
@@ -549,7 +545,7 @@ public class TTextTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_sequence(interp);
         assertTrue(tmp instanceof TTextSeq);
-        assertEquals(((TTextSeq) tmp).tostring(), type.tostring());
+        assertEquals(((TTextSeq) tmp).to_string(), type.to_string());
     }
 
 
@@ -560,7 +556,7 @@ public class TTextTest {
         functions.meos_initialize("UTC");
         Temporal tmp = base.to_sequenceset(interp);
         assertTrue(tmp instanceof TTextSeqSet);
-        assertEquals(((TTextSeqSet) tmp).tostring(), type.tostring());
+        assertEquals(((TTextSeqSet) tmp).to_string(), type.to_string());
     }
 
 
@@ -570,11 +566,11 @@ public class TTextTest {
     public void testInsert(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TTextInst") {
-            assertEquals(((TTextInst)base.insert(base2)).tostring(), ((TTextSeq) tseq).tostring());
+            assertEquals(((TTextInst)base.insert(base2)).to_string(), ((TTextSeq) tseq).to_string());
         } else if (type == "TTextSeq") {
-            assertEquals(((TTextSeq)base.insert(base2)).tostring(), ((TTextSeq) tseq).tostring());
+            assertEquals(((TTextSeq)base.insert(base2)).to_string(), ((TTextSeq) tseq).to_string());
         } else if (type == "TTextSeqSet") {
-            assertEquals(((TTextSeqSet)base.insert(base2)).tostring(), ((TTextSeqSet) tseq).tostring());
+            assertEquals(((TTextSeqSet)base.insert(base2)).to_string(), ((TTextSeqSet) tseq).to_string());
         }
     }
 
@@ -584,11 +580,11 @@ public class TTextTest {
     public void testUpdate(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TTextInst") {
-            assertEquals(((TTextInst)base.update(base2)).tostring(), ((TTextInst) tseq).tostring());
+            assertEquals(((TTextInst)base.update(base2)).to_string(), ((TTextInst) tseq).to_string());
         } else if (type == "TTextSeq") {
-            assertEquals(((TTextSeq)base.update(base2)).tostring(), ((TTextSeqSet) tseq).tostring());
+            assertEquals(((TTextSeq)base.update(base2)).to_string(), ((TTextSeqSet) tseq).to_string());
         } else if (type == "TTextSeqSet") {
-            assertEquals(((TTextSeqSet)base.update(base2)).tostring(), ((TTextSeqSet) tseq).tostring());
+            assertEquals(((TTextSeqSet)base.update(base2)).to_string(), ((TTextSeqSet) tseq).to_string());
         }
     }
 
@@ -599,9 +595,9 @@ public class TTextTest {
     public void testAppendSeq(Temporal base, TSequence base2, Temporal tseq, String type) {
         functions.meos_initialize("UTC");
         if (type == "TTextSeq") {
-            assertEquals(((TTextSeq)base.append_sequence(base2)).tostring(), ((TTextSeq) tseq).tostring());
+            assertEquals(((TTextSeq)base.append_sequence(base2)).to_string(), ((TTextSeq) tseq).to_string());
         } else if (type == "TTextSeqSet") {
-            assertEquals(((TTextSeqSet)base.append_sequence(base2)).tostring(), ((TTextSeqSet) tseq).tostring());
+            assertEquals(((TTextSeqSet)base.append_sequence(base2)).to_string(), ((TTextSeqSet) tseq).to_string());
         }
     }
 

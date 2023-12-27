@@ -1,6 +1,5 @@
 package types.temporal;
 
-import types.core.DateTimeFormatHelper;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -41,11 +40,7 @@ public class TemporalValue<V extends Serializable> implements Serializable {
 	 *
 	 * @return String
 	 */
-	@Override
-	public String toString() {
-		return String.format("%s@%s", value, DateTimeFormatHelper.getStringFormat(time));
-	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

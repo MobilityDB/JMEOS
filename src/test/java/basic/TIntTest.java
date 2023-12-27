@@ -463,19 +463,19 @@ public class TIntTest {
             TIntInst tinst = new TIntInst(source);
             assertTrue(tinst instanceof TIntInst);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
         else if (type == "TIntSeq") {
             TIntSeq tinst = new TIntSeq(source);
             assertTrue(tinst instanceof TIntSeq);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
 
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tinst = new TIntSeqSet(source);
             assertTrue(tinst instanceof TIntSeqSet);
             assertEquals(tinst.interpolation(), interpolation);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
     }
 
@@ -488,15 +488,15 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TIntInst tb = (TIntInst)source.copy();
-            assertEquals(tb.tostring(),(((TIntInst) source).tostring()));
+            assertEquals(tb.to_string(),(((TIntInst) source).to_string()));
         }
         else if (type == "TIntSeq") {
             TIntSeq tb = (TIntSeq) source.copy();
-            assertEquals(tb.tostring(),(((TIntSeq) source).tostring()));
+            assertEquals(tb.to_string(),(((TIntSeq) source).to_string()));
 
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tb = (TIntSeqSet) source.copy();
-            assertEquals(tb.tostring(),(((TIntSeqSet) source).tostring()));
+            assertEquals(tb.to_string(),(((TIntSeqSet) source).to_string()));
         }
     }
 
@@ -508,15 +508,15 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TIntInst tinst = new TIntInst(source);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
         else if (type == "TIntSeq") {
             TIntSeq tinst = new TIntSeq(source);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
 
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tinst = new TIntSeqSet(source);
-            assertEquals(tinst.tostring(),expected);
+            assertEquals(tinst.to_string(),expected);
         }
     }
 
@@ -527,15 +527,15 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TFloatInst tinst = (TFloatInst) source.to_tfloat();
-            assertEquals(tinst.tostring(2),expected);
+            assertEquals(tinst.to_string(2),expected);
         }
         else if (type == "TIntSeq") {
             TFloatSeq tinst = (TFloatSeq) source.to_tfloat();
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
 
         } else if (type == "TIntSeqSet") {
             TFloatSeqSet tinst = (TFloatSeqSet) source.to_tfloat();
-            assertEquals(tinst.tostring(15),expected);
+            assertEquals(tinst.to_string(15),expected);
         }
     }
 
@@ -642,7 +642,7 @@ public class TIntTest {
     @MethodSource("start_instant")
     void testStartInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TIntInst)source.start_instant()).tostring(),((TIntInst)expected.start_instant()).tostring());
+        assertEquals(((TIntInst)source.start_instant()).to_string(),((TIntInst)expected.start_instant()).to_string());
     }
 
 
@@ -650,7 +650,7 @@ public class TIntTest {
     @MethodSource("end_instant")
     void testEndInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TIntInst)source.end_instant()).tostring(),((TIntInst)expected.end_instant()).tostring());
+        assertEquals(((TIntInst)source.end_instant()).to_string(),((TIntInst)expected.end_instant()).to_string());
     }
 
 
@@ -659,7 +659,7 @@ public class TIntTest {
     @MethodSource("start_instant")
     void testMinInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TIntInst)source.min_instant()).tostring(),((TIntInst)expected.min_instant()).tostring());
+        assertEquals(((TIntInst)source.min_instant()).to_string(),((TIntInst)expected.min_instant()).to_string());
     }
 
 
@@ -667,7 +667,7 @@ public class TIntTest {
     @MethodSource("max_instant")
     void testMaxInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TIntInst)source.max_instant()).tostring(),((TIntInst)expected.max_instant()).tostring());
+        assertEquals(((TIntInst)source.max_instant()).to_string(),((TIntInst)expected.max_instant()).to_string());
     }
 
 
@@ -676,7 +676,7 @@ public class TIntTest {
     @MethodSource("instant_n")
     void testInstant_n(Temporal source, int n, Temporal expected) {
         functions.meos_initialize("UTC");
-        assertEquals(((TIntInst)source.instant_n(n)).tostring(),((TIntInst)expected).tostring());
+        assertEquals(((TIntInst)source.instant_n(n)).to_string(),((TIntInst)expected).to_string());
     }
 
 
@@ -718,7 +718,7 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         TIntInst tmp = (TIntInst) source.to_instant();
         assertTrue(tmp instanceof TIntInst);
-        assertEquals(tmp.tostring(),expected.tostring());
+        assertEquals(tmp.to_string(),expected.to_string());
 
     }
 
@@ -730,7 +730,7 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         TIntSeq tmp = (TIntSeq) source.to_sequence(interp);
         assertTrue(tmp instanceof TIntSeq);
-        assertEquals(tmp.tostring(),expected.tostring());
+        assertEquals(tmp.to_string(),expected.to_string());
 
     }
 
@@ -741,7 +741,7 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         TIntSeqSet tmp = (TIntSeqSet) source.to_sequenceset(interp);
         assertTrue(tmp instanceof TIntSeqSet);
-        assertEquals(tmp.tostring(),expected.tostring());
+        assertEquals(tmp.to_string(),expected.to_string());
 
     }
 
@@ -753,13 +753,13 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TIntInst tmp = (TIntInst) source.insert(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeq)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeq)expected).to_string());
         } else if (type == "TIntSeq") {
             TIntSeq tmp = (TIntSeq) source.insert(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tmp = (TIntSeqSet) source.insert(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         }
     }
 
@@ -772,13 +772,13 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TIntInst tmp = (TIntInst) source.update(tseq);
-            assertEquals(tmp.tostring(), ((TIntInst)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntInst)expected).to_string());
         } else if (type == "TIntSeq") {
             TIntSeq tmp = (TIntSeq) source.update(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tmp = (TIntSeqSet) source.update(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         }
     }
 
@@ -789,10 +789,10 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if (type == "TIntSeq") {
             TIntSeq tmp = (TIntSeq) source.append_sequence(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         } else if (type == "TIntSeqSet") {
             TIntSeqSet tmp = (TIntSeqSet) source.append_sequence(tseq);
-            assertEquals(tmp.tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(tmp.to_string(), ((TIntSeqSet)expected).to_string());
         }
     }
 
@@ -806,13 +806,13 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TIntInst)tmp).tostring(), ((TIntInst)source).tostring());
+            assertEquals(((TIntInst)tmp).to_string(), ((TIntInst)source).to_string());
         } else if (type == "TIntSeq") {
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TIntSeq)tmp).tostring(), ((TIntSeq)source).tostring());
+            assertEquals(((TIntSeq)tmp).to_string(), ((TIntSeq)source).to_string());
         } else if (type == "TIntSeqSet") {
             TNumber tmp = ((TNumber) source).abs();
-            assertEquals(((TIntSeqSet)tmp).tostring(), ((TIntSeqSet)source).tostring());
+            assertEquals(((TIntSeqSet)tmp).to_string(), ((TIntSeqSet)source).to_string());
         }
     }
 
@@ -823,13 +823,13 @@ public class TIntTest {
         functions.meos_initialize("UTC");
         if(type == "TIntInst"){
             TNumber tmp = ((TNumber) source).delta_value();
-            assertEquals(((TIntInst)tmp).tostring(), ((TIntInst)expected).tostring());
+            assertEquals(((TIntInst)tmp).to_string(), ((TIntInst)expected).to_string());
         } else if (type == "TIntSeq") {
             TNumber tmp = ((TNumber) source).delta_value();
-            assertEquals(((TIntSeq)tmp).tostring(), ((TIntSeq)expected).tostring());
+            assertEquals(((TIntSeq)tmp).to_string(), ((TIntSeq)expected).to_string());
         } else if (type == "TIntSeqSet") {
             TNumber tmp = ((TNumber) source).delta_value();
-            assertEquals(((TIntSeqSet)tmp).tostring(), ((TIntSeqSet)expected).tostring());
+            assertEquals(((TIntSeqSet)tmp).to_string(), ((TIntSeqSet)expected).to_string());
         }
     }
 

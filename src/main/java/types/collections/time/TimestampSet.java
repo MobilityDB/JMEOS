@@ -2,8 +2,6 @@ package types.collections.time;
 
 import jnr.ffi.Pointer;
 import types.collections.base.Set;
-import types.core.DateTimeFormatHelper;
-import types.core.TypeName;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -34,7 +32,6 @@ import utils.ConversionUtils;
  * @author Nidhal Mareghni
  * @since 10/09/2023
  */
-@TypeName(name = "timestampset")
 public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollection {
 	private List<OffsetDateTime> dateTimeList = null;
 	private Pointer _inner;
@@ -711,7 +708,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 * @throws SQLException
 	 */
 	/*
-	public boolean equals(Time other) throws SQLException{
+	public boolean eq(Time other) throws SQLException{
 		boolean result;
 		result = other instanceof TimestampSet ? functions.set_eq(this._inner,((TimestampSet) other).get_inner()) : false;
 		return result;
@@ -850,23 +847,6 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 
 
-
-
-	
-	public String getValue() {
-		return String.format("{%s}", dateTimeList.stream()
-				.map(DateTimeFormatHelper::getStringFormat)
-				.collect(Collectors.joining(", ")));
-	}
-	
-
-
-	
-	@Override
-	public int hashCode() {
-		String value = getValue();
-		return value != null ? value.hashCode() : 0;
-	}
 	
 	/**
 	 * Gets the interval on which the temporal
