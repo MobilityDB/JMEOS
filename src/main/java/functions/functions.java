@@ -5,6 +5,7 @@ import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
 import utils.JarLibraryLoader;
 import utils.meosCatalog.MeosEnums.meosType;
+import utils.meosCatalog.MeosEnums.meosOper;
 
 import java.time.*;
 
@@ -1112,6 +1113,8 @@ public class functions {
 		Pointer span_timestamp_to_tbox(Pointer span, long t);
 
 		Pointer stbox_copy(Pointer box);
+
+		Pointer stbox_make(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer p);
 
 		Pointer tbox_copy(Pointer box);
 
@@ -3015,7 +3018,6 @@ public class functions {
 
 	}
 
-	//To avoid flooding warnings
 	@SuppressWarnings("unused")
 	public static Pointer lwpoint_make(int srid, int hasz, int hasm, Pointer p) {
 		return MeosLibrary.meos.lwpoint_make(srid, hasz, hasm, p);
@@ -6048,6 +6050,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer stbox_copy(Pointer box) {
 		return MeosLibrary.meos.stbox_copy(box);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer stbox_make(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer p) {
+		return MeosLibrary.meos.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, p);
 	}
 	
 	@SuppressWarnings("unused")

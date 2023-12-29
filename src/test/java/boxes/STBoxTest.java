@@ -136,22 +136,6 @@ public class STBoxTest {
 	}
 
 
-	/*
-	@ParameterizedTest(name = "Test str method with stbox={0}, expected={1}")
-	@CsvSource(value = {
-			"STBox X((1, 1),(2, 2)); 0101000000000000F03F0000000000000040000000000000F03F0000000000000040",
-			"STBox Z((1, 1, 1),(2, 2, 2)); 0111000000000000F03F0000000000000040000000000000F03F0000000000000040000000000000F03F0000000000000040",
-			"STBox T([2019-09-01,2019-09-02]); 010221000300A01E4E713402000000F66B85340200",
-			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); 010321000300A01E4E713402000000F66B85340200000000000000F03F0000000000000040000000000000F03F0000000000000040",
-			"STBox ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02]); 011321000300A01E4E713402000000F66B85340200000000000000F03F0000000000000040000000000000F03F0000000000000040000000000000F03F0000000000000040",
-	}, delimiter = ';')
-
-	public void testAsHexwkb(String stbox, String expected) throws SQLException {
-		assertEquals(expected, new STBox(stbox).as_hexwkb();
-	}
-
-	 */
-
 
 	@ParameterizedTest(name = "Test toGeometry method with stbox={0}, expected={1}")
 	@CsvSource(value = {
@@ -248,24 +232,6 @@ public class STBoxTest {
 		assertEquals(expected,val);
 	}
 
-	/*
-	@ParameterizedTest(name = "Test XminYmin method with stbox={0}, expected={1}")
-	@CsvSource(value = {
-			"STBox X((1, 1),(2, 2)); 1",
-			"STBox Z((1, 1, 1),(2, 2, 2)); 1",
-			"STBox T([2019-09-01,2019-09-02]); null",
-			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); 1",
-			"STBox ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02]); 1",
-	}, delimiter = ';')
-	public void testXminYmin(String stbox, String expected) throws SQLException {
-		STBox stb = new STBox(stbox);
-		String val = String.valueOf(stb.xmin());
-		String val2 = String.valueOf(stb.ymin());
-		assertEquals(expected,val);
-		assertEquals(expected,val2);
-	}
-
-	 */
 
 
 	@ParameterizedTest(name = "Test SRID method with stbox={0}, expected={1}")
@@ -314,27 +280,6 @@ public class STBoxTest {
 		STBox res = new STBox(expected);
 		assertEquals(new_stb.toString(15),res.toString(15));
 	}
-
-
-	/*
-	@ParameterizedTest(name = "Test Round method with stbox={0}, expected={1}")
-	@CsvSource(value = {
-			"STBOX X((1.123456789,1.123456789),(2.123456789,2.123456789)); true"
-			//"STBox X((1.123456789, 1.123456789),(2.123456789, 2.123456789)); STBox X((1.12, 1.12),(2.12, 2.12))",
-			//"STBox Z((1.123456789, 1.123456789, 1.123456789),(2.123456789, 2.123456789, 2.123456789)); STBox Z((1.12, 1.12, 1.12),(2.12, 2.12, 2.12))",
-			//"STBox XT(((1.123456789, 1.123456789),(2.123456789, 2.123456789)),[2019-09-01, 2019-09-02]); STBox XT(((1.12, 1.12),(2.12, 2.12)),[2019-09-01, 2019-09-03])",
-			//"STBox ZT(((1.123456789, 1.123456789, 1.123456789),(2.123456789, 2.123456789, 2.123456789)),[2019-09-01, 2019-09-02]); STBox ZT(((1.12, 1.12, 1.12),(2.12, 2.12, 2.12)),[2019-09-01, 2019-09-02])",
-	}, delimiter = ';')
-	public void testRound(String stbox, String expected) throws SQLException {
-		STBox stb = new STBox(stbox);
-		//STBox res = new STBox(expected);
-		//STBox stbb = stb.round(2);
-		//assertEquals(res,stbb);
-	}
-
-
-	 */
-
 
 
 

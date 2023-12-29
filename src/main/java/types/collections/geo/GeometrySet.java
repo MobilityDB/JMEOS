@@ -5,10 +5,23 @@ import functions.functions;
 
 public class GeometrySet extends GeoSet{
     private Pointer _inner;
+    private String type="Geom";
+
+    public GeometrySet(){
+    }
+
+    public GeometrySet(Pointer inner){
+        super(inner);
+        this._inner = inner;
+    }
+
     public GeometrySet(String str){
-        super();
+        super(str);
         this._inner = functions.geomset_in(str);
     }
+
+    public String getType(){return type;}
+
     @Override
     public Pointer get_inner(){
         return this._inner;

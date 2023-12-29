@@ -5,6 +5,8 @@ import types.collections.base.Base;
 import types.collections.base.SpanSet;
 import types.collections.time.Period;
 
+import java.util.List;
+
 /**
  * Class for representing lists of disjoint floatspans.
  * <p>
@@ -48,7 +50,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
     @Override
-    public Pointer createListInner(Period... periods){
+    public Pointer createListInner(List<Period> periods){
         return null;
     }
 

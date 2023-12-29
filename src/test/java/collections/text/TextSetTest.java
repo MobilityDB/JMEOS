@@ -30,7 +30,6 @@ public class TextSetTest {
         TextSet tset = new TextSet("{A, BB, ccc}");
         String pr = tset.as_hexwkb();
         TextSet ttp = new TextSet(functions.set_from_hexwkb(pr));
-        System.out.println(ttp.toString());
     }
 
 
@@ -83,6 +82,19 @@ public class TextSetTest {
         assertTrue(other2.greaterThanOrEqual(other));
     }
 
+
+    @Test
+    public void testIntersection() {
+        assertEquals(tset.intersection(new TextSet("{A}")).toString(),"{\"A\"}");
+        assertEquals(tset.intersection(new TextSet("{a, BB, ccc}")).toString(),"{\"BB\", \"ccc\"}");
+    }
+
+
+    @Test
+    public void testUnion() {
+        assertEquals(tset.union(new TextSet("{A}")).toString(),"{\"A\", \"BB\", \"ccc\"}");
+        assertEquals(tset.union(new TextSet("{a, BB, ccc}")).toString(),"{\"A\", \"BB\", \"a\", \"ccc\"}");
+    }
 
 
 }

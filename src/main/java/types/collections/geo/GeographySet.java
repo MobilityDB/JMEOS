@@ -5,10 +5,23 @@ import functions.functions;
 
 public class GeographySet extends GeoSet{
     private Pointer _inner;
+    private String type="Geog";
+
+    public GeographySet(){
+    }
+
+    public GeographySet(Pointer inner){
+        super(inner);
+        this._inner = inner;
+    }
+
     public GeographySet(String str){
-        super();
+        super(str);
         this._inner = functions.geogset_in(str);
     }
+
+    public String getType(){return type;}
+
     @Override
     public Pointer get_inner(){
         return this._inner;

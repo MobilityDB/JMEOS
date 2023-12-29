@@ -5,12 +5,15 @@ import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
+import types.basic.tpoint.TPoint;
 import types.collections.time.Time;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.geom.Geometry;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
+import types.temporal.Temporal;
 import utils.ConversionUtils;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
@@ -59,16 +62,16 @@ public class STBox implements Box {
 
 	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only){
 		STBox other_box=null;
-
-		if (other instanceof STBox){
-
-		}
-
-		if (allow_time_only) {
+		if(allow_space_only && other instanceof Geometry){
+			other_box = new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
+		} else if (other instanceof TPoint) {
+			other_box = new STBox(functions.tpoint_to_stbox(((TPoint)other).getPointInner()));
+		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
 				case Period p -> other_box = new STBox(functions.period_to_stbox(p.get_inner()));
 				case PeriodSet ps -> other_box = new STBox(functions.periodset_to_stbox(ps.get_inner()));
+				case Temporal t -> other_box = new STBox(functions.period_to_stbox(functions.temporal_to_period(t.getInner())));
 				case TimestampSet ts -> other_box = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
 				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 			}
@@ -83,7 +86,7 @@ public class STBox implements Box {
 	 * The default constructor
 	 */
 	public STBox() {
-		super();
+
 	}
 	
 	public STBox(Pointer inner){
@@ -91,247 +94,89 @@ public class STBox implements Box {
 	}
 	
 	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
-		super();
 		this._inner = inner;
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
 		this.isGeodetic = geodetic;
-		String str = functions.stbox_out(this._inner,2);
-		//setValue(str);
 	}
-	
+
 	/**
 	 * The string constructor
 	 *
 	 * @param value - STBox value
 	 */
-	
-	public STBox(final String value){
-		super();
-		this._inner = functions.stbox_in(value);
 
+	public STBox(final String value){
+		this._inner = functions.stbox_in(value);
 	}
-	
+
 	/**
-	 * The constructor for only value dimension (x,y) or (x,y,z)
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param pMax - coordinates for maximum bound
+	 * Constructor with x,y,z coordinates and {@link LocalDateTime} values.
+	 * @param xmin x minimum float value
+	 * @param xmax x maximum float value
+	 * @param ymin y minimum float value
+	 * @param ymax y maximum float value
+	 * @param zmin z minimum float value
+	 * @param zmax z maximum float value
+	 * @param tmin LocalDateTime minimum value
+	 * @param tmax LocalDateTime maximum value
+	 * @param tmin_inc tmin boolean inclusion
+	 * @param tmax_inc tmax boolean inclusion
+	 * @param geodetic boolean geodetic
 	 */
-	public STBox(Point pMin, Point pMax, Pointer inner){
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		if (inner != null) {
-			this._inner = inner;
+	public STBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax, LocalDateTime tmin, LocalDateTime tmax, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
+		Pointer period=null;
+		boolean hast = tmin != null && tmax != null;
+		boolean hasx = !Float.isNaN(xmin) && !Float.isNaN(xmax) && !Float.isNaN(ymin) && !Float.isNaN(ymax);
+		boolean hasz = !Float.isNaN(zmin) && !Float.isNaN(zmax);
+		if (hast){
+			period = new Period(tmin, tmax, tmin_inc, tmax_inc).get_inner();
 		}
+
+		this._inner = functions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, period);
 	}
-	
+
+
 	/**
-	 * The constructor for value dimension (x,y) or (x,y,z) and time dimension
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param tMin - minimum time dimension
-	 * @param pMax - coordinates for maximum bound
-	 * @param tMax - maximum time dimension
+	 * Constructor without the z coordinate
+	 * @param xmin y minimum float value
+	 * @param xmax y maximum float value
+	 * @param ymin z minimum float value
+	 * @param ymax z maximum float value
+	 * @param tmin LocalDateTime minimum value
+	 * @param tmax LocalDateTime maximum value
 	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, Pointer inner){
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		if (inner != null) {
-			this._inner = inner;
-		}
+	public STBox(float xmin, float xmax, float ymin, float ymax, LocalDateTime tmin, LocalDateTime tmax){
+		this(xmin,xmax,ymin,ymax,0.0f,0.0f,tmin,tmax,true,true,false);
 	}
-	
+
+
+    /**
+     * Constructor without the LocalDateTime aspect (equivalent to a TBox)
+     * @param xmin
+     * @param xmax
+     * @param ymin
+     * @param ymax
+     * @param zmin
+     * @param zmax
+     */
+	public STBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+		this(xmin,xmax,ymin,ymax,zmin,zmax,null,null,true,true,false);
+	}
+
 	/**
-	 * The constructor for only time dimension
-	 *
-	 * @param tMin - minimum time dimension
-	 * @param tMax - maximum time dimension
+	 * Constructor only with x coordinates and temporal dimension
+	 * @param xmin
+	 * @param xmax
+	 * @param tmin
+	 * @param tmax
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, Pointer inner) {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		if (inner != null) {
-			this._inner = inner;
-		}
+	public STBox(float xmin, float xmax, LocalDateTime tmin, LocalDateTime tmax){
+		this(xmin,xmax,0.0f,0.0f,0.0f,0.0f,tmin,tmax,true,true,false);
 	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param pMax       - coordinates for maximum bound
-	 * @param isGeodetic - if the coordinates are spherical
-	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, Pointer inner){
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.isGeodetic = isGeodetic;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates and time dimension
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param tMin       - minimum time dimension
-	 * @param pMax       - coordinates for maximum bound
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, Pointer inner)
-			{
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for geodetic box with only time dimension
-	 *
-	 * @param tMin       - minimum time dimension
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, Pointer inner) {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for only value dimension (x,y) or (x,y,z) and SRID
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param pMax - coordinates for maximum bound
-	 * @param srid - spatial reference identifier
-	 */
-	public STBox(Point pMin, Point pMax, int srid, Pointer inner) {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y) or (x,y,z), time dimension and SRID
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param tMin - minimum time dimension
-	 * @param pMax - coordinates for maximum bound
-	 * @param tMax - maximum time dimension
-	 * @param srid - spatial reference identifier
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid, Pointer inner) {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for only time dimension and SRID
-	 *
-	 * @param tMin - minimum time dimension
-	 * @param tMax - maximum time dimension
-	 * @param srid - spatial reference identifier
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid, Pointer inner)  {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates and SRID
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param pMax       - coordinates for maximum bound
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid, Pointer inner) {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates, time dimension and SRID
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param tMin       - minimum time dimension
-	 * @param pMax       - coordinates for maximum bound
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner) {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for geodetic box with only time dimension and SRID
-	 *
-	 * @param tMin       - minimum time dimension
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner)  {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
+
+
+
 
 	/**
 	 * Returns a copy of "this".
@@ -356,14 +201,7 @@ public class STBox implements Box {
 		Pointer result = functions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
 	}
-	
-	
-	//To modify for pointer
-    /*
-    public String as_hexwkb(){
-        return stbox_as_hexwkb(this._inner,-1,this._inner.size())[0];
-    }
-   */
+
 
 	/**
 	 * Returns a "STBox" from a "Geometry".
@@ -383,21 +221,6 @@ public class STBox implements Box {
 		boolean geodetic = false;
 		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
-
-
-
-
-
-    /*
-    //Add the datetime_to_timestamptz function to the class
-    public STBox from_datetime(Pointer time){
-        Pointer result;
-        //Add the datetime_to_timestamptz function to the class
-        result = timestamp_to_stbox(datetime_to_timestamptz(time));
-        return new STBox(result);
-    }
-
-     */
 
 
 	/**
@@ -455,33 +278,59 @@ public class STBox implements Box {
      */
 
 
-    /*
-    //Modify Period type
-    public STBox from_geometry_datetime(Geometry geometry, Pointer datetime){
-        Pointer gs = gserialized_in(geometry.toString(),-1);
-        Pointer result = geo_timestamp_to_stbox(gs,datetime_to_timestamptz(datetime));
+	/**
+	 * Returns a "STBox" from a space and time dimension.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>geo_timestamp_to_stbox</li>
+	 *             <li>geo_period_to_stbox</li>
+	 * @param geometry A {@link Geometry} instance representing the space dimension.
+	 * @param datetime A `{@link Time} instance representing the time dimension.
+	 * @param geodetic Whether to create a geodetic or geometric "STBox".
+	 * @return A new {@link STBox} instance.
+	 */
+	public static STBox from_geometry_datetime(Geometry geometry, LocalDateTime datetime, boolean geodetic){
+        Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
+        Pointer result = functions.geo_timestamp_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
         return new STBox(result);
     }
 
-    public STBox from_geometry_period(Geometry geometry, Pointer period){
-        Pointer gs = gserialized_in(geometry.toString(),-1);
-        Pointer result = geo_period_to_stbox(gs,period._inner);
+
+	/**
+	 * Returns a "STBox" from a space and time dimension.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>geo_timestamp_to_stbox</li>
+	 *             <li>geo_period_to_stbox</li>
+	 * @param geometry A {@link Geometry} instance representing the space dimension.
+	 * @param period A `{@link Period} instance representing the time dimension.
+	 * @param geodetic Whether to create a geodetic or geometric "STBox".
+	 * @return A new {@link STBox} instance.
+	 */
+    public static STBox from_geometry_period(Geometry geometry, Period period, boolean geodetic){
+		Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
+        Pointer result = functions.geo_period_to_stbox(gs,period.get_inner());
         return new STBox(result);
     }
 
-    public STBox from_tpoint(TPoint temporal){
-        return new STBox(tpoint_to_stbox(temporal._inner));
+
+	/**
+	 * Returns the bounding box of a "TPoint" instance as an "STBox".
+	 *
+	 * <p>.
+	 *
+	 *         MEOS Functions:
+	 *             <li>tpoint_to_stbox</li>
+	 * @param temporal A {@link TPoint} instance.
+	 * @return A new {@link STBox} instance.
+	 */
+    public static STBox from_tpoint(TPoint temporal){
+        return new STBox(functions.tpoint_to_stbox(temporal.getPointInner()));
     }
-
-     */
-	
-	
-
-    public Geometry to_geometry(int precision) throws ParseException {
-        return ConversionUtils.gserialized_to_shapely_geometry(functions.stbox_to_geo(this._inner),precision);
-    }
-
-
 
 
     /* ------------------------- Output ---------------------------------------- */
@@ -513,6 +362,22 @@ public class STBox implements Box {
         Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }
+
+
+	/**
+	 * Returns the spatial dimension of "this" as a {@link Geometry} instance.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_to_geo</li>
+	 * @param precision The precision of the geometry coordinates.
+	 * @return A new {@link Geometry} instance.
+	 * @throws ParseException
+	 */
+	public Geometry to_geometry(int precision) throws ParseException {
+		return ConversionUtils.gserialized_to_shapely_geometry(functions.stbox_to_geo(this._inner),precision);
+	}
 
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -565,55 +430,124 @@ public class STBox implements Box {
 
 
 	/**
-	 * Returns the minimum X coordinate of ``self``.
+	 * Returns the minimum X coordinate of "this".
 	 *
-	 *         Returns:
-	 *             A :class:`float` with the minimum X coordinate of ``self``.
-	 *
+	 * <p>
 	 *         MEOS Functions:
-	 *             stbox_xmin
-	 * @return
+	 *             <li>stbox_xmin</li>
+	 * @return A {@link Float} with the minimum X coordinate of "this".
 	 */
-    public boolean xmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_xmin(this._inner, result);
+    public float xmin(){
+		return (float) functions.stbox_xmin(this._inner).getDouble(0);
     }
-    public boolean ymin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_ymin(this._inner, result);
+
+	/**
+	 * Returns the minimum Y coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ymin</li>
+	 * @return A {@link Float} with the minimum Y coordinate of "this".
+	 */
+    public float ymin(){
+		return (float) functions.stbox_ymin(this._inner).getDouble(0);
     }
-    public boolean zmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_zmin(this._inner, result);
+
+	/**
+	 * Returns the minimum Z coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_zmin</li>
+	 * @return A {@link Float} with the minimum Z coordinate of "this".
+	 */
+    public float zmin(){
+		return (float) functions.stbox_zmin(this._inner).getDouble(0);
     }
-    public boolean tmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_tmin(this._inner, result);
+
+	/**
+	 * Returns the minimum T coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_tmin</li>
+	 * @return A {@link Float} with the minimum T coordinate of "this".
+	 */
+    public float tmin(){
+		return (float) functions.stbox_tmin(this._inner).getDouble(0);
     }
-    public boolean xmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_xmax(this._inner, result);
+
+	/**
+	 * Returns the maximum X coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_xmax</li>
+	 * @return A {@link Float} with the maximum X coordinate of "this".
+	 */
+    public float xmax(){
+		return (float) functions.stbox_xmax(this._inner).getDouble(0);
     }
-    public boolean ymax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_ymax(this._inner, result);
+
+	/**
+	 * Returns the maximum Y coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ymax</li>
+	 * @return A {@link Float} with the maximum Y coordinate of "this".
+	 */
+    public float ymax(){
+		return (float) functions.stbox_ymax(this._inner).getDouble(0);
     }
-    public boolean zmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_zmax(this._inner, result);
+
+	/**
+	 * Returns the maximum Z coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_zmax</li>
+	 * @return A {@link Float} with the maximum Z coordinate of "this".
+	 */
+    public float zmax(){
+		return (float) functions.stbox_zmax(this._inner).getDouble(0);
     }
-    public boolean tmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-		return false;
-        //return functions.stbox_tmax(this._inner, result);
+
+	/**
+	 * Returns the maximum T coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_tmax</li>
+	 * @return A {@link Float} with the maximum T coordinate of "this".
+	 */
+    public float tmax(){
+		return (float) functions.stbox_tmax(this._inner).getDouble(0);
     }
+
+	public boolean get_tmin_inc(){
+		return tmin_inc;
+	}
+
+	public boolean get_tmax_inc(){
+		return tmax_inc;
+	}
+
+	public OffsetDateTime getTMin() {
+		return tMin;
+	}
+
+	public OffsetDateTime getTMax() {
+		return tMax;
+	}
+
+	public boolean isGeodetic() {
+		return isGeodetic;
+	}
+
+	public int getSrid() {
+		return srid;
+	}
 
 	public Pointer get_inner(){
 		return this._inner;
@@ -649,13 +583,61 @@ public class STBox implements Box {
 
 	/** ------------------------- Transformations ------------------------------- */
 
+	/**
+	 * Get the spatial dimension of "this", removing the temporal dimension
+	 *         if any
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_get_space</li>
+	 * @return A new {@link STBox} instance.
+	 */
+	public STBox get_space(){
+		return new STBox(functions.stbox_get_space(this._inner));
+	}
 
+
+	/**
+	 * Expands "this" with "other".
+	 *         If "other" is a {@link Integer} or a {@link Float}, the result is equal
+	 *         to "this" but with the spatial dimensions expanded by "other" in all
+	 *         directions. If "other" is a {@link java.time.Duration}, the result is equal to
+	 *         "this"  but with the temporal dimension expanded by `other` in both
+	 *         directions.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_expand_space</li>
+	 *             <li>stbox_expand_time</li>
+	 * @param stbox The object to expand "this" with.
+	 * @param other The object to expand "this" with.
+	 * @return A new {@link STBox} instance.
+	 */
 	public STBox expand_stbox(STBox stbox, STBox other) {
 		Pointer result = functions.stbox_copy(this._inner);
 		functions.stbox_expand(other._inner, result);
 		return new STBox(result);
 	}
 
+
+	/**
+	 * Expands "this" with "other".
+	 *         If "other" is a {@link Integer} or a {@link Float}, the result is equal
+	 *         to "this" but with the spatial dimensions expanded by "other" in all
+	 *         directions. If "other" is a {@link java.time.Duration}, the result is equal to
+	 *         "this"  but with the temporal dimension expanded by `other` in both
+	 *         directions.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_expand_space</li>
+	 *             <li>stbox_expand_time</li>
+	 * @param value The value to expand with
+	 * @return A new {@link STBox} instance.
+	 */
 	public STBox expand_numerical(Number value) {
 		STBox result = null;
 		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
@@ -663,15 +645,6 @@ public class STBox implements Box {
 		}
 		return result;
 	}
-
-	 /*
-    //Add the timedelta function
-    public STBox expand_timedelta(STBox stbox, Duration duration){
-        Pointer result = stbox_expand_temporal(this._inner, timedelta_to_interval(duration));
-        return new STBox(result);
-    }
-
-     */
 
 
 	/**
@@ -1067,16 +1040,44 @@ public class STBox implements Box {
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
-	/*
 	public float nearest_approach_distance_geom(Geometry other) {
-		Pointer gs = functions.gserialized_in(other.toString(), -1);
-		return (float) functions.nad_stbox_geo(this._inner, gs);
+		return (float) functions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()));
 	}
 
+
+	/**
+	 * Returns the distance between the nearest points of "this" and "other".
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>nad_stbox_geo</li>
+	 *             <li>nad_stbox_stbox</li>
+	 *          </ul>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
-	
 	public float nearest_approach_distance_stbox(STBox other) {
 		return (float) functions.nad_stbox_stbox(this._inner, other._inner);
+	}
+
+
+	/**
+	 * Returns the distance between the nearest points of "this" and "other".
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>nad_stbox_geo</li>
+	 *             <li>nad_stbox_stbox</li>
+	 *          </ul>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
+	 */
+	public float nearest_approach_distance_tpoint(TPoint other) {
+		return (float) functions.nad_tpoint_stbox(this._inner, other.getPointInner());
 	}
 
 
@@ -1192,137 +1193,5 @@ public class STBox implements Box {
 		}
 	}
 
-	public String getValue() {
-		String sridPrefix = "";
-		if (srid != 0) {
-			sridPrefix = String.format("SRID=%s;", srid);
-		}
-		if (isGeodetic) {
-			return getGeodeticValue(sridPrefix);
-		} else {
-			return getNonGeodeticValue(sridPrefix);
-		}
-	}
 
-	
-	/**
-	 * Compares if the values in time dimension are the same
-	 *
-	 * @param other - a STBox to compare
-	 * @return true if they are equals; otherwise false
-	 */
-	public boolean tIsEqual(STBox other) {
-		boolean tMinIsEqual;
-		boolean tMaxIsEqual;
-		
-		if (tMin != null && other.getTMin() != null) {
-			tMinIsEqual = tMin.isEqual(other.getTMin());
-		} else {
-			tMinIsEqual = tMin == other.getTMin();
-		}
-		
-		if (tMax != null && other.getTMax() != null) {
-			tMaxIsEqual = tMax.isEqual(other.getTMax());
-		} else {
-			tMaxIsEqual = tMax == other.getTMax();
-		}
-		
-		return tMinIsEqual && tMaxIsEqual;
-	}
-	
-	public Double getXmin() {
-		return pMin != null ? pMin.getX() : null;
-	}
-	
-	public Double getXmax() {
-		return pMax != null ? pMax.getX() : null;
-	}
-	
-	public Double getYmin() {
-		return pMin != null ? pMin.getY() : null;
-	}
-	
-	public Double getYmax() {
-		return pMax != null ? pMax.getY() : null;
-	}
-	
-	public Double getZmin() {
-		return pMin != null ? pMin.getZ() : null;
-	}
-	
-	public Double getZmax() {
-		return pMax != null ? pMax.getZ() : null;
-	}
-
-	public boolean get_tmin_inc(){
-		return tmin_inc;
-	}
-
-	public boolean get_tmax_inc(){
-		return tmax_inc;
-	}
-	
-	public OffsetDateTime getTMin() {
-		return tMin;
-	}
-	
-	public OffsetDateTime getTMax() {
-		return tMax;
-	}
-	
-	public boolean isGeodetic() {
-		return isGeodetic;
-	}
-	
-	public int getSrid() {
-		return srid;
-	}
-
-	
-	/**
-	 * Gets a string for geodetic values
-	 *
-	 * @param sridPrefix - a string that contains the SRID
-	 * @return the STBox string with geodetic values
-	 */
-	private String getGeodeticValue(String sridPrefix) {
-		if (tMin != null) {
-			if (pMin != null) {
-				return String.format("%sGEODSTBOX T((%f, %f, %f, %s), (%f, %f, %f, %s))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMin.getZ(), tMin, pMax.getX(), pMax.getY(), pMax.getZ(), tMax);
-			}
-			return String.format("%sGEODSTBOX T((, %s), (, %s))", sridPrefix, tMin, tMax);
-		}
-		return String.format("%sGEODSTBOX((%f, %f, %f), (%f, %f, %f))", sridPrefix,
-				pMin.getX(), pMin.getY(), pMin.getZ(), pMax.getX(), pMax.getY(), pMax.getZ());
-	}
-	
-	/**
-	 * Gets a string for non-geodetic values
-	 *
-	 * @param sridPrefix - a string that contains the SRID
-	 * @return the STBox string with non-geodetic values
-	 */
-	private String getNonGeodeticValue(String sridPrefix) {
-		if (pMin == null) {
-			if (tMin != null) {
-				return String.format("%sSTBOX T((, %s), (, %s))", sridPrefix, tMin, tMax);
-			}
-		} else if (pMin.getZ() == null) {
-			if (tMin == null) {
-				return String.format("%sSTBOX ((%f, %f), (%f, %f))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMax.getX(), pMax.getY());
-			}
-			return String.format("%sSTBOX T((%f, %f, %s), (%f, %f, %s))", sridPrefix,
-					pMin.getX(), pMin.getY(), tMin, pMax.getX(), pMax.getY(), tMax);
-		} else {
-			if (tMin == null) {
-				return String.format("%sSTBOX Z((%f, %f, %s), (%f, %f, %s))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMin.getZ(), pMax.getX(), pMax.getY(), pMax.getZ());
-			}
-			return String.format("%sSTBOX ZT((%f, %f, %f, %s), (%f, %f, %f, %s))", sridPrefix,
-					pMin.getX(), pMin.getY(), pMin.getZ(), tMin, pMax.getX(), pMax.getY(), pMax.getZ(), tMax);
-		}
-		return null;
-	}
 }

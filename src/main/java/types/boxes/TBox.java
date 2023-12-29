@@ -2,6 +2,10 @@ package types.boxes;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.basic.tnumber.TNumber;
+import types.collections.base.Span;
+import types.collections.number.FloatSpan;
+import types.collections.number.IntSpan;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
@@ -51,12 +55,12 @@ public class TBox implements Box {
 	}
 	
 	
-	public TBox(Pointer inner) throws SQLException {
+	public TBox(Pointer inner)  {
 		this(inner, true, true, true, true);
 	}
 	
 	public TBox(Pointer inner, boolean xmin_inc, boolean xmax_inc, boolean tmax_inc, boolean
-			tmin_inc) throws SQLException {
+			tmin_inc) {
 		super();
 		this._inner = inner;
 		this.xmin_inc = xmin_inc;
@@ -70,10 +74,8 @@ public class TBox implements Box {
 	 * The string constructor
 	 *
 	 * @param value - the string with the TBox value
-	 * @throws SQLException
 	 */
-	public TBox(final String value) throws SQLException {
-		super();
+	public TBox(String value){
 		this._inner = functions.tbox_in(value);
 	}
 	
@@ -124,9 +126,8 @@ public class TBox implements Box {
 	 *         MEOS Functions:
 	 *             <li>tbox_copy</li>
 	 * @return a new TBox instance
-	 * @throws SQLException
 	 */
-	public TBox copy() throws SQLException {
+	public TBox copy(){
 		return new TBox(functions.tbox_copy(this._inner));
 	}
 
@@ -139,22 +140,51 @@ public class TBox implements Box {
 	 *             <li>tbox_from_hexwkb</li>
 	 * @param hexwkb WKB representation in hex-encoded ASCII
 	 * @return a new TBox instance
-	 * @throws SQLException
 	 */
-	public static TBox from_hexwkb(String hexwkb) throws SQLException {
+	public static TBox from_hexwkb(String hexwkb) {
 		return new TBox(functions.tbox_from_hexwkb(hexwkb));
 	}
 
-	public TBox from_value_number(Number value) throws SQLException {
+
+
+	public static TBox from_value_number(Number value)  {
 		TBox tbox = null;
 		if(Integer.class.isInstance(value)){
 			tbox = new TBox(functions.int_to_tbox((int)value));
 		}
 		else if (Float.class.isInstance(value)){
-			tbox = new TBox(functions.float_to_tbox((int)value));
+			tbox = new TBox(functions.float_to_tbox((float)value));
 		}
 		return tbox;
 	}
+
+
+	/**
+	 * Returns a "TBox" from a numeric value or span. The created "TBox" will
+	 *         only have a numerical dimension.
+	 *
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>int_to_tbox</li>
+	 *             <li>float_to_tbox</li>
+	 *             <li>span_to_tbox</li>
+	 *             <li>span_to_tbox</li>
+	 * @param span value to be canverted into a TBox
+	 * @return A new {@link TBox} instance
+	 */
+	public static TBox from_value_span(Span span) {
+		TBox tbox = null;
+		if(span instanceof IntSpan){
+			tbox = new TBox(functions.numspan_to_tbox(span.get_inner()));
+		}
+		else if (span instanceof FloatSpan){
+			tbox = new TBox(functions.numspan_to_tbox(span.get_inner()));
+		}
+		return tbox;
+	}
+
+
 
 
 	/**
@@ -172,24 +202,79 @@ public class TBox implements Box {
 	 *
 	 * @param time value to be canverted into a TBox
 	 * @return a {@link TBox} instance
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public TBox from_time(Time time) throws SQLException {
+	public static TBox from_time(Time time) throws Exception {
 		TBox tbox = null;
 		if (time instanceof Period){
-			//tbox = new TBox(((Period) time).getLower(), ((Period) time).getUpper(), ((Period) time).lower_inc(), ((Period) time).upper_inc());
+			tbox = new TBox(functions.period_to_tbox(((Period) time).get_inner()));
 		}
 		else if (time instanceof PeriodSet){
-			//tbox = new TBox(((PeriodSet) time).start_period().getLower(), ((PeriodSet) time).end_period().getUpper(), ((PeriodSet) time).start_period().lower_inc(), ((PeriodSet) time).end_period().upper_inc());
+			tbox = new TBox(functions.periodset_to_tbox(((PeriodSet) time).get_inner()));
 		}
 		else if (time instanceof TimestampSet){
-			tbox = new TBox(((TimestampSet) time).startTimestamp(), ((TimestampSet) time).endTimestamp());
+			tbox = new TBox(functions.timestampset_to_tbox(((TimestampSet) time).get_inner()));
 		}
 		else {
-			throw new SQLException("Operation not supported with this type.");
+			throw new Exception("Operation not supported with this type.");
 		}
 		return tbox;
 	}
+
+
+	/**
+	 * Returns a "TBox" from a numerical and a temporal object.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>int_timestamp_to_tbox</li>
+	 *             <li>int_period_to_tbox</li>
+	 *             <li>float_timestamp_to_tbox</li>
+	 *             <li>float_period_to_tbox</li>
+	 *             <li>span_timestamp_to_tbox</li>
+	 *             <li>span_period_to_tbox</li>
+	 * @param value numerical span of the TBox
+	 * @param time temporal span of the TBox
+	 * @return A new {@link TBox} instance
+	 */
+	public static TBox from_value_time(Object value, Period time){
+		TBox tbox = null;
+		if (value instanceof Integer) {
+			if (time instanceof Period) {
+				tbox = new TBox(functions.int_period_to_tbox(((Integer) value).intValue(), time.get_inner()));
+			}
+		} else if (value instanceof Float) {
+			if (time instanceof Period) {
+				tbox = new TBox(functions.float_period_to_tbox(((Float) value).floatValue(), time.get_inner()));
+			}
+		} else if (value instanceof IntSpan) {
+			if (time instanceof Period) {
+				tbox = new TBox(functions.span_period_to_tbox(((IntSpan) value).get_inner(), time.get_inner()));
+			}
+		} else if (value instanceof FloatSpan) {
+			if (time instanceof Period) {
+				tbox = new TBox(functions.span_period_to_tbox(((FloatSpan) value).get_inner(), time.get_inner()));
+			}
+		}
+		return tbox;
+	}
+
+
+	/**
+	 * Returns a "TBox" from a {@link TNumber} object.
+	 *
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>tnumber_to_tbox</li>
+	 * @param temporal temporal number to be canverted into a TBox
+	 * @return A new {@link TBox} instance
+	 */
+	public static TBox from_tnumber(TNumber temporal){
+		return new TBox(functions.tnumber_to_tbox(temporal.getNumberInner()));
+	}
+
 
     /* ------------------------- Output ---------------------------------------- */
 
@@ -222,14 +307,28 @@ public class TBox implements Box {
 
 
 	/**
+	 * Returns the numeric span of "this".
+	 *
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>tbox_to_floatspan</li>
+	 * @return A new {@link FloatSpan} instance
+	 */
+	public FloatSpan to_floatspan(){
+		return new FloatSpan(functions.tbox_to_floatspan(this._inner));
+	}
+
+
+	/**
 	 * Returns the temporal span of "this".
 	 * <p>
 	 *         MEOS Functions:
 	 *             <li>tbox_to_period</li>
 	 * @return a {@link Period} instance
 	 */
-	@Override
 	public Period to_period(){
+		functions.meos_initialize("UTC");
 		return new Period(functions.tbox_to_period(this._inner));
 	}
 
@@ -260,6 +359,7 @@ public class TBox implements Box {
 		return functions.tbox_hast(this._inner);
 	}
 
+
     /* ------------------------- Transformation -------------------------------- */
 
 
@@ -277,9 +377,8 @@ public class TBox implements Box {
 	 *
 	 * @param obj object used to expand "this"
 	 * @return a {@link TBox} instance
-	 * @throws SQLException
 	 */
-	public TBox expand(Object obj) throws SQLException {
+	public TBox expand(Object obj)   {
 		Pointer result = null;
 		if(obj instanceof TBox){
 			result = functions.tbox_copy(this._inner);
@@ -299,9 +398,8 @@ public class TBox implements Box {
 	 *             <li>tbox_round</li>
 	 *
 	 * @return a {@link TBox instance}
-	 * @throws SQLException
 	 */
-	public TBox round() throws SQLException {
+	public TBox round()   {
 		return this.round(0);
 	}
 
@@ -313,23 +411,14 @@ public class TBox implements Box {
 	 *
 	 * @param maxdd maximum number of decimal digits
 	 * @return a {@link TBox instance}
-	 * @throws SQLException
 	 */
-	public TBox round(int maxdd) throws SQLException {
+	public TBox round(int maxdd)  {
 		Pointer new_inner = functions.tbox_copy(this._inner);
 		functions.tbox_round(new_inner,maxdd);
 		return new TBox(new_inner);
 	}
 
 
-    /*
-    //Add the timedelta function
-    public STBox expand_timedelta(STBox stbox, Duration duration){
-        Pointer result = tbox_expand_temporal(this._inner, timedelta_to_interval(duration));
-        return new TBox(result);
-    }
-
-     */
 
     /* ------------------------- Topological Operations ------------------------ */
 
@@ -359,12 +448,13 @@ public class TBox implements Box {
 		if (other instanceof TBox) {
 			result = functions.adjacent_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
 		else if (other instanceof TNumber){
-			result = functions.adjacent_tbox_tbox(this._inner,functions.tnumber_to_tbox(other.get_inner()))
+			result = functions.adjacent_tbox_tbox(this._inner,functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+		} else if (other instanceof FloatSpan) {
+			result = functions.adjacent_span_span(this._inner,((FloatSpan) other).get_inner());
 		}
 
-		 */
+
 		return result;
 	}
 
@@ -387,18 +477,14 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if contained, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_contained_in(Object other) throws SQLException {
+	public boolean is_contained_in(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.contained_tbox_tbox(this._inner, ((TBox) other).get_inner());
+		} else if (other instanceof TNumber){
+			result = functions.contained_tbox_tbox(this._inner,functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)obj);
-		}
-		 */
 		return result;
 	}
 
@@ -421,18 +507,15 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if contains, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean contains(Object other) throws SQLException {
+	public boolean contains(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.contains_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.contains_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
 		return result;
 	}
 
@@ -446,18 +529,15 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overlaps, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean overlaps(Object other) throws SQLException {
+	public boolean overlaps(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.overlaps_tbox_tbox(this._inner, ((TBox) other).get_inner());
+		} else if(other instanceof TNumber){
+			result = functions.overlaps_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
-		}
-		 */
+
 		return result;
 	}
 
@@ -471,18 +551,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if same, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_same(Object other) throws SQLException {
+	public boolean is_same(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.same_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.same_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -500,18 +578,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return True if left, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_left(Object other) throws SQLException {
+	public boolean is_left(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.left_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.left_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -526,18 +602,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overleft, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_left(Object other) throws SQLException {
+	public boolean is_over_or_left(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.overleft_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)obj);
+		else if(other instanceof TNumber){
+			result = functions.overleft_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -552,18 +626,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if right, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_right(Object other) throws SQLException {
+	public boolean is_right(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.right_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.right_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -579,18 +651,16 @@ public class TBox implements Box {
 	 *             <li>tnumber_to_tbox</li>
 	 * @param other temporal object to compare with
 	 * @return True if overright, False otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_right(Object other) throws SQLException {
+	public boolean is_over_or_right(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.overright_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.overright_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -605,18 +675,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_before(Object other) throws SQLException {
+	public boolean is_before(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.before_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.before_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -632,18 +700,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overbefore, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(Object other) throws SQLException {
+	public boolean is_over_or_before(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.overbefore_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.overbefore_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -658,18 +724,16 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if after, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_after(Object other) throws SQLException {
+	public boolean is_after(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.after_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+		else if(other instanceof TNumber){
+			result = functions.after_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -686,18 +750,17 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if overafter, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(Object other) throws SQLException {
+	public boolean is_over_or_after(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
 			result = functions.overafter_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
-		/*
-		else if(obj instanceof Tnumber){
-			result = functions.tbox_expand_value(this._inner,(float)other);
+
+		else if(other instanceof TNumber){
+			result = functions.overafter_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
-		 */
+
 		return result;
 	}
 
@@ -712,9 +775,8 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a {@link TBox} instance
-	 * @throws SQLException
 	 */
-	public TBox union(TBox other, boolean strict) throws SQLException {
+	public TBox union(TBox other, boolean strict) {
 		return new TBox(functions.union_tbox_tbox(this._inner, other._inner,strict));
 	}
 
@@ -727,9 +789,8 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a {@link TBox} instance
-	 * @throws SQLException
 	 */
-	public TBox add(TBox other, boolean strict) throws SQLException {
+	public TBox add(TBox other, boolean strict) {
 		return this.union(other,strict);
 	}
 
@@ -740,9 +801,8 @@ public class TBox implements Box {
 	 *             <li>intersection_tbox_tbox</li>
 	 * @param other temporal object to merge with
 	 * @return a {@link TBox} instance if the instersection is not empty, "null" otherwise.
-	 * @throws SQLException
 	 */
-	public TBox intersection(TBox other) throws SQLException {
+	public TBox intersection(TBox other) {
 		return new TBox(functions.intersection_tbox_tbox(this._inner,other.get_inner()));
 	}
 
@@ -754,9 +814,8 @@ public class TBox implements Box {
 	 *             <li>intersection_tbox_tbox</li>
 	 * @param other temporal object to merge with
 	 * @return a {@link TBox} instance if the instersection is not empty, "null" otherwise.
-	 * @throws SQLException
 	 */
-	public TBox mul(TBox other) throws SQLException {
+	public TBox mul(TBox other) {
 		return this.intersection(other);
 	}
 
@@ -773,8 +832,16 @@ public class TBox implements Box {
 	 * @param other temporal object to compare with
 	 * @return A {@link Float} with the distance between the nearest points of "this" and "other".
 	 */
-	public float nearest_approach_distance(TBox other) {
-		return (float) functions.nad_tbox_tbox(this._inner, other._inner);
+	public float nearest_approach_distance(Object other) {
+		float result = 0.0f;
+		if(other instanceof TBox){
+			result = (float) functions.nad_tbox_tbox(this._inner, ((TBox) other).get_inner());
+		}
+		else if(other instanceof TNumber){
+			result = (float) functions.nad_tbox_tbox(((TNumber) other).getNumberInner(), this._inner);
+		}
+
+		return result;
 	}
 
 
@@ -791,9 +858,8 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean eq(Box other) throws SQLException{
+	public boolean eq(Box other) {
 		boolean result;
 		result = other instanceof TBox ? functions.tbox_eq(this._inner,((TBox) other).get_inner()) : false;
 		return result;
@@ -809,9 +875,8 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if not equal, false otherwise
-	 * @throws SQLException
 	 */
-	public boolean notEquals(Box other) throws SQLException{
+	public boolean notEquals(Box other) {
 		boolean result;
 		result = other instanceof TBox ? functions.stbox_ne(this._inner,((TBox) other).get_inner()) : true;
 		return result;
@@ -829,14 +894,14 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if less than, false otherwise
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public boolean lessThan(Box other) throws SQLException{
+	public boolean lessThan(Box other) throws Exception {
 		if (other instanceof TBox){
 			return functions.tbox_lt(this._inner,((TBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new Exception("Operation not supported with this type.");
 		}
 	}
 
@@ -852,14 +917,14 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if less than or equal to, false otherwise
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public boolean lessThanOrEqual(Box other) throws SQLException{
+	public boolean lessThanOrEqual(Box other) throws Exception {
 		if (other instanceof TBox){
 			return functions.tbox_le(this._inner,((TBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new Exception("Operation not supported with this type.");
 		}
 	}
 
@@ -875,14 +940,14 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if greater than, false otherwise
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public boolean greaterThan(Box other) throws SQLException{
+	public boolean greaterThan(Box other) throws Exception {
 		if (other instanceof TBox){
 			return functions.tbox_gt(this._inner,((TBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new Exception("Operation not supported with this type.");
 		}
 	}
 
@@ -897,14 +962,14 @@ public class TBox implements Box {
 	 *
 	 * @param other temporal object to compare with
 	 * @return true if greater than or equal to, false otherwise
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public boolean greaterThanOrEqual(Box other) throws SQLException{
+	public boolean greaterThanOrEqual(Box other) throws Exception {
 		if (other instanceof TBox){
 			return functions.tbox_ge(this._inner,((TBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new Exception("Operation not supported with this type.");
 		}
 	}
 

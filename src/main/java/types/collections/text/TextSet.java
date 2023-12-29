@@ -22,8 +22,11 @@ public class TextSet extends Set<String> {
     private Pointer _inner;
 
 
-
     /** ------------------------- Constructors ---------------------------------- */
+
+    public TextSet(){
+        super();
+    }
 
     public TextSet(String str){
         super(str);
@@ -177,7 +180,22 @@ public class TextSet extends Set<String> {
 
     /* ------------------------- Set Operations -------------------------------- */
 
-    //TODO: intersection
+
+    /**
+     * Returns the intersection of "this" and "other".
+     *
+     * <p>
+     *         MEOS Functions:
+     *             <li>intersection_textset_text</li>
+     *             <li>intersection_set_set</li>
+     * @param ts A {@link TextSet} or {@link String} instance
+     * @return An object of the same type as "other" or null if the intersection is empty.
+     */
+    public TextSet intersection(TextSet ts){
+        return new TextSet(functions.intersection_set_set(this._inner, ts._inner));
+    }
+
+
 
     /**
      * Returns the difference of "this" and "other".
@@ -196,23 +214,13 @@ public class TextSet extends Set<String> {
             TextSet tmptxt = new TextSet((String) other);
             return new TextSet(functions.minus_textset_text(this._inner, tmptxt._inner));
         }
-
         else if (other instanceof TextSet){
             return new TextSet(functions.minus_set_set(this._inner,((TextSet) other)._inner));
         }
-
         else{
             return null;
-            //return super.minus(other);
         }
     }
-
-    /*
-    public String subtract_from(Object other){
-        functions.minus_text_textset(other)
-    }
-
-     */
 
 
     /**
@@ -232,14 +240,11 @@ public class TextSet extends Set<String> {
             TextSet tmptxt = new TextSet((String) other);
             return new TextSet(functions.union_textset_text(this._inner, tmptxt._inner));
         }
-
         else if (other instanceof TextSet){
             return new TextSet(functions.union_set_set(this._inner,((TextSet) other)._inner));
         }
-
         else{
             return null;
-            //return super.minus(other);
         }
     }
 

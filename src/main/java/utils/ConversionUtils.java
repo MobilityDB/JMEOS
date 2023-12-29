@@ -67,7 +67,6 @@ public class ConversionUtils {
 	}
 
 	public static String interval_to_timedelta(Pointer p){
-		//TODO: parse the string and transform it in duration
 		return functions.pg_interval_out(p);
 	}
 

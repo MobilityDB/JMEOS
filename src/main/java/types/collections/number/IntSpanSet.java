@@ -5,6 +5,8 @@ import functions.functions;
 import jnr.ffi.Pointer;
 import types.collections.time.Period;
 
+import java.util.List;
+
 
 /**
  * Class for representing lists of disjoint intspans.
@@ -49,7 +51,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     }
 
     @Override
-    public Pointer createListInner(Period... periods){
+    public Pointer createListInner(List<Period> periods){
         return null;
     }
 

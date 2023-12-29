@@ -41,19 +41,13 @@ public class FunctionsGenerator {
 	 */
 	private final HashMap<String, String> equivalentTypes = buildEquivalentTypes();
 	
-	/**
-	 * //TODO
-	 */
+
 	private final HashMap<String, String> conversionTypes = buildConversionTypes();
 	
-	/**
-	 * // TODO
-	 */
+
 	private final HashMap<String, String> conversionTypedefs;
-	
-	/**
-	 * //TODO modify the process of unsupported types. The unsupported types need to inform the dev who generate the functions.java to know if every types are supported (in every process wanted)
-	 */
+
+
 	private final ArrayList<String> unsupportedEquivalentTypes = new ArrayList<>(); // List of unsupported types
 	private final ArrayList<String> unsupportedConversionTypedefs = new ArrayList<>(); // List of unsupported types
 	private final ArrayList<String> unsupportedConversionTypes = new ArrayList<>(); // List of unsupported types
@@ -330,8 +324,6 @@ public class FunctionsGenerator {
 				functionCallingProcess = returnProcess;
 			} else {
 				if (paramNames.contains("result")){
-					System.out.println(paramNames);
-					System.out.println(typesNamesList);
 					functionCallingProcess.add("boolean out;");
 					functionCallingProcess.add("Runtime runtime = Runtime.getSystemRuntime();");
 					int total = signature.split(Pattern.quote("Pointer"), -1).length -1;
@@ -402,8 +394,8 @@ public class FunctionsGenerator {
 				import jnr.ffi.Memory;
 				import jnr.ffi.Runtime;
 				import utils.JarLibraryLoader;
-				import utils.MeosCatalog.MeosEnums.meosType;
-				import utils.MeosCatalog.MeosEnums.meosOper;
+				import utils.meosCatalog.MeosEnums.meosType;
+				import utils.meosCatalog.MeosEnums.meosOper;
 								
 				import java.time.*;
 				""";
@@ -418,7 +410,6 @@ public class FunctionsGenerator {
 		BuilderUtils.readBuilderLines(functionsBuilder, line -> {
 			if (!line.isBlank()) {
 				String functionSignature = "public static " + BuilderUtils.removeSemicolon(line) + " {\n";
-				System.out.println(functionSignature);
 				/* Generate the conversion process */
 				var conversionProcess = this.generateConversionProcess(line);
 				var conversionProcessList = BuilderUtils.extractPairValues(conversionProcess);

@@ -2,6 +2,7 @@ package types.collections.base;
 
 import jnr.ffi.Pointer;
 import functions.functions;
+import org.locationtech.jts.io.ParseException;
 
 
 public abstract class Set<T extends Object> implements Collection, Base {
@@ -86,9 +87,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *
      * @return A {@link T} instance
      */
-    public T start_element(){
-        return null;
-    }
+    public abstract T start_element() throws ParseException;
 
 
     /**
@@ -96,9 +95,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *
      * @return A {@link T} instance
      */
-    public T end_element(){
-        return null;
-    }
+    public abstract T end_element() throws ParseException;
 
 
     /**

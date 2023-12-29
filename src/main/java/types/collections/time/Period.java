@@ -2,12 +2,16 @@ package types.collections.time;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.TemporalObject;
 import types.boxes.Box;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+
+import types.collections.base.Base;
 import types.collections.base.Span;
+import types.temporal.Temporal;
 import utils.ConversionUtils;
 
 import javax.naming.OperationNotSupportedException;
@@ -74,7 +78,6 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	public Period(Pointer _inner) {
 		super(_inner);
 		this._inner = _inner;
-		String str = functions.period_out(this._inner);
 	}
 	
 	/**
@@ -96,7 +99,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 */
 	public Period(String lower, String upper) {
-		super();
+		super(lower,upper,true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
 		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
@@ -113,7 +116,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upperInclusive - if the upper bound is inclusive
 	 */
 	public Period(String lower, String upper, boolean lowerInclusive, boolean upperInclusive) {
-		super();
+		super(lower,upper,lowerInclusive,upperInclusive);
 		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
 		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
 		this._inner = functions.period_make(lower_ts, upper_ts, lowerInclusive, upperInclusive);
@@ -127,7 +130,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 */
 	public Period(LocalDateTime lower, LocalDateTime upper) {
-		super();
+		super(lower.toString(),upper.toString(),true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
 		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
@@ -145,7 +148,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upperInclusive - if the upper bound is inclusive
 	 */
 	public Period(LocalDateTime lower, LocalDateTime upper, boolean lowerInclusive, boolean upperInclusive) {
-		super();
+		super(lower.toString(),upper.toString(),lowerInclusive,upperInclusive);
 		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
 		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
 		this._inner = functions.period_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
@@ -159,7 +162,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 */
 	public Period(String lower, LocalDateTime upper) {
-		super();
+		super(lower,upper.toString(),true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
 		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower,-1);
@@ -174,7 +177,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param upper          - a timestamp for the upper bound
 	 */
 	public Period(LocalDateTime lower, String upper){
-		super();
+		super(lower.toString(),upper,true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
 		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
@@ -204,9 +207,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 	@Override
 	public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
-		int new_upper = Integer.parseInt(upper);
-		int new_lower = Integer.parseInt(lower);
-		return functions.intspan_make(new_lower,new_upper,lower_inc,upper_inc);
+		return functions.period_make(functions.pg_timestamptz_in(lower,-1),functions.pg_timestamptz_in(upper,-1),lower_inc,upper_inc);
 	}
 	@Override
 	public Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
@@ -443,17 +444,16 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if adjacent, false otherwise
 	 */
-	public boolean is_adjacent(Time other) {
+	public boolean is_adjacent(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
 			case Period p -> returnValue = functions.adjacent_span_span(this._inner, p.get_inner());
 			case PeriodSet ps -> returnValue = functions.adjacent_spanset_span(ps.get_inner(), this._inner);
-			//case DateTime dt -> returnValue = functions.adjacent_periodset_timestamp(this._inner, ConversionUtils.datetimeToTimestampTz(dt.get_inner()));
+			//case Time dt -> returnValue = functions.adjacent_period_timestamp(this._inner, ConversionUtils.datetimeToTimestampTz(dt));
 			case TimestampSet ts -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_span(ts.get_inner()));
-			// case Temporal t -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.temporal_time(t.period().get_inner()));
-			//case Temporal t -> returnValue = functions.adjacent_spanset_span(this._inner, t.period().get_inner());
+			case Temporal t -> returnValue = functions.adjacent_span_span(this._inner,functions.temporal_to_period(t.getInner()));
 			case Box b -> returnValue = functions.adjacent_span_span(this._inner, b.to_period()._inner);
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_adjacent((Base) other);
 		}
 		return returnValue;
 	}
@@ -481,14 +481,14 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if contained, false otherwise
 	 */
-	public boolean is_contained_in(Time other) {
+	public boolean is_contained_in(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.contained_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.contained_span_spanset(this._inner,ps.get_inner());
-			//case Temporal t -> returnValue = functions.contained_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_contained_in(t.period());
 			case Box b -> returnValue = functions.contained_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_contained_in((Base) other);
 		}
 		return returnValue;
 	}
@@ -518,15 +518,15 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if contains, false otherwise
 	 */
-	public boolean contains(Time other) {
+	public boolean contains(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.contains_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.contains_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.contains_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.contains_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.contains(t.period());
 			case Box b -> returnValue = functions.contains_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.contains((Base) other);
 		}
 		return returnValue;
 	}
@@ -554,16 +554,17 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if overlaps, false otherwise
 	 */
-	public boolean overlaps(Time other) {
+	public boolean overlaps(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overlaps_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overlaps_spanset_span(ps.get_inner(),this._inner);
 			case TimestampSet ts -> returnValue = functions.overlaps_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.overlaps_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.overlaps(t.period());
 			case Box b -> returnValue = functions.overlaps_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.overlaps((Base) other);
 		}
+
 		return returnValue;
 	}
 
@@ -582,15 +583,15 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if equal, false otherwise
 	 */
-	public boolean is_same(Time other) {
+	public boolean is_same(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.span_eq(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.span_eq(this._inner,functions.spanset_span(ps.get_inner()));
 			case TimestampSet ts -> returnValue = functions.span_eq(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.span_eq(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_same(t.period());
 			case Box b -> returnValue = functions.span_eq(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_same((Base) other);
 		}
 		return returnValue;
 	}
@@ -625,15 +626,15 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
 	 */
-	public boolean is_before(Time other) {
+	public boolean is_before(Time other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.left_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.left_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.left_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.left_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_left(t.period());
 			case Box b -> returnValue = functions.left_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_left((Base) other);
 		}
 		return returnValue;
 	}
@@ -663,15 +664,15 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
 	 */
-	public boolean is_over_or_before(Time other) {
+	public boolean is_over_or_before(Time other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overleft_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overleft_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overleft_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.overleft_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_over_or_left(t.period());
 			case Box b -> returnValue = functions.overleft_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_over_or_left((Base) other);
 		}
 		return returnValue;
 	}
@@ -700,15 +701,15 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if after, false otherwise
 	 */
-	public boolean is_after(Time other) {
+	public boolean is_after(Time other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.right_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.right_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.right_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.right_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_right(t.period());
 			case Box b -> returnValue = functions.right_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_right((Base) other);
 		}
 		return returnValue;
 	}
@@ -740,21 +741,19 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if overlapping or after, false otherwise
 	 */
-	public boolean is_over_or_after(Time other) {
+	public boolean is_over_or_after(Time other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overright_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overright_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overright_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.overright_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
+			case Temporal t -> returnValue = this.is_over_or_right(t.period());
 			case Box b -> returnValue = functions.overright_span_span(this._inner,b.to_period().get_inner());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+			default -> returnValue = super.is_over_or_right((Base) other);
 		}
 		return returnValue;
 	}
 
-
-	//TODO: use Duration class from java.time instead
 
 	/*
 	  ------------------------ Distance Operations ------------------------
@@ -810,13 +809,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to intersect with
 	 * @return {@link Time} instance. The actual class depends on "other".
 	 */
-    public Time intersection(Time other) {
+    public Time intersection(TemporalObject other) throws Exception {
         Time returnValue = null;
         switch (other){
             case Period p -> returnValue = new Period(functions.intersection_span_span(this._inner,p.get_inner()));
             case PeriodSet ps -> returnValue = new PeriodSet(functions.intersection_spanset_span(ps.get_inner(), this._inner));
             case TimestampSet ts -> returnValue = new TimestampSet(functions.intersection_spanset_span(functions.set_to_spanset(ts.get_inner()),this._inner));
-            default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+            default -> returnValue = (Time) super.intersection((Base) other);
         }
         return returnValue;
     }
@@ -837,7 +836,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to intersect with
 	 * @return {@link Time} instance. The actual class depends on "other".
 	 */
-    public Time mul(Time other)  {
+    public Time mul(Time other) throws Exception {
         return this.intersection(other);
     }
 

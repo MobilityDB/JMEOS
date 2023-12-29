@@ -1078,8 +1078,7 @@ extern TBox *int_timestamp_to_tbox(int i, TimestampTz t);
 extern TBox *span_period_to_tbox(const Span *span, const Span *p);
 extern TBox *span_timestamp_to_tbox(const Span *span, TimestampTz t);
 extern STBox *stbox_copy(const STBox *box);
-extern STBox * stbox_make(bool hasx, bool hasz, bool geodetic, int32 srid,
-  double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, const Span *p);
+extern STBox *stbox_make(bool hasx, bool hasz, bool geodetic, int32 srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, const Span *p);
 extern TBox *tbox_copy(const TBox *box);
 extern TBox *tbox_make(const Span *s, const Span *p);
 

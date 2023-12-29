@@ -36,7 +36,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public Temporal(Pointer inner){
         this.inner = createInner(inner);
     }
-    // To delete !
+
     public Temporal(String customType, TemporalType temporalType) {
         //this.customType = customType;
         //this.temporalType = temporalType;
@@ -570,7 +570,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
-    public boolean is_adjacent(TemporalObject other) {
+    public boolean is_adjacent(TemporalObject other) throws Exception {
         return this.bounding_box().is_adjacent((Time) other);
     }
 
@@ -581,11 +581,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *   <p>
      *
      *         See Also:
-     *             {@link Period#is_adjacent(Time)}
+     *             {@link Period#is_adjacent(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
-    public boolean is_temporally_adjacent(TemporalObject other) {
+    public boolean is_temporally_adjacent(TemporalObject other) throws Exception {
         return this.period().is_adjacent((Time) other);
     }
 
@@ -597,11 +597,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(Time)}
+     *             {@link Period#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
-    public boolean is_contained_in(TemporalObject other) {
+    public boolean is_contained_in(TemporalObject other) throws Exception {
         return this.bounding_box().is_contained_in((Time) other);
     }
 
@@ -613,11 +613,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(Time)}
+     *             {@link Period#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
-    public boolean is_temporally_contained_in(TemporalObject other) {
+    public boolean is_temporally_contained_in(TemporalObject other) throws Exception {
         return this.period().is_contained_in((Time) other);
     }
 
@@ -630,11 +630,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#contains(Time)}
+     *             {@link Period#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
-    public boolean contains(TemporalObject other)  {
+    public boolean contains(TemporalObject other) throws Exception {
         return this.bounding_box().contains((Time) other);
     }
 
@@ -646,11 +646,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#contains(Time)}
+     *             {@link Period#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
-    public boolean temporally_contains(TemporalObject other)  {
+    public boolean temporally_contains(TemporalObject other) throws Exception {
         return this.period().contains((Time) other);
     }
 
@@ -663,11 +663,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(Time)}
+     *             {@link Period#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
-    public boolean overlaps(TemporalObject other)  {
+    public boolean overlaps(TemporalObject other) throws Exception {
         return this.bounding_box().overlaps((Time) other);
     }
 
@@ -679,11 +679,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(Time)}
+     *             {@link Period#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
-    public boolean temporally_overlaps(TemporalObject other) {
+    public boolean temporally_overlaps(TemporalObject other) throws Exception {
         return this.period().overlaps((Time) other);
     }
 
@@ -696,11 +696,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_same(Time)}
+     *             {@link Period#is_same(TemporalObject)}
      * @param other A time or temporal object to compare to `self`.
      * @return True if same, False otherwise.
      */
-    public boolean is_same(TemporalObject other)  {
+    public boolean is_same(TemporalObject other) throws Exception {
         return this.bounding_box().is_same((Time) other);
     }
 
@@ -718,7 +718,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is before "other", False otherwise.
      */
-    public boolean is_before(TemporalObject other) {
+    public boolean is_before(TemporalObject other) throws Exception {
         return this.period().is_before((Time)other);
     }
 
@@ -733,7 +733,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A time or temporal object to compare `self` to.
      * @return True if `self` is before `other` allowing overlap, False otherwise.
      */
-    public boolean is_over_or_before(TemporalObject other) {
+    public boolean is_over_or_before(TemporalObject other) throws Exception {
         return this.period().is_over_or_before((Time)other);
     }
 
@@ -747,7 +747,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other", False otherwise.
      */
-    public boolean is_after(TemporalObject other) {
+    public boolean is_after(TemporalObject other) throws Exception {
         return this.period().is_after((Time)other);
     }
 
@@ -763,7 +763,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other" allowing overlap, False otherwise.
      */
-    public boolean is_over_or_after(TemporalObject other) {
+    public boolean is_over_or_after(TemporalObject other) throws Exception {
         return this.period().is_over_or_after((Time)other);
     }
 
