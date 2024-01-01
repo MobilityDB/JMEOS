@@ -45,8 +45,6 @@ import javax.naming.OperationNotSupportedException;
  * @since 10/09/2023
  */
 public class STBox implements Box {
-	private Point pMin = null;
-	private Point pMax = null;
 	private OffsetDateTime tMin = null;
 	private OffsetDateTime tMax = null;
 	private boolean isGeodetic = false;
@@ -54,7 +52,6 @@ public class STBox implements Box {
 	private Pointer _inner = null;
 	private boolean tmin_inc = true;
 	private boolean tmax_inc = true;
-	private Runtime runtime = Runtime.getSystemRuntime();
 
 	public STBox _get_box(TemporalObject other){
 		return this._get_box(other,true,false);
@@ -723,6 +720,12 @@ public class STBox implements Box {
 	public STBox mul(STBox other) {
 		return this.intersection(other);
 	}
+
+
+
+
+	/* ------------------------- Positions Operators ------------------------------------- */
+
 
 
 	/**

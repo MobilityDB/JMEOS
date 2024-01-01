@@ -9,9 +9,6 @@ import types.collections.time.Period;
  */
 
 public interface Box extends TemporalObject{
-
-    boolean get_tmin_inc();
-    boolean get_tmax_inc();
     Period to_period();
 
 }

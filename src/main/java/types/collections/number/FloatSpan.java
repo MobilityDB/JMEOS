@@ -177,7 +177,7 @@ public class FloatSpan extends Span<Float> implements Number{
      *         MEOS Functions:
      *             <li>period_lower</li>
      *
-     * @return The lower bound of the span as a {@link float}
+     * @return The lower bound of the span as a {@link Float}
      */
     public Float lower(){
         return (float) functions.floatspan_lower(this._inner);
@@ -193,7 +193,7 @@ public class FloatSpan extends Span<Float> implements Number{
      *         MEOS Functions:
      *             <li>period_upper</li>
      *
-     * @return The lower bound of the span as a {@link float}
+     * @return The lower bound of the span as a {@link Float}
      */
     public Float upper(){
         return (float) functions.floatspan_upper(this._inner);

@@ -226,7 +226,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * 			MEOS Functions:
 	 * 		    <ul>
 	 *             <li>span_copy</li>
-	 *          </ul
+	 *          </ul>
 	 * </p>
 	 * @return Instance of Period class
 	 */

@@ -190,6 +190,7 @@
                     <additionalOptions>-Xdoclint:none</additionalOptions>
                     <show>private</show>
                     <nohelp>true</nohelp>
+                    <!-- Add output directory configuration here if needed -->
                 </configuration>
                 <executions>
                     <execution>
@@ -201,9 +202,12 @@
                     </execution>
                 </executions>
             </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
                     <source>21</source>
                     <target>21</target>
@@ -224,6 +228,8 @@
         </plugins>
     </build>
 
+
+
     <reporting>
         <plugins>
             <plugin>
@@ -231,12 +237,13 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.6.2</version>
                 <configuration>
-                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+                    <stylesheetfile>${project.basedir}/docs/stylesheet.css</stylesheetfile>
                     <show>public</show>
                 </configuration>
             </plugin>
         </plugins>
     </reporting>
+
 
 
 

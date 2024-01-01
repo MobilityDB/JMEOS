@@ -10,9 +10,7 @@ import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
 import types.collections.time.TimestampSet;
-
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 
 /**
@@ -38,36 +36,30 @@ import java.time.OffsetDateTime;
  *     floatrange (if it only has the numeric dimension).
  */
 public class TBox implements Box {
-	private double xmin = 0.0f;
-	private double xmax = 0.0f;
-	private OffsetDateTime tmin;
-	private OffsetDateTime tmax;
 	private boolean xmin_inc = true;
-	private boolean xmax_inc = true;
+	private boolean xmax_inc = false;
 	private boolean tmin_inc = true;
-	private boolean tmax_inc = true;
+	private boolean tmax_inc = false;
 	private Pointer _inner = null;
 	
 	
 	/** ------------------------- Constructors ---------------------------------- */
 	public TBox() {
-		super();
+
 	}
 	
 	
 	public TBox(Pointer inner)  {
-		this(inner, true, true, true, true);
+		this(inner, true, false, true, false);
 	}
-	
+
 	public TBox(Pointer inner, boolean xmin_inc, boolean xmax_inc, boolean tmax_inc, boolean
 			tmin_inc) {
-		super();
 		this._inner = inner;
 		this.xmin_inc = xmin_inc;
 		this.xmax_inc = xmax_inc;
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
-		String str = functions.tbox_out(this._inner,2);
 	}
 	
 	/**
@@ -78,45 +70,53 @@ public class TBox implements Box {
 	public TBox(String value){
 		this._inner = functions.tbox_in(value);
 	}
-	
+
+
 	/**
-	 * The constructor for only value dimension x
-	 *
-	 * @param xmin - minimum x value
-	 * @param xmax - maximum x value
+	 * Constructor with number parameters
+	 * @param xmin X minimal coordinates
+	 * @param xmax X maximal coordinates
 	 */
-	public TBox(Double xmin, Double xmax) {
-		super();
-		this.xmin = xmin;
-		this.xmax = xmax;
+	public TBox(Number xmin, Number xmax){
+		this(xmin,xmax,null,null,true,false,true,false);
 	}
-	
+
 	/**
-	 * The constructor for only time dimension
-	 *
-	 * @param tmin - minimum time dimension
-	 * @param tmax - maximum time dimension
+	 * Constructor with number and temporal parameters
+	 * @param xmin X minimal coordinates
+	 * @param xmax X maximal coordinates
+	 * @param tmin temporal minimal value
+	 * @param tmax temporal maximal value
 	 */
-	public TBox(OffsetDateTime tmin, OffsetDateTime tmax) {
-		super();
-		this.tmin = tmin;
-		this.tmax = tmax;
+	public TBox(Number xmin, Number xmax, LocalDateTime tmin, LocalDateTime tmax){
+		this(xmin,xmax,tmin,tmax,true,false,true,false);
 	}
-	
+
+
+
 	/**
-	 * The constructor for value dimension x and time dimension
-	 *
-	 * @param xmin - minimum x value
-	 * @param tmin - minimum time dimension
-	 * @param xmax - maximum x value
-	 * @param tmax - maximum time dimension
+	 * Constructor with number, temporal and inclusions parameters
+	 * @param xmin X minimal coordinates
+	 * @param xmax X maximal coordinates
+	 * @param tmin temporal minimal value
+	 * @param tmax temporal maximal value
+	 * @param xmin_inc x minimal inclusion
+	 * @param xmax_inc x maximal inclusion
+	 * @param tmin_inc temporal minimal inclusion
+	 * @param tmax_inc temporal maxmimal inclusion
 	 */
-	public TBox(Double xmin, OffsetDateTime tmin, Double xmax, OffsetDateTime tmax) {
-		super();
-		this.xmin = xmin;
-		this.xmax = xmax;
-		this.tmin = tmin;
-		this.tmax = tmax;
+	public TBox(Number xmin, Number xmax, LocalDateTime tmin, LocalDateTime tmax, boolean xmin_inc, boolean xmax_inc, boolean tmin_inc, boolean tmax_inc){
+		Period p = null;
+		Span span = null;
+		if(xmin instanceof Integer && xmax instanceof Integer){
+			 span = new IntSpan(xmin.intValue(),xmax.intValue(),xmin_inc,xmax_inc);
+		} else if (xmin instanceof Float && xmax instanceof Float) {
+			 span = new FloatSpan(xmin.floatValue(),xmax.floatValue(),xmin_inc,xmax_inc);
+		}
+		if(tmin != null && tmax != null){
+			p = new Period(tmin,tmax,tmin_inc,tmax_inc);
+		}
+		this._inner = functions.tbox_make(span.get_inner(),p.get_inner());
 	}
 
 
@@ -973,22 +973,6 @@ public class TBox implements Box {
 		}
 	}
 
-	
-	public double getXmin() {
-		return xmin;
-	}
-	
-	public double getXmax() {
-		return xmax;
-	}
-	
-	public OffsetDateTime getTmin() {
-		return tmin;
-	}
-	
-	public OffsetDateTime getTmax() {
-		return tmax;
-	}
 
 	public boolean get_tmin_inc(){
 		return tmin_inc;
