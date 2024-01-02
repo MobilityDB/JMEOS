@@ -323,7 +323,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TFloatSeqSet} indicating the temporal angular_difference of the temporal point.
 	 */
 	default TFloatSeqSet angular_difference(){
-		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_angular_difference(getPointInner()),"Float",getTemporalType());
+		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_angular_difference(getPointInner()),"Float", TemporalType.TEMPORAL_SEQUENCE_SET);
 	}
 
 

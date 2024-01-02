@@ -64,13 +64,13 @@ public interface TGeogPoint extends TPoint {
 	 * @param interp  The interpolation method.
 	 * @return A new {@link TGeogPoint} object.
 	 */
-	default TGeogPoint from_base_time(Geometry value, Time base, TInterpolation interp){
+	static TGeogPoint from_base_time(Geometry value, Time base, TInterpolation interp){
 		if (base instanceof Period){
 			return new TGeogPointSeq(functions.tpointseq_from_base_period(ConversionUtils.geography_to_gserialized(value), ((Period) base).get_inner(), interp.getValue()));
 		} else if (base instanceof PeriodSet) {
-			return new TGeogPointSeqSet(functions.tpointseqset_from_base_periodset(ConversionUtils.geography_to_gserialized(value), ((Period) base).get_inner(), interp.getValue()));
+			return new TGeogPointSeqSet(functions.tpointseqset_from_base_periodset(ConversionUtils.geography_to_gserialized(value), ((PeriodSet) base).get_inner(), interp.getValue()));
 		} else if (base instanceof TimestampSet) {
-			return new TGeogPointSeq(functions.tpointseq_from_base_timestampset(ConversionUtils.geography_to_gserialized(value), ((Period) base).get_inner()));
+			return new TGeogPointSeq(functions.tpointseq_from_base_timestampset(ConversionUtils.geography_to_gserialized(value), ((TimestampSet) base).get_inner()));
 		}
 		else{
 			throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
@@ -93,7 +93,7 @@ public interface TGeogPoint extends TPoint {
 	 * @return A new {@link TGeomPoint} object.
 	 */
 	default TGeomPoint to_geometric(){
-		return (TGeomPoint) Factory.create_temporal(functions.tgeogpoint_to_tgeompoint(getPointInner()),getCustomType(),getTemporalType());
+		return (TGeomPoint) Factory.create_temporal(functions.tgeogpoint_to_tgeompoint(getPointInner()),"Geom",getTemporalType());
 
 	}
 

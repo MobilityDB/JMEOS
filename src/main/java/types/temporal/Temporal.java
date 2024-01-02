@@ -94,6 +94,39 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     /* ------------------------- Output ---------------------------------------- */
 
 
+    /**
+     * Returns the temporal object as a MF-JSON string.
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>temporal_as_mfjson</li>
+     *
+     * @param with_bbox Whether to include the bounding box in the output.
+     * @param flags The flags to use for the output.
+     * @param precision The precision to use for the output.
+     * @param srs The SRS to use for the output.
+     * @return The temporal object as a MF-JSON string.
+     */
+    public String as_mfjson(boolean with_bbox, int flags, int precision, String srs){
+        return functions.temporal_as_mfjson(this.inner,with_bbox,flags,precision,srs);
+    }
+
+
+    /**
+     * Returns the temporal object as a MF-JSON string.
+     *
+     * <p>
+     *
+     *         MEOS Functions:
+     *             <li>temporal_as_mfjson</li>
+     *
+     * @return The temporal object as a MF-JSON string.
+     */
+    public String as_mfjson(){
+        return this.as_mfjson(true,3,6,null);
+    }
+
 
 
     /** ------------------------- Accessors ---------------------------------------- */

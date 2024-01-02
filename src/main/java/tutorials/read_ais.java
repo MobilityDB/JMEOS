@@ -2,6 +2,10 @@ package tutorials;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.basic.tpoint.tgeog.TGeogPointInst;
+import types.collections.time.Period;
+import types.collections.time.TimestampSet;
+import utils.ConversionUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -30,14 +34,13 @@ public class read_ais {
 		} catch (IOException e) {
 			System.out.println("Error opening file");
 		}
-		
 		AIS_record rec = new AIS_record();
 		int no_records = 0;
 		int no_nulls = 0;
 		char[] header_buffer = new char[MAX_LENGTH_HEADER];
 		char[] point_buffer = new char[MAX_LENGTH_POINT];
 		char[] timestamp_buffer = new char[MAX_LENGTH_TIMESTAMP];
-		
+		System.out.println("Here");
 		
 		try (Scanner scanner = new Scanner(new File(file_path))) {
 			header_buffer = scanner.next().toCharArray();
@@ -50,8 +53,7 @@ public class read_ais {
 			String line;
 			line = scanner.nextLine();
 			do {
-				
-				
+
 				line = scanner.nextLine();
 				String[] tokens = line.split(",");
 				rec.MMSI = Integer.parseInt(tokens[1]);
@@ -59,7 +61,10 @@ public class read_ais {
 				rec.Longitude = Double.parseDouble(tokens[3].trim());
 				rec.SOG = Float.parseFloat(tokens[4].trim());
 				String temp = tokens[0];
-				rec.T = functions.pg_timestamp_in(tokens[0].trim(), -1);
+				String new_temp = "{" + temp + "+00" + "}";
+				TimestampSet per = new TimestampSet(new_temp);
+				rec.T = ConversionUtils.string_to_LocalDateTime(temp);
+				//rec.T = functions.pg_timestamp_in(tokens[0].trim(), -1);
 				
 				if (tokens.length == 5) {
 					no_records++;
@@ -69,17 +74,17 @@ public class read_ais {
 					no_nulls++;
 				}
 				if (no_records % 1000 == 0) {
-					
-					String t_out = functions.pg_timestamp_out(rec.T);
+					String t_out = per.toString();
 					String str_pointbuffer;
-					str_pointbuffer = String.format("SRID=4326;Point(%f %f)@%s+00", rec.Longitude, rec.Latitude, t_out);
+					str_pointbuffer = String.format("POINT(%f %f)@%s", rec.Longitude, rec.Latitude, t_out);
 					str_pointbuffer = str_pointbuffer.replaceAll(",", ".");
-					
-					Pointer inst1 = functions.tgeogpoint_in(str_pointbuffer);
-					String inst1_out = functions.tpoint_as_text(inst1, 2);
-					
+					str_pointbuffer = str_pointbuffer.replaceAll("\\{", "");
+					str_pointbuffer = str_pointbuffer.replaceAll("\\}", "");
+					System.out.println(str_pointbuffer);
+					TGeogPointInst inst1 = new TGeogPointInst(str_pointbuffer);
+					String inst1_out = inst1.to_string();
 					float rec_tmp = (float) rec.SOG;
-					Pointer inst2 = functions.tfloatinst_make(rec_tmp, rec.T.atOffset(ZoneOffset.UTC));
+					Pointer inst2 = functions.tfloatinst_make(rec_tmp, ConversionUtils.datetimeToTimestampTz(rec.T));
 					String inst2_out = functions.tfloat_out(inst2, 2);
 					
 					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);

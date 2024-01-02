@@ -660,6 +660,56 @@ public interface TFloat extends TNumber {
 
 
 
+	/* ------------------------- Transformations ---------------------------------- */
+
+
+	/**
+	 * Returns a copy of "this" converted from radians to degrees.
+	 *
+	 *  <p>
+	 *         MEOS Functions:
+	 *             <li>tfloat_degrees</li>
+	 * @param normalize normalize: If True, the result will be normalized to the range [0, 360).
+	 * @return A {@link TFloat} instance.
+	 */
+	default Temporal to_degrees(boolean normalize){
+		return Factory.create_temporal(functions.tfloat_degrees(getNumberInner(),normalize), getCustomType(),getTemporalType());
+
+	}
+
+
+	/**
+	 * Returns a copy of this converted from degrees to radians.
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tfloat_radians</li>
+	 * @return A new {@link TFloat} instance.
+	 */
+	default Temporal to_radians(){
+		return Factory.create_temporal(functions.tfloat_radians(getNumberInner()), getCustomType(),getTemporalType());
+
+	}
+
+
+	/**
+	 * Returns "this" rounded to the given number of decimal digits.
+	 *
+	 *  <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>tfloat_round</li>
+	 * @param max_decimals Maximum number of decimal digits.
+	 * @return A new {@link TFloat} instance.
+	 */
+	default Temporal round(int max_decimals){
+		return Factory.create_temporal(functions.tfloat_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());
+
+	}
+
+
+
+
 
 
 

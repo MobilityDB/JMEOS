@@ -46,7 +46,6 @@ public class ConversionUtils {
 	 *
 	 * @param ts offsetDateTime
 	 * @return localDateTime
-	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
 	 */
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
@@ -178,6 +177,13 @@ public class ConversionUtils {
 		}
 
 		return wkbStringBuilder.toString();
+	}
+
+
+	public static LocalDateTime string_to_LocalDateTime(String value){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
+		return dateTime;
 	}
 
 

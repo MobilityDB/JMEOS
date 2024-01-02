@@ -58,6 +58,7 @@ public final class Factory{
             case "Geog" -> instant = new TGeogPointInst(inner);
             case "String" -> instant = new TTextInst(inner);
         }
+        System.out.println(instant.toString());
         return instant;
     }
 
