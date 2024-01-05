@@ -22,7 +22,7 @@ import jnr.ffi.Pointer;
  *         >>> IntSpan(lower='2', upper='5', upper_inc=True)
  */
 public class IntSpan extends Span<Integer> implements Number{
-    private Pointer _inner;
+    private final Pointer _inner;
 
     /** ------------------------- Constructor ---------------------------------------- */
 

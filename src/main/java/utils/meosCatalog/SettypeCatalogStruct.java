@@ -2,8 +2,8 @@ package utils.meosCatalog;
 import utils.meosCatalog.MeosEnums.meosType;
 
 public class SettypeCatalogStruct {
-    private meosType settype;
-    private meosType basetype;
+    private final meosType settype;
+    private final meosType basetype;
 
     public SettypeCatalogStruct(meosType settype, meosType basetype) {
         this.settype = settype;

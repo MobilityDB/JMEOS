@@ -11,8 +11,8 @@ import types.temporal.TemporalType;
  */
 public class TIntSeq extends TSequence<Integer> implements TInt {
 	private Pointer inner;
-	private String customType = "Integer";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+	private final String customType = "Integer";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
 	public TIntSeq(){

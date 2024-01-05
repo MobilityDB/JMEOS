@@ -104,7 +104,7 @@ public class FunctionsGenerator {
 		StringBuilder interfaceBuilder = generator.generateInterface(functionsInterfaceBuilder);
 		StringBuilder classBuilder = generator.generateClass(functionsClassBuilder, interfaceBuilder);
 		BuilderUtils.writeFileFromBuilder(classBuilder, generator.functionsFilePath.toString());
-		String tmp_functionsFilePath = Paths.get("").toAbsolutePath().toString() + "/src/main/java/functions/functions.java";
+		String tmp_functionsFilePath = Paths.get("").toAbsolutePath() + "/src/main/java/functions/functions.java";
 		BuilderUtils.writeFileFromBuilder(classBuilder, tmp_functionsFilePath);
 	}
 	
@@ -128,7 +128,7 @@ public class FunctionsGenerator {
 			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
 			
 			/* Changing special types or names */
-			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void)) //FIXME utiliser les Optional pour les param optionel look pymeos
+			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void)) //
 			line = line.replaceAll("synchronized", "synchronize"); // Change the keyword used by Java (for the function temporal_simplify(const Temporal *temp, double eps_dist, bool synchronized))
 		}
 		

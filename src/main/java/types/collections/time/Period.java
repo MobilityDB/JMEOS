@@ -36,7 +36,6 @@ import javax.naming.OperationNotSupportedException;
  * @author Nidhal Mareghni
  * @since 07/09/2023
  *
- * TODO: Add datetime in constructor, Modify the timestampTZ
  */
 public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	private static final String LOWER_INCLUSIVE = "[";
@@ -49,9 +48,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	private boolean upperInclusive = false;
 	private Pointer _inner;
 
-	/*
-	  ------------------------ Constructors ------------------------
-	 */
+	/*------------------------ Constructors ------------------------*/
 
 
 	/**
@@ -253,9 +250,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/*
-	  ------------------------ Output ------------------------
-	 */
+	/*------------------------ Output ------------------------*/
 
 
 	/**
@@ -274,9 +269,22 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/*
-	  ------------------------ Conversions ------------------------
+	/*------------------------ Conversions ------------------------*/
+
+
+	/**
+	 * Returns a period set containing "this" object.
+	 *	<p>
+	 *		MEOS Functions:
+	 *			<ul>
+	 *             <li>span_to_spanset</li>
+	 *          </ul>
+	 *  </p>
+	 * @return PeriodSet instance
 	 */
+	public PeriodSet to_spanset(){
+		return new PeriodSet(functions.span_to_spanset(functions.span_to_spanset(this._inner)));
+	}
 
 
 	/**
@@ -295,9 +303,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 
 
 
-	/**
-	 * ------------------------ Accessors ------------------------
-	 */
+	/*------------------------ Accessors ------------------------*/
 
 	@Override
 	public Pointer get_inner(){
@@ -332,21 +338,32 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 		return functions.span_upper_inc(this._inner);
 	}
 
+
+	/**
+	 * Returns the lower bound of a period
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>period_lower</li>
+	 * @return The lower bound of the period as a {@link LocalDateTime}
+	 */
 	public LocalDateTime lower() {
 		return ConversionUtils.timestamptz_to_datetime(functions.period_lower(this._inner));
 	}
 
+
+	/**
+	 * Returns the upper bound of a period
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>period_upper</li>
+	 * @return The upper bound of the period as a {@link LocalDateTime}
+	 */
 	public LocalDateTime upper() {
 		return ConversionUtils.timestamptz_to_datetime(functions.period_upper(this._inner));
 	}
 
-	public boolean isLowerInclusive() {
-		return lowerInclusive;
-	}
-
-	public boolean isUpperInclusive() {
-		return upperInclusive;
-	}
 
 	/**
 	 *  Returns the duration of the period.
@@ -357,7 +374,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @return timedelta instance representing the duration of the period
 	 */
 	public Duration duration(){
-		return Duration.between(lower,upper);
+		return ConversionUtils.interval_to_timedelta(functions.period_duration(this._inner));
 	}
 
 
@@ -386,9 +403,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/*
-	  ------------------------ Transformations ------------------------
-	 */
+	/*------------------------ Transformations ------------------------*/
 
 
 	/**
@@ -414,9 +429,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/*
-	  ------------------------ Topological Operations ------------------------
-	 */
+	/*------------------------ Topological Operations ------------------------*/
 
 
 	/**
@@ -486,7 +499,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 		switch (other){
 			case Period p -> returnValue = functions.contained_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.contained_span_spanset(this._inner,ps.get_inner());
-			case Temporal t -> returnValue = this.is_contained_in(t.period());
+			case Temporal t -> returnValue = this.is_contained_in((TemporalObject)t.period());
 			case Box b -> returnValue = functions.contained_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_contained_in((Base) other);
 		}
@@ -524,7 +537,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 			case Period p -> returnValue = functions.contains_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.contains_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.contains_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.contains(t.period());
+			case Temporal t -> returnValue = contains((TemporalObject) t.period());
 			case Box b -> returnValue = functions.contains_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.contains((Base) other);
 		}
@@ -560,7 +573,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 			case Period p -> returnValue = functions.overlaps_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overlaps_spanset_span(ps.get_inner(),this._inner);
 			case TimestampSet ts -> returnValue = functions.overlaps_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.overlaps(t.period());
+			case Temporal t -> returnValue = this.overlaps((TemporalObject)t.period());
 			case Box b -> returnValue = functions.overlaps_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.overlaps((Base) other);
 		}
@@ -589,7 +602,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 			case Period p -> returnValue = functions.span_eq(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.span_eq(this._inner,functions.spanset_span(ps.get_inner()));
 			case TimestampSet ts -> returnValue = functions.span_eq(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.is_same(t.period());
+			case Temporal t -> returnValue = this.is_same((TemporalObject)t.period());
 			case Box b -> returnValue = functions.span_eq(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_same((Base) other);
 		}
@@ -598,9 +611,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 
 
 
-	/*
-	  ------------------------ Position Operations ------------------------
-	 */
+	/*------------------------ Position Operations ------------------------*/
 
 	/**
 	 * Returns whether "this" is strictly before "other". That is, "this" ends before "other" starts.
@@ -626,13 +637,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
 	 */
-	public boolean is_before(Time other) throws Exception {
+	public boolean is_before(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.left_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.left_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.left_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.is_left(t.period());
+			case Temporal t -> returnValue = is_before(t.period());
 			case Box b -> returnValue = functions.left_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_left((Base) other);
 		}
@@ -664,13 +675,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if before, false otherwise
 	 */
-	public boolean is_over_or_before(Time other) throws Exception {
+	public boolean is_over_or_before(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overleft_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overleft_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overleft_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.is_over_or_left(t.period());
+			case Temporal t -> returnValue = is_over_or_before(t.period());
 			case Box b -> returnValue = functions.overleft_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_over_or_left((Base) other);
 		}
@@ -701,13 +712,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if after, false otherwise
 	 */
-	public boolean is_after(Time other) throws Exception {
+	public boolean is_after(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.right_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.right_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.right_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.is_right(t.period());
+			case Temporal t -> returnValue = is_after(t.period());
 			case Box b -> returnValue = functions.right_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_right((Base) other);
 		}
@@ -741,13 +752,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return true if overlapping or after, false otherwise
 	 */
-	public boolean is_over_or_after(Time other) throws Exception {
+	public boolean is_over_or_after(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.overright_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.overright_span_spanset(this._inner,ps.get_inner());
 			case TimestampSet ts -> returnValue = functions.overright_span_span(this._inner,functions.set_span(ts.get_inner()));
-			case Temporal t -> returnValue = this.is_over_or_right(t.period());
+			case Temporal t -> returnValue = is_over_or_after(t.period());
 			case Box b -> returnValue = functions.overright_span_span(this._inner,b.to_period().get_inner());
 			default -> returnValue = super.is_over_or_right((Base) other);
 		}
@@ -755,9 +766,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	}
 
 
-	/*
-	  ------------------------ Distance Operations ------------------------
-	 */
+	/*------------------------ Distance Operations ------------------------*/
 
 
 	/**
@@ -782,16 +791,13 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 			case Period p -> returnValue = functions.distance_span_span(this._inner,p.get_inner());
 			case PeriodSet ps -> returnValue = functions.distance_spanset_span(ps.get_inner(),this._inner);
 			case TimestampSet ts -> returnValue = functions.distance_span_span(this._inner,functions.set_span(ts.get_inner()));
-			//case Temporal t -> returnValue = functions.distance_span_span(this._inner,functions.temporal_to_period(t.get_inner()));
-			//case TBox b -> returnValue = functions.distance_span_span(this._inner,b.to_period().get_inner());
+			case Box b -> returnValue = this.distance((Time) b.to_period());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
 	}
 
-	/*
-	  ------------------------ Set Operations ------------------------
-	 */
+	/*------------------------ Set Operations ------------------------*/
 
 	/**
 	 * Returns the temporal intersection of "this" and "other".
@@ -931,9 +937,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 		return this.union(other);
 	}
 
-	/*
-	  ------------------------ Comparisons ------------------------
-	 */
+	/*------------------------ Comparisons ------------------------*/
 
 
 	/**
@@ -950,7 +954,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 */
 	public boolean eq(Time other) {
 		boolean result;
-		result = other instanceof Period ? functions.span_eq(this._inner,((Period) other).get_inner()) : false;
+		result = other instanceof Period && functions.span_eq(this._inner, ((Period) other).get_inner());
 		return result;
 	}
 
@@ -966,7 +970,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 */
 	public boolean notEquals(Time other) {
 		boolean result;
-		result = other instanceof Period ? functions.span_ne(this._inner,((Period) other).get_inner()) : true;
+		result = !(other instanceof Period) || functions.span_ne(this._inner, ((Period) other).get_inner());
 		return result;
 	}
 

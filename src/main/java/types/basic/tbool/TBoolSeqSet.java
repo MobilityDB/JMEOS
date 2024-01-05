@@ -8,8 +8,8 @@ import types.temporal.TemporalType;
 
 public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 	private Pointer inner;
-	private String customType = "Boolean";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "Boolean";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 
 	public TBoolSeqSet(){}

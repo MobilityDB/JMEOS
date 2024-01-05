@@ -149,10 +149,10 @@ public class TBox implements Box {
 
 	public static TBox from_value_number(Number value)  {
 		TBox tbox = null;
-		if(Integer.class.isInstance(value)){
+		if(value instanceof Integer){
 			tbox = new TBox(functions.int_to_tbox((int)value));
 		}
-		else if (Float.class.isInstance(value)){
+		else if (value instanceof Float){
 			tbox = new TBox(functions.float_to_tbox((float)value));
 		}
 		return tbox;
@@ -384,7 +384,7 @@ public class TBox implements Box {
 			result = functions.tbox_copy(this._inner);
 			functions.tbox_expand(((TBox) obj).get_inner(),result);
 		}
-		else if(Integer.class.isInstance(obj) || Float.class.isInstance(obj)){
+		else if(obj instanceof Integer || obj instanceof Float){
 			result = functions.tbox_expand_value(this._inner,(float)obj);
 		}
 		return new TBox(result);
@@ -861,7 +861,7 @@ public class TBox implements Box {
 	 */
 	public boolean eq(Box other) {
 		boolean result;
-		result = other instanceof TBox ? functions.tbox_eq(this._inner,((TBox) other).get_inner()) : false;
+		result = other instanceof TBox && functions.tbox_eq(this._inner, ((TBox) other).get_inner());
 		return result;
 	}
 
@@ -878,7 +878,7 @@ public class TBox implements Box {
 	 */
 	public boolean notEquals(Box other) {
 		boolean result;
-		result = other instanceof TBox ? functions.stbox_ne(this._inner,((TBox) other).get_inner()) : true;
+		result = !(other instanceof TBox) || functions.stbox_ne(this._inner, ((TBox) other).get_inner());
 		return result;
 	}
 

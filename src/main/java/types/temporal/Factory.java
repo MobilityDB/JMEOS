@@ -28,6 +28,7 @@ public final class Factory{
     }
 
     public static Temporal create_temporal(Pointer inner, String customType, TemporalType temporalType){
+
         Temporal tmp = null;
         if(inner == null){
             tmp = null;
@@ -58,7 +59,6 @@ public final class Factory{
             case "Geog" -> instant = new TGeogPointInst(inner);
             case "String" -> instant = new TTextInst(inner);
         }
-        System.out.println(instant.toString());
         return instant;
     }
 

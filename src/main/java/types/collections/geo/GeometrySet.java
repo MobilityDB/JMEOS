@@ -5,7 +5,7 @@ import functions.functions;
 
 public class GeometrySet extends GeoSet{
     private Pointer _inner;
-    private String type="Geom";
+    private final String type="Geom";
 
     public GeometrySet(){
     }

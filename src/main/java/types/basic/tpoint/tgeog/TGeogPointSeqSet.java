@@ -8,8 +8,8 @@ import types.temporal.TemporalType;
 public class TGeogPointSeqSet extends TPointSeqSet implements TGeogPoint {
 
 	private Pointer inner;
-	private String customType = "Geog";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "Geog";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 
 	public TGeogPointSeqSet(){}

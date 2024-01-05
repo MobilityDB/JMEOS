@@ -3,8 +3,6 @@ package types.temporal;
 import jnr.ffi.Pointer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class TSequence<V extends Serializable> extends Temporal<V> {
 	protected boolean stepwise;

@@ -8,8 +8,8 @@ import types.temporal.TemporalType;
 public class TGeomPointSeqSet extends TPointSeqSet implements TGeomPoint{
 
 	private Pointer inner;
-	private String customType = "Geom";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "Geom";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 	public TGeomPointSeqSet(){}
 

@@ -10,7 +10,8 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
 
     /** ------------------------- Constructors ---------------------------------- */
-    public Set(){};
+    public Set(){}
+
     public Set(Pointer inner){
         this._inner = createInner(inner);
     }
@@ -105,7 +106,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public T element_n(int n) throws Exception {
         if (n < 0 || n >= this.num_elements()){
-            throw new Exception("Index: " + Integer.toString(n)+ "out of bounds");
+            throw new Exception("Index: " + n + "out of bounds");
         }
         else {
             return null;

@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	private Pointer inner;
-	private String customType = "Geog";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "Geog";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 
 	public TGeogPointInst(){}

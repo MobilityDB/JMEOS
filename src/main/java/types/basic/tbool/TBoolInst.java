@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TBoolInst extends TInstant<Boolean> implements TBool {
 	private Pointer inner;
-	private String customType = "Boolean";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "Boolean";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 
 	public TBoolInst(){}

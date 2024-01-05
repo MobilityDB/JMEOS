@@ -63,13 +63,13 @@ public interface TGeomPoint extends TPoint {
 	 * @param interp  The interpolation method.
 	 * @return A new {@link TGeogPoint} object.
 	 */
-	default TGeomPoint from_base_time(Geometry value, Time base, TInterpolation interp){
+	static TGeomPoint from_base_time(Geometry value, Time base, TInterpolation interp){
 		if (base instanceof Period){
 			return new TGeomPointSeq(functions.tpointseq_from_base_period(ConversionUtils.geometry_to_gserialized(value), ((Period) base).get_inner(), interp.getValue()));
 		} else if (base instanceof PeriodSet) {
-			return new TGeomPointSeqSet(functions.tpointseqset_from_base_periodset(ConversionUtils.geometry_to_gserialized(value), ((Period) base).get_inner(), interp.getValue()));
+			return new TGeomPointSeqSet(functions.tpointseqset_from_base_periodset(ConversionUtils.geometry_to_gserialized(value), ((PeriodSet) base).get_inner(), interp.getValue()));
 		} else if (base instanceof TimestampSet) {
-			return new TGeomPointSeq(functions.tpointseq_from_base_timestampset(ConversionUtils.geometry_to_gserialized(value), ((Period) base).get_inner()));
+			return new TGeomPointSeq(functions.tpointseq_from_base_timestampset(ConversionUtils.geometry_to_gserialized(value), ((TimestampSet) base).get_inner()));
 		}
 		else{
 			throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());

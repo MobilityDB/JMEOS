@@ -532,6 +532,91 @@ public class TGeogPointTest {
     }
 
 
+    private static Stream<Arguments> to_instant() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), new TGeogPointInst("Point(1 1)@2019-09-01")),
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01}"), new TGeogPointInst("Point(1 1)@2019-09-01")),
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01]"), new TGeogPointInst("Point(1 1)@2019-09-01")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01]}"), new TGeogPointInst("Point(1 1)@2019-09-01"))
+        );
+    }
+
+
+
+    private static Stream<Arguments> to_sequence() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeq("[Point(1 1)@2019-09-01]")),
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}")),
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), TInterpolation.LINEAR, new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR, new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"))
+        );
+    }
+
+
+    private static Stream<Arguments> to_sequenceset() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01]}")),
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
+        );
+    }
+
+
+
+    private static Stream<Arguments> set_interp() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01}")),
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"),"TGeogPointSeq", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}")),
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01]"),"TGeogPointSeq", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01}")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01],[Point(2 2)@2019-09-03]}"), "TGeogPointSeqSet", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01,Point(2 2)@2019-09-03}"))
+        );
+    }
+
+
+    private static Stream<Arguments> round() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointInst("Point(1.123456789 1.123456789)@2019-09-01"), "TGeogPointInst", new TGeogPointInst("Point(1.12 1.12)@2019-09-01")),
+                Arguments.of(new TGeogPointSeq("{Point(1.123456789 1.123456789)@2019-09-01, Point(2.123456789 2.123456789)@2019-09-02}"),"TGeogPointSeq", new TGeogPointSeq("{Point(1.12 1.12)@2019-09-01,Point(2.12 2.12)@2019-09-02}")),
+                Arguments.of(new TGeogPointSeq("[Point(1.123456789 1.123456789)@2019-09-01, Point(2.123456789 2.123456789)@2019-09-02]"),"TGeogPointSeq", new TGeogPointSeq("[Point(1.12 1.12)@2019-09-01,Point(2.12 2.12)@2019-09-02]")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1.123456789 1.123456789)@2019-09-01, Point(2.123456789 2.123456789)@2019-09-02], [Point(1.123456789 1.123456789)@2019-09-03, Point(1.123456789 1.123456789)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("{[Point(1.12 1.12)@2019-09-01,Point(2.12 2.12)@2019-09-02], [Point(1.12 1.12)@2019-09-03,Point(1.12 1.12)@2019-09-05]}"))
+        );
+    }
+
+
+    private static Stream<Arguments> insert() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq",new TGeogPointSeq("{Point(1 1)@2019-09-03}"), new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02, Point(1 1)@2019-09-03}")  ),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05],[Point(1 1)@2019-09-06]}"))
+        );
+    }
+
+
+
+    private static Stream<Arguments> append_sequence() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"),"TGeogPointSeq", new TGeogPointSeq("[Point(1 1)@2019-09-03]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03]}")),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05],[Point(1 1)@2019-09-06]}"))
+        );
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -673,8 +758,6 @@ public class TGeogPointTest {
     @MethodSource("asmfjson")
     void testAsmfjson(Temporal source, String type, String expected) {
         functions.meos_initialize("UTC");
-        System.out.println(source.as_mfjson());
-        System.out.println(expected);
         assertEquals(source.as_mfjson(), expected);
     }
 
@@ -900,9 +983,106 @@ public class TGeogPointTest {
     }
 
 
+    @ParameterizedTest(name="Test to instant method")
+    @MethodSource("to_instant")
+    void testToInstant(Temporal source, TGeogPointInst tgeog) throws ParseException {
+        functions.meos_initialize("UTC");
+        TGeogPointInst tmp = (TGeogPointInst) source.to_instant();
+        assertTrue(tmp instanceof TGeogPointInst);
+        assertEquals(tmp.to_string(),tgeog.to_string());
+    }
+
+
+    @ParameterizedTest(name="Test to sequence method")
+    @MethodSource("to_sequence")
+    void testToSequence(Temporal source, TInterpolation interpolation, TGeogPointSeq tgeog) throws ParseException {
+        functions.meos_initialize("UTC");
+        TGeogPointSeq tmp = (TGeogPointSeq) source.to_sequence(interpolation);
+        assertTrue(tmp instanceof TGeogPointSeq);
+        assertEquals(tmp.to_string(),tgeog.to_string());
+    }
+
+
+    @ParameterizedTest(name="Test to sequenceset method")
+    @MethodSource("to_sequenceset")
+    void testToSequenceSet(Temporal source, TInterpolation interpolation, TGeogPointSeqSet tgeog) throws ParseException {
+        functions.meos_initialize("UTC");
+        TGeogPointSeqSet tmp = (TGeogPointSeqSet) source.to_sequenceset(interpolation);
+        assertTrue(tmp instanceof TGeogPointSeqSet);
+        assertEquals(tmp.to_string(),tgeog.to_string());
+    }
+
+
+    @ParameterizedTest(name="Test set interpolation method")
+    @MethodSource("set_interp")
+    void testSetInterp(Temporal source, String type, TInterpolation interpolation, TGeogPointSeq tgeog) throws ParseException {
+        functions.meos_initialize("UTC");
+        if (type == "TGeogPointInst"){
+            TGeogPointInst tmp = (TGeogPointInst) source.set_interpolation(interpolation);
+            assertTrue(tmp instanceof TGeogPointInst);
+            assertEquals(tmp.to_string(),tgeog.to_string());
+        } else if (type == "TGeogPointSeq") {
+            TGeogPointSeq tmp = (TGeogPointSeq) source.set_interpolation(interpolation);
+            assertTrue(tmp instanceof TGeogPointSeq);
+            assertEquals(tmp.to_string(),tgeog.to_string());
+        } else if (type == "TGeogPointSeqSet"){
+            TGeogPointSeqSet tmp = (TGeogPointSeqSet) source.set_interpolation(interpolation);
+            assertTrue(tmp instanceof TGeogPointSeqSet);
+            assertEquals(tmp.to_string(),tgeog.to_string());
+        }
+
+    }
 
 
 
+    @ParameterizedTest(name="Test round method")
+    @MethodSource("round")
+    void testRound(TPoint source, String type, TPoint tgeog) throws ParseException {
+        functions.meos_initialize("UTC");
+        if(type == "TGeogPointInst" ){
+            assertTrue(source instanceof TGeogPointInst);
+            assertEquals(source.to_string(),tgeog.to_string());
+        } else if (type == "TGeogPointSeq" ) {
+            assertTrue(source instanceof TGeogPointSeq);
+            assertEquals(source.to_string(),tgeog.to_string());
+        } else if (type == "TGeogPointSeqSet" ) {
+            assertTrue(source instanceof TGeogPointSeqSet);
+            assertEquals(source.to_string(),tgeog.to_string());
+        }
+    }
+
+
+    @ParameterizedTest(name="Test insert method")
+    @MethodSource("insert")
+    void testInsert(Temporal source, String type, Temporal add, Temporal expected) throws ParseException {
+        functions.meos_initialize("UTC");
+        if (type == "TGeogPointSeq"){
+            TGeogPointSeq tgeog = (TGeogPointSeq) source.insert(add);
+            assertEquals(tgeog.to_string(), ((TGeogPointSeq) expected).to_string());
+        } else if (type == "TGeogPointSeqSet") {
+            TGeogPointSeqSet tgeog = (TGeogPointSeqSet) source.insert(add);
+            assertEquals(tgeog.to_string(), ((TGeogPointSeqSet) expected).to_string());
+        }
+    }
+
+
+    @ParameterizedTest(name="Test append sequence method")
+    @MethodSource("append_sequence")
+    void testAppendSequence(Temporal source, String type, TGeogPointSeq tgeoseq, Temporal expected) throws ParseException {
+        functions.meos_initialize("UTC");
+
+        if (type == "TGeogPointSeq"){
+            TGeogPointSeq tseq = (TGeogPointSeq) source.append_sequence(tgeoseq);
+            assertEquals(tseq.to_string(), ((TGeogPointSeqSet)expected).to_string() );
+
+
+        } else if (type == "TGeogPointSeqSet") {
+            TGeogPointSeqSet tseq = (TGeogPointSeqSet) source.append_sequence(tgeoseq);
+            assertEquals(tseq.to_string(),  ((TGeogPointSeqSet) expected).to_string() );
+        }
+
+
+    }
 
 
 

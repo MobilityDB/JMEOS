@@ -2,8 +2,8 @@ package utils.meosCatalog;
 import utils.meosCatalog.MeosEnums.meosType;
 
 public class SpansettypeCatalogStruct {
-    private meosType spansettype;
-    private meosType spantype;
+    private final meosType spansettype;
+    private final meosType spantype;
 
     public SpansettypeCatalogStruct(meosType spansettype, meosType spantype) {
         this.spansettype = spansettype;

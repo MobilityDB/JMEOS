@@ -9,8 +9,8 @@ import java.util.List;
 
 public class TFloatSeq extends TSequence<Float> implements TFloat {
 	private Pointer inner;
-	private String customType = "Float";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+	private final String customType = "Float";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
 	public TFloatSeq(){}

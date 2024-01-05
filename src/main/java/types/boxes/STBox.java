@@ -1,8 +1,6 @@
 package types.boxes;
 
 import functions.functions;
-import jnr.ffi.Memory;
-import jnr.ffi.Runtime;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.basic.tpoint.TPoint;
@@ -45,10 +43,10 @@ import javax.naming.OperationNotSupportedException;
  * @since 10/09/2023
  */
 public class STBox implements Box {
-	private OffsetDateTime tMin = null;
-	private OffsetDateTime tMax = null;
+	private final OffsetDateTime tMin = null;
+	private final OffsetDateTime tMax = null;
 	private boolean isGeodetic = false;
-	private int srid = 0;
+	private final int srid = 0;
 	private Pointer _inner = null;
 	private boolean tmin_inc = true;
 	private boolean tmax_inc = true;
@@ -637,7 +635,7 @@ public class STBox implements Box {
 	 */
 	public STBox expand_numerical(Number value) {
 		STBox result = null;
-		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
+		if(value instanceof Integer || value instanceof Float){
 			result = new STBox(functions.stbox_expand_space(this.get_inner(), value.floatValue()));
 		}
 		return result;
@@ -1098,7 +1096,7 @@ public class STBox implements Box {
 	 */
 	public boolean eq(Box other) {
 		boolean result;
-		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
+		result = other instanceof STBox && functions.stbox_eq(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 
@@ -1114,7 +1112,7 @@ public class STBox implements Box {
 	 */
 	public boolean notEquals(Box other) {
 		boolean result;
-		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
+		result = !(other instanceof STBox) || functions.stbox_ne(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 

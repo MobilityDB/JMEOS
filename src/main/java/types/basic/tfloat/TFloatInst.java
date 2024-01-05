@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TFloatInst extends TInstant<Float> implements TFloat{
 	private Pointer inner;
-	private String customType = "Float";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "Float";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 
 	public TFloatInst(){}

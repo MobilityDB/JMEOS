@@ -9,8 +9,8 @@ public class TTextInst extends TInstant<String> implements TText {
 
 
 	private Pointer inner;
-	private String customType = "String";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "String";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 
 	public TTextInst(){}

@@ -13,8 +13,8 @@ import types.temporal.TemporalType;
  */
 public class TTextSeq extends TSequence<String> implements TText{
 	private Pointer inner;
-	private String customType = "String";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+	private final String customType = "String";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
 	public TTextSeq(){}

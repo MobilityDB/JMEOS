@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TIntInst extends TInstant<Integer> implements TInt{
 	private Pointer inner;
-	private String customType = "Integer";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "Integer";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 	public TIntInst(){}
 

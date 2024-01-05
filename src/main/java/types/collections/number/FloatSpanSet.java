@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class FloatSpanSet extends SpanSet<Float> implements Number{
 
-    private Pointer _inner;
+    private final Pointer _inner;
 
     /** ------------------------- Constructors ---------------------------------- */
 
@@ -491,7 +491,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      */
     public FloatSpanSet intersection(FloatSpanSet other) throws Exception {
         Pointer result = null;
-        FloatSpanSet tmp = (FloatSpanSet) super.intersection((Base)other);
+        FloatSpanSet tmp = (FloatSpanSet) super.intersection(other);
         result = tmp.get_inner();
         return new FloatSpanSet(result);
     }

@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TGeomPointInst extends TPointInst implements TGeomPoint {
 	private Pointer inner;
-	private String customType = "Geom";
-	private TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
+	private final String customType = "Geom";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
 	public TGeomPointInst(){}
 

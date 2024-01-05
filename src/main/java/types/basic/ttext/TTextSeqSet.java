@@ -9,8 +9,8 @@ import types.temporal.TemporalType;
 public class TTextSeqSet extends TSequenceSet<String> implements TText{
 
 	private Pointer inner;
-	private String customType = "String";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "String";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 
 	public TTextSeqSet(){}

@@ -23,7 +23,7 @@ import types.collections.base.Span;
  *         >>> FloatSpan(lower='2.0', upper='5.8', upper_inc=True)
  */
 public class FloatSpan extends Span<Float> implements Number{
-    private Pointer _inner;
+    private final Pointer _inner;
 
     /** ------------------------- Constructors ---------------------------------- */
 
@@ -512,7 +512,7 @@ public class FloatSpan extends Span<Float> implements Number{
      *      *            "other".
      */
     public FloatSpan intersection(FloatSpan other){
-        return new FloatSpan(functions.intersection_span_span(this._inner, ((FloatSpan)other).get_inner() ));
+        return new FloatSpan(functions.intersection_span_span(this._inner, other.get_inner() ));
     }
 
 
@@ -531,7 +531,7 @@ public class FloatSpan extends Span<Float> implements Number{
      *      *            "other".
      */
     public FloatSpanSet intersection(FloatSpanSet other){
-        return new FloatSpanSet(functions.intersection_spanset_span(this._inner, ((FloatSpanSet)other).get_inner() ));
+        return new FloatSpanSet(functions.intersection_spanset_span(this._inner, other.get_inner() ));
     }
 
 

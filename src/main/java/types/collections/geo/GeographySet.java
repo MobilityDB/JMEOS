@@ -5,7 +5,7 @@ import functions.functions;
 
 public class GeographySet extends GeoSet{
     private Pointer _inner;
-    private String type="Geog";
+    private final String type="Geog";
 
     public GeographySet(){
     }

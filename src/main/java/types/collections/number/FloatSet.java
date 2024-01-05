@@ -19,7 +19,7 @@ import types.collections.base.Set;
  *         >>> FloatSet(elements=[1, '2', 3, '56'])
  */
 public class FloatSet extends Set<Float> implements Number{
-    private Pointer _inner;
+    private final Pointer _inner;
 
     public FloatSet(Pointer inner){
         super(inner);
@@ -387,7 +387,7 @@ public class FloatSet extends Set<Float> implements Number{
     public FloatSet intersection(FloatSet other) throws Exception {
         Pointer result = null;
         if(other instanceof FloatSet){
-            result = functions.intersection_set_set(this._inner, ((FloatSet) other)._inner);
+            result = functions.intersection_set_set(this._inner, other._inner);
         }
         return new FloatSet(result);
     }

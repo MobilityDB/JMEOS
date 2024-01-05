@@ -2,8 +2,8 @@ package utils.meosCatalog;
 import utils.meosCatalog.MeosEnums.meosType;
 
 public class TemptypeCatalogStruct {
-    private meosType temptype;
-    private meosType basetype;
+    private final meosType temptype;
+    private final meosType basetype;
 
     public TemptypeCatalogStruct(meosType temptype, meosType basetype) {
         this.temptype = temptype;

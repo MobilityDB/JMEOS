@@ -15,6 +15,16 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
 
+import types.TemporalObject;
+import types.basic.tfloat.TFloat;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
+import types.basic.tint.TIntInst;
+import types.basic.tint.TIntSeq;
+import types.basic.tint.TIntSeqSet;
+import types.boxes.STBox;
+import types.boxes.TBox;
 import types.collections.number.IntSpan;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
@@ -23,13 +33,21 @@ import static functions.functions.meos_finalize;
 import static functions.functions.meos_initialize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import functions.functions;
+import types.temporal.TInterpolation;
+
 
 class PeriodTest {
 	private Period period = new Period("(2019-09-08 00:00:00+00, 2019-09-10 00:00:00+00)");
 	private Period period2 = new Period("[2019-09-08 02:03:00+0, 2019-09-10 02:03:00+0]");
-	
+	private Period p = new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)");
+
+
+
+
 	PeriodTest() throws SQLException {
 	}
+
 
 	static Stream<Arguments> period_constructor() throws SQLException {
 		functions.meos_initialize("UTC");
@@ -70,6 +88,134 @@ class PeriodTest {
 				Arguments.of(false,false)
 		);
 	}
+
+	private static Stream<Arguments> temporals_adjacent() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), true),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_iscontained() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_contains() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_overlaps() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_same() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_before() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_after() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), true),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_overbefore() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+		);
+	}
+
+
+	private static Stream<Arguments> temporals_overafter() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
+				Arguments.of(new TFloatInst("1.0@2020-01-01"), true),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
+				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+		);
+	}
+
+
+
 
 
 
@@ -152,7 +298,6 @@ class PeriodTest {
 	public void testFromAsConstructor() throws SQLException {
 		functions.meos_initialize("UTC");
 		assertNotEquals(this.period,new Period("(2019-09-08 00:00:00+00, 2019-09-10 00:00:00+00)"));
-		//assert_period_equality(p, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
 	}
 
 	@Test
@@ -160,14 +305,13 @@ class PeriodTest {
 		functions.meos_initialize("UTC");
 		Period other = this.period.copy();
 		assertNotEquals(this.period, other);
-		//assert_period_equality(p, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
+		assertEquals(other.toString(), this.period.toString());
 	}
 
 	@Test
 	public void testPeriodOut() throws SQLException {
 		functions.meos_initialize("UTC");
 		assertEquals(this.period.toString(), "(2019-09-08 00:00:00+00, 2019-09-10 00:00:00+00)");
-		//assert_period_equality(p, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
 	}
 
 
@@ -224,6 +368,84 @@ class PeriodTest {
 		functions.meos_initialize("UTC");
 		assertEquals(this.period.hash(), 1164402929);
 	}
+
+
+	@ParameterizedTest(name="Test Adjacency constructor")
+	@MethodSource("temporals_adjacent")
+	public void testAdjacency(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_adjacent(other), expected);
+	}
+
+	@ParameterizedTest(name="Test is contained in constructor")
+	@MethodSource("temporals_iscontained")
+	public void testIsContainedIn(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_contained_in(other), expected);
+
+	}
+
+
+	@ParameterizedTest(name="Test contains constructor")
+	@MethodSource("temporals_contains")
+    public void testContains(TemporalObject other, boolean expected) throws Exception {
+        functions.meos_initialize("UTC");
+        assertEquals(this.p.contains(other), expected);
+
+    }
+
+
+	@ParameterizedTest(name="Test overlaps constructor")
+	@MethodSource("temporals_overlaps")
+	public void testOverlaps(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.overlaps(other), expected);
+	}
+
+
+	@ParameterizedTest(name="Test is same constructor")
+	@MethodSource("temporals_same")
+	public void testIsSame(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_same(other), expected);
+	}
+
+
+
+	@ParameterizedTest(name="Test is before constructor")
+	@MethodSource("temporals_before")
+	public void testIsBefore(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_before(other), expected);
+	}
+
+
+
+	@ParameterizedTest(name="Test is after constructor")
+	@MethodSource("temporals_after")
+	public void testIsAfter(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_after(other), expected);
+	}
+
+
+	@ParameterizedTest(name="Test is over or before constructor")
+	@MethodSource("temporals_overbefore")
+	public void testIsOverOrBefore(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_over_or_before(other), expected);
+
+	}
+
+
+	@ParameterizedTest(name="Test is over or after constructor")
+	@MethodSource("temporals_overafter")
+	public void testIsOverOrAfter(TemporalObject other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.is_over_or_after(other), expected);
+
+	}
+
 
 
 }

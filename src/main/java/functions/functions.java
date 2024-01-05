@@ -5,7 +5,6 @@ import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
 import utils.JarLibraryLoader;
 import utils.meosCatalog.MeosEnums.meosType;
-import utils.meosCatalog.MeosEnums.meosOper;
 
 import java.time.*;
 

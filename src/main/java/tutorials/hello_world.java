@@ -1,12 +1,10 @@
 package tutorials;
 
-import jnr.ffi.Pointer;
 import types.basic.tpoint.tgeom.TGeomPointInst;
 import types.basic.tpoint.tgeom.TGeomPointSeq;
 import types.basic.tpoint.tgeom.TGeomPointSeqSet;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 import static functions.functions.*;
 

@@ -8,7 +8,8 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
 
     /** ------------------------- Constructors ---------------------------------- */
-    public Span(){};
+    public Span(){}
+
     public Span(Pointer inner){
         this._inner = createInner(inner);
     }

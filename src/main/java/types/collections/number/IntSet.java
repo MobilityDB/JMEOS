@@ -18,7 +18,7 @@ import jnr.ffi.Pointer;
  *         >>> IntSet(elements=[1, '2', 3, '56'])
  */
 public class IntSet extends Set<Integer> implements Number{
-    private Pointer _inner;
+    private final Pointer _inner;
 
     public IntSet(Pointer inner){
         super(inner);
@@ -378,7 +378,7 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet intersection(IntSet other) throws Exception {
         Pointer result = null;
         if(other instanceof IntSet){
-            result = functions.intersection_set_set(this._inner, ((IntSet) other)._inner);
+            result = functions.intersection_set_set(this._inner, other._inner);
         }
 
         return new IntSet(result);

@@ -36,7 +36,7 @@ import utils.ConversionUtils;
  * @since 10/09/2023
  */
 public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollection {
-	private List<OffsetDateTime> dateTimeList = null;
+	private final List<OffsetDateTime> dateTimeList = null;
 	private Pointer _inner;
 
 
@@ -48,7 +48,11 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 	public TimestampSet() {
 	}
-	
+
+	/**
+	 * Pointer constructor
+	 * @param _inner Pointer
+	 */
 	public TimestampSet(Pointer _inner)  {
 		super(_inner);
 		this._inner = _inner;
@@ -67,6 +71,17 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.timestampset_in(str);
+	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
+	}
+
+
 	/**
 	 * Return a copy of "this".
 	 *<p>
@@ -76,16 +91,6 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	 */
 	public TimestampSet copy() {
 		return new TimestampSet(functions.set_copy(this._inner));
-	}
-
-	@Override
-	public Pointer createStringInner(String str){
-		return functions.timestampset_in(str);
-	}
-
-	@Override
-	public Pointer createInner(Pointer inner){
-		return inner;
 	}
 
 
@@ -528,6 +533,10 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
     /* ------------------------- Distance Operations --------------------------- */
 
 
+
+
+
+
     /* ------------------------- Set Operations -------------------------------- */
 
 	/**
@@ -550,6 +559,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 			case PeriodSet ps -> returnValue = new PeriodSet(functions.intersection_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
 			case TimestampSet ts -> returnValue = new TimestampSet(functions.intersection_set_set(this._inner,ts.get_inner()));
 			case Temporal t -> returnValue = this.intersection(t.time());
+			case Box b -> returnValue = this.intersection(b.to_period());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -595,6 +605,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 			case PeriodSet ps -> returnValue = new PeriodSet(functions.minus_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
 			case TimestampSet ts -> returnValue = new TimestampSet(functions.minus_set_set(this._inner,ts.get_inner()));
 			case Temporal t -> returnValue = this.minus(t.time());
+			case Box b -> returnValue = this.minus(b.to_period());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -641,6 +652,7 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 			case PeriodSet ps -> returnValue = new PeriodSet(functions.union_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
 			case TimestampSet ts -> returnValue =  new TimestampSet(functions.union_set_set(this._inner,ts.get_inner()));
 			case Temporal t -> returnValue = this.union(t.time());
+			case Box b -> returnValue = this.union(b.to_period());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -817,69 +829,5 @@ public class TimestampSet extends Set<LocalDateTime> implements Time, TimeCollec
 	}
 
 	 */
-
-
-	
-	/**
-	 * Gets the interval on which the temporal
-	 * value is defined ignoring the potential time gaps
-	 *
-	 * @return a Duration
-	 */
-	public Duration timeSpan() {
-		if (dateTimeList.isEmpty()) {
-			return Duration.ZERO;
-		}
-		
-		return Duration.between(dateTimeList.get(0), dateTimeList.get(dateTimeList.size() - 1));
-	}
-
-	
-	/**
-	 * Get the number of timestamps
-	 *
-	 * @return a number
-	 */
-	public int numTimestamps() {
-		return dateTimeList.size();
-	}
-	
-	/**
-	 * Gets the first timestamp
-	 *
-	 * @return a timestamp
-	 */
-	public OffsetDateTime startTimestamp() {
-		if (dateTimeList.isEmpty()) {
-			return null;
-		}
-		
-		return dateTimeList.get(0);
-	}
-	
-	/**
-	 * Gets the last timestamp
-	 *
-	 * @return a timestamp
-	 */
-	public OffsetDateTime endTimestamp() {
-		if (dateTimeList.isEmpty()) {
-			return null;
-		}
-		
-		return dateTimeList.get(dateTimeList.size() - 1);
-	}
-
-	
-	/**
-	 * Get all timestamps
-	 *
-	 * @return an array with the timestamps
-	 */
-	public OffsetDateTime[] timestamps() {
-		return dateTimeList.toArray(new OffsetDateTime[0]);
-	}
-	
-
 
 }

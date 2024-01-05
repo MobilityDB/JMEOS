@@ -3,13 +3,10 @@ package tutorials;
 import types.basic.tpoint.tgeog.TGeogPointInst;
 import types.basic.tpoint.tgeog.TGeogPointSeq;
 import types.collections.time.TimestampSet;
-import types.temporal.TSequence;
-import types.temporal.Temporal;
 import utils.ConversionUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static functions.functions.*;
 

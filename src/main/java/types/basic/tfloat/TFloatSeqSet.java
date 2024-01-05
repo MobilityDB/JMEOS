@@ -7,8 +7,8 @@ import types.temporal.TemporalType;
 
 public class TFloatSeqSet extends TSequenceSet<Float> implements TFloat {
 	private Pointer inner;
-	private String customType = "Float";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "Float";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 
 	public TFloatSeqSet(){

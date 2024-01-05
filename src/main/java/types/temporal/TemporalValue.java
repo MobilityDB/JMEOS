@@ -47,9 +47,8 @@ public class TemporalValue<V extends Serializable> implements Serializable {
 			return false;
 		}
 		
-		if (obj instanceof TemporalValue<?>) {
-			TemporalValue<?> other = (TemporalValue<?>) obj;
-			return value.equals(other.value) && time.isEqual(other.time);
+		if (obj instanceof TemporalValue<?> other) {
+            return value.equals(other.value) && time.isEqual(other.time);
 		}
 		
 		return false;

@@ -3,13 +3,11 @@ package tutorials;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tpoint.tgeog.TGeogPointInst;
-import types.collections.time.Period;
 import types.collections.time.TimestampSet;
 import utils.ConversionUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Scanner;
 
 import static functions.functions.meos_finalize;

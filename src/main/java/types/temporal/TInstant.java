@@ -1,10 +1,7 @@
 package types.temporal;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import jnr.ffi.Pointer;
 
 /**
@@ -13,7 +10,7 @@ import jnr.ffi.Pointer;
  * @param <V>
  */
 public abstract class TInstant<V extends Serializable> extends Temporal<V> {
-	private TemporalValue<V> temporalValue = null;
+	private final TemporalValue<V> temporalValue = null;
 	private Pointer _inner = null;
 
 

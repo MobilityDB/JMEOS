@@ -4,8 +4,6 @@ import jnr.ffi.Pointer;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();

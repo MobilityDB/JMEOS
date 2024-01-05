@@ -34,7 +34,7 @@ import java.util.List;
  * @since 10/09/2023
  */
 public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeCollection {
-	private List<Period> periodList = null;
+	private final List<Period> periodList = null;
 	private Pointer _inner;
 
 	/* ------------------------- Constructors ---------------------------------- */
@@ -43,7 +43,12 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 */
 	public PeriodSet() {
 	}
-	
+
+
+	/**
+	 * Pointer Constructor
+	 * @param _inner Pointer
+	 */
 	public PeriodSet(Pointer _inner) {
 		super(_inner);
 		this._inner = _inner;
@@ -115,7 +120,6 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 *
 	 * @return a new PeriodSet instance
 	 */
-
 	public PeriodSet copy()  {
 		return new PeriodSet(functions.spanset_copy(this._inner));
 	}
@@ -175,7 +179,10 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 
 	/** ------------------------- Accessors ------------------------------------- */
 
-
+	/**
+	 * Returns the C inner object
+	 * @return the inner Pointer
+	 */
 	public Pointer get_inner(){
 		return this._inner;
 	}
@@ -216,6 +223,18 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 		return ConversionUtils.timestamptz_to_datetime(functions.periodset_end_timestamp(this._inner));
 	}
 
+
+	/**
+	 * Returns the nth timestamp of the PeriodSet
+	 * @param n the nth element
+	 * @return Returns the nth timestamp of the PeriodSet
+	 */
+	public LocalDateTime timestamp_n(int n){
+		if (n < 0 || n > this.num_timestamps()){
+			throw new UnsupportedOperationException("Parameter not valid") ;
+		}
+		return null;
+	}
 
 	/**
 	 * Returns the number of periods in "this".
@@ -274,6 +293,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	public Period end_span() {
 		return this.end_period();
 	}
+
 
 	/**
 	 * Return the hash representation of "this".
@@ -735,7 +755,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 */
 	public boolean eq(Time other) {
 		boolean result;
-		result = other instanceof PeriodSet ? functions.spanset_eq(this._inner,((PeriodSet) other).get_inner()) : false;
+		result = other instanceof PeriodSet && functions.spanset_eq(this._inner, ((PeriodSet) other).get_inner());
 		return result;
 	}
 
@@ -751,7 +771,7 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 	 */
 	public boolean notEquals(Time other) {
 		boolean result;
-		result = other instanceof PeriodSet ? functions.spanset_ne(this._inner,((PeriodSet) other).get_inner()) : true;
+		result = !(other instanceof PeriodSet) || functions.spanset_ne(this._inner, ((PeriodSet) other).get_inner());
 		return result;
 	}
 
@@ -830,39 +850,6 @@ public class PeriodSet extends SpanSet<LocalDateTime> implements Time, TimeColle
 		}
 	}
 
-
-
-
-	
-	/**
-	 * Gets all the Periods
-	 *
-	 * @return an array of Periods
-	 */
-	public Period[] periods() {
-		return periodList.toArray(new Period[0]);
-	}
-
-	
-	/**
-	 * Gets the number of periods
-	 *
-	 * @return a number
-	 */
-	public int numPeriods() {
-		return periodList.size();
-	}
-	
-	
-	/**
-	 * Gets the Period located at the index position
-	 *
-	 * @param n - the index
-	 * @return a Period
-	 */
-	public Period periodN(int n) {
-		return periodList.get(n);
-	}
 
 }
 	

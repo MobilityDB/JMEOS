@@ -11,7 +11,8 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
     /** ------------------------- Constructor ----------------------------------- */
 
-    public SpanSet(){};
+    public SpanSet(){}
+
     public SpanSet(Pointer inner){
         this._inner = createInner(inner);
     }

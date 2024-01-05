@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	private Pointer inner;
-	private String customType = "Boolean";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
+	private final String customType = "Boolean";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE;
 
 
 	public TBoolSeq(){

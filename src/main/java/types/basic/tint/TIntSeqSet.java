@@ -8,8 +8,8 @@ import types.temporal.TemporalType;
 
 public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	private Pointer inner;
-	private String customType = "Integer";
-	private TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+	private final String customType = "Integer";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
 
 	public TIntSeqSet(){

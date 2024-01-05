@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Class based on the manually-defined functions from PyMeos.
+ * This class contains conversions functions for MEOS/JMEOS types.
  *
  * @author Killian Monnier and Nidhal Mareghni
  * @see <a href="https://github.com/MobilityDB/PyMEOS/blob/9d84632df5a4b060d43421248c142af337ec4ddd/pymeos_cffi/pymeos_cffi/builder/build_pymeos_functions.py">...</a>
@@ -32,7 +33,6 @@ public class ConversionUtils {
 	 *
 	 * @param dt localDateTime
 	 * @return offsetDateTime
-	 * //FIXME copy of the pymeos function but do it has a real purpose ? Maybe need a refactor
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
 		functions.meos_initialize("UTC");
@@ -65,13 +65,13 @@ public class ConversionUtils {
 		return functions.pg_interval_make(years,month,weeks,days,hours,minutes,seconds);
 	}
 
-	public static String interval_to_timedelta(Pointer p){
-		return functions.pg_interval_out(p);
+	public static Duration interval_to_timedelta(Pointer p){
+		return Duration.parse(functions.pg_interval_out(p));
 	}
 
 	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {
-		boolean lower_inc = intrange.lowerBoundType() == BoundType.CLOSED ? true : false;
-		boolean upper_inc = intrange.upperBoundType() == BoundType.CLOSED ? true : false;
+		boolean lower_inc = intrange.lowerBoundType() == BoundType.CLOSED;
+		boolean upper_inc = intrange.upperBoundType() == BoundType.CLOSED;
 		return functions.intspan_make(intrange.lowerEndpoint(),intrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
@@ -82,8 +82,8 @@ public class ConversionUtils {
 	}
 
 	public static Pointer floatrange_to_floatspan(Range<Float> floatrange){
-		boolean lower_inc = floatrange.lowerBoundType() == BoundType.CLOSED ? true : false;
-		boolean upper_inc = floatrange.upperBoundType() == BoundType.CLOSED ? true : false;
+		boolean lower_inc = floatrange.lowerBoundType() == BoundType.CLOSED;
+		boolean upper_inc = floatrange.upperBoundType() == BoundType.CLOSED;
 		return functions.floatspan_make(floatrange.lowerEndpoint(),floatrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
