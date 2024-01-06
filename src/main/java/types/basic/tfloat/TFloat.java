@@ -1,6 +1,9 @@
 package types.basic.tfloat;
 
 import jnr.ffi.Pointer;
+import types.basic.tbool.TBoolInst;
+import types.basic.tbool.TBoolSeq;
+import types.basic.tbool.TBoolSeqSet;
 import types.basic.tint.TInt;
 import types.basic.tnumber.TNumber;
 import types.collections.number.FloatSpan;
@@ -14,7 +17,10 @@ import functions.functions;
 
 
 /**
- * Class that represents the MobilityDB type TFloat
+ * Class that represents the MobilityDB type TFloat used for {@link TFloatInst}, {@link TFloatSeq} and {@link TFloatSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TFloat extends TNumber {
 	String customType = "Float";
@@ -706,42 +712,6 @@ public interface TFloat extends TNumber {
 		return Factory.create_temporal(functions.tfloat_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

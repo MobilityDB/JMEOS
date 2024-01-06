@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Java library for manipulating StringBuilders as well as strings to allow string modification, reading and file writing operations.
+ * Java class for manipulating StringBuilders as well as strings to allow string modification, reading and file writing operations.
  *
  * @author Nidhal Mareghni and Killian Monnier
  * @since 27/07/2023

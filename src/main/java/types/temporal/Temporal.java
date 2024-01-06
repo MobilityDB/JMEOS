@@ -20,6 +20,9 @@ import static types.temporal.TemporalType.*;
 /**
  * Abstract class for Temporal sub types
  * @param <V> - Base type of the temporal data type eg. Integer, Boolean
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public abstract class Temporal<V extends Serializable> implements Serializable, TemporalObject {
     private Pointer inner;
@@ -747,7 +750,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_before(Time)}
+     *             {@link Period#is_before(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is before "other", False otherwise.
      */
@@ -762,7 +765,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_before(Time)}
+     *             {@link Period#is_over_or_before(TemporalObject)}
      * @param other A time or temporal object to compare `self` to.
      * @return True if `self` is before `other` allowing overlap, False otherwise.
      */
@@ -776,7 +779,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_after(Time)}
+     *             {@link Period#is_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other", False otherwise.
      */
@@ -792,7 +795,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_after(Time)}
+     *             {@link Period#is_over_or_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other" allowing overlap, False otherwise.
      */

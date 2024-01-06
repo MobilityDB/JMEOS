@@ -116,7 +116,9 @@ public class TBox implements Box {
 		if(tmin != null && tmax != null){
 			p = new Period(tmin,tmax,tmin_inc,tmax_inc);
 		}
-		this._inner = functions.tbox_make(span.get_inner(),p.get_inner());
+        assert span != null;
+        assert p != null;
+        this._inner = functions.tbox_make(span.get_inner(),p.get_inner());
 	}
 
 

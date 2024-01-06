@@ -785,7 +785,7 @@ public class Period extends Span<LocalDateTime> implements Time, TimeCollection{
 	 * @param other temporal object to compare with
 	 * @return a timedelta instance
 	 */
-	public double distance(Time other) {
+	public double distance(TemporalObject other) {
 		double returnValue;
 		switch (other){
 			case Period p -> returnValue = functions.distance_span_span(this._inner,p.get_inner());

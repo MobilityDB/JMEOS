@@ -22,6 +22,9 @@ import java.util.List;
  * <p>
  *         >>> IntSpanSet(span_list=['[8, 10]', '[11, 12]'])
  *         >>> IntSpanSet(span_list=[IntSpan('[8, 10]'), IntSpan('[11, 12]')])
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class IntSpanSet extends SpanSet<Integer> implements Number{
     private final Pointer _inner;

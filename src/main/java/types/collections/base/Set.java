@@ -3,8 +3,16 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 import org.locationtech.jts.io.ParseException;
+import types.basic.tbool.TBoolInst;
+import types.basic.tbool.TBoolSeq;
+import types.basic.tbool.TBoolSeqSet;
 
-
+/**
+ * Abstract class that represents a set of temporal object
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public abstract class Set<T extends Object> implements Collection, Base {
     private Pointer _inner;
 

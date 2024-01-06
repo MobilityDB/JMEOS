@@ -20,6 +20,9 @@ import jnr.ffi.Pointer;
  *         >>> IntSpan(lower=2, upper=5)
  *         >>> IntSpan(lower=2, upper=5, lower_inc=False, upper_inc=True)
  *         >>> IntSpan(lower='2', upper='5', upper_inc=True)
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class IntSpan extends Span<Integer> implements Number{
     private final Pointer _inner;

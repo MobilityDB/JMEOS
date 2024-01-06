@@ -5,6 +5,12 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
+/**
+ * Temporal float instant class inherited from temporal instant.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TFloatInst extends TInstant<Float> implements TFloat{
 	private Pointer inner;
 	private final String customType = "Float";
@@ -13,6 +19,11 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 
 	public TFloatInst(){}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TFloatInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

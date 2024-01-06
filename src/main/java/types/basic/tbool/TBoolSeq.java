@@ -8,7 +8,10 @@ import types.temporal.TemporalType;
 import java.util.List;
 
 /**
- * By Default Interpolation is stepwise
+ * Temporal boolean sequence class inherited from temporal sequence.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	private Pointer inner;
@@ -20,6 +23,11 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 
 	}
 
+	/**
+	 * Pointer constructor
+	 *
+	 * @param inner
+	 */
 	public TBoolSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;
@@ -28,7 +36,7 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	/**
 	 * The string constructor
 	 *
-	 * @param value - the string with the TBoolInst value
+	 * @param value - the string with the TBoolSeq value
 	 */
 	public TBoolSeq(String value){
 		this(value,2);
@@ -36,14 +44,13 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 
 
 	/**
-	 * The string constructor
+	 * The string and interpolation constructor
 	 *
 	 * @param value - the string with the TBoolInst value
 	 */
 	public TBoolSeq(String value, int interpolation) {
 		super(value);
 		this.inner = functions.tbool_in(value);
-		//this.inner = functions.tboolseq_in(value, interpolation);
 	}
 
 
@@ -54,13 +61,6 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	public TBoolSeq(List<String> list, boolean lower_inc, boolean upper_inc,int interpolation, boolean normalize) {
 		super();
 	}
-
-
-
-
-
-
-
 
 
 	@Override

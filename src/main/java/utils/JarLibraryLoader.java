@@ -10,6 +10,8 @@ import java.net.URL;
  * <a href="https://github.com/jnr/jnr-ffi/issues/93#issuecomment-717760847">...</a>
  *
  * @param <T> Library defined interface
+ * @author Killian Monier and Nidhal Mareghni
+ * @since 13/08/2023
  */
 public class JarLibraryLoader<T> {
 	

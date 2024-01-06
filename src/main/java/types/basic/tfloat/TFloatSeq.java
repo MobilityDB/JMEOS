@@ -7,6 +7,13 @@ import types.temporal.TemporalType;
 
 import java.util.List;
 
+
+/**
+ * Temporal float sequence class inherited from temporal sequence.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TFloatSeq extends TSequence<Float> implements TFloat {
 	private Pointer inner;
 	private final String customType = "Float";
@@ -15,6 +22,11 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 
 	public TFloatSeq(){}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TFloatSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;
@@ -35,6 +47,7 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	 * The string constructor
 	 *
 	 * @param value - the string with the TFloatSeq value
+	 * @param interpolation - interpolation value
 	 */
 	public TFloatSeq(String value, int interpolation)   {
 		super(value);
@@ -49,7 +62,6 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	public TFloatSeq(List<String> list, boolean lower_inc, boolean upper_inc, int interpolation, boolean normalize)  {
 		super();
 	}
-
 
 
 

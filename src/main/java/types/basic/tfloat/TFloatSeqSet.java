@@ -5,6 +5,13 @@ import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
 import types.temporal.TemporalType;
 
+
+/**
+ * Temporal float sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TFloatSeqSet extends TSequenceSet<Float> implements TFloat {
 	private Pointer inner;
 	private final String customType = "Float";
@@ -15,6 +22,11 @@ public class TFloatSeqSet extends TSequenceSet<Float> implements TFloat {
 
 	}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TFloatSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

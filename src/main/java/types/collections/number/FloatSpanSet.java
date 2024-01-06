@@ -21,6 +21,9 @@ import java.util.List;
  * <p>
  *         >>> FloatSpanSet(span_list=['[8, 10]', '[11, 12]'])
  *         >>> FloatSpanSet(span_list=[FloatSpan('[8, 10]'), FloatSpan('[11, 12]')])
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class FloatSpanSet extends SpanSet<Float> implements Number{
 

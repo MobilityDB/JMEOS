@@ -5,6 +5,9 @@ import types.TemporalObject;
 import types.basic.tbool.TBool;
 import types.basic.tfloat.TFloat;
 import types.basic.tfloat.TFloatSeqSet;
+import types.basic.tint.TIntInst;
+import types.basic.tint.TIntSeq;
+import types.basic.tint.TIntSeqSet;
 import types.basic.tpoint.tgeog.TGeogPoint;
 import types.basic.tpoint.tgeom.TGeomPoint;
 import types.boxes.STBox;
@@ -21,8 +24,10 @@ import javax.naming.OperationNotSupportedException;
 import java.io.Serializable;
 
 /**
- * Base abstract class for TGeomPoint and TGeogPoint
- * Contains logic for handling SRID
+ * Class that represents the MobilityDB type TPoint used for {@link TPointInst}, {@link TPointSeq} and {@link TPointSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TPoint extends Serializable {
 	Pointer getPointInner();
@@ -485,7 +490,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_before(Time)}
+	 *             {@link types.collections.time.Period#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if left, False otherwise.
 	 */
@@ -501,7 +506,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_before(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or left, False otherwise.
 	 */
@@ -516,7 +521,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_after(Time)}
+	 *             {@link types.collections.time.Period#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if right, False otherwise.
 	 */
@@ -533,7 +538,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_after(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or right, False otherwise.
 	 */
@@ -549,7 +554,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_before(Time)}
+	 *             {@link types.collections.time.Period#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if below, False otherwise.
 	 */
@@ -564,7 +569,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_before(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or below, False otherwise.
 	 */
@@ -582,7 +587,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_after(Time)}
+	 *             {@link types.collections.time.Period#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if above, False otherwise.
 	 */
@@ -598,7 +603,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_after(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or above, False otherwise.
 	 */
@@ -615,7 +620,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_before(Time)}
+	 *             {@link types.collections.time.Period#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if front, False otherwise.
 	 */
@@ -633,7 +638,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_before(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or front, False otherwise.
 	 */
@@ -651,7 +656,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_after(Time)}
+	 *             {@link types.collections.time.Period#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if behind, False otherwise.
 	 */
@@ -669,7 +674,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.Period#is_over_or_after(Time)}
+	 *             {@link types.collections.time.Period#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or behind, False otherwise.
 	 */

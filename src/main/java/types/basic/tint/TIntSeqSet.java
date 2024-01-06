@@ -1,11 +1,21 @@
 package types.basic.tint;
 
 import functions.functions;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
 import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
 import types.temporal.TemporalType;
 
 
+
+/**
+ * Temporal integer sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	private Pointer inner;
 	private final String customType = "Integer";
@@ -15,6 +25,11 @@ public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	public TIntSeqSet(){
 	}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TIntSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

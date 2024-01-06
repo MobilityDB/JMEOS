@@ -7,6 +7,12 @@ import types.collections.base.Set;
 import utils.ConversionUtils;
 
 
+/**
+ * Abstract class representing a set of geo object inheriting from set type.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public abstract class GeoSet extends Set<Geometry> {
     protected Pointer _inner;
 
@@ -14,11 +20,21 @@ public abstract class GeoSet extends Set<Geometry> {
         super();
 
     }
+
+    /**
+     * Pointer constructor
+     * @param inner Pointer
+     */
     public GeoSet(Pointer inner){
         super(inner);
         this._inner = createInner(inner);
     }
 
+    /**
+     * The string constructor
+     *
+     * @param value - the string with the TBoolInst value
+     */
     public GeoSet(String value){
         super(value);
         this._inner = createStringInner(value);
@@ -30,9 +46,9 @@ public abstract class GeoSet extends Set<Geometry> {
     public abstract Pointer createStringInner(String str);
 
     public static GeoSet factory(String type, Pointer inner){
-        if (type == "Geom"){
+        if (type.equals("Geom")){
             return new GeometrySet(inner);
-        } else if (type == "Geog") {
+        } else if (type.equals("Geog")) {
             return new GeographySet(inner);
         }
         return null;

@@ -34,7 +34,10 @@ import static functions.functions.meos_initialize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import functions.functions;
+import types.collections.time.Time;
 import types.temporal.TInterpolation;
+
+import javax.naming.OperationNotSupportedException;
 
 
 class PeriodTest {
@@ -215,6 +218,34 @@ class PeriodTest {
 	}
 
 
+	private static Stream<Arguments> temporals_distance() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), 0.0),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), 0.0),
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), 0.0),
+				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), 599443200)
+		);
+	}
+
+
+	private static Stream<Arguments> intersection() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true)
+		);
+	}
+
+
+	private static Stream<Arguments> other() {
+		functions.meos_initialize("UTC");
+		return Stream.of(
+				Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true)
+		);
+	}
+
+
 
 
 
@@ -370,14 +401,14 @@ class PeriodTest {
 	}
 
 
-	@ParameterizedTest(name="Test Adjacency constructor")
+	@ParameterizedTest(name="Test Adjacency method")
 	@MethodSource("temporals_adjacent")
 	public void testAdjacency(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
 		assertEquals(this.p.is_adjacent(other), expected);
 	}
 
-	@ParameterizedTest(name="Test is contained in constructor")
+	@ParameterizedTest(name="Test is contained in method")
 	@MethodSource("temporals_iscontained")
 	public void testIsContainedIn(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -386,7 +417,7 @@ class PeriodTest {
 	}
 
 
-	@ParameterizedTest(name="Test contains constructor")
+	@ParameterizedTest(name="Test contains method")
 	@MethodSource("temporals_contains")
     public void testContains(TemporalObject other, boolean expected) throws Exception {
         functions.meos_initialize("UTC");
@@ -395,7 +426,7 @@ class PeriodTest {
     }
 
 
-	@ParameterizedTest(name="Test overlaps constructor")
+	@ParameterizedTest(name="Test overlaps method")
 	@MethodSource("temporals_overlaps")
 	public void testOverlaps(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -403,7 +434,7 @@ class PeriodTest {
 	}
 
 
-	@ParameterizedTest(name="Test is same constructor")
+	@ParameterizedTest(name="Test is same method")
 	@MethodSource("temporals_same")
 	public void testIsSame(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -412,7 +443,7 @@ class PeriodTest {
 
 
 
-	@ParameterizedTest(name="Test is before constructor")
+	@ParameterizedTest(name="Test is before method")
 	@MethodSource("temporals_before")
 	public void testIsBefore(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -421,7 +452,7 @@ class PeriodTest {
 
 
 
-	@ParameterizedTest(name="Test is after constructor")
+	@ParameterizedTest(name="Test is after method")
 	@MethodSource("temporals_after")
 	public void testIsAfter(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -429,7 +460,7 @@ class PeriodTest {
 	}
 
 
-	@ParameterizedTest(name="Test is over or before constructor")
+	@ParameterizedTest(name="Test is over or before method")
 	@MethodSource("temporals_overbefore")
 	public void testIsOverOrBefore(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -438,7 +469,7 @@ class PeriodTest {
 	}
 
 
-	@ParameterizedTest(name="Test is over or after constructor")
+	@ParameterizedTest(name="Test is over or after method")
 	@MethodSource("temporals_overafter")
 	public void testIsOverOrAfter(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC");
@@ -447,5 +478,81 @@ class PeriodTest {
 	}
 
 
+
+	@ParameterizedTest(name="Test distance method")
+	@MethodSource("temporals_distance")
+	public void testDistance(TemporalObject other, double expected) throws Exception {
+		functions.meos_initialize("UTC");
+		assertEquals(this.p.distance(other), expected);
+
+	}
+
+
+
+	@ParameterizedTest(name="Test intersection method")
+	@MethodSource("intersection")
+	public void testIntersection(Time other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		this.p.intersection(other);
+	}
+
+	@ParameterizedTest(name="Test minus method")
+	@MethodSource("intersection")
+	public void testMinus(Time other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		this.p.minus(other);
+	}
+
+	@ParameterizedTest(name="Test union method")
+	@MethodSource("intersection")
+	public void testUnion(Time other, boolean expected) throws Exception {
+		functions.meos_initialize("UTC");
+		this.p.union(other);
+	}
+
+
+
+	@ParameterizedTest(name="Test equal method")
+	@MethodSource("other")
+	public void testEqual(Time t) throws SQLException {
+		functions.meos_initialize("UTC");
+		assertFalse(this.period.equals(t));
+	}
+
+
+	@ParameterizedTest(name="Test ne method")
+	@MethodSource("other")
+	public void testNotEqual(Time t) throws SQLException {
+		functions.meos_initialize("UTC");
+		assertTrue(this.period.notEquals(t));
+	}
+
+	@ParameterizedTest(name="Test lt method")
+	@MethodSource("other")
+	public void testLessThan(Time t) throws SQLException, OperationNotSupportedException {
+		functions.meos_initialize("UTC");
+		assertTrue(this.period.lessThan(t));
+	}
+
+	@ParameterizedTest(name="Test le method")
+	@MethodSource("other")
+	public void testLessThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
+		functions.meos_initialize("UTC");
+		assertTrue(this.period.lessThanOrEqual(t));
+	}
+
+	@ParameterizedTest(name="Test gt method")
+	@MethodSource("other")
+	public void testGreaterThan(Time t) throws SQLException, OperationNotSupportedException {
+		functions.meos_initialize("UTC");
+		assertTrue(this.period.greaterThan(t));
+	}
+
+	@ParameterizedTest(name="Test ge method")
+	@MethodSource("other")
+	public void testGreaterThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
+		functions.meos_initialize("UTC");
+		assertFalse(this.period.greaterThanOrEqual(t));
+	}
 
 }

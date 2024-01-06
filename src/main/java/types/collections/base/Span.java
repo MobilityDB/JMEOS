@@ -3,6 +3,13 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import functions.functions;
 
+
+/**
+ * Abstract class that represents a span of temporal object
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public abstract class Span<T extends Object> implements Collection, Base{
     private Pointer _inner;
 

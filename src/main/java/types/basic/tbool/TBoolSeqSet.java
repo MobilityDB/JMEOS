@@ -5,7 +5,12 @@ import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;
 import types.temporal.TemporalType;
 
-
+/**
+ * Temporal boolean sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 	private Pointer inner;
 	private final String customType = "Boolean";
@@ -14,6 +19,11 @@ public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 
 	public TBoolSeqSet(){}
 
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TBoolSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

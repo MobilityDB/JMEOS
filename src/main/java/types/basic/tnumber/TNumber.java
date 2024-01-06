@@ -3,6 +3,9 @@ package types.basic.tnumber;
 import jnr.ffi.Pointer;
 import types.TemporalObject;
 import types.basic.tfloat.TFloat;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TInt;
 import types.boxes.TBox;
 import functions.functions;
@@ -13,6 +16,13 @@ import types.temporal.TemporalType;
 import javax.naming.OperationNotSupportedException;
 import java.sql.SQLException;
 
+
+/**
+ * Base interface that encompasses the Temporal float and Temporal integer interfaces.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public interface TNumber {
     Pointer getNumberInner();
     String getCustomType();

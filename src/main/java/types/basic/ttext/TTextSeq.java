@@ -9,7 +9,10 @@ import jnr.ffi.Pointer;
 import types.temporal.TemporalType;
 
 /**
- * By Default Interpolation is stepwise
+ * Temporal text sequence class inherited from temporal sequence.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class TTextSeq extends TSequence<String> implements TText{
 	private Pointer inner;
@@ -19,6 +22,12 @@ public class TTextSeq extends TSequence<String> implements TText{
 
 	public TTextSeq(){}
 
+
+	/**
+	 * Pointer constructor
+	 *
+	 * @param inner
+	 */
 	public TTextSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;
@@ -33,6 +42,7 @@ public class TTextSeq extends TSequence<String> implements TText{
 	public TTextSeq(String value){
 		this(value,2);
 	}
+
 
 	/**
 	 * The string constructor

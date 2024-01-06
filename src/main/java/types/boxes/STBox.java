@@ -55,6 +55,15 @@ public class STBox implements Box {
 		return this._get_box(other,true,false);
 	}
 
+
+	/**
+	 * Factory method to create new STBox objects
+	 *
+	 * @param other a temporal object
+	 * @param allow_space_only boolean space dimension
+	 * @param allow_time_only boolean time dimension
+	 * @return a new {@link STBox} object
+	 */
 	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only){
 		STBox other_box=null;
 		if(allow_space_only && other instanceof Geometry){
@@ -576,7 +585,7 @@ public class STBox implements Box {
 	}
 	
 
-	/** ------------------------- Transformations ------------------------------- */
+	/* ------------------------- Transformations ------------------------------- */
 
 	/**
 	 * Get the spatial dimension of "this", removing the temporal dimension
@@ -969,7 +978,7 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *         See Also:
-	 * 				{@link Period#is_before(Time)}
+	 * 				{@link Period#is_before(TemporalObject)}
 	 * 	<p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly before "other", "false" otherwise.
@@ -985,7 +994,7 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *     See Also:
-	 * 	 			{@link Period#is_over_or_before(Time)}
+	 * 	 			{@link Period#is_over_or_before(TemporalObject)}
 	 * 	 </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
@@ -1000,7 +1009,7 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *      See Also:
-	 * 	 			{@link Period#is_after(Time)}
+	 * 	 			{@link Period#is_after(TemporalObject)}
 	 *     </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly after "other", "false" otherwise.
@@ -1016,7 +1025,7 @@ public class STBox implements Box {
 	 *
 	 *  <p>
 	 *      See Also:
-	 * 				{@link Period#is_over_or_after(Time)}
+	 * 				{@link Period#is_over_or_after(TemporalObject)}
 	 *      </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.

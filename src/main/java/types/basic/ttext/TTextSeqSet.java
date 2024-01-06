@@ -5,7 +5,12 @@ import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
 import types.temporal.TemporalType;
 
-
+/**
+ * Temporal text sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TTextSeqSet extends TSequenceSet<String> implements TText{
 
 	private Pointer inner;
@@ -15,6 +20,11 @@ public class TTextSeqSet extends TSequenceSet<String> implements TText{
 
 	public TTextSeqSet(){}
 
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TTextSeqSet(Pointer inner){
 		super(inner);
 		this.inner = inner;

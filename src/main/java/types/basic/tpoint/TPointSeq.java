@@ -5,7 +5,8 @@ import types.temporal.TSequence;
 
 /**
  * Base abstract class for TGeomPointSeq and TGeogPointSeq
- * Contains logic for handling SRID
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public abstract class TPointSeq extends TSequence<TPoint> implements TPoint {
 
@@ -15,11 +16,21 @@ public abstract class TPointSeq extends TSequence<TPoint> implements TPoint {
         super();
 
     }
+
+    /**
+     * The Pointer constructor
+     * @param inner Pointer
+     */
     public TPointSeq(Pointer inner){
         super(inner);
         this.inner = createInner(inner);
     }
 
+    /**
+     * The string constructor
+     *
+     * @param value - the string with the TIntInst value
+     */
     public TPointSeq(String value){
         super(value);
         this.inner = createStringInner(value);

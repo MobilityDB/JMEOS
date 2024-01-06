@@ -16,6 +16,8 @@ import jnr.ffi.Pointer;
  *     strings or integers.
  * <p>
  *         >>> IntSet(elements=[1, '2', 3, '56'])
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class IntSet extends Set<Integer> implements Number{
     private final Pointer _inner;

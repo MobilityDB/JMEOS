@@ -1,5 +1,12 @@
 package utils.meosCatalog;
 
+
+/**
+ * Meos enumeration storing the type and operators through MEOS integer values.
+ *
+ * @author Nidhal Mareghni
+ * @since 18/10/2023
+ */
 public class MeosEnums {
     public enum meosType {
         T_UNKNOWN(0),
@@ -118,14 +125,6 @@ public class MeosEnums {
             return value;
         }
     }
-
-
-
-
-
-
-
-
 
 
 }

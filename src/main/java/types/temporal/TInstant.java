@@ -5,9 +5,12 @@ import java.io.Serializable;
 import jnr.ffi.Pointer;
 
 /**
- * Base class for temporal instant
+ * Base class for all temporal instant
  *
- * @param <V>
+ * @param <V> base classe such as integer, boolean, text
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 	private final TemporalValue<V> temporalValue = null;

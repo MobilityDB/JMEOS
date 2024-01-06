@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class used to extract the functions from the MEOS library.
- * Run with ./script folder
+ * Run with directly with java through the main class
  *
  * @author Killian Monnier
  * @since 27/06/2023

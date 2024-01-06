@@ -2,6 +2,9 @@ package types.basic.ttext;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
@@ -10,13 +13,18 @@ import types.temporal.*;
 
 
 /**
- * Class that represents the MobilityDB type TText
+ * Class that represents the MobilityDB type TText used for {@link TTextInst}, {@link TTextSeq} and {@link TTextSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TText {
     String customType = "String";
     Pointer getTextInner();
     String getCustomType();
     TemporalType getTemporalType();
+
+
     /* ------------------------- Constructors ---------------------------------- */
 
 

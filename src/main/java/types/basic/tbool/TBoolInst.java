@@ -5,6 +5,13 @@ import jnr.ffi.Pointer;
 import functions.functions;
 import types.temporal.TemporalType;
 
+
+/**
+ * Temporal boolean instant class inherited from temporal instant.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TBoolInst extends TInstant<Boolean> implements TBool {
 	private Pointer inner;
 	private final String customType = "Boolean";
@@ -13,6 +20,11 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 
 	public TBoolInst(){}
 
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TBoolInst(Pointer inner){
 		super(inner);
 		this.inner = inner;
@@ -28,19 +40,35 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 		super(value);
 		this.inner = functions.tboolinst_in(value);
 	}
-	
+
 	/**
-	 * The value and timestamp constructor
+	 * Value and timestamp constructor
 	 *
+	 * @param str timestamp
+	 * @param value boolean value
 	 */
 	public TBoolInst(String str, boolean value)  {
 		super();
 	}
 
+	/**
+	 * Value and timestamp constructor
+	 *
+	 * @param timemstamp timestamp
+	 * @param value boolean value
+	 */
 	public TBoolInst(boolean value, String timemstamp)  {
 		super();
 	}
 
+	/**
+	 * Mixed constructor
+	 *
+	 * @param str original String
+	 * @param value boolean value
+	 * @param timemstamp timestamp value
+	 * @param inner Pointer
+	 */
 	public TBoolInst(String str, boolean value, String timemstamp, Pointer inner)  {
 		super();
 	}

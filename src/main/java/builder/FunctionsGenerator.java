@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class used to generate the functions from the MEOS library.
- * Run with ./script folder
+ * Run with directly with java through the main class
  *
  * @author Killian Monnier and Nidhal Mareghni
  * @since 27/06/2023

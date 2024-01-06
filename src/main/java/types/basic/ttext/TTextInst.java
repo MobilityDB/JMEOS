@@ -5,6 +5,13 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
+
+/**
+ * Temporal text instant class inherited from temporal instant.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TTextInst extends TInstant<String> implements TText {
 
 
@@ -15,6 +22,11 @@ public class TTextInst extends TInstant<String> implements TText {
 
 	public TTextInst(){}
 
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TTextInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

@@ -3,6 +3,9 @@ package types.basic.tpoint.tgeog;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tbool.TBool;
+import types.basic.tint.TIntInst;
+import types.basic.tint.TIntSeq;
+import types.basic.tint.TIntSeqSet;
 import types.basic.tpoint.tgeom.TGeomPoint;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
@@ -19,7 +22,10 @@ import utils.ConversionUtils;
 
 
 /**
- * Class that represents the MobilityDB type TGeogPoint
+ * Class that represents the MobilityDB type TGeogPoint used for {@link TGeogPointInst}, {@link TGeogPointSeq} and {@link TGeogPointSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TGeogPoint extends TPoint {
 	String customType = "Geog";

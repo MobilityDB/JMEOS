@@ -17,6 +17,8 @@ import types.collections.base.Set;
  *     strings or floats.
  *<p>
  *         >>> FloatSet(elements=[1, '2', 3, '56'])
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class FloatSet extends Set<Float> implements Number{
     private final Pointer _inner;

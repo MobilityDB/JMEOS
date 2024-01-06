@@ -2,12 +2,18 @@ package types.basic.tint;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
 import types.temporal.TSequence;
 import types.temporal.TemporalType;
 
 
 /**
- * By Default Interpolation is stepwise
+ * Temporal integer sequence class inherited from temporal sequence.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public class TIntSeq extends TSequence<Integer> implements TInt {
 	private Pointer inner;
@@ -18,6 +24,11 @@ public class TIntSeq extends TSequence<Integer> implements TInt {
 	public TIntSeq(){
 	}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TIntSeq(Pointer inner){
 		super(inner);
 		this.inner = inner;

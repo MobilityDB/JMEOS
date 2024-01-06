@@ -5,6 +5,13 @@ import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
 
+
+/**
+ * Temporal integer instant class inherited from temporal instant.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public class TIntInst extends TInstant<Integer> implements TInt{
 	private Pointer inner;
 	private final String customType = "Integer";
@@ -12,6 +19,11 @@ public class TIntInst extends TInstant<Integer> implements TInt{
 
 	public TIntInst(){}
 
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TIntInst(Pointer inner){
 		super(inner);
 		this.inner = inner;

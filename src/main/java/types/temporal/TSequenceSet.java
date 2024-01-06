@@ -5,6 +5,15 @@ import jnr.ffi.Pointer;
 import java.io.Serializable;
 import java.util.*;
 
+
+/**
+ * Base class for all temporal sequence set
+ *
+ * @param <V> base classe such as integer, boolean, text
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
 public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();
 	protected boolean stepwise;

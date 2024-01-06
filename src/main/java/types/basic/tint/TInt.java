@@ -3,6 +3,9 @@ package types.basic.tint;
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tfloat.TFloat;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tnumber.TNumber;
 import types.collections.number.IntSpan;
 import types.collections.number.IntSpanSet;
@@ -14,16 +17,16 @@ import types.temporal.*;
 
 
 /**
- * Class that represents the MobilityDB type TInt
+ * Class that represents the MobilityDB type TInt used for {@link TIntInst}, {@link TIntSeq} and {@link TIntSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TInt extends TNumber {
 	String customType = "Integer";
 	Pointer getNumberInner();
 	String getCustomType();
 	TemporalType getTemporalType();
-
-
-
 
 
 

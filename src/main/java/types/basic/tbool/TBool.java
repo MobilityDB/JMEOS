@@ -10,13 +10,18 @@ import functions.functions;
 
 
 /**
- * Class that represents the MobilityDB type TBool
+ * Class that represents the MobilityDB type TBool used for {@link TBoolInst}, {@link TBoolSeq} and {@link TBoolSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TBool {
     String customType = "Boolean";
     Pointer getBoolInner();
     String getCustomType();
     TemporalType getTemporalType();
+
+
     /* ------------------------- Constructors ---------------------------------- */
 
 

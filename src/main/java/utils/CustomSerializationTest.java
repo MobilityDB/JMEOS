@@ -5,7 +5,14 @@ import java.sql.SQLException;
 import functions.functions;
 import jnr.ffi.Pointer;
 
-public class testCustomSerialization {
+
+/**
+ * Class test for Pointer serialization and de-serialization.
+ *
+ * @author Nidhal Mareghni
+ * @since 18/10/2023
+ */
+public class CustomSerializationTest {
     public static void main(String[] args) throws SQLException{
         functions.meos_initialize("UTC");
 

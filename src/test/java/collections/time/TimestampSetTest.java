@@ -7,8 +7,18 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
+import types.boxes.STBox;
+import types.boxes.TBox;
 import types.collections.time.PeriodSet;
+import types.collections.time.Time;
 import types.collections.time.TimestampSet;
 import types.collections.time.Period;
 
@@ -19,6 +29,17 @@ class TimestampSetTest {
 
     TimestampSetTest() throws SQLException {
     }
+
+
+    private static Stream<Arguments> times() {
+        functions.meos_initialize("UTC");
+        return Stream.of(
+                Arguments.of(new Period("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+                Arguments.of(new PeriodSet("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
+                Arguments.of(new TimestampSet("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}"), false)
+        );
+    }
+
 
 
 
@@ -119,7 +140,7 @@ class TimestampSetTest {
 
 
     @Test
-    public void testTimestampSetPositionFunction() throws Exception {
+    public void testIsContainedInFunction() throws Exception {
         functions.meos_initialize("UTC");
         TimestampSet tmp_set = new TimestampSet("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}");
         assertFalse(tset.is_contained_in(tmp_set));
@@ -169,6 +190,30 @@ class TimestampSetTest {
         TimestampSet tmp_set = new TimestampSet("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}");
         tset.distance(tmp_set);
     }
+
+
+    @ParameterizedTest(name="Test intersection method")
+    @MethodSource("times")
+    public void testIntersection(Time other, boolean expected) throws Exception {
+        functions.meos_initialize("UTC");
+        this.tset.intersection(other);
+    }
+
+    @ParameterizedTest(name="Test union method")
+    @MethodSource("times")
+    public void testUnion(Time other, boolean expected) throws Exception {
+        functions.meos_initialize("UTC");
+        this.tset.union(other);
+    }
+
+
+    @ParameterizedTest(name="Test minus method")
+    @MethodSource("times")
+    public void testMinus(Time other, boolean expected) throws Exception {
+        functions.meos_initialize("UTC");
+        this.tset.minus(other);
+    }
+
 
 
     @Test

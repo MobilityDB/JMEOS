@@ -5,6 +5,9 @@ import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tbool.TBool;
 import types.basic.tpoint.tgeog.TGeogPoint;
+import types.basic.tpoint.tgeog.TGeogPointInst;
+import types.basic.tpoint.tgeog.TGeogPointSeq;
+import types.basic.tpoint.tgeog.TGeogPointSeqSet;
 import types.collections.time.Period;
 import types.collections.time.PeriodSet;
 import types.collections.time.Time;
@@ -19,7 +22,10 @@ import org.locationtech.jts.geom.Point;
 import utils.ConversionUtils;
 
 /**
- * Class that represents the MobilityDB type TGeomPoint
+ * Class that represents the MobilityDB type TGeomPoint used for {@link TGeomPointInst}, {@link TGeomPointSeq} and {@link TGeomPointSeqSet}
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public interface TGeomPoint extends TPoint {
 	String customType = "Geom";

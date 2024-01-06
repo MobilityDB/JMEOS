@@ -6,8 +6,10 @@ import types.temporal.TInstant;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Base abstract class for TGeomPointIntSet and TGeogPointIntSet
- * Contains logic for handling SRID
+ * Base abstract class for TGeomPointInt and TGeogPointInt
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
  */
 public abstract class TPointInst extends TInstant<Point> implements TPoint{
 
@@ -17,11 +19,21 @@ public abstract class TPointInst extends TInstant<Point> implements TPoint{
 		super();
 
 	}
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TPointInst(Pointer inner){
 		super(inner);
 		this.inner = createInner(inner);
 	}
 
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TIntInst value
+	 */
 	public TPointInst(String value){
 		super(value);
 		this.inner = createStringInner(value);
