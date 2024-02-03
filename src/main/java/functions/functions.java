@@ -5,6 +5,7 @@ import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
 import utils.JarLibraryLoader;
 import utils.meosCatalog.MeosEnums.meosType;
+import utils.meosCatalog.MeosEnums.meosOper;
 
 import java.time.*;
 
@@ -2066,6 +2067,14 @@ public class functions {
 		Pointer ttext_tmax_transfn(Pointer state, Pointer temp);
 
 		Pointer ttext_tmin_transfn(Pointer state, Pointer temp);
+
+		Pointer temporal_simplify_min_dist(Pointer temp, double dist);
+
+		Pointer temporal_simplify_min_tdelta(Pointer temp, Pointer mint);
+
+		Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize);
+
+		Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize);
 
 		Pointer temporal_tprecision(Pointer temp, Pointer duration, long origin);
 
@@ -8582,6 +8591,26 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer ttext_tmin_transfn(Pointer state, Pointer temp) {
 		return MeosLibrary.meos.ttext_tmin_transfn(state, temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_simplify_min_dist(Pointer temp, double dist) {
+		return MeosLibrary.meos.temporal_simplify_min_dist(temp, dist);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_simplify_min_tdelta(Pointer temp, Pointer mint) {
+		return MeosLibrary.meos.temporal_simplify_min_tdelta(temp, mint);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize) {
+		return MeosLibrary.meos.temporal_simplify_dp(temp, eps_dist, synchronize);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize) {
+		return MeosLibrary.meos.temporal_simplify_max_dist(temp, eps_dist, synchronize);
 	}
 	
 	@SuppressWarnings("unused")

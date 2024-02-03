@@ -4,6 +4,7 @@ import types.basic.tpoint.tgeog.TGeogPointInst;
 import types.basic.tpoint.tgeog.TGeogPointSeq;
 import types.collections.time.TimestampSet;
 import utils.ConversionUtils;
+import functions.functions;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import static functions.functions.*;
 
 public class ais_stream_file {
     private static final int NO_INSTANTS_BATCH = 1000;
-    private static final int NO_INSTANTS_KEEP = 2;
+    private static final int NO_INSTANTS_KEEP = 5;
     private static final int MAX_TRIPS = 5;
     private static final int MAX_LENGTH_POINT = 64;
     private static final int MAX_LENGTH_HEADER = 1024;
@@ -29,7 +30,7 @@ public class ais_stream_file {
 
     static class TripRecord {
         long MMSI = 0;
-        TGeogPointSeq trip = null; // Equivalent class for TSequence in Java
+        TGeogPointSeq trip; // Equivalent class for TSequence in Java
     }
 
     public static void main(String[] args) {
@@ -37,6 +38,7 @@ public class ais_stream_file {
         int noRecords = 0;
         int noNulls = 0;
         int noWrites = 0;
+        int check = 0;
 
         TripRecord[] trips = new TripRecord[MAX_TRIPS];
         for (int ia = 0; ia < trips.length; ia++) {
@@ -71,11 +73,13 @@ public class ais_stream_file {
 
 
                 noRecords++;
-
+                System.out.println("Valeur de j avant le -1");
+                System.out.println(j);
                 j = -1;
                 for (int i=0; i < noShips; i++){
                     if (trips[i].MMSI == rec.MMSI){
                         j = i;
+                        break;
                     }
                 }
                 if (j < 0){
@@ -86,7 +90,7 @@ public class ais_stream_file {
                     trips[j].MMSI = rec.MMSI;
                 }
 
-
+                System.out.println(j);
                 String t_out = per.toString();
                 String str_pointbuffer;
                 str_pointbuffer = String.format("POINT(%f %f)@%s", rec.Longitude, rec.Latitude, t_out);
@@ -96,26 +100,31 @@ public class ais_stream_file {
                 System.out.println(str_pointbuffer);
                 TGeogPointInst inst1 = new TGeogPointInst(str_pointbuffer);
                 String inst1_out = inst1.to_string();
-                System.out.println("fin bloc 1");
-                System.out.println(trips[j].trip);
-                if(trips[j].trip != null && trips[j].trip.num_timestamps() == NO_INSTANTS_BATCH){
+                System.out.println(trips[j]);
+                if (trips[j].trip!=null){
+                    System.out.println(trips[j].trip.getPointInner());
+                    check = functions.temporal_num_timestamps(trips[j].trip.getPointInner());
+                }
+
+                if(trips[j].trip != null && check == NO_INSTANTS_BATCH){
                     System.out.println("instant batch");
                     String temp_out = trips[j].trip.to_string();
                     fileOut.write(String.format("%d, %s%n", trips[j].MMSI,temp_out));
                     noWrites++;
                     System.out.print("*");
                 }
-                System.out.println("Avan la fin");
                 TGeogPointInst geoginst = new TGeogPointInst(inst1_out);
-                System.out.println("Après la fin");
                 if (trips[j].trip == null){
-                    System.out.println("Dans le null");
-                    trips[j].trip = new TGeogPointSeq(geoginst.getPointInner());
-                    System.out.println(trips[j].trip.to_string());
+                    System.out.println("interieur null");
+                    System.out.println(geoginst.getPointInner());
+                    TGeogPointSeq tseq = new TGeogPointSeq(functions.tsequence_make_exp(geoginst.getPointInner(),1,NO_INSTANTS_BATCH,true,false,3,true));
+                    trips[j].trip = tseq;
+
                 }
                 else{
-                    System.out.println("dans le not null");
-                    trips[j].trip = new TGeogPointSeq(trips[j].trip.insert(geoginst).getInner());
+                    System.out.println("add");
+                    functions.tsequence_append_tinstant(trips[j].trip.getPointInner(),geoginst.getPointInner(),0.0,null,true);
+                    //trips[j].trip = new TGeogPointSeq(trips[j].trip.insert(geoginst).getInner());
                 }
             }
 

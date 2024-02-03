@@ -2,6 +2,7 @@ package tutorials;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import types.basic.tfloat.TFloatInst;
 import types.basic.tpoint.tgeog.TGeogPointInst;
 import types.collections.time.TimestampSet;
 import utils.ConversionUtils;
@@ -27,7 +28,7 @@ public class read_ais {
 		String workingdir = System.getProperty("user.dir");
 		System.out.println(workingdir);
 		//Reading the file
-		String file_path = workingdir + "/src/main/java/tutorials/aisinput.csv";
+		String file_path = workingdir + "/src/main/java/tutorials/scale10.csv";
 		try (BufferedReader reader = new BufferedReader(new FileReader(file_path))) {
 		} catch (IOException e) {
 			System.out.println("Error opening file");
@@ -45,8 +46,8 @@ public class read_ais {
 		} catch (FileNotFoundException e) {
 			System.out.println("Error file not found");
 		}
-		
-		
+
+		long startTime = System.nanoTime();
 		try (Scanner scanner = new Scanner(new File(file_path))) {
 			String line;
 			line = scanner.nextLine();
@@ -71,21 +72,21 @@ public class read_ais {
 					System.out.println("Record with missing values ignored \n");
 					no_nulls++;
 				}
-				if (no_records % 1000 == 0) {
+				if (true) {
 					String t_out = per.toString();
 					String str_pointbuffer;
 					str_pointbuffer = String.format("POINT(%f %f)@%s", rec.Longitude, rec.Latitude, t_out);
 					str_pointbuffer = str_pointbuffer.replaceAll(",", ".");
 					str_pointbuffer = str_pointbuffer.replaceAll("\\{", "");
 					str_pointbuffer = str_pointbuffer.replaceAll("\\}", "");
-					System.out.println(str_pointbuffer);
+					//System.out.println(str_pointbuffer);
 					TGeogPointInst inst1 = new TGeogPointInst(str_pointbuffer);
 					String inst1_out = inst1.to_string();
 					float rec_tmp = (float) rec.SOG;
-					Pointer inst2 = functions.tfloatinst_make(rec_tmp, ConversionUtils.datetimeToTimestampTz(rec.T));
-					String inst2_out = functions.tfloat_out(inst2, 2);
+					TFloatInst inst2 = new TFloatInst(functions.tfloatinst_make(rec_tmp, ConversionUtils.datetimeToTimestampTz(rec.T)));
+					String inst2_out = inst2.to_string(2);
 					
-					System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);
+					//System.out.printf("MMSI:%d, Location: %s SOG:%s\n", rec.MMSI, inst1_out, inst2_out);
 					
 				}
 				
@@ -94,7 +95,9 @@ public class read_ais {
 		} catch (FileNotFoundException e) {
 			System.out.println("Error file not found");
 		}
-		
+		long stopTime = System.nanoTime();
+		System.out.println("Time taken: ");
+		System.out.println((double) (stopTime - startTime)/1000000000.0);
 		System.out.printf("\n%d no_records read.\n%d incomplete records ignored.\n", no_records, no_nulls);
 		
 		meos_finalize();

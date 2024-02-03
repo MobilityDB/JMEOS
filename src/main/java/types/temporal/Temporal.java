@@ -273,6 +273,8 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the number of timestamps in "this".
      */
     public int num_timestamps(){
+        System.out.println("ici");
+        System.out.println(this.inner);
         return functions.temporal_num_timestamps(this.inner);
     }
 
@@ -852,6 +854,17 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
+    /**
+     * Return the simplified trip using Douglas-Peucker algorithm
+     * @param temp Pointer object
+     * @param dist distance
+     * @param sync synchronization
+     * @return a new Pointer object
+     */
+    public Pointer temporal_simplify_dp(Pointer temp, double dist, boolean sync){
+        return functions.temporal_simplify_dp(temp,dist,sync);
+    }
+
 
     /* ------------------------- Comparisons ----------------------------------- */
 
@@ -944,38 +957,5 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return functions.temporal_ge(this.inner,other.getInner());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Builds the temporal value. It can be overridden in child classes to change the behavior.
-     * @param value data type value
-     * @param time OffsetDateTime
-     * @return temporal value wrapper
-     */
-    protected TemporalValue<V> buildTemporalValue(V value, OffsetDateTime time) {
-        return new TemporalValue<>(value, time);
-    }
 
 }
