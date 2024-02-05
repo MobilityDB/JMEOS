@@ -7,9 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Java library for manipulating StringBuilders as well as strings to allow string modification, reading and file writing operations.
+ * Java class for manipulating StringBuilders as well as strings to allow string modification, reading and file writing operations.
  *
- * @author Killian Monnier
+ * @author Nidhal Mareghni and Killian Monnier
  * @since 27/07/2023
  */
 public class BuilderUtils {
@@ -69,6 +69,7 @@ public class BuilderUtils {
 	public static void readBuilderLines(StringBuilder builder, Consumer<String> line) {
 		String[] lines = builder.toString().split("\n");
 		for (String builderLine : lines) {
+
 			line.accept(builderLine);
 		}
 	}
@@ -106,6 +107,7 @@ public class BuilderUtils {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = pattern.matcher(line);
+
 				if (matcher.find()) {
 					lines.add(matcher.group());
 				}

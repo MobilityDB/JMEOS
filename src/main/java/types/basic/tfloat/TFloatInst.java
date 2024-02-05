@@ -1,16 +1,32 @@
 package types.basic.tfloat;
 
+import functions.functions;
 import jnr.ffi.Pointer;
 import types.temporal.TInstant;
+import types.temporal.TemporalType;
 
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
+/**
+ * Temporal float instant class inherited from temporal instant.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
+public class TFloatInst extends TInstant<Float> implements TFloat{
+	private Pointer inner;
+	private final String customType = "Float";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_INSTANT;
 
-public class TFloatInst extends TInstant<Float> {
+
+	public TFloatInst(){}
 
 
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TFloatInst(Pointer inner){
 		super(inner);
+		this.inner = inner;
 	}
 
 
@@ -18,20 +34,38 @@ public class TFloatInst extends TInstant<Float> {
 	 * The string constructor
 	 *
 	 * @param value - the string with the TFloatInst value
-	 * @throws SQLException
 	 */
-	public TFloatInst(String value) throws SQLException {
-		super(value, TFloat::getSingleTemporalValue);
+	public TFloatInst(String value) {
+		super(value);
+		this.inner = functions.tfloatinst_in(value);
 	}
-	
-	/**
-	 * The value and timestamp constructor
-	 *
-	 * @param value - a float
-	 * @param time  - a timestamp
-	 * @throws SQLException
-	 */
-	public TFloatInst(float value, OffsetDateTime time) throws SQLException {
-		super(value, time);
+
+
+
+	@Override
+	public Pointer createStringInner(String str){
+		return functions.tfloatinst_in(str);
 	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
+	}
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
+	}
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
+	}
+
+	@Override
+	public Pointer getNumberInner(){
+		return inner;
+	}
+
+
 }

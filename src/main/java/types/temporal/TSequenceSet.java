@@ -1,452 +1,43 @@
 package types.temporal;
 
 import jnr.ffi.Pointer;
-import types.temporal.delegates.CompareValueFunction;
-import types.temporal.delegates.GetTemporalSequenceFunction;
-import types.time.Period;
-import types.time.PeriodSet;
 
 import java.io.Serializable;
-import java.sql.SQLException;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> implements TemporalSequences<V> {
-	private CompareValueFunction<V> compareValueFunction;
+
+/**
+ * Base class for all temporal sequence set
+ *
+ * @param <V> base classe such as integer, boolean, text
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
+public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();
 	protected boolean stepwise;
 	private Pointer _inner;
-	
-	protected TSequenceSet(String value,
-						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
-						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
-		this.compareValueFunction = compareValueFunction;
-		parseValue(value, getTemporalSequenceFunction);
-		validate();
-	}
-	
-	protected TSequenceSet(boolean stepwise,
-						   String value,
-						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
-						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
-		this.compareValueFunction = compareValueFunction;
-		parseValue(value, getTemporalSequenceFunction);
-		this.stepwise = stepwise;
-		validate();
-	}
-	
-	protected TSequenceSet(boolean stepwise,
-						   String[] values,
-						   GetTemporalSequenceFunction<V> getTemporalSequenceFunction,
-						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
-		this.compareValueFunction = compareValueFunction;
-		this.stepwise = stepwise;
-		for (String val : values) {
-			TSequence<V> sequence = getTemporalSequenceFunction.run(val);
-			sequenceList.add(sequence);
-		}
-		validate();
-	}
-	
-	protected TSequenceSet(boolean stepwise,
-						   TSequence<V>[] values,
-						   CompareValueFunction<V> compareValueFunction) throws SQLException {
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
-		this.compareValueFunction = compareValueFunction;
-		this.stepwise = stepwise;
-		sequenceList.addAll(Arrays.asList(values));
-		validate();
+
+
+	public TSequenceSet(){
+		super();
 	}
 
 	protected TSequenceSet(Pointer inner){
-		super(TemporalType.TEMPORAL_SEQUENCE_SET);
+		super(inner);
 		this._inner = inner;
 
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 
-	protected void validateTemporalDataType() throws SQLException {
-		if (sequenceList.isEmpty()) {
-			throw new SQLException("Sequence set must be composed of at least one sequence.");
-		}
-		
-		for (int i = 0; i < sequenceList.size(); i++) {
-			TSequence<V> x = sequenceList.get(i);
-			validateSequence(x);
-			
-			if (i + 1 < sequenceList.size()) {
-				TSequence<V> y = sequenceList.get(i + 1);
-				validateSequence(y);
-				
-				if (x.endTimestamp().isAfter(y.startTimestamp()) ||
-						(x.endTimestamp().isEqual(y.startTimestamp()) && x.isUpperInclusive() && y.isLowerInclusive())) {
-					throw new SQLException("The sequences of a sequence set cannot overlap.");
-				}
-			}
-		}
-	}
-	
-	private void validateSequence(TSequence<V> sequence) throws SQLException {
-		if (sequence == null) {
-			throw new SQLException("Sequence cannot be null.");
-		}
-		
-		if (sequence.stepwise != this.stepwise) {
-			throw new SQLException("Sequence should have the same interpolation.");
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public String buildValue() {
-		StringJoiner sj = new StringJoiner(", ");
-		
-		for (TSequence<V> sequence : sequenceList) {
-			sj.add(sequence.buildValue(true));
-		}
-		
-		return String.format("%s{%s}",
-				stepwise && explicitInterpolation() ? TemporalConstants.STEPWISE : "",
-				sj.toString());
-	}
-	
-	/**
-	 * Parses the string representation of the value
-	 *
-	 * @param value                       string representation
-	 * @param getTemporalSequenceFunction delegate used to create a new temporal sequence
-	 * @throws SQLException
-	 */
-	private void parseValue(String value, GetTemporalSequenceFunction<V> getTemporalSequenceFunction)
-			throws SQLException {
-		String newValue = preprocessValue(value);
-		
-		if (newValue.startsWith(TemporalConstants.STEPWISE)) {
-			stepwise = true;
-			newValue = newValue.substring(TemporalConstants.STEPWISE.length());
-		}
-		
-		newValue = newValue.replace("{", "").replace("}", "").trim();
-		List<String> seqValues = getSequenceValues(newValue);
-		
-		for (String seq : seqValues) {
-			if (stepwise && !seq.startsWith(TemporalConstants.STEPWISE)) {
-				seq = TemporalConstants.STEPWISE + seq;
-			}
-			sequenceList.add(getTemporalSequenceFunction.run(seq));
-		}
-	}
-	
-	/**
-	 * Splits the value into a list of string representations of sequences
-	 *
-	 * @param value the sequence set value
-	 * @return list of values
-	 */
-	protected List<String> getSequenceValues(String value) {
-		Matcher m = Pattern.compile("[\\[|\\(].*?[^\\]\\)][\\]|\\)]")
-				.matcher(value);
-		List<String> seqValues = new ArrayList<>();
-		while (m.find()) {
-			seqValues.add(m.group());
-		}
-		return seqValues;
-	}
-	
-	protected boolean explicitInterpolation() {
-		return true;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public List<V> getValues() {
-		List<V> values = new ArrayList<>();
-		for (TSequence<V> sequence : sequenceList) {
-			values.addAll(sequence.getValues());
-		}
-		return values;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public V startValue() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		return sequenceList.get(0).startValue();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public V endValue() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		return sequenceList.get(sequenceList.size() - 1).endValue();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public V minValue() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		V min = null;
-		
-		for (TSequence<V> sequence : sequenceList) {
-			V value = sequence.minValue();
-			
-			if (min == null || compareValueFunction.run(value, min) < 0) {
-				min = value;
-			}
-		}
-		
-		return min;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public V maxValue() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		V max = null;
-		
-		for (TSequence<V> sequence : sequenceList) {
-			V value = sequence.maxValue();
-			
-			if (max == null || compareValueFunction.run(value, max) > 0) {
-				max = value;
-			}
-		}
-		
-		return max;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public V valueAtTimestamp(OffsetDateTime timestamp) {
-		for (TSequence<V> sequence : sequenceList) {
-			V value = sequence.valueAtTimestamp(timestamp);
-			
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public int numTimestamps() {
-		return timestamps().length;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public OffsetDateTime[] timestamps() {
-		LinkedHashSet<OffsetDateTime> timestamps = new LinkedHashSet<>();
-		
-		for (TSequence<V> sequence : sequenceList) {
-			timestamps.addAll(Arrays.asList(sequence.timestamps()));
-		}
-		
-		return timestamps.toArray(new OffsetDateTime[0]);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public OffsetDateTime timestampN(int n) throws SQLException {
-		OffsetDateTime[] timestamps = timestamps();
-		if (n >= 0 && n < timestamps.length) {
-			return timestamps[n];
-		}
-		
-		throw new SQLException("There is no timestamp at this index.");
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public OffsetDateTime startTimestamp() {
-		return sequenceList.get(0).startTimestamp();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public OffsetDateTime endTimestamp() {
-		return sequenceList.get(sequenceList.size() - 1).endTimestamp();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public Period period() throws SQLException {
-		TSequence<V> first = sequenceList.get(0);
-		TSequence<V> last = sequenceList.get(sequenceList.size() - 1);
-		return new Period(first.startTimestamp(), last.endTimestamp(),
-				first.isLowerInclusive(), last.isUpperInclusive());
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public PeriodSet getTime() throws SQLException {
-		ArrayList<Period> periods = new ArrayList<>();
-		for (TSequence<V> sequence : sequenceList) {
-			periods.add(sequence.period());
-		}
-		return new PeriodSet(periods.toArray(new Period[0]));
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public int numInstants() {
-		return instants().size();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TInstant<V> startInstant() {
-		return sequenceList.get(0).startInstant();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TInstant<V> endInstant() {
-		return sequenceList.get(sequenceList.size() - 1).endInstant();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TInstant<V> instantN(int n) throws SQLException {
-		List<TInstant<V>> instants = instants();
-		
-		if (n >= 0 && n < instants.size()) {
-			return instants.get(n);
-		}
-		
-		throw new SQLException("There is no instant at this index.");
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public List<TInstant<V>> instants() {
-		ArrayList<TInstant<V>> list = new ArrayList<>();
-		for (TSequence<V> sequence : sequenceList) {
-			list.addAll(sequence.instantList);
-		}
-		return list;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public Duration duration() {
-		Duration duration = Duration.ZERO;
-		for (TSequence<V> sequence : sequenceList) {
-			duration = duration.plus(sequence.duration());
-		}
-		return duration;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public Duration timespan() {
-		return Duration.between(startTimestamp(), endTimestamp());
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public void shift(Duration duration) {
-		for (TSequence<V> sequence : sequenceList) {
-			sequence.shift(duration);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	/*
-	public boolean intersectsTimestamp(OffsetDateTime dateTime) {
-		for (TSequence<V> sequence : sequenceList) {
-			if (sequence.intersectsTimestamp(dateTime)) {
-				return true;
-			}
-		}
-		return false;
+	public TSequenceSet(String str){
+		super(str);
+		this._inner = createStringInner(str);
 	}
 
-	 */
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	/*
-	public boolean intersectsPeriod(Period period) {
-		for (TSequence<V> sequence : sequenceList) {
-			if (sequence.intersectsPeriod(period)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	public abstract Pointer createStringInner(String str);
+	public abstract Pointer createInner(Pointer inner);
 
-	 */
-	
 
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -471,7 +62,7 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 			TSequence<V> thisVal = sequenceList.get(i);
 			TSequence<?> otherVal = otherTemporal.sequenceList.get(i);
 			
-			if (!thisVal.equals(otherVal)) {
+			if (!thisVal.eq(otherVal)) {
 				return false;
 			}
 		}
@@ -485,55 +76,5 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> i
 		return value != null ? value.hashCode() : 0;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 
-	public int numSequences() {
-		return sequenceList.size();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TSequence<V> startSequence() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		return sequenceList.get(0);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TSequence<V> endSequence() {
-		if (sequenceList.isEmpty()) {
-			return null;
-		}
-		
-		return sequenceList.get(sequenceList.size() - 1);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public TSequence<V> sequenceN(int n) throws SQLException {
-		if (n >= 0 && n < sequenceList.size()) {
-			return sequenceList.get(n);
-		}
-		
-		throw new SQLException("There is no sequence at this index.");
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public List<TSequence<V>> sequences() {
-		return new ArrayList<>(sequenceList);
-	}
 }

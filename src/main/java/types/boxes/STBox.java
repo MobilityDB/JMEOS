@@ -1,21 +1,23 @@
 package types.boxes;
 
 import functions.functions;
-import jnr.ffi.Memory;
-import jnr.ffi.Runtime;
+import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
-import types.core.DateTimeFormatHelper;
-import types.core.TypeName;
+import types.basic.tpoint.TPoint;
+import types.collections.time.Time;
 import jnr.ffi.Pointer;
-import net.postgis.jdbc.geometry.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 
-import types.time.Period;
-import types.time.PeriodSet;
-import types.time.TimestampSet;
+import types.temporal.Temporal;
+import utils.ConversionUtils;
+import types.collections.time.Period;
+import types.collections.time.PeriodSet;
+import types.collections.time.TimestampSet;
+
+import javax.naming.OperationNotSupportedException;
 
 
 /**
@@ -40,35 +42,40 @@ import types.time.TimestampSet;
  * @author Nidhal Mareghni
  * @since 10/09/2023
  */
-@TypeName(name = "stbox")
-public class STBox extends Box {
-	private Point pMin = null;
-	private Point pMax = null;
-	private OffsetDateTime tMin = null;
-	private OffsetDateTime tMax = null;
+public class STBox implements Box {
+	private final OffsetDateTime tMin = null;
+	private final OffsetDateTime tMax = null;
 	private boolean isGeodetic = false;
-	private int srid = 0;
+	private final int srid = 0;
 	private Pointer _inner = null;
 	private boolean tmin_inc = true;
 	private boolean tmax_inc = true;
-	private Runtime runtime = Runtime.getSystemRuntime();
 
-	public STBox _get_box(TemporalObject<?> other) throws SQLException {
+	public STBox _get_box(TemporalObject other){
 		return this._get_box(other,true,false);
 	}
 
-	public STBox _get_box(TemporalObject<?> other, boolean allow_space_only, boolean allow_time_only) throws SQLException {
+
+	/**
+	 * Factory method to create new STBox objects
+	 *
+	 * @param other a temporal object
+	 * @param allow_space_only boolean space dimension
+	 * @param allow_time_only boolean time dimension
+	 * @return a new {@link STBox} object
+	 */
+	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only){
 		STBox other_box=null;
-
-		if (other instanceof STBox){
-
-		}
-
-		if (allow_time_only) {
+		if(allow_space_only && other instanceof Geometry){
+			other_box = new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
+		} else if (other instanceof TPoint) {
+			other_box = new STBox(functions.tpoint_to_stbox(((TPoint)other).getPointInner()));
+		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
 				case Period p -> other_box = new STBox(functions.period_to_stbox(p.get_inner()));
 				case PeriodSet ps -> other_box = new STBox(functions.periodset_to_stbox(ps.get_inner()));
+				case Temporal t -> other_box = new STBox(functions.period_to_stbox(functions.temporal_to_period(t.getInner())));
 				case TimestampSet ts -> other_box = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
 				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 			}
@@ -76,289 +83,104 @@ public class STBox extends Box {
 		return other_box;
 	}
 
-	/** ------------------------- Constructors ---------------------------------- */
+    /* ------------------------- Constructors ---------------------------------- */
 
 
 	/**
 	 * The default constructor
 	 */
 	public STBox() {
-		super();
+
 	}
 	
-	public STBox(Pointer inner) throws SQLException {
+	public STBox(Pointer inner){
 		this(inner, true, true, false);
 	}
 	
-	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic) throws SQLException {
-		super();
+	public STBox(Pointer inner, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
 		this._inner = inner;
 		this.tmin_inc = tmin_inc;
 		this.tmax_inc = tmax_inc;
 		this.isGeodetic = geodetic;
-		String str = functions.stbox_out(this._inner,2);
-		setValue(str);
 	}
-	
+
 	/**
 	 * The string constructor
 	 *
 	 * @param value - STBox value
-	 * @throws SQLException
 	 */
-	
-	public STBox(final String value) throws SQLException {
-		super();
-		setValue(value);
-		this._inner = functions.stbox_in(value);
 
+	public STBox(final String value){
+		this._inner = functions.stbox_in(value);
 	}
-	
+
 	/**
-	 * The constructor for only value dimension (x,y) or (x,y,z)
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param pMax - coordinates for maximum bound
-	 * @throws SQLException
+	 * Constructor with x,y,z coordinates and {@link LocalDateTime} values.
+	 * @param xmin x minimum float value
+	 * @param xmax x maximum float value
+	 * @param ymin y minimum float value
+	 * @param ymax y maximum float value
+	 * @param zmin z minimum float value
+	 * @param zmax z maximum float value
+	 * @param tmin LocalDateTime minimum value
+	 * @param tmax LocalDateTime maximum value
+	 * @param tmin_inc tmin boolean inclusion
+	 * @param tmax_inc tmax boolean inclusion
+	 * @param geodetic boolean geodetic
 	 */
-	public STBox(Point pMin, Point pMax, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
+	public STBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax, LocalDateTime tmin, LocalDateTime tmax, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
+		Pointer period=null;
+		boolean hast = tmin != null && tmax != null;
+		boolean hasx = !Float.isNaN(xmin) && !Float.isNaN(xmax) && !Float.isNaN(ymin) && !Float.isNaN(ymax);
+		boolean hasz = !Float.isNaN(zmin) && !Float.isNaN(zmax);
+		if (hast){
+			period = new Period(tmin, tmax, tmin_inc, tmax_inc).get_inner();
 		}
+
+		this._inner = functions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, period);
 	}
-	
+
+
 	/**
-	 * The constructor for value dimension (x,y) or (x,y,z) and time dimension
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param tMin - minimum time dimension
-	 * @param pMax - coordinates for maximum bound
-	 * @param tMax - maximum time dimension
-	 * @throws SQLException
+	 * Constructor without the z coordinate
+	 * @param xmin y minimum float value
+	 * @param xmax y maximum float value
+	 * @param ymin z minimum float value
+	 * @param ymax z maximum float value
+	 * @param tmin LocalDateTime minimum value
+	 * @param tmax LocalDateTime maximum value
 	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
+	public STBox(float xmin, float xmax, float ymin, float ymax, LocalDateTime tmin, LocalDateTime tmax){
+		this(xmin,xmax,ymin,ymax,0.0f,0.0f,tmin,tmax,true,true,false);
 	}
-	
+
+
+    /**
+     * Constructor without the LocalDateTime aspect (equivalent to a TBox)
+     * @param xmin
+     * @param xmax
+     * @param ymin
+     * @param ymax
+     * @param zmin
+     * @param zmax
+     */
+	public STBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+		this(xmin,xmax,ymin,ymax,zmin,zmax,null,null,true,true,false);
+	}
+
 	/**
-	 * The constructor for only time dimension
-	 *
-	 * @param tMin - minimum time dimension
-	 * @param tMax - maximum time dimension
-	 * @throws SQLException
+	 * Constructor only with x coordinates and temporal dimension
+	 * @param xmin
+	 * @param xmax
+	 * @param tmin
+	 * @param tmax
 	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, Pointer inner) throws SQLException {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
+	public STBox(float xmin, float xmax, LocalDateTime tmin, LocalDateTime tmax){
+		this(xmin,xmax,0.0f,0.0f,0.0f,0.0f,tmin,tmax,true,true,false);
 	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param pMax       - coordinates for maximum bound
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.isGeodetic = isGeodetic;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates and time dimension
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param tMin       - minimum time dimension
-	 * @param pMax       - coordinates for maximum bound
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, Pointer inner)
-			throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for geodetic box with only time dimension
-	 *
-	 * @param tMin       - minimum time dimension
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @throws SQLException
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, Pointer inner) throws SQLException {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for only value dimension (x,y) or (x,y,z) and SRID
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param pMax - coordinates for maximum bound
-	 * @param srid - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, Point pMax, int srid, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y) or (x,y,z), time dimension and SRID
-	 *
-	 * @param pMin - coordinates for minimum bound
-	 * @param tMin - minimum time dimension
-	 * @param pMax - coordinates for maximum bound
-	 * @param tMax - maximum time dimension
-	 * @param srid - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for only time dimension and SRID
-	 *
-	 * @param tMin - minimum time dimension
-	 * @param tMax - maximum time dimension
-	 * @param srid - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, int srid, Pointer inner) throws SQLException {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates and SRID
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param pMax       - coordinates for maximum bound
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, Point pMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for value dimension (x,y,z) with geodetic coordinates, time dimension and SRID
-	 *
-	 * @param pMin       - coordinates for minimum bound
-	 * @param tMin       - minimum time dimension
-	 * @param pMax       - coordinates for maximum bound
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(Point pMin, OffsetDateTime tMin, Point pMax, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner)
-			throws SQLException {
-		super();
-		this.pMin = pMin;
-		this.pMax = pMax;
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
-	
-	/**
-	 * The constructor for geodetic box with only time dimension and SRID
-	 *
-	 * @param tMin       - minimum time dimension
-	 * @param tMax       - maximum time dimension
-	 * @param isGeodetic - if the coordinates are spherical
-	 * @param srid       - spatial reference identifier
-	 * @throws SQLException
-	 */
-	public STBox(OffsetDateTime tMin, OffsetDateTime tMax, boolean isGeodetic, int srid, Pointer inner) throws SQLException {
-		super();
-		this.tMin = tMin;
-		this.tMax = tMax;
-		this.isGeodetic = isGeodetic;
-		this.srid = srid;
-		validate();
-		if (inner != null) {
-			this._inner = inner;
-		}
-	}
+
+
+
 
 	/**
 	 * Returns a copy of "this".
@@ -366,9 +188,8 @@ public class STBox extends Box {
 	 *         MEOS Functions:
 	 *             <li>stbox_copy</li>
 	 * @return a STBox instance
-	 * @throws SQLException
 	 */
-	public STBox copy() throws SQLException {
+	public STBox copy() {
 		return new STBox(functions.stbox_copy(this._inner));
 	}
 
@@ -379,20 +200,12 @@ public class STBox extends Box {
 	 *             <li>stbox_from_hexwkb</li>
 	 * @param hexwkb WKB representation in hex-encoded ASCII
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_hexwkb(String hexwkb) throws SQLException {
+	public static STBox from_hexwkb(String hexwkb) {
 		Pointer result = functions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
 	}
-	
-	
-	//To modify for pointer
-    /*
-    public String as_hexwkb(){
-        return stbox_as_hexwkb(this._inner,-1,this._inner.size())[0];
-    }
-   */
+
 
 	/**
 	 * Returns a "STBox" from a "Geometry".
@@ -403,25 +216,15 @@ public class STBox extends Box {
 	 * @param geom A `Geometry` instance.
 	 * @param geodetic Whether to create a geodetic or geometric `STBox`.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_geometry(Geometry geom, boolean geodetic) throws SQLException {
-		Pointer gs = functions.gserialized_in(geom.toString(), -1);
-		return new STBox(functions.geo_to_stbox(gs));
+	public static STBox from_geometry(Geometry geom, boolean geodetic) {
+		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
 
-
-
-    /*
-    //Add the datetime_to_timestamptz function to the class
-    public STBox from_datetime(Pointer time){
-        Pointer result;
-        //Add the datetime_to_timestamptz function to the class
-        result = timestamp_to_stbox(datetime_to_timestamptz(time));
-        return new STBox(result);
-    }
-
-     */
+	public static STBox from_geometry(Geometry geom) {
+		boolean geodetic = false;
+		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
+	}
 
 
 	/**
@@ -436,9 +239,8 @@ public class STBox extends Box {
 	 *         </ul>
 	 * @param other a Time instance
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public static STBox from_time(TemporalObject<?> other) throws SQLException{
+	public static STBox from_time(Time other) {
 		STBox returnValue;
 		switch (other){
 			case Period p -> returnValue = new STBox(functions.period_to_stbox(p.get_inner()));
@@ -480,37 +282,62 @@ public class STBox extends Box {
      */
 
 
-    /*
-    //Modify Period type
-    public STBox from_geometry_datetime(Geometry geometry, Pointer datetime){
-        Pointer gs = gserialized_in(geometry.toString(),-1);
-        Pointer result = geo_timestamp_to_stbox(gs,datetime_to_timestamptz(datetime));
+	/**
+	 * Returns a "STBox" from a space and time dimension.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>geo_timestamp_to_stbox</li>
+	 *             <li>geo_period_to_stbox</li>
+	 * @param geometry A {@link Geometry} instance representing the space dimension.
+	 * @param datetime A `{@link Time} instance representing the time dimension.
+	 * @param geodetic Whether to create a geodetic or geometric "STBox".
+	 * @return A new {@link STBox} instance.
+	 */
+	public static STBox from_geometry_datetime(Geometry geometry, LocalDateTime datetime, boolean geodetic){
+        Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
+        Pointer result = functions.geo_timestamp_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
         return new STBox(result);
     }
 
-    public STBox from_geometry_period(Geometry geometry, Pointer period){
-        Pointer gs = gserialized_in(geometry.toString(),-1);
-        Pointer result = geo_period_to_stbox(gs,period._inner);
+
+	/**
+	 * Returns a "STBox" from a space and time dimension.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>geo_timestamp_to_stbox</li>
+	 *             <li>geo_period_to_stbox</li>
+	 * @param geometry A {@link Geometry} instance representing the space dimension.
+	 * @param period A `{@link Period} instance representing the time dimension.
+	 * @param geodetic Whether to create a geodetic or geometric "STBox".
+	 * @return A new {@link STBox} instance.
+	 */
+    public static STBox from_geometry_period(Geometry geometry, Period period, boolean geodetic){
+		Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
+        Pointer result = functions.geo_period_to_stbox(gs,period.get_inner());
         return new STBox(result);
     }
 
-    public STBox from_tpoint(TPoint temporal){
-        return new STBox(tpoint_to_stbox(temporal._inner));
+
+	/**
+	 * Returns the bounding box of a "TPoint" instance as an "STBox".
+	 *
+	 * <p>.
+	 *
+	 *         MEOS Functions:
+	 *             <li>tpoint_to_stbox</li>
+	 * @param temporal A {@link TPoint} instance.
+	 * @return A new {@link STBox} instance.
+	 */
+    public static STBox from_tpoint(TPoint temporal){
+        return new STBox(functions.tpoint_to_stbox(temporal.getPointInner()));
     }
 
-     */
-	
-	
-	//Add the shapely package ?
-    /*
-    public BaseGeometry to_geometry(int precision){
-        return gserialized_to_shapely_geometry(stbox_to_geo(this._inner),precision);
-    }
 
-     */
-
-
-	/** ------------------------- Output ---------------------------------------- */
+    /* ------------------------- Output ---------------------------------------- */
 
 	/**
 	 *  Returns a string representation of "this".
@@ -526,7 +353,7 @@ public class STBox extends Box {
 
 
 
-	/** ------------------------- Conversions ---------------------------------- */
+    /* ------------------------- Conversions ---------------------------------- */
 
 	/**
 	 * Returns the temporal dimension of "this" as a "Period" instance.
@@ -534,15 +361,30 @@ public class STBox extends Box {
 	 *         MEOS Functions:
 	 *             <li>stbox_to_period</li>
 	 * @return a new Period instance
-	 * @throws SQLException
 	 */
-    public Period to_period() throws SQLException {
+    public Period to_period() {
         Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }
 
 
-	/** ------------------------- Accessors ------------------------------------- */
+	/**
+	 * Returns the spatial dimension of "this" as a {@link Geometry} instance.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_to_geo</li>
+	 * @param precision The precision of the geometry coordinates.
+	 * @return A new {@link Geometry} instance.
+	 * @throws ParseException
+	 */
+	public Geometry to_geometry(int precision) throws ParseException {
+		return ConversionUtils.gserialized_to_shapely_geometry(functions.stbox_to_geo(this._inner),precision);
+	}
+
+
+    /* ------------------------- Accessors ------------------------------------- */
 
 	/**
 	 * Returns whether "this" has a spatial (XY) dimension.
@@ -592,50 +434,131 @@ public class STBox extends Box {
 
 
 	/**
-	 * Returns the minimum X coordinate of ``self``.
+	 * Returns the minimum X coordinate of "this".
 	 *
-	 *         Returns:
-	 *             A :class:`float` with the minimum X coordinate of ``self``.
-	 *
+	 * <p>
 	 *         MEOS Functions:
-	 *             stbox_xmin
-	 * @return
+	 *             <li>stbox_xmin</li>
+	 * @return A {@link Float} with the minimum X coordinate of "this".
 	 */
-    public boolean xmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_xmin(this._inner, result);
-    }
-    public boolean ymin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_ymin(this._inner, result);
-    }
-    public boolean zmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_zmin(this._inner, result);
-    }
-    public boolean tmin(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_tmin(this._inner, result);
-    }
-    public boolean xmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_xmax(this._inner, result);
-    }
-    public boolean ymax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_ymax(this._inner, result);
-    }
-    public boolean zmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_zmax(this._inner, result);
-    }
-    public boolean tmax(){
-		Pointer result = Memory.allocate(runtime,Double.BYTES);
-        return functions.stbox_tmax(this._inner, result);
+    public float xmin(){
+		return (float) functions.stbox_xmin(this._inner).getDouble(0);
     }
 
+	/**
+	 * Returns the minimum Y coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ymin</li>
+	 * @return A {@link Float} with the minimum Y coordinate of "this".
+	 */
+    public float ymin(){
+		return (float) functions.stbox_ymin(this._inner).getDouble(0);
+    }
 
-	/** ------------------------- Spatial Reference System ---------------------- */
+	/**
+	 * Returns the minimum Z coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_zmin</li>
+	 * @return A {@link Float} with the minimum Z coordinate of "this".
+	 */
+    public float zmin(){
+		return (float) functions.stbox_zmin(this._inner).getDouble(0);
+    }
+
+	/**
+	 * Returns the minimum T coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_tmin</li>
+	 * @return A {@link Float} with the minimum T coordinate of "this".
+	 */
+    public float tmin(){
+		return (float) functions.stbox_tmin(this._inner).getDouble(0);
+    }
+
+	/**
+	 * Returns the maximum X coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_xmax</li>
+	 * @return A {@link Float} with the maximum X coordinate of "this".
+	 */
+    public float xmax(){
+		return (float) functions.stbox_xmax(this._inner).getDouble(0);
+    }
+
+	/**
+	 * Returns the maximum Y coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_ymax</li>
+	 * @return A {@link Float} with the maximum Y coordinate of "this".
+	 */
+    public float ymax(){
+		return (float) functions.stbox_ymax(this._inner).getDouble(0);
+    }
+
+	/**
+	 * Returns the maximum Z coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_zmax</li>
+	 * @return A {@link Float} with the maximum Z coordinate of "this".
+	 */
+    public float zmax(){
+		return (float) functions.stbox_zmax(this._inner).getDouble(0);
+    }
+
+	/**
+	 * Returns the maximum T coordinate of "this".
+	 *
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_tmax</li>
+	 * @return A {@link Float} with the maximum T coordinate of "this".
+	 */
+    public float tmax(){
+		return (float) functions.stbox_tmax(this._inner).getDouble(0);
+    }
+
+	public boolean get_tmin_inc(){
+		return tmin_inc;
+	}
+
+	public boolean get_tmax_inc(){
+		return tmax_inc;
+	}
+
+	public OffsetDateTime getTMin() {
+		return tMin;
+	}
+
+	public OffsetDateTime getTMax() {
+		return tMax;
+	}
+
+	public boolean isGeodetic() {
+		return isGeodetic;
+	}
+
+	public int getSrid() {
+		return srid;
+	}
+
+	public Pointer get_inner(){
+		return this._inner;
+	}
+
+
+    /* ------------------------- Spatial Reference System ---------------------- */
 
 	/**
 	 * Returns the SRID of "this".
@@ -656,38 +579,76 @@ public class STBox extends Box {
 	 *             <li>stbox_set_srid</li>
 	 * @param value The new SRID.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox set_srid(int value) throws SQLException {
+	public STBox set_srid(int value) {
 		return new STBox(functions.stbox_set_srid(this._inner,value));
 	}
 	
 
-	/** ------------------------- Transformations ------------------------------- */
+	/* ------------------------- Transformations ------------------------------- */
+
+	/**
+	 * Get the spatial dimension of "this", removing the temporal dimension
+	 *         if any
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_get_space</li>
+	 * @return A new {@link STBox} instance.
+	 */
+	public STBox get_space(){
+		return new STBox(functions.stbox_get_space(this._inner));
+	}
 
 
-	public STBox expand_stbox(STBox stbox, STBox other) throws SQLException {
+	/**
+	 * Expands "this" with "other".
+	 *         If "other" is a {@link Integer} or a {@link Float}, the result is equal
+	 *         to "this" but with the spatial dimensions expanded by "other" in all
+	 *         directions. If "other" is a {@link java.time.Duration}, the result is equal to
+	 *         "this"  but with the temporal dimension expanded by `other` in both
+	 *         directions.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_expand_space</li>
+	 *             <li>stbox_expand_time</li>
+	 * @param stbox The object to expand "this" with.
+	 * @param other The object to expand "this" with.
+	 * @return A new {@link STBox} instance.
+	 */
+	public STBox expand_stbox(STBox stbox, STBox other) {
 		Pointer result = functions.stbox_copy(this._inner);
 		functions.stbox_expand(other._inner, result);
 		return new STBox(result);
 	}
 
-	public STBox expand_numerical(Number value) throws SQLException {
+
+	/**
+	 * Expands "this" with "other".
+	 *         If "other" is a {@link Integer} or a {@link Float}, the result is equal
+	 *         to "this" but with the spatial dimensions expanded by "other" in all
+	 *         directions. If "other" is a {@link java.time.Duration}, the result is equal to
+	 *         "this"  but with the temporal dimension expanded by `other` in both
+	 *         directions.
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *             <li>stbox_expand_space</li>
+	 *             <li>stbox_expand_time</li>
+	 * @param value The value to expand with
+	 * @return A new {@link STBox} instance.
+	 */
+	public STBox expand_numerical(Number value) {
 		STBox result = null;
-		if(Integer.class.isInstance(value) || Float.class.isInstance(value)){
-			result = new STBox(functions.stbox_expand_space(this.get_inner(),(float) value));
+		if(value instanceof Integer || value instanceof Float){
+			result = new STBox(functions.stbox_expand_space(this.get_inner(), value.floatValue()));
 		}
 		return result;
 	}
-
-	 /*
-    //Add the timedelta function
-    public STBox expand_timedelta(STBox stbox, Duration duration){
-        Pointer result = stbox_expand_temporal(this._inner, timedelta_to_interval(duration));
-        return new STBox(result);
-    }
-
-     */
 
 
 	/**
@@ -698,9 +659,8 @@ public class STBox extends Box {
 	 *
 	 * @param maxdd Maximum number of decimal digits.
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox round(int maxdd) throws SQLException {
+	public STBox round(int maxdd) {
 		Pointer new_inner = functions.stbox_copy(this._inner);
 		functions.stbox_round(new_inner,maxdd);
 		return new STBox(new_inner);
@@ -711,7 +671,7 @@ public class STBox extends Box {
 
 
 
-	/** ------------------------- Set Operations -------------------------------- */
+    /* ------------------------- Set Operations -------------------------------- */
 
 
 	/**
@@ -722,9 +682,8 @@ public class STBox extends Box {
 	 * @param other spatiotemporal box to merge with
 	 * @param strict included or not
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox union(STBox other, boolean strict) throws SQLException {
+	public STBox union(STBox other, boolean strict) {
 		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
@@ -736,9 +695,8 @@ public class STBox extends Box {
 	 *             <li>union_stbox_stbox</li>
 	 * @param other spatiotemporal box to merge with
 	 * @return a new STBox instance
-	 * @throws SQLException
 	 */
-	public STBox add(STBox other) throws SQLException {
+	public STBox add(STBox other) {
 		return this.union(other, true);
 	}
 
@@ -751,9 +709,8 @@ public class STBox extends Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
-	 * @throws SQLException
 	 */
-	public STBox intersection(STBox other) throws SQLException {
+	public STBox intersection(STBox other) {
 		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
 	}
 
@@ -766,11 +723,16 @@ public class STBox extends Box {
 	 *
 	 * @param other temporal object to merge with
 	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
-	 * @throws SQLException
 	 */
-	public STBox mul(STBox other) throws SQLException {
+	public STBox mul(STBox other) {
 		return this.intersection(other);
 	}
+
+
+
+
+	/* ------------------------- Positions Operators ------------------------------------- */
+
 
 
 	/**
@@ -783,9 +745,8 @@ public class STBox extends Box {
 	 *             <li>adjacent_stbox_stbox</li>
 	 * @param other The other spatiotemporal object to check adjacency with "this".
 	 * @return "true" if "this" and "other" are adjacent, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_adjacent(TemporalObject<?> other) throws SQLException {
+	public boolean is_adjacent(TemporalObject other) {
 		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -797,9 +758,8 @@ public class STBox extends Box {
 	 *             <li>contained_stbox_stbox</li>
 	 * @param other The spatiotemporal object to check containment with "this.
 	 * @return "true" if "this" is contained in "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_contained_in(TemporalObject<?> other) throws SQLException {
+	public boolean is_contained_in(TemporalObject other) {
 		return functions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -813,9 +773,8 @@ public class STBox extends Box {
 	 *             <li>contains_stbox_stbox </li>
 	 * @param other The spatiotemporal object to check containment with "this".
 	 * @return "true" if "this" contains "other", "false otherwise.
-	 * @throws SQLException
 	 */
-	public boolean contains(TemporalObject<?> other) throws SQLException {
+	public boolean contains(TemporalObject other) {
 		return functions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -827,9 +786,8 @@ public class STBox extends Box {
 	 *             <li>overlaps_stbox_stbox </li>
 	 * @param other The spatiotemporal object to check overlap with "this".
 	 * @return "true" if "this" overlaps "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean overlaps(TemporalObject<?> other) throws SQLException {
+	public boolean overlaps(TemporalObject other)  {
 		return functions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -841,9 +799,8 @@ public class STBox extends Box {
 	 *             <li>same_stbox_stbox</li>
 	 * @param other The spatiotemporal object to check equality with "this".
 	 * @return "true" if "this" is the same as "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_same(TemporalObject<?> other) throws SQLException {
+	public boolean is_same(TemporalObject other) {
 		return functions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
@@ -855,9 +812,8 @@ public class STBox extends Box {
 	 *             <li>left_stbox_stbox </li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly to the left of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_left(TemporalObject<?> other) throws SQLException {
+	public boolean is_left(TemporalObject other) {
 		return functions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -869,9 +825,8 @@ public class STBox extends Box {
 	 *             <li>overleft_stbox_stbox, tpoint_to_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is to the left of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_left(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_left(TemporalObject other) {
 		return functions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -883,9 +838,8 @@ public class STBox extends Box {
 	 *             <li>right_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly to the right of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_right(TemporalObject<?> other) throws SQLException {
+	public boolean is_right(TemporalObject other) {
 		return functions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -898,9 +852,8 @@ public class STBox extends Box {
 	 *             <li>overright_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is to the right of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_right(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_right(TemporalObject other) {
 		return functions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -912,9 +865,8 @@ public class STBox extends Box {
 	 *             <li>below_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly below of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_below(TemporalObject<?> other) throws SQLException {
+	public boolean is_below(TemporalObject other) {
 		return functions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -928,9 +880,8 @@ public class STBox extends Box {
 	 *             <li>overbelow_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is below "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_below(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_below(TemporalObject other) {
 		return functions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -943,9 +894,8 @@ public class STBox extends Box {
 	 *             <li>above_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly above of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_above(TemporalObject<?> other) throws SQLException {
+	public boolean is_above(TemporalObject other) {
 		return functions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -959,9 +909,8 @@ public class STBox extends Box {
 	 *             <li>overabove_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is above "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_above(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_above(TemporalObject other) {
 		return functions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -974,9 +923,8 @@ public class STBox extends Box {
 	 *             <li>front_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly in front of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_front(TemporalObject<?> other) throws SQLException {
+	public boolean is_front(TemporalObject other) {
 		return functions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -990,9 +938,8 @@ public class STBox extends Box {
 	 *             <li>overfront_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is in front of "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_front(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_front(TemporalObject other) {
 		return functions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1005,9 +952,8 @@ public class STBox extends Box {
 	 *             <li>back_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly behind of "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_behind(TemporalObject<?> other) throws SQLException {
+	public boolean is_behind(TemporalObject other) {
 		return functions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1021,9 +967,8 @@ public class STBox extends Box {
 	 *             <li>overback_stbox_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is behind of "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_behind(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_behind(TemporalObject other) {
 		return functions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
@@ -1037,9 +982,8 @@ public class STBox extends Box {
 	 * 	<p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly before "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_before(TemporalObject other) throws Exception {
 		return this.to_period().is_before(other);
 	}
 
@@ -1054,9 +998,8 @@ public class STBox extends Box {
 	 * 	 </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_before(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_before(TemporalObject other) throws Exception {
 		return this.to_period().is_over_or_before(other);
 	}
 
@@ -1070,9 +1013,8 @@ public class STBox extends Box {
 	 *     </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly after "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_after(TemporalObject other) throws Exception {
 		return this.to_period().is_after(other);
 	}
 
@@ -1087,13 +1029,12 @@ public class STBox extends Box {
 	 *      </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean is_over_or_after(TemporalObject<?> other) throws SQLException {
+	public boolean is_over_or_after(TemporalObject other) throws Exception {
 		return this.to_period().is_over_or_after(other);
 	}
 
-	/** ------------------------- Distance Operations --------------------------- */
+    /* ------------------------- Distance Operations --------------------------- */
 
 
 	/**
@@ -1110,17 +1051,48 @@ public class STBox extends Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_geom(Geometry other) {
-		Pointer gs = functions.gserialized_in(other.toString(), -1);
-		return (float) functions.nad_stbox_geo(this._inner, gs);
+		return (float) functions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()));
 	}
-	
+
+
+	/**
+	 * Returns the distance between the nearest points of "this" and "other".
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>nad_stbox_geo</li>
+	 *             <li>nad_stbox_stbox</li>
+	 *          </ul>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
+	 */
 	public float nearest_approach_distance_stbox(STBox other) {
 		return (float) functions.nad_stbox_stbox(this._inner, other._inner);
 	}
 
 
+	/**
+	 * Returns the distance between the nearest points of "this" and "other".
+	 *
+	 * <p>
+	 *
+	 *         MEOS Functions:
+	 *         <ul>
+	 *             <li>nad_stbox_geo</li>
+	 *             <li>nad_stbox_stbox</li>
+	 *          </ul>
+	 * @param other The spatiotemporal object to compare with "this".
+	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
+	 */
+	public float nearest_approach_distance_tpoint(TPoint other) {
+		return (float) functions.nad_tpoint_stbox(this._inner, other.getPointInner());
+	}
 
-	/** ------------------------- Comparisons ----------------------------------- */
+
+
+    /* ------------------------- Comparisons ----------------------------------- */
 
 	/**
 	 * Returns whether "this" is equal to "other".
@@ -1130,11 +1102,10 @@ public class STBox extends Box {
 	 *             <li>stbox_eq</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is equal to "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean equals(TemporalObject<?> other) throws SQLException{
+	public boolean eq(Box other) {
 		boolean result;
-		result = other instanceof STBox ? functions.stbox_eq(this._inner,((STBox) other).get_inner()) : false;
+		result = other instanceof STBox && functions.stbox_eq(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 
@@ -1147,11 +1118,10 @@ public class STBox extends Box {
 	 *             <li>stbox_ne</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is not equal to "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean notEquals(TemporalObject<?> other) throws SQLException{
+	public boolean notEquals(Box other) {
 		boolean result;
-		result = other instanceof STBox ? functions.stbox_ne(this._inner,((STBox) other).get_inner()) : true;
+		result = !(other instanceof STBox) || functions.stbox_ne(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 
@@ -1164,14 +1134,13 @@ public class STBox extends Box {
 	 *             <li>stbox_lt</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is less than "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean lessThan(TemporalObject<?> other) throws SQLException{
+	public boolean lessThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1185,14 +1154,13 @@ public class STBox extends Box {
 	 *             <li>stbox_le</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is less than or equal "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean lessThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean lessThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_le(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1206,14 +1174,13 @@ public class STBox extends Box {
 	 *             <li>stbox_gt</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is greater "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean greaterThan(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
@@ -1226,250 +1193,15 @@ public class STBox extends Box {
 	 *             <li>stbox_ge</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is greater or equal "other", "false" otherwise.
-	 * @throws SQLException
 	 */
-	public boolean greaterThanOrEqual(TemporalObject<?> other) throws SQLException{
+	public boolean greaterThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
 			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
 		}
 		else{
-			throw new SQLException("Operation not supported with this type.");
+			throw new OperationNotSupportedException("Operation not supported with this type.");
 		}
 	}
 
 
-
-
-
-
-
-
-
-	
-	
-	@Override
-	public String getValue() {
-		String sridPrefix = "";
-		if (srid != 0) {
-			sridPrefix = String.format("SRID=%s;", srid);
-		}
-		if (isGeodetic) {
-			return getGeodeticValue(sridPrefix);
-		} else {
-			return getNonGeodeticValue(sridPrefix);
-		}
-	}
-	
-	@Override
-	public void setValue(String value) throws SQLException {
-		boolean hasZ;
-		boolean hasT;
-		if (value.startsWith("SRID")) {
-			String[] initialValues = value.split(";");
-			srid = Integer.parseInt(initialValues[0].split("=")[1]);
-			value = initialValues[1];
-		}
-		
-		if (value.contains("GEODSTBOX")) {
-			isGeodetic = true;
-			value = value.replace("GEODSTBOX", "");
-			hasZ = true;
-			hasT = value.contains("T");
-		} else if (value.startsWith("STBOX")) {
-			value = value.replace("STBOX", "");
-			hasZ = value.contains("Z");
-			hasT = value.contains("T");
-		} else {
-			throw new SQLException("Could not parse STBox value");
-		}
-		value = value.replace("Z", "")
-				.replace("T", "")
-				.replace("(", "")
-				.replace(")", "");
-		String[] values = value.split(",");
-		int nonEmpty = (int) Arrays.stream(values).filter(x -> !x.isEmpty()).count();
-		if (nonEmpty == 2) {
-			String[] removedNull = Arrays.stream(values)
-					.filter(x -> !x.isEmpty())
-					.toArray(String[]::new);
-			this.tMin = DateTimeFormatHelper.getDateTimeFormat(removedNull[0].trim());
-			this.tMax = DateTimeFormatHelper.getDateTimeFormat(removedNull[1].trim());
-		} else {
-			this.pMin = new Point();
-			this.pMax = new Point();
-			if (nonEmpty >= 4) {
-				this.pMin.setX(Double.parseDouble(values[0]));
-				this.pMax.setX(Double.parseDouble(values[nonEmpty / 2]));
-				this.pMin.setY(Double.parseDouble(values[1]));
-				this.pMax.setY(Double.parseDouble(values[1 + nonEmpty / 2]));
-			} else {
-				throw new SQLException("Could not parse STBox value, invalid number of parameters.");
-			}
-			if (hasZ) {
-				this.pMin.setZ(Double.parseDouble(values[2]));
-				this.pMax.setZ(Double.parseDouble(values[2 + nonEmpty / 2]));
-			}
-			if (hasT) {
-				this.tMin = DateTimeFormatHelper.getDateTimeFormat(values[nonEmpty / 2 - 1].trim());
-				this.tMax = DateTimeFormatHelper.getDateTimeFormat(values[(nonEmpty / 2 - 1) + nonEmpty / 2].trim());
-			}
-		}
-		validate();
-	}
-
-	
-	/**
-	 * Compares if the values in time dimension are the same
-	 *
-	 * @param other - a STBox to compare
-	 * @return true if they are equals; otherwise false
-	 */
-	public boolean tIsEqual(STBox other) {
-		boolean tMinIsEqual;
-		boolean tMaxIsEqual;
-		
-		if (tMin != null && other.getTMin() != null) {
-			tMinIsEqual = tMin.isEqual(other.getTMin());
-		} else {
-			tMinIsEqual = tMin == other.getTMin();
-		}
-		
-		if (tMax != null && other.getTMax() != null) {
-			tMaxIsEqual = tMax.isEqual(other.getTMax());
-		} else {
-			tMaxIsEqual = tMax == other.getTMax();
-		}
-		
-		return tMinIsEqual && tMaxIsEqual;
-	}
-	
-	@Override
-	public int hashCode() {
-		String value = getValue();
-		return value != null ? value.hashCode() : 0;
-	}
-	
-	public Double getXmin() {
-		return pMin != null ? pMin.getX() : null;
-	}
-	
-	public Double getXmax() {
-		return pMax != null ? pMax.getX() : null;
-	}
-	
-	public Double getYmin() {
-		return pMin != null ? pMin.getY() : null;
-	}
-	
-	public Double getYmax() {
-		return pMax != null ? pMax.getY() : null;
-	}
-	
-	public Double getZmin() {
-		return pMin != null ? pMin.getZ() : null;
-	}
-	
-	public Double getZmax() {
-		return pMax != null ? pMax.getZ() : null;
-	}
-
-	public boolean get_tmin_inc(){
-		return tmin_inc;
-	}
-
-	public boolean get_tmax_inc(){
-		return tmax_inc;
-	}
-	
-	public OffsetDateTime getTMin() {
-		return tMin;
-	}
-	
-	public OffsetDateTime getTMax() {
-		return tMax;
-	}
-	
-	public boolean isGeodetic() {
-		return isGeodetic;
-	}
-	
-	public int getSrid() {
-		return srid;
-	}
-	
-	/**
-	 * Verifies that the received fields are valid
-	 *
-	 * @throws SQLException
-	 */
-	private void validate() throws SQLException {
-		if (tMin == null ^ tMax == null) {
-			throw new SQLException("Both tmin and tmax should have a value.");
-		}
-		
-		if (pMin != null && pMax != null) {
-			if ((pMin.getX() == null ^ pMax.getX() == null) ^ (pMin.getY() == null ^ pMax.getY() == null)) {
-				throw new SQLException("Both x and y coordinates should have a value.");
-			}
-			
-			if (pMin.getZ() == null ^ pMax.getZ() == null) {
-				throw new SQLException("Both zmax and zmin should have a value.");
-			}
-			
-			if (isGeodetic && pMin.getZ() == null) {
-				throw new SQLException("Geodetic coordinates need z value.");
-			}
-			
-			if (pMin.getX() == null && tMin == null) {
-				throw new SQLException("Could not parse STBox value, invalid number of arguments.");
-			}
-		}
-	}
-	
-	/**
-	 * Gets a string for geodetic values
-	 *
-	 * @param sridPrefix - a string that contains the SRID
-	 * @return the STBox string with geodetic values
-	 */
-	private String getGeodeticValue(String sridPrefix) {
-		if (tMin != null) {
-			if (pMin != null) {
-				return String.format("%sGEODSTBOX T((%f, %f, %f, %s), (%f, %f, %f, %s))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMin.getZ(), tMin, pMax.getX(), pMax.getY(), pMax.getZ(), tMax);
-			}
-			return String.format("%sGEODSTBOX T((, %s), (, %s))", sridPrefix, tMin, tMax);
-		}
-		return String.format("%sGEODSTBOX((%f, %f, %f), (%f, %f, %f))", sridPrefix,
-				pMin.getX(), pMin.getY(), pMin.getZ(), pMax.getX(), pMax.getY(), pMax.getZ());
-	}
-	
-	/**
-	 * Gets a string for non-geodetic values
-	 *
-	 * @param sridPrefix - a string that contains the SRID
-	 * @return the STBox string with non-geodetic values
-	 */
-	private String getNonGeodeticValue(String sridPrefix) {
-		if (pMin == null) {
-			if (tMin != null) {
-				return String.format("%sSTBOX T((, %s), (, %s))", sridPrefix, tMin, tMax);
-			}
-		} else if (pMin.getZ() == null) {
-			if (tMin == null) {
-				return String.format("%sSTBOX ((%f, %f), (%f, %f))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMax.getX(), pMax.getY());
-			}
-			return String.format("%sSTBOX T((%f, %f, %s), (%f, %f, %s))", sridPrefix,
-					pMin.getX(), pMin.getY(), tMin, pMax.getX(), pMax.getY(), tMax);
-		} else {
-			if (tMin == null) {
-				return String.format("%sSTBOX Z((%f, %f, %s), (%f, %f, %s))", sridPrefix,
-						pMin.getX(), pMin.getY(), pMin.getZ(), pMax.getX(), pMax.getY(), pMax.getZ());
-			}
-			return String.format("%sSTBOX ZT((%f, %f, %f, %s), (%f, %f, %f, %s))", sridPrefix,
-					pMin.getX(), pMin.getY(), pMin.getZ(), tMin, pMax.getX(), pMax.getY(), pMax.getZ(), tMax);
-		}
-		return null;
-	}
 }
