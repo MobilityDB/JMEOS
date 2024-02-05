@@ -34,7 +34,7 @@ The following dependencies are obtained through Maven and are necessary to devel
 - 🌍 Jts Core
 ### Structure of the project
 The project is based on two layer of wrapper. The function wrapper uses JNR-FFI to transform MEOS API functions in Java functions. The outer wrapper uses the functions wrapper to define spatiotemporal classes and methods written in Java.
-
+![Project Structure](thesis/assets/ProjectStructure.png "text to show")
 
 ## Installation
 ### MobilityDB
