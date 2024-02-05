@@ -11,9 +11,15 @@ The increasing complexity and volume of spatiotemporal data in various domains n
 
 ## Table of contents
 
-
-## Features
-Wrapper 
+- [Requirements](#Requirements)
+- [Installation]
+- [Javadoc]
+- [Unit Test]
+- [Deployment]
+- [Code Analysis]
+- [Docker Image]
+- [Use Case Example]
+- [Future Work]
 
 ## Requirements
 The project is based on MEOS and developed in Java
@@ -29,9 +35,11 @@ The following dependencies are obtained through Maven and are necessary to devel
 
 
 ## Installation
+### MobilityDB
 Installation of Java and Maven will not be detailed here since many tutorials exists online. The installation of MobilityDB with MEOS needs to follow these subsequent commands: 
 
 ```bash
+#Install MobilityDB with MEOS
 git clone https://github.com/MobilityDB/MobilityDB
 mkdir MobilityDB/build
 cd MobilityDB/build
@@ -39,14 +47,14 @@ cmake -DMEOS=on ..
 make
 sudo make install
 ```
-
+### Dependencies
 Concerning the dependencies, all of them were already included in the pom.xml file. It is highly recommended to use an IDE such as IntelliJ in order to seamlessly integrated all the components in the development environment.
 
 
 ## Javadoc
 The Javadoc generated is available under the docs folder. 
 It can be generated through the following command:
-```java
+```bash
 mvn javadoc:javadoc
 ```
 
@@ -55,29 +63,87 @@ By default, the generated javadoc will be stored inside the **target** folder.
 ## Unit test
 Multiple unit test were implemented and are located under the **test** folder. The folder is structured similarly to the source file, as enforced by Java/IntelliJ rules. 
 The following command allows to run all test at once:
-```java
+```bash
 mvn test
 ```
 One can prefer running only one file (class):
-```java
+```bash
 mvn test -Dtest="FileTest"
 ```
 It is also possible to run only one method of a class:
-```java
+```bash
 mvn test -Dtest="FileTest#method"
 ```
 
 
 ## Deployment
-A dedicated self-explanatory file describing how the project can be deployed is stored in this file
+A dedicated self-explanatory file describing how the project can be deployed through a **jar** file, is stored [here].
 
 ## Code analysis
+The code analysis is performed through SonarQube. In order to install it, the following set of commands needs to be run through command line:
+```bash
+# 1. Download and Install SonarQube
+sudo apt - get install zip -y
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.6.1.59531.zip
+sudo unzip sonarqube -9.6.1.59531.zip
+sudo mv sonarqube -9.6.1.59531 sonarqube
+sudo mv sonarqube/opt/
+
+# 2. Add SonarQube Group and User
+sudo groupadd sonar
+sudo useradd -d /opt/sonarqube -g sonar sonar
+sudo chown sonar : sonar /opt/sonarqube -R
+
+# 3. Configure SonarQube
+sudo nano/opt/sonarqube/conf/sonar.properties
+# Edit with sonar username , password and url
+sudo nano/opt/sonarqube/bin/linux-x86-64/sonar.sh
+# Add sonar user
+
+# 4. Setup Systemd service
+sudo nano/etc/systemd/system/sonar.service
+# Add service configuration of sonar
+sudo systemctl enable sonar
+sudo systemctl start sonar
+sudo systemctl status sonar
+
+# 5. Modify Kernel System Limits
+sudo nano/etc/sysctl.conf
+# Increase limit
+sudo reboot
+
+# 6. Access SonarQube Web Interface
+# Access through http://IP:9000
+```
+
+When SonarQube is properly installed in the system, running the code analysis is straigthforward:
+```bash
+#Running code analysis
+mvn clean verify sonar:sonar -Dsonar.projectKey=JMEOS -Dsonar.host.url=http://localhost:9000 -Dsonar.login=#yourtoken
+```
 
 ## Docker image
+In order to improve the portability of JMEOS library, a docker image was created. The docker image include a JMEOS, a linux environment as well as the installation of all requirements and dependencies of the project. This latter is available in an other repository located  [here](https://github.com/nmareghn/Docker-JMEOS/tree/main).
+Docker 24.0.7 needs to be installed. Many tutorials online detail this process.
 
-## Use case example
+To clone it, please run this command:
+```bash
+git clone https://gitlab.com/asded/docker_mobilitydb-jmeos
+cd docker_mobilitydb-jmeos/.devcontainer
+```
+To build the docker image, browse to the image directory:
+```bash
+docker build -t mbjmeos:lasted .
+```
 
-## Future work
+To run the docker image and use the following command:
+```bash
+docker run -ti mbjmeos:lasted
+```
+
+## Use Case Example
+
+## Future Work
 -  **Error Handling Improvements**  
 	- Address limitations in JNR-FFI documentation and debuggability. 
 	- Enhance error handling in JMEOS for better debugging, especially with C library interfacing.
@@ -94,5 +160,3 @@ A dedicated self-explanatory file describing how the project can be deployed is 
 -  **Creation of New MEOS Bindings**  
     - Develop new bindings for languages such as C and JavaScript, expanding MobilityDB's developer community.          
     - Support diverse applications and foster a more inclusive user base, contributing to spatiotemporal data processing knowledge.
-
-
