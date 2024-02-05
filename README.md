@@ -14,12 +14,12 @@ The increasing complexity and volume of spatiotemporal data in various domains n
 - [Requirements](#Requirements)
 - [Installation](#Installation)
 - [Javadoc](#Javadoc)
-- [Unit Test](#UnitTest)
+- [Unit Test](#Unit-Test)
 - [Deployment](#Deployment)
-- [Code Analysis](#CodeAnalysis)
-- [Docker Image](#DockerImage)
-- [Use Case Example](#UseCaseExample)
-- [Future Work](#FutureWork)
+- [Code Analysis](#Code-Analysis)
+- [Docker Image](#Docker-Image)
+- [Use Case Example](#Use-Case-Example)
+- [Future Work](#Future-Work)
 
 ## Requirements
 The project is based on MEOS and developed in Java
