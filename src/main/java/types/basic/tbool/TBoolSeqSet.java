@@ -1,48 +1,69 @@
 package types.basic.tbool;
 
+import functions.functions;
 import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;
+import types.temporal.TemporalType;
 
-import java.sql.SQLException;
+/**
+ * Temporal boolean sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
+public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
+	private Pointer inner;
+	private final String customType = "Boolean";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
 
-public class TBoolSeqSet extends TSequenceSet<Boolean> {
 
+	public TBoolSeqSet(){}
+
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TBoolSeqSet(Pointer inner){
 		super(inner);
+		this.inner = inner;
 	}
 
 	/**
 	 * The string constructor
 	 *
-	 * @param value - the string with the TBoolSeqSet value
-	 * @throws SQLException
+	 * @param value - the string with the TBoolInst value
 	 */
-	public TBoolSeqSet(String value) throws SQLException {
-		super(true, value, TBoolSeq::new, TBool::compareValue);
+	public TBoolSeqSet(String value) {
+		super(value);
+		this.inner = functions.tbool_in(value);
 	}
-	
-	/**
-	 * The string array constructor
-	 *
-	 * @param values - an array of strings
-	 * @throws SQLException
-	 */
-	public TBoolSeqSet(String[] values) throws SQLException {
-		super(true, values, TBoolSeq::new, TBool::compareValue);
-	}
-	
-	/**
-	 * The TBoolSeq array constructor
-	 *
-	 * @param values - an array of TBoolSeq
-	 * @throws SQLException
-	 */
-	public TBoolSeqSet(TBoolSeq[] values) throws SQLException {
-		super(true, values, TBool::compareValue);
-	}
-	
+
+
+
 	@Override
-	protected boolean explicitInterpolation() {
-		return false;
+	public Pointer createStringInner(String str){
+		return functions.tbool_in(str);
 	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
+	}
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
+	}
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
+	}
+
+	@Override
+	public Pointer getBoolInner(){
+		return inner;
+	}
+
 }

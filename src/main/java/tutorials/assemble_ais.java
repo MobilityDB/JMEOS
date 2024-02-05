@@ -96,7 +96,7 @@ public class assemble_ais {
 					ship = numships++;
 					if (ship == MAX_TRIPS) {
 						System.out.printf("The maximum number of ships in the input file is bigger than %d", MAX_TRIPS);
-						return_value = 1;
+						//return_value = 1;
 					}
 					trips[ship].MMSI = rec.MMSI;
 				}

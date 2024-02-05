@@ -3,6 +3,13 @@ import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import functions.functions.MeosLibrary;
 
+
+/**
+ * Serialization class for JNR-FFI Pointer type.
+ *
+ * @author Nidhal Mareghni
+ * @since 18/08/2023
+ */
 public class CustomSerialization {
     public static long getInnerAddress(Pointer pointer){
         return pointer.address();

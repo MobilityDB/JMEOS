@@ -9,6 +9,12 @@ import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TIntInst;
 import types.basic.tint.TIntSeq;
 import types.basic.tint.TIntSeqSet;
+import types.basic.tpoint.tgeog.TGeogPointInst;
+import types.basic.tpoint.tgeog.TGeogPointSeq;
+import types.basic.tpoint.tgeog.TGeogPointSeqSet;
+import types.basic.tpoint.tgeom.TGeomPointInst;
+import types.basic.tpoint.tgeom.TGeomPointSeq;
+import types.basic.tpoint.tgeom.TGeomPointSeqSet;
 import types.basic.ttext.TTextInst;
 import types.basic.ttext.TTextSeq;
 import types.basic.ttext.TTextSeqSet;
@@ -22,8 +28,9 @@ public final class Factory{
     }
 
     public static Temporal create_temporal(Pointer inner, String customType, TemporalType temporalType){
+
         Temporal tmp = null;
-        if(inner.equals(null)){
+        if(inner == null){
             tmp = null;
         }
         else{
@@ -48,7 +55,8 @@ public final class Factory{
             case "Integer" -> instant =  new TIntInst(inner);
             case "Float" -> instant = new TFloatInst(inner);
             case "Boolean" -> instant = new TBoolInst(inner);
-            //case "Point": return new TPointIn
+            case "Geom" -> instant = new TGeomPointInst(inner);
+            case "Geog" -> instant = new TGeogPointInst(inner);
             case "String" -> instant = new TTextInst(inner);
         }
         return instant;
@@ -60,7 +68,8 @@ public final class Factory{
             case "Integer" -> sequence =  new TIntSeq(inner);
             case "Float" -> sequence = new TFloatSeq(inner);
             case "Boolean" -> sequence = new TBoolSeq(inner);
-            //case "Point": return new TPointIn
+            case "Geom" -> sequence = new TGeomPointSeq(inner);
+            case "Geog" -> sequence = new TGeogPointSeq(inner);
             case "String" -> sequence = new TTextSeq(inner);
         }
         return sequence;
@@ -72,7 +81,8 @@ public final class Factory{
             case "Integer" -> sequenceset =  new TIntSeqSet(inner);
             case "Float" -> sequenceset = new TFloatSeqSet(inner);
             case "Boolean" -> sequenceset = new TBoolSeqSet(inner);
-            //case "Point": return new TPointIn
+            case "Geom" -> sequenceset = new TGeomPointSeqSet(inner);
+            case "Geog" -> sequenceset = new TGeogPointSeqSet(inner);
             case "String" -> sequenceset = new TTextSeqSet(inner);
         }
         return sequenceset;

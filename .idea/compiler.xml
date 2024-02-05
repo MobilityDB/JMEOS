@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="jmeos" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="functions-builder" target="21" />
+      <module name="jmeos (1)" target="21" />
+      <module name="jmeos (2)" target="1.5" />
+      <module name="jmeos-builder" target="21" />
+      <module name="untitled" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

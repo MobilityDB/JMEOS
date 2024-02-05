@@ -1,47 +1,69 @@
 package types.basic.ttext;
 
+import functions.functions;
 import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
-import java.sql.SQLException;
+import types.temporal.TemporalType;
 
-public class TTextSeqSet extends TSequenceSet<String> {
+/**
+ * Temporal text sequence set class inherited from temporal sequence set.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
+public class TTextSeqSet extends TSequenceSet<String> implements TText{
 
+	private Pointer inner;
+	private final String customType = "String";
+	private final TemporalType temporalType = TemporalType.TEMPORAL_SEQUENCE_SET;
+
+
+	public TTextSeqSet(){}
+
+
+	/**
+	 * Pointer constructor
+	 * @param inner Pointer
+	 */
 	public TTextSeqSet(Pointer inner){
 		super(inner);
+		this.inner = inner;
 	}
 
 	/**
 	 * The string constructor
 	 *
-	 * @param value - the string with the TTextSeqSet value
-	 * @throws SQLException
+	 * @param value - the string with the TBoolInst value
 	 */
-	public TTextSeqSet(String value) throws SQLException {
-		super(true, value, TTextSeq::new, TText::compareValue);
+	public TTextSeqSet(String value) {
+		super(value);
+		this.inner = functions.ttext_in(value);
 	}
-	
-	/**
-	 * The string array constructor
-	 *
-	 * @param values - an array of strings
-	 * @throws SQLException
-	 */
-	public TTextSeqSet(String[] values) throws SQLException {
-		super(true, values, TTextSeq::new, TText::compareValue);
-	}
-	
-	/**
-	 * The TTextSeq array constructor
-	 *
-	 * @param values - an array of TTextSeq
-	 * @throws SQLException
-	 */
-	public TTextSeqSet(TTextSeq[] values) throws SQLException {
-		super(true, values, TText::compareValue);
-	}
-	
+
+
+
 	@Override
-	protected boolean explicitInterpolation() {
-		return false;
+	public Pointer createStringInner(String str){
+		return functions.ttext_in(str);
+	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+		return inner;
+	}
+
+	@Override
+	public String getCustomType(){
+		return this.customType;
+	}
+
+	@Override
+	public TemporalType getTemporalType(){
+		return this.temporalType;
+	}
+
+	@Override
+	public Pointer getTextInner(){
+		return inner;
 	}
 }

@@ -6,6 +6,8 @@ import jnr.ffi.Pointer;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
+import static functions.functions.*;
+
 
 
 public class disassemble_berlinmod {
@@ -26,10 +28,12 @@ public class disassemble_berlinmod {
 		trip_record[] trips = new trip_record[MAX_NO_TRIPS];
 		Arrays.fill(trips, new trip_record());
 		int[] curr_inst = new int[MAX_NO_TRIPS];
-		
-		
+
+		long startTime = System.nanoTime();
+
+		String workingdir = System.getProperty("user.dir");
 		//Reading the file
-		String file_path = "/home/nidhal/IdeaProjects/JMEOS/src/main/java/tutorials/aisinput.csv";
+		String file_path = workingdir + "/src/main/java/tutorials/trips.csv";
 		try (BufferedReader reader = new BufferedReader(new FileReader(file_path))) {
 		} catch (IOException e) {
 			System.out.println("Error opening file");
@@ -58,6 +62,7 @@ public class disassemble_berlinmod {
 				String trip_buffer_string = tokens[4];
 				
 				int day = functions.pg_date_in(date_buffer_string);
+				System.out.println(day);
 				Pointer trip = functions.temporal_from_hexwkb(trip_buffer_string);
 				
 				trips[i].vehid = vehid;
@@ -73,17 +78,56 @@ public class disassemble_berlinmod {
 				if (tokens.length != 5 && scanner.hasNextLine()) {
 					System.out.println("Trip record with missing values \n");
 				}
-				
+
+				int records_in = i;
+
+				BufferedWriter fileOut = new BufferedWriter(new FileWriter("trip_instants.csv"));
+				fileOut.write(header_buffer);
+
+				for(int a=0; i<MAX_NO_TRIPS;i++){
+					curr_inst[a]=1;
+				}
+
+				int records_out = 0;
+
+				while(true){
+					int first = 0;
+					while (first < records_in && curr_inst[first] < 0){
+						first++;
+					}
+					if (first == records_in){
+						break;
+					}
+
+					Pointer min_inst = functions.temporal_instant_n(trips[first].trip,curr_inst[first]);
+					int min_trip = first;
+
+
+					for (int a = first +1 ; a < records_in ; a++){
+						if (curr_inst[a] < 0){
+							continue;
+						}
+						Pointer inst = functions.temporal_instant_n(trips[i].trip,curr_inst[i]);
+					}
+
+
+
+				}
+
+
 				
 			} while (scanner.hasNextLine());
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("Error file not found");
-		}
-		
+		} catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        long stopTime = System.nanoTime();
+		System.out.println("Time taken: ");
+		System.out.println(stopTime - startTime);
 		int records_in = i;
-		
-		
+
 		functions.meos_finalize();
 		
 	}
