@@ -152,8 +152,9 @@ For example:
 - **read_ais.java**: reads AIS csv file containing ships locations and speed, extract the data and create JMEOS spatiotemporal type from these data in order to output the MMSI, Instants and SOG. 
 - **simplify_berlinmod**: reads a BerlinMOD csv file containing trips, parse and extract data to create JMEOS  spatiotemporal types and then simplify these trips before outputting the results.
 
-
-
+In the following figure, the output obtained from the simplify_berlinmod file execution:
+<br/><br/>
+![Simplify BerlinMOD output](thesis/assets/SimplifyBerlinMOD.png "Simplify BerlinMOD output")
 
 
 To run the examples, it is necessary to execute the following command:
@@ -174,7 +175,11 @@ A small benchmark was performed on the read_ais.java file in order to compare th
 
 Below, two graphs representing the results obtained from this benchmark.
 
+<br/><br/>
+![Time in seconds](thesis/assets/Time_in_seconds.jpg "Time in seconds")
 
+<br/><br/>
+![Throughput](thesis/assets/Throughput.jpg "Throughput")
 
 ## Future Work
 -  **Error Handling Improvements**  
