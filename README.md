@@ -32,6 +32,8 @@ The following dependencies are obtained through Maven and are necessary to devel
 - 🛠️ Maven Plugin
 - ✅ JUnit
 - 🌍 Jts Core
+### Structure of the project
+The project is based on two layer of wrapper. The function wrapper uses JNR-FFI to transform MEOS API functions in Java functions. The outer wrapper uses the functions wrapper to define spatiotemporal classes and methods written in Java.
 
 
 ## Installation
@@ -142,6 +144,35 @@ docker run -ti mbjmeos:lasted
 ```
 
 ## Use Case Example
+Multiple use case example are stored inside the **tutorials** package of the project. These examples manipulated BerlinMOD or AIS (from danish maritime institute) data.
+For example:
+- **hello_world.java**: manipulates TGeomPoint and transform them in mf-json strings format. 
+- **read_ais.java**: reads AIS csv file containing ships locations and speed, extract the data and create JMEOS spatiotemporal type from these data in order to output the MMSI, Instants and SOG. 
+- **simplify_berlinmod**: reads a BerlinMOD csv file containing trips, parse and extract data to create JMEOS  spatiotemporal types and then simplify these trips before outputting the results.
+
+
+
+
+
+To run the examples, it is necessary to execute the following command:
+```bash
+#Compile the java file
+javac -cp  "path/to/jmeos.jar" tutorials/hello_world.java
+#Run the java file
+java -cp ".:path/to/jmeos.jar" tutorials.hello_world
+```
+Again it is highly recommended to use IntelliJ or similar tools that seamlessly integrates and coordinates all dependencies. Thus, if you use IntelliJ, then simply run it through the GUI application.
+
+All files containing the data used in the use case example files are located in the resources directory.
+
+
+
+### Benchmark
+A small benchmark was performed on the read_ais.java file in order to compare the runtime performance with PyMEOS (Python implementation of MEOS) and MEOS. This benchmark was performed over 5 iterations and with 3 scales (200k, 500k and 1M lines) on AIS data obtained from [Danish AIS data](https://dma.dk/safety-at-sea/navigational-information/ais-data).
+
+Below, two graphs representing the results obtained from this benchmark.
+
+
 
 ## Future Work
 -  **Error Handling Improvements**  
