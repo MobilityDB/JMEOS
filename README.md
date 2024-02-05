@@ -190,7 +190,7 @@ Below, two graphs representing the results obtained from this benchmark.
 	- Increase test coverage in future JMEOS iterations for improved reliability. 
 	- While 100% coverage was not achievable within the thesis timeline, it remains a recommended goal. 
 -  **Implementation of Remaining Methods**  
-    - Complete the implementation of remaining JMEOS methods to unlock full library potential. 
+    - Complete the implementation of remaining JMEOS methods to achieve full library potential. 
     - Ensures JMEOS fully encapsulates MEOS C library functionality, broadening use case applicability. 
  -  **Addition of New Examples/Visual Examples**  
     - Implement additional example files using real-world data to demonstrate JMEOS functionalities. 
