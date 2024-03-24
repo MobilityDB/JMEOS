@@ -111,7 +111,19 @@ public class JarLibraryLoader<T> {
 				System.out.println("Running in test mode");
 				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
 			}
-		} else {
+		}
+		else if (getOSName().equals("macOS")) {
+			try {
+				copyFileFromJar("/jmeos/lib/libmeos.dylib", projectPath + "/src/lib/libmeos.dylib");
+				System.out.println("File copied successfully.");
+
+				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			} catch (IOException e) {
+				System.out.println("Running in test mode");
+				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			}
+		}
+		else {
 			throw new UnsupportedOperationException("JMEOS is only supported on Linux OS");
 		}
 	}

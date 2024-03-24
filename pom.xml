@@ -64,6 +64,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <argLine>-Xmx1024m</argLine>
+                    <forkCount>1</forkCount> <!-- Run tests within the main process -->
+                </configuration>
             </plugin>
 
             <plugin>
@@ -106,11 +110,11 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/src/main/resources/lib/libmeos.so</file>
+                            <file>${project.basedir}/src/main/resources/lib/libmeos.dylib</file>
                             <groupId>org.jmeos</groupId>
                             <artifactId>meos</artifactId>
                             <version>1.0</version>
-                            <packaging>so</packaging>
+                            <packaging>dylib</packaging>
                         </configuration>
                     </execution>
                 </executions>
