@@ -122,10 +122,13 @@ public class FunctionsGenerator {
 			line = line.replaceAll("static inline ", "");
 			
 			/* Changing types with * */
-			line = line.replaceAll("char\\s\\*\\*", "**char ");
-			line = line.replaceAll("char\\s\\*", "*char ");
-			line = line.replaceAll("\\w+\\s\\*\\*", "*[] ");
-			line = line.replaceAll("\\w+\\s\\*(?!\\*)", "* ");
+			line = line.replaceAll("char\\s?\\*\\*", "**char ");
+			line = line.replaceAll("char\\s?\\*", "*char ");
+//			line = line.replaceAll("(\\w+\\s?\\*\\*\\*)(?!\\*)", "*[][] ");
+//			line = line.replaceAll("(\\w+\\s?\\*\\*)(?!\\*)", "*[] ");
+			line = line.replaceAll("\\w+\\s?(\\*+)", "* ");
+//			line = line.replaceAll("(\\w+\\s?\\*)(?!\\*)", "* ");
+			line = line.replaceAll("\\s\\.\\.\\.", " * args");
 			
 			/* Changing special types or names */
 			line = line.replaceAll("\\(void\\)", "()"); // Remove the void parameter (for the function meos_finish(void)) //
@@ -147,9 +150,13 @@ public class FunctionsGenerator {
 	private static HashMap<String, String> buildEquivalentTypes() {
 		HashMap<String, String> types = new HashMap<>();
 		types.put("\\*", "Pointer");
+//		types.put("\\*\\[\\]", "Pointer[]");
+//		types.put("\\*\\[\\]\\[\\]", "Pointer[][]");
+//		types.put("\\*\\[]", "Pointer[]");
+//		types.put("\\*\\*\\[]", "Pointer[][]");
 		types.put("\\*char", "String");
 		types.put("\\*\\*char", "Pointer");
-		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
+//		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
 		types.put("bool", "boolean");
 		types.put("float", "float");
 		types.put("double", "double");
@@ -274,6 +281,14 @@ public class FunctionsGenerator {
 		}
 		return conversionList;
 	}
+
+	/**
+	 * utility function to count the number if occurences of pointer, pointer[] and pointer[][]
+	 */
+	public static int countOccurrences(String text, String pattern) {
+		String[] parts = text.split(Pattern.quote(pattern), -1);
+		return parts.length - 1;
+	}
 	
 	/**
 	 * Produce the returning process for a function
@@ -300,13 +315,13 @@ public class FunctionsGenerator {
 		}
 
 		/* Manage the return process : if there is something to return */
-		if (!getFunctionTypes(signature).get(0).equals("void")) {
-			var classReturnType = BuilderUtils.extractFunctionTypes(signature).get(0);
+		if (!getFunctionTypes(signature).getFirst().equals("void")) {
+			var classReturnType = BuilderUtils.extractFunctionTypes(signature).getFirst();
 			
 			/* Manage the returning process of conversion types */
 			if (conversionTypes.containsValue(classReturnType)) {
 				List<String> returnProcess = new ArrayList<>();
-				var functionCall = BuilderUtils.removeSemicolon(functionCallingProcess.get(0));
+				var functionCall = BuilderUtils.removeSemicolon(functionCallingProcess.getFirst());
 				
 				returnProcess.add("var result = " + functionCall + ";");
 				
@@ -326,8 +341,21 @@ public class FunctionsGenerator {
 				if (paramNames.contains("result")){
 					functionCallingProcess.add("boolean out;");
 					functionCallingProcess.add("Runtime runtime = Runtime.getSystemRuntime();");
-					int total = signature.split(Pattern.quote("Pointer"), -1).length -1;
-					if (total > 1){
+//					int pointer_total = signature.split(Pattern.quote("Pointer"), -1).length -1;
+//					int pointer_array_total = signature.split(Pattern.quote("Pointer[]"), -1).length -1;
+
+					// Count occurrences of "Pointer"
+					int pointerCount = countOccurrences(signature, "Pointer");
+
+					// Count occurrences of "Pointer[]"
+					int pointerArrayCount = countOccurrences(signature, "Pointer\\[\\]");
+
+					// Count occurrences of "Pointer[][]"
+					int pointerArrayArrayCount = countOccurrences(signature, "Pointer\\[\\]\\[\\]");
+
+
+
+					if (pointerCount > 1){
 						functionCallingProcess.add("Pointer result = Memory.allocateDirect(runtime, Long.BYTES);");
 						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
 						functionCallingProcess.add("Pointer new_result = result.getPointer(0);");
@@ -348,13 +376,6 @@ public class FunctionsGenerator {
 						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
 						functionCallingProcess.add("return out ? result.getLong(0) : null ;");
 					}
-
-					else if (signature.contains("long ")){
-						functionCallingProcess.add("Pointer result = Memory.allocateDirect(runtime, Long.BYTES);");
-						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
-						functionCallingProcess.add("return out ? result.getLong(0) : null ;");
-					}
-
 					else if (signature.contains("boolean ")){
 						functionCallingProcess.add("Pointer result = Memory.allocateDirect(runtime, Long.BYTES);");
 						functionCallingProcess.add("out = MeosLibrary.meos." + BuilderUtils.extractFunctionName(signature) + "(" + BuilderUtils.getListWithoutBrackets(paramNames) + ");");
@@ -369,7 +390,7 @@ public class FunctionsGenerator {
 
 				}
 				else{
-					functionCallingProcess.set(0, "return " + functionCallingProcess.get(0));
+					functionCallingProcess.set(0, "return " + functionCallingProcess.getFirst());
 				}
 
 			}
@@ -393,6 +414,8 @@ public class FunctionsGenerator {
 				import jnr.ffi.Pointer;
 				import jnr.ffi.Memory;
 				import jnr.ffi.Runtime;
+				import jnr.ffi.byref.PointerByReference;
+				import jnr.ffi.Struct;
 				import utils.JarLibraryLoader;
 				import utils.meosCatalog.MeosEnums.meosType;
 				import utils.meosCatalog.MeosEnums.meosOper;

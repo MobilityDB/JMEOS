@@ -1,11 +1,11 @@
 package types.collections.base;
 
 import jnr.ffi.Pointer;
-import functions.functions;
 import org.locationtech.jts.io.ParseException;
-import types.basic.tbool.TBoolInst;
-import types.basic.tbool.TBoolSeq;
-import types.basic.tbool.TBoolSeqSet;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import functions.functions;
 
 /**
  * Abstract class that represents a set of temporal object
@@ -67,6 +67,59 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
 
     /**
+     * Returns the copy of a span
+     *
+     * @return Pointer type
+     */
+
+    public Pointer copy() {
+        return functions.set_copy(this._inner);
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation.
+     * @return Pointer type
+     */
+    public Pointer from_wkb(Pointer wkb, long size) {
+        return functions.stbox_from_wkb(wkb, size);
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
+     * @return T type
+     */
+    public Pointer from_hexwkb(String hexwkb) {
+        return functions.set_from_hexwkb(hexwkb);
+    }
+
+
+    /**
+     * Returns the WKB representation
+     * @return Pointer type
+     */
+    public Pointer as_wkb(byte variant) {
+        return functions.set_as_wkb(this._inner, variant);
+    }
+
+    /**
+     * Returns the WKB representation in hex-encoded ASCII.
+     * @return String type
+     */
+    public String as_hexwkb(byte variant) {
+        return functions.set_as_hexwkb(this._inner, variant);
+    }
+
+    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.set_to_span(this._inner);
+        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+    }
+
+    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.set_to_spanset(this._inner);
+        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
+    }
+
+    /**
      * Returns the number of elements in "this".
      * <p>
      *         MEOS Functions:
@@ -119,6 +172,16 @@ public abstract class Set<T extends Object> implements Collection, Base {
         else {
             return null;
         }
+    }
+
+    /**
+     * Returns the elements.
+     * @param
+     * @return A {@link T} instance
+     */
+    public T elements(List<T> list) throws Exception
+    {
+        throw new Exception("Operation not supported for List- " + list);
     }
 
 
@@ -336,26 +399,74 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return A {@link Float} instance
      * @throws Exception
      */
-    public float distance(Base other) throws Exception {
+//    public float distance(Base other) throws Exception {
+//        if (other instanceof Set<?>){
+//            return (float) functions.distance_floatset_floatset(this._inner, ((Set<?>) other)._inner);
+//        } else if (other instanceof Span<?>) {
+//            return (float) functions.distance_floatspan_floatspan(functions.set_to_span(this._inner), ((Span<?>) other).get_inner());
+//        } else if (other instanceof SpanSet<?>) {
+//            return (float) functions.distance_floatspanset_floatspan(this._inner,((SpanSet<?>) other).get_inner());
+//        }
+//        else {
+//            throw new Exception("Operation not supported with this type");
+//        }
+//    }
+
+    public void distance(Base other) throws Exception {
+        throw new Exception("Operation not supported with "+ other + " type");
+    }
+
+
+    /* ------------------------- Set Operations -------------------------------- */
+
+    public Base intersection(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return (float) functions.distance_set_set(this._inner, ((Set<?>) other)._inner);
-        } else if (other instanceof Span<?>) {
-            return (float) functions.distance_span_span(functions.set_span(this._inner), ((Span<?>) other).get_inner());
-        } else if (other instanceof SpanSet<?>) {
-            return (float) functions.distance_spanset_span(this._inner,((SpanSet<?>) other).get_inner());
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_set_set(this._inner, ((Set<?>) other)._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");
         }
     }
 
+    public Base mul(Base other) throws Exception {
+        return intersection(other);
+    }
 
-    /* ------------------------- Set Operations -------------------------------- */
+    public Base minus(Base other) throws Exception {
+        if (other instanceof Set<?>){
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_set_set(this._inner, ((Set<?>) other).get_inner()));
+        }
+        else {
+            throw new Exception("Operation not supported with this type");
+        }
+    }
 
+    public Base sub(Base other) throws Exception {
+        return minus(other);
+    }
 
+    public Base subtract_from(Base other) throws Exception {
+        throw new Exception("Operation not supported with " + other + " type");
+    }
+
+    public Base rsub(Base other) throws Exception {
+        return subtract_from(other);
+    }
+
+    public Base union(Base other) throws Exception {
+        if (other instanceof Set<?>){
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_set_set(this._inner, ((Set<?>) other)._inner));
+        }
+        else {
+            throw new Exception("Operation not supported with " + other + " type");
+        }
+    }
+
+    public Base add(Base other) throws Exception {
+        return union(other);
+    }
 
     /* ------------------------- Comparisons ----------------------------------- */
-
 
     /**
      * Returns whether "this" and "other" are equal.

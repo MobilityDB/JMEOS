@@ -34,10 +34,12 @@ public class FunctionsExtractor {
 	 *
 	 * @throws URISyntaxException thrown when resources not found
 	 */
-	public FunctionsExtractor() throws URISyntaxException {
 
-		String absolute = "src/main/java/builder/resources/meos.h";
-		this.inputFilePath = Paths.get(absolute);
+	String currentDir = System.getProperty("user.dir");
+	public FunctionsExtractor() throws URISyntaxException {
+    
+		String reqDir= "/builder/resources/meos.h"; 
+		this.inputFilePath = Paths.get(currentDir, reqDir);
 		//this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/meos.h")).toURI());
 		this.outputFunctionsFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_functions.h"));
 		this.outputTypesFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_types.h"));

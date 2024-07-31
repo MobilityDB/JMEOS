@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <description>JMEOS is a Java library allowing MobilityDB users
-        to perform MEOS native operations on MobilityDB data types.
+    <description>
+        JMEOS is a Java library allowing MobilityDB users to perform MEOS native operations on MobilityDB data types using JAVA.
     </description>
 
     <dependencies>
@@ -50,6 +50,13 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
 
 
@@ -223,8 +230,6 @@
                     <outputDirectory>jar</outputDirectory>
                 </configuration>
             </plugin>
-
-
         </plugins>
     </build>
 
@@ -243,9 +248,5 @@
             </plugin>
         </plugins>
     </reporting>
-
-
-
-
 
 </project>

@@ -1,8 +1,12 @@
 package types.collections.number;
 import types.collections.base.Base;
 import types.collections.base.Set;
-import functions.functions;
 import jnr.ffi.Pointer;
+import functions.functions;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Class for representing a set of text values.
@@ -90,16 +94,16 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link IntSpan} instance
      */
     public IntSpan to_span(){
-        return new IntSpan(functions.set_span(this._inner));
+        return new IntSpan(functions.set_to_span(this._inner));
     }
 
-
-
-    /*
     public FloatSet to_floatset(){
-        return new FloatSet();
+        List<Float> floatElements = new ArrayList<Float>();
+        for (Integer element : this.elements()) {
+            floatElements.add(element.floatValue());
+        }
+        return new FloatSet(String.valueOf(floatElements));
     }
-     */
 
 
     /** ------------------------- Accessors ------------------------------------- */
@@ -150,20 +154,21 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link Integer} instance
      * @throws Exception
      */
-    /*
+
     public Integer element_n(int n) throws Exception {
         super.element_n(n);
-        return functions.intset_value_n(this._inner,n);
-    }
-     */
-
-
-
-    /*
-    public List<Float> elements(){
+        return Objects.requireNonNull(functions.intset_value_n(this._inner, n + 1)).getInt(Integer.BYTES);
     }
 
-     */
+    public List<Integer> elements(){
+        Pointer elems = functions.intset_values(this._inner);
+        List<Integer> ret = new ArrayList<Integer>();
+        for (int i=0;i<this.num_elements();i++)
+        {
+            ret.add(elems.getInt((long) i *Integer.BYTES));
+        }
+        return ret;
+    }
 
 
 
@@ -227,7 +232,7 @@ public class IntSet extends Set<Integer> implements Number{
 
     public boolean contains(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.contains_intset_int(this._inner, (int) other);
+            return functions.contains_set_int(this._inner, (int) other);
         }
         else {
             return super.contains((Base) other);
@@ -260,7 +265,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.left_intset_int(this._inner, (int) other);
+            return functions.left_set_int(this._inner, (int) other);
         }
         else{
             return super.is_left((Base) other);
@@ -283,7 +288,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_over_or_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overleft_intset_int(this._inner, (int) other);
+            return functions.overleft_set_int(this._inner, (int) other);
         }
         else{
             return super.is_over_or_left((Base) other);
@@ -307,7 +312,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.right_intset_int(this._inner, (int) other);
+            return functions.right_set_int(this._inner, (int) other);
         }
         else{
             return super.is_right((Base) other);
@@ -331,7 +336,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_over_or_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overright_intset_int(this._inner, (int) other);
+            return functions.overright_set_int(this._inner, (int) other);
         }
         else{
             return super.is_over_or_right((Base) other);
@@ -345,47 +350,30 @@ public class IntSet extends Set<Integer> implements Number{
     /**
      * Returns the intersection of "this" and "other".
      *
-     *  <p>
-     *
-     *         MEOS Functions:
-     *             <li>intersection_set_set</li>
-     *             <li>intersection_intset_int</li>
-     *
-     * @param other A {@link IntSet} or {@link Integer} instance
-     * @return An object of the same type as "other" or "None" if the
-     *      *             intersection is empty.
-     * @throws Exception
-     */
-    public boolean intersection(Integer other) throws Exception{
-        Pointer result = null;
-        return false;
-        //return functions.intersection_intset_int(this._inner, (int) other, result);
-    }
-
-
-    /**
-     * Returns the intersection of "this" and "other".
-     *
-     *  <p>
-     *
-     *         MEOS Functions:
-     *             <li>intersection_set_set</li>
-     *             <li>intersection_intset_int</li>
+     * <p>
+     * <p>
+     * MEOS Functions:
+     * <li>intersection_set_set</li>
+     * <li>intersection_intset_int</li>
      *
      * @param other A {@link IntSet} or {@link Integer} instance
      * @return An object of the same type as "other" or "None" if the
-     *      *             intersection is empty.
+     * *             intersection is empty.
      * @throws Exception
      */
-    public IntSet intersection(IntSet other) throws Exception {
+    public Pointer intersection(Object other) throws Exception{
         Pointer result = null;
-        if(other instanceof IntSet){
-            result = functions.intersection_set_set(this._inner, other._inner);
+        if (other instanceof Integer){
+            result= functions.intersection_set_int(this._inner, (int) other);
         }
-
-        return new IntSet(result);
+        else if(other instanceof IntSet){
+            result= functions.intersection_set_set(this._inner, ((IntSet) other)._inner);
+        }
+        else {
+            super.intersection((Base) other);
+        }
+        return result;
     }
-
 
     /**
      * Returns the difference of "this" and "other".
@@ -403,7 +391,7 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet minus(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.minus_intset_int(this._inner, (int) other);
+            result = functions.minus_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
             result = functions.minus_set_set(this._inner, ((IntSet) other)._inner);
@@ -416,20 +404,16 @@ public class IntSet extends Set<Integer> implements Number{
     /**
      * Returns the difference of "other" and "this".
      *
-     *  <p>
-     *
-     *         MEOS Functions:
-     *             <li>minus_int_intset</li>
-     *
+     * <p>
+     * <p>
+     * MEOS Functions:
+     * <li>minus_int_intset</li>
      *
      * @param other A {@link Integer} instance
      * @return A {@link Integer} instance or "None" if the difference is empty.
      */
-    public boolean subtract_from(int other){
-        Pointer result = null;
-        return false;
-        //return functions.minus_int_intset(other,this._inner,result);
-
+    public Pointer subtract_from(int other){
+        return functions.minus_int_set(other,this._inner);
     }
 
 
@@ -449,12 +433,11 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.union_intset_int(this._inner, (int) other);
+            result = functions.union_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
             result = functions.union_set_set(this._inner, ((IntSet) other)._inner);
         }
-
         return new IntSet(result);
     }
 
@@ -479,15 +462,22 @@ public class IntSet extends Set<Integer> implements Number{
      * @throws Exception
      */
     public float distance(Object other) throws Exception {
+        float answer=0;
         if (other instanceof Integer){
-            return (float) functions.distance_intset_int(this._inner, (int) other);
+            answer= (float) functions.distance_set_int(this._inner, (int) other);
+        }
+        else if(other instanceof IntSet){
+            answer= functions.distance_intset_intset(this._inner, ((IntSet) other)._inner);
+        }
+        else if(other instanceof IntSpan){
+            answer= this.to_spanset().distance(other);
+        }
+        else if(other instanceof IntSpanSet){
+            answer= this.to_spanset().distance(other);
         }
         else {
-            return super.distance((Base) other);
+            super.distance((Base) other);
         }
+        return answer;
     }
-
-
-
-
 }

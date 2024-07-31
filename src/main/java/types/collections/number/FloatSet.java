@@ -1,8 +1,12 @@
 package types.collections.number;
-import functions.functions;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.Set;
+import functions.functions;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -95,13 +99,17 @@ public class FloatSet extends Set<Float> implements Number{
      * @return A new {@link FloatSpan} instance
      */
     public FloatSpan to_span(){
-        return new FloatSpan(functions.set_span(this._inner));
+        return new FloatSpan(functions.set_to_span(this._inner));
     }
 
+    public IntSet to_intset(){
+        List<Integer> intElements = new ArrayList<Integer>();
+        for (Float element : this.elements()) {
+            intElements.add(element.intValue());
+        }
+        return new IntSet(String.valueOf(intElements));
+    }
 
-    /*
-    public IntSet to_intset(){}
-     */
 
     /** ------------------------- Accessors ------------------------------------- */
 
@@ -153,16 +161,18 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public Float element_n(int n) throws Exception {
         super.element_n(n);
-        return 2.0f;
+        return this.elements().get(n);
     }
 
-
-
-    /*
     public List<Float> elements(){
+        Pointer elems = functions.floatset_values(this._inner);
+        List<Float> ret = new ArrayList<Float>();
+        for (int i=0;i<this.num_elements();i++)
+        {
+            ret.add((float) elems.getDouble((long) i * Double.BYTES));
+        }
+        return ret;
     }
-
-     */
 
     /* ------------------------- Transformations ------------------------------------ */
 
@@ -242,7 +252,7 @@ public class FloatSet extends Set<Float> implements Number{
 
     public boolean contains(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.contains_floatset_float(this._inner, (float) other);
+            return functions.contains_set_float(this._inner, (float) other);
         }
         else{
             return super.contains((Base)other);
@@ -269,7 +279,7 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean is_left(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.left_floatset_float(this._inner, (float) other);
+            return functions.left_set_float(this._inner, (float) other);
         }
         else{
             return super.is_left((Base) other);
@@ -292,7 +302,7 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean is_over_or_left(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.overleft_floatset_float(this._inner, (float) other);
+            return functions.overleft_set_float(this._inner, (float) other);
         }
         else{
             return super.is_over_or_left((Base) other);
@@ -316,7 +326,7 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean is_right(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.right_floatset_float(this._inner, (float) other);
+            return functions.right_set_float(this._inner, (float) other);
         }
         else{
             return super.is_right((Base) other);
@@ -340,7 +350,7 @@ public class FloatSet extends Set<Float> implements Number{
      */
     public boolean is_over_or_right(Object other) throws Exception {
         if (other instanceof Float){
-            return functions.overright_floatset_float(this._inner, (float) other);
+            return functions.overright_set_float(this._inner, (float) other);
         }
         else{
             return super.is_over_or_right((Base) other);
@@ -365,36 +375,19 @@ public class FloatSet extends Set<Float> implements Number{
      *      *             intersection is empty.
      * @throws Exception
      */
-    public boolean intersection(Float other) throws Exception{
+    public Pointer intersection(Object other) throws Exception{
         Pointer result = null;
-        return false;
-        //return functions.intersection_floatset_float(this._inner, (float) other, result);
-    }
-
-
-    /**
-     * Returns the intersection of "this" and "other".
-     *
-     *  <p>
-     *
-     *         MEOS Functions:
-     *             <li>intersection_set_set</li>
-     *             <li>intersection_floatset_float</li>
-     *
-     * @param other A {@link FloatSet} or {@link Float} instance
-     * @return An object of the same type as "other" or "None" if the
-     *      *             intersection is empty.
-     * @throws Exception
-     */
-    public FloatSet intersection(FloatSet other) throws Exception {
-        Pointer result = null;
-        if(other instanceof FloatSet){
-            result = functions.intersection_set_set(this._inner, other._inner);
+        if ((other instanceof Float) || (other instanceof Integer)){
+            result= functions.intersection_set_float(this._inner, (float) other);
         }
-        return new FloatSet(result);
+        else if(other instanceof FloatSet){
+            result= functions.intersection_set_set(this._inner, ((FloatSet) other)._inner);
+        }
+        else {
+            super.intersection((Base) other);
+        }
+        return result;
     }
-
-
 
     /**
      * Returns the difference of "this" and "other".
@@ -412,7 +405,7 @@ public class FloatSet extends Set<Float> implements Number{
     public FloatSet minus(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Float){
-            result = functions.minus_floatset_float(this._inner, (float) other);
+            result = functions.minus_set_float(this._inner, (float) other);
         }
         else if(other instanceof FloatSet){
             result = functions.minus_set_set(this._inner, ((FloatSet) other)._inner);
@@ -435,10 +428,8 @@ public class FloatSet extends Set<Float> implements Number{
      * @param other A {@link Float} instance
      * @return A {@link Float} instance or "None" if the difference is empty.
      */
-    public boolean subtract_from(float other){
-        Pointer result = null;
-        return false;
-        //return functions.minus_float_floatset(other,this._inner,result);
+    public Pointer subtract_from(float other){
+        return functions.minus_float_set(other,this._inner);
 
     }
 
@@ -459,7 +450,7 @@ public class FloatSet extends Set<Float> implements Number{
     public FloatSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Float){
-            result = functions.union_floatset_float(this._inner, (float) other);
+            result = functions.union_set_float(this._inner, (float) other);
         }
         else if(other instanceof FloatSet){
             result = functions.union_set_set(this._inner, ((FloatSet) other)._inner);
@@ -487,25 +478,22 @@ public class FloatSet extends Set<Float> implements Number{
      * @throws Exception
      */
     public float distance(Object other) throws Exception {
-        if (other instanceof Float){
-            return (float) functions.distance_floatset_float(this._inner, (float) other);
+        float answer=0;
+        if ((other instanceof Float) || (other instanceof Integer)){
+            answer= (float) functions.distance_set_float(this._inner, (float) other);
+        }
+        else if(other instanceof FloatSet){
+            answer= (float) functions.distance_floatset_floatset(this._inner, ((FloatSet) other)._inner);
+        }
+        else if(other instanceof FloatSpan){
+            answer= this.to_spanset().distance(other);
+        }
+        else if(other instanceof FloatSpanSet){
+            answer= this.to_spanset().distance(other);
         }
         else {
-            return super.distance((Base) other);
+            super.distance((Base) other);
         }
+        return answer;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
