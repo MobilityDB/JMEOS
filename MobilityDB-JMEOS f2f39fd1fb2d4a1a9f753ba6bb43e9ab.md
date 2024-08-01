@@ -260,30 +260,77 @@ types.put("size_t", "long");
 types.put("interType", "int");
 ```
 
-## FUNCTIONS CHANGED
+## CLASSES CHANGED
 
 1. Span, SpanSet, Set-
 
-There is a difficulty in changing the distance function as in the base classes it only throws an exception but in the child classes, it has to calculate the distance. Hence, there is a return-type conflict between the 
+There is a difficulty in changing the distance function as in the base classes it only throws an exception but in the child classes, it has to calculate the distance. Hence, there is a return-type conflict between the
 
-1. Type Changes-
+1. Type chnages in **types.collections.base**-
+- [x]  Set
+- [x]  Span
 - [x]  SpanSet
+
+Interfaces changed-
+
+- [x]  Base
+- [x]  Collection
+
+1. Type Changes in **types.collections.numbers**-
 - [x]  FloatSpanSet
 - [x]  IntSpanSet
-- [x]  Span
 - [x]  IntSpan
 - [x]  FloatSpan
-- [x]  Set
 - [x]  IntSet
 - [x]  FloatSet
+
+Interfaces changed-
+
+- [x]  Number
+
+1. Type of changes in **types.collections.time**-
+- [x]  TimeStampset → tstzspan
+- [x]  PeriodSet → tstzspanset
+- [x]  Period → tstzset
+
+Extra types added-
+
+- [ ]  dateset
+- [ ]  datespan
+- [ ]  datespanset
+
+Interfaces added-
+
+- [x]  Time
+- [x]  TimeCollection
+
+1. Type changes in **types.temporal**
+- [ ]  Factory
+- [x]  Temporal
+- [x]  TInstant
+- [x]  TSequence
+- [x]  Tsequenceset
+
+Enum type changes-
+
+- [x]  TemporalType
+- [x]  TInterpolation → interpolation
+
+1. Type changes in **types.boxes**
+- [ ]  STBox
+- [ ]  TBox
+
+Interfaces changed
+
+- [ ]  Box
 
 ## UNIT TESTS
 
 1. meos_initilize and meos_finalize functions in the [functions.java](http://functions.java) file need to be called or else it will give errors, since the library is not initialized you can’t use any datatype or functions mentioned in the meos library connected to java using the java wrapper.
-2. List of Test modules for **collections.numbers**
+2. List of Test modules for **Types.collections.numbers**
 - [x]  IntSpanTest
 - [x]  FloatSpanTest
 - [x]  IntSetTest
 - [x]  FloatSetTest
-- [ ]  IntSpanSetTest
-- [ ]  FloatSpanSetTest
+- [x]  IntSpanSetTest
+- [x]  FloatSpanSetTest
