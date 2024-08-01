@@ -156,7 +156,7 @@ public class FunctionsGenerator {
 //		types.put("\\*\\*\\[]", "Pointer[][]");
 		types.put("\\*char", "String");
 		types.put("\\*\\*char", "Pointer");
-//		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
+		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
 		types.put("bool", "boolean");
 		types.put("float", "float");
 		types.put("double", "double");
