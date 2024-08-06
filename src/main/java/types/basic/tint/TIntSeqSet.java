@@ -13,8 +13,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal integer sequence set class inherited from temporal sequence set.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	private Pointer inner;
