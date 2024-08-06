@@ -5,8 +5,7 @@ import types.temporal.TSequence;
 
 /**
  * Base abstract class for TGeomPointSeq and TGeogPointSeq
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class TPointSeq extends TSequence<TPoint> implements TPoint {
 
