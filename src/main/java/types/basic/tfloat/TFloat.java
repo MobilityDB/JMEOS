@@ -19,8 +19,7 @@ import functions.functions;
 /**
  * Class that represents the MobilityDB type TFloat used for {@link TFloatInst}, {@link TFloatSeq} and {@link TFloatSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TFloat extends TNumber {
 	String customType = "Float";
