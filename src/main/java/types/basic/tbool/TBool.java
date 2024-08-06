@@ -12,8 +12,7 @@ import functions.functions;
 /**
  * Class that represents the MobilityDB type TBool used for {@link TBoolInst}, {@link TBoolSeq} and {@link TBoolSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TBool {
     String customType = "Boolean";
