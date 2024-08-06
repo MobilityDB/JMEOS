@@ -10,8 +10,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal geographic point instant class inherited from temporal point instant and implementing temporal geographic point.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	private Pointer inner;
