@@ -8,10 +8,10 @@ import types.basic.tpoint.tgeog.TGeogPoint;
 import types.basic.tpoint.tgeog.TGeogPointInst;
 import types.basic.tpoint.tgeog.TGeogPointSeq;
 import types.basic.tpoint.tgeog.TGeogPointSeqSet;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
 import types.collections.time.Time;
-import types.collections.time.TimestampSet;
+import types.collections.time.tstzspanset;
 import types.temporal.Factory;
 import types.temporal.TInterpolation;
 import types.temporal.Temporal;
@@ -24,8 +24,7 @@ import utils.ConversionUtils;
 /**
  * Class that represents the MobilityDB type TGeomPoint used for {@link TGeomPointInst}, {@link TGeomPointSeq} and {@link TGeomPointSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TGeomPoint extends TPoint {
 	String customType = "Geom";
@@ -60,9 +59,9 @@ public interface TGeomPoint extends TPoint {
 	 *
 	 *         MEOS Functions:
 	 *             <li>tpointinst_make</li>
-	 *             <li>tpointseq_from_base_timestampset</li>
-	 *             <li>tpointseq_from_base_period</li>
-	 *             <li>tpointseqset_from_base_periodset</li>
+	 *             <li>tpointseq_from_base_tstzspanset</li>
+	 *             <li>tpointseq_from_base_tstzset</li>
+	 *             <li>tpointseqset_from_base_tstzspan</li>
 	 *
 	 * @param value The base geometry.
 	 * @param base The time value.
@@ -70,12 +69,12 @@ public interface TGeomPoint extends TPoint {
 	 * @return A new {@link TGeogPoint} object.
 	 */
 	static TGeomPoint from_base_time(Geometry value, Time base, TInterpolation interp){
-		if (base instanceof Period){
-			return new TGeomPointSeq(functions.tpointseq_from_base_period(ConversionUtils.geometry_to_gserialized(value), ((Period) base).get_inner(), interp.getValue()));
-		} else if (base instanceof PeriodSet) {
-			return new TGeomPointSeqSet(functions.tpointseqset_from_base_periodset(ConversionUtils.geometry_to_gserialized(value), ((PeriodSet) base).get_inner(), interp.getValue()));
-		} else if (base instanceof TimestampSet) {
-			return new TGeomPointSeq(functions.tpointseq_from_base_timestampset(ConversionUtils.geometry_to_gserialized(value), ((TimestampSet) base).get_inner()));
+		if (base instanceof tstzset){
+			return new TGeomPointSeq(functions.tpointseq_from_base_tstzset(ConversionUtils.geometry_to_gserialized(value), ((tstzset) base).get_inner()));
+		} else if (base instanceof tstzspan) {
+			return new TGeomPointSeqSet(functions.tpointseq_from_base_tstzspan(ConversionUtils.geometry_to_gserialized(value), ((tstzspan) base).get_inner(), interp.getValue()));
+		} else if (base instanceof tstzspanset) {
+			return new TGeomPointSeq(functions.tpointseq_from_base_tstzset(ConversionUtils.geometry_to_gserialized(value), ((tstzspanset) base).get_inner()));
 		}
 		else{
 			throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
@@ -115,7 +114,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is always equal to "value", False otherwise.
 	 */
 	default boolean always_equal(Geometry value){
-		return functions.tpoint_always_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return functions.always_eq_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 
 	}
 
@@ -130,7 +129,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is always different to "value", False otherwise.
 	 */
 	default boolean always_not_equal(Geometry value){
-		return ! functions.tpoint_ever_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return (functions.always_ne_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0);
 	}
 
 
@@ -145,7 +144,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is ever equal to "value", False otherwise.
 	 */
 	default boolean ever_equal(Geometry value){
-		return  functions.tpoint_ever_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return  functions.ever_eq_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 	}
 
 
@@ -160,7 +159,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is ever different to "value", False otherwise.
 	 */
 	default boolean ever_not_equal(Geometry value){
-		return ! functions.tpoint_always_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return functions.ever_ne_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 
 	}
 
@@ -176,7 +175,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is never equal to "value", False otherwise.
 	 */
 	default boolean never_equal(Geometry value){
-		return ! functions.tpoint_ever_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return ! (this.ever_equal(value));
 	}
 
 
@@ -191,7 +190,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "self" is never different to "value", False otherwise.
 	 */
 	default boolean never_not_equal(Geometry value){
-		return functions.tpoint_always_eq(getPointInner(),ConversionUtils.geometry_to_gserialized(value));
+		return !(this.ever_not_equal(value));
 	}
 
 
@@ -233,26 +232,5 @@ public interface TGeomPoint extends TPoint {
 
 
     /* ------------------------- Database Operations --------------------------- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
