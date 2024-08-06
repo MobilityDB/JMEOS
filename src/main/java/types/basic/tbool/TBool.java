@@ -128,7 +128,7 @@ public interface TBool {
      */
     default boolean always_eq(boolean value){
         int result= functions.always_eq_tbool_bool(getBoolInner(), value);
-        return result == 1;
+        return result > 0;
     }
 
 
@@ -144,7 +144,7 @@ public interface TBool {
      */
     default boolean ever_eq(boolean value){
         int result= functions.ever_eq_tbool_bool(getBoolInner(), value);
-        return result == 1;
+        return result > 0;
     }
 
     /**
