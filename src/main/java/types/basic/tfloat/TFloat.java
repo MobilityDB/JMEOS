@@ -710,6 +710,5 @@ public interface TFloat extends TNumber {
 	 */
 	default Temporal round(int max_decimals){
 		return Factory.create_temporal(functions.tfloat_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());
-
 	}
 }
