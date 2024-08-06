@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal boolean instant class inherited from temporal instant.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TBoolInst extends TInstant<Boolean> implements TBool {
 	private Pointer inner;

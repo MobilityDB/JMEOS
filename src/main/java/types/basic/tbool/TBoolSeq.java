@@ -10,8 +10,7 @@ import java.util.List;
 /**
  * Temporal boolean sequence class inherited from temporal sequence.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TBoolSeq extends TSequence<Boolean> implements TBool {
 	private Pointer inner;
