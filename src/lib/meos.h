@@ -2416,11 +2416,11 @@ extern STBox *geo_expand_space(const GSERIALIZED *gs, double d);
 extern Temporal *geomeas_to_tpoint(const GSERIALIZED *gs);
 extern Temporal *tgeogpoint_to_tgeompoint(const Temporal *temp);
 extern Temporal *tgeompoint_to_tgeogpoint(const Temporal *temp);
-bool tpoint_AsMVTGeom(const Temporal *temp, const STBox *bounds, int32_t extent, int32_t buffer, bool clip_geom, GSERIALIZED **gsarr, int64 **timesarr, int *count);
+extern bool tpoint_AsMVTGeom(const Temporal *temp, const STBox *bounds, int32_t extent, int32_t buffer, bool clip_geom, GSERIALIZED **gsarr, int64 **timesarr, int *count);
 extern STBox *tpoint_expand_space(const Temporal *temp, double d);
 extern Temporal **tpoint_make_simple(const Temporal *temp, int *count);
 extern Temporal *tpoint_set_srid(const Temporal *temp, int32 srid);
-bool tpoint_tfloat_to_geomeas(const Temporal *tpoint, const Temporal *measure, bool segmentize, GSERIALIZED **result);
+extern bool tpoint_tfloat_to_geomeas(const Temporal *tpoint, const Temporal *measure, bool segmentize, GSERIALIZED **result);
 
 /*****************************************************************************/
 
@@ -2497,10 +2497,10 @@ extern SkipList *ttext_tmin_transfn(SkipList *state, const Temporal *temp);
 
 /* Simplification functions for temporal types */
 
-Temporal *temporal_simplify_dp(const Temporal *temp, double eps_dist, bool synchronized);
-Temporal *temporal_simplify_max_dist(const Temporal *temp, double eps_dist, bool synchronized);
-Temporal *temporal_simplify_min_dist(const Temporal *temp, double dist);
-Temporal *temporal_simplify_min_tdelta(const Temporal *temp, const Interval *mint);
+extern Temporal *temporal_simplify_dp(const Temporal *temp, double eps_dist, bool synchronized);
+extern Temporal *temporal_simplify_max_dist(const Temporal *temp, double eps_dist, bool synchronized);
+extern Temporal *temporal_simplify_min_dist(const Temporal *temp, double dist);
+extern Temporal *temporal_simplify_min_tdelta(const Temporal *temp, const Interval *mint);
 
 /*****************************************************************************/
 

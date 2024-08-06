@@ -4,7 +4,7 @@ package types.temporal;
 /**
  * Enumeration of the interpolation type associating it with the corresponding MEOS value.
  *
- * @author Nidhal Mareghni
+ * @author ARIJIT SAMAL
  * @since 10/09/2023
  */
 public enum TInterpolation {
@@ -34,9 +34,7 @@ public enum TInterpolation {
                 return TInterpolation.DISCRETE;
             case "linear":
                 return TInterpolation.LINEAR;
-            case "stepwise":
-                return TInterpolation.STEPWISE;
-            case "step":
+            case "stepwise", "step":
                 return TInterpolation.STEPWISE;
             case "none":
                 if (none) {

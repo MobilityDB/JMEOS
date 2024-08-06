@@ -1,19 +1,17 @@
 package types.temporal;
 
+import functions.functions;
 import jnr.ffi.Pointer;
 import types.TemporalObject;
 import types.collections.base.Base;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import utils.ConversionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-
-import functions.functions;
-import types.collections.time.Time;
-import types.collections.time.TimestampSet;
-import utils.ConversionUtils;
 
 import static types.temporal.TemporalType.*;
 
@@ -21,8 +19,7 @@ import static types.temporal.TemporalType.*;
  * Abstract class for Temporal sub types
  * @param <V> - Base type of the temporal data type eg. Integer, Boolean
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class Temporal<V extends Serializable> implements Serializable, TemporalObject {
     private Pointer inner;
@@ -87,10 +84,10 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param str The MF-JSON string.
      * @return A temporal object from a MF-JSON string.
      */
-    public Temporal from_mfjson(String str){
-        Pointer result = functions.temporal_from_mfjson(str);
-        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
-    }
+//    public Temporal from_mfjson(String str){
+//        Pointer result = functions.temporal_as_(str);
+//        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+//    }
 
 
 
@@ -147,19 +144,19 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *
      * @return The bounding box of `self`.
      */
-    public Period bounding_box(){
-        return new Period(functions.temporal_to_period(this.inner));
+    public tstzspan bounding_box(){
+        return new tstzspan(functions.temporal_to_tstzspan(this.inner));
     }
 
     /**
-     * Returns the {@link PeriodSet} on which `self` is defined.
+     * Returns the {@link tstzspanset} on which `self` is defined.
      *
      *         MEOS Functions:
      *             temporal_time
-     * @return the {@link PeriodSet}  on which `self` is defined.
+     * @return the {@link tstzspanset}  on which `self` is defined.
      */
-    public PeriodSet time(){
-        return new PeriodSet(functions.temporal_time(this.inner));
+    public tstzspanset time(){
+        return new tstzspanset(functions.temporal_time(this.inner));
     }
 
 
@@ -170,27 +167,27 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
     /**
-     * Returns the {@link Period} on which "this" is defined ignoring
+     * Returns the {@link tstzset} on which "this" is defined ignoring
      *         potential time gaps.
      * <p>
      *         MEOS Functions:
      *             <li>temporal_to_period</li>
      * @return
      */
-    public Period period(){
+    public tstzspan period(){
         return this.timespan();
     }
 
     /**
-     * Returns the {@link Period} on which "this" is defined ignoring
+     * Returns the {@link tstzspan} on which "this" is defined ignoring
      *         potential time gaps.
      * <p>
      *         MEOS Functions:
      *             <li>temporal_to_period</li>
      * @return
      */
-    public Period timespan(){
-        return new Period(functions.temporal_to_period(this.inner));
+    public tstzspan timespan(){
+        return new tstzspan(functions.temporal_to_tstzspan(this.inner));
     }
 
 
@@ -286,7 +283,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the first timestamp in "this".
      */
     public LocalDateTime start_timestamp(){
-        return ConversionUtils.timestamptz_to_datetime(functions.temporal_start_timestamp(this.inner));
+        return ConversionUtils.timestamptz_to_datetime(functions.temporal_start_timestamptz(this.inner));
     }
 
 
@@ -298,7 +295,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the last timestamp in "this".
      */
     public LocalDateTime end_timestamp(){
-        return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamp(this.inner));
+        return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamptz(this.inner));
     }
 
     /**
@@ -353,7 +350,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequence}.
      */
     public Temporal to_sequence(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE);
+        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE);
 
     }
 
@@ -366,7 +363,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequenceSet}
      */
     public Temporal to_sequenceset(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
+        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
 
     }
 
@@ -488,14 +485,14 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal at(Time other){
         Pointer result = null;
-        if (other instanceof Period){
-            result = functions.temporal_at_period(this.inner,((Period) other).get_inner());
+        if (other instanceof tstzset){
+            result = functions.temporal_at_tstzset(this.inner,((tstzset) other).get_inner());
 
-        } else if (other instanceof PeriodSet) {
-            result = functions.temporal_at_periodset(this.inner,((PeriodSet) other).get_inner());
+        } else if (other instanceof tstzspan) {
+            result = functions.temporal_at_tstzspan(this.inner,((tstzspan) other).get_inner());
 
-        } else if (other instanceof TimestampSet) {
-            result = functions.temporal_at_timestampset(this.inner,((TimestampSet) other).get_inner());
+        } else if (other instanceof tstzspanset) {
+            result = functions.temporal_at_tstzspanset(this.inner,((tstzspanset) other).get_inner());
         }
         return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());
     }
@@ -552,14 +549,14 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal minus(Time other){
         Pointer result = null;
-        if (other instanceof Period){
-            result = functions.temporal_minus_period(this.inner,((Period) other).get_inner());
+        if (other instanceof tstzset){
+            result = functions.temporal_minus_tstzset(this.inner,((tstzset) other).get_inner());
 
-        } else if (other instanceof PeriodSet) {
-            result = functions.temporal_minus_periodset(this.inner,((PeriodSet) other).get_inner());
+        } else if (other instanceof tstzspan) {
+            result = functions.temporal_minus_tstzspan(this.inner,((tstzspan) other).get_inner());
 
-        } else if (other instanceof TimestampSet) {
-            result = functions.temporal_minus_timestampset(this.inner,((TimestampSet) other).get_inner());
+        } else if (other instanceof tstzspanset) {
+            result = functions.temporal_minus_tstzspanset(this.inner,((tstzspanset) other).get_inner());
         }
         return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());
     }
@@ -604,7 +601,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_adjacent(Base)}
+     *             {@link tstzset#is_adjacent(Base)}
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
@@ -619,7 +616,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *   <p>
      *
      *         See Also:
-     *             {@link Period#is_adjacent(TemporalObject)}
+     *             {@link tstzset#is_adjacent(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
@@ -635,7 +632,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(TemporalObject)}
+     *             {@link tstzset#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
@@ -651,7 +648,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(TemporalObject)}
+     *             {@link tstzset#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
@@ -668,7 +665,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#contains(TemporalObject)}
+     *             {@link tstzset#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
@@ -684,7 +681,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#contains(TemporalObject)}
+     *             {@link tstzset#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
@@ -701,7 +698,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(TemporalObject)}
+     *             {@link tstzset#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
@@ -717,7 +714,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(TemporalObject)}
+     *             {@link tstzset#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
@@ -734,7 +731,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_same(TemporalObject)}
+     *             {@link tstzset#is_same(Time)} (TemporalObject)}
      * @param other A time or temporal object to compare to `self`.
      * @return True if same, False otherwise.
      */
@@ -752,7 +749,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_before(TemporalObject)}
+     *             {@link tstzset#is_before(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is before "other", False otherwise.
      */
@@ -767,7 +764,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_before(TemporalObject)}
+     *             {@link tstzset#is_over_or_before(TemporalObject)}
      * @param other A time or temporal object to compare `self` to.
      * @return True if `self` is before `other` allowing overlap, False otherwise.
      */
@@ -781,7 +778,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_after(TemporalObject)}
+     *             {@link tstzset#is_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other", False otherwise.
      */
@@ -797,7 +794,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_after(TemporalObject)}
+     *             {@link tstzset#is_over_or_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other" allowing overlap, False otherwise.
      */

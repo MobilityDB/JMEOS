@@ -5,7 +5,6 @@ import types.collections.base.Base;
 import types.collections.base.Set;
 import functions.functions;
 
-
 /**
  * Class for representing a set of text values.
  * <p>
@@ -141,7 +140,7 @@ public class TextSet extends Set<String> {
     public boolean contains(Object other) throws Exception {
         if (other instanceof String){
             TextSet tset = new TextSet((String)other);
-            return functions.contains_textset_text(this._inner,tset._inner);
+            return functions.contains_set_text(this._inner,tset._inner);
         }
         else {
             return super.contains((Base)other);
@@ -215,7 +214,7 @@ public class TextSet extends Set<String> {
     public TextSet minus(Object other){
         if (other instanceof String){
             TextSet tmptxt = new TextSet((String) other);
-            return new TextSet(functions.minus_textset_text(this._inner, tmptxt._inner));
+            return new TextSet(functions.minus_set_text(this._inner, tmptxt._inner));
         }
         else if (other instanceof TextSet){
             return new TextSet(functions.minus_set_set(this._inner,((TextSet) other)._inner));
@@ -224,6 +223,11 @@ public class TextSet extends Set<String> {
             return null;
         }
     }
+
+//    public String subtract_from(Object other){
+//        result= functions.minus_text_set(other, this._inner);
+//
+//    }
 
 
     /**
@@ -241,7 +245,7 @@ public class TextSet extends Set<String> {
     public TextSet union(Object other){
         if (other instanceof String){
             TextSet tmptxt = new TextSet((String) other);
-            return new TextSet(functions.union_textset_text(this._inner, tmptxt._inner));
+            return new TextSet(functions.union_set_text(this._inner, tmptxt._inner));
         }
         else if (other instanceof TextSet){
             return new TextSet(functions.union_set_set(this._inner,((TextSet) other)._inner));
@@ -250,9 +254,4 @@ public class TextSet extends Set<String> {
             return null;
         }
     }
-
-
-
-
-
 }

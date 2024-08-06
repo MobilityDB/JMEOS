@@ -1,7 +1,6 @@
 package collections.number;
 
 
-import functions.functions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,7 +10,6 @@ import types.collections.number.FloatSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 import functions.*;

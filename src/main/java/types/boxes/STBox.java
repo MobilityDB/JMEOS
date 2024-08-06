@@ -1,6 +1,5 @@
 package types.boxes;
 
-import functions.functions;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.basic.tpoint.TPoint;
@@ -11,12 +10,13 @@ import org.locationtech.jts.geom.Geometry;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
+import types.collections.time.tstzset;
 import types.temporal.Temporal;
 import utils.ConversionUtils;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
-import types.collections.time.TimestampSet;
-
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import functions.functions;
 import javax.naming.OperationNotSupportedException;
 
 
@@ -357,12 +357,13 @@ public class STBox implements Box {
 
 	/**
 	 * Returns the temporal dimension of "this" as a "Period" instance.
-	 *<p>
-	 *         MEOS Functions:
-	 *             <li>stbox_to_period</li>
+	 * <p>
+	 * MEOS Functions:
+	 * <li>stbox_to_period</li>
+	 *
 	 * @return a new Period instance
 	 */
-    public Period to_period() {
+    public tstzset to_period() {
         Pointer result = functions.stbox_to_period(this._inner);
         return new Period(result);
     }

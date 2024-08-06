@@ -1,15 +1,16 @@
 package types.boxes;
 
-import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tnumber.TNumber;
+import functions.functions;
 import types.collections.base.Span;
 import types.collections.number.FloatSpan;
 import types.collections.number.IntSpan;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
 import types.collections.time.Time;
-import types.collections.time.TimestampSet;
+
 import java.time.LocalDateTime;
 
 
@@ -32,7 +33,7 @@ import java.time.LocalDateTime;
  *         >>> TBox(xmin='0', xmax='10', tmin=parse('2020-06-01'), tmax=parse('2020-06-0'))
  *</pre>
  *     Note that you can create a TBox with only the numerical or the temporal dimension. In these cases, it will be
- *     equivalent to a {@link Period} (if it only has temporal dimension) or to a
+ *     equivalent to a {@link tstzset} (if it only has temporal dimension) or to a
  *     floatrange (if it only has the numeric dimension).
  */
 public class TBox implements Box {
@@ -106,7 +107,7 @@ public class TBox implements Box {
 	 * @param tmax_inc temporal maxmimal inclusion
 	 */
 	public TBox(Number xmin, Number xmax, LocalDateTime tmin, LocalDateTime tmax, boolean xmin_inc, boolean xmax_inc, boolean tmin_inc, boolean tmax_inc){
-		Period p = null;
+		tstzspan p = null;
 		Span span = null;
 		if(xmin instanceof Integer && xmax instanceof Integer){
 			 span = new IntSpan(xmin.intValue(),xmax.intValue(),xmin_inc,xmax_inc);
@@ -114,7 +115,7 @@ public class TBox implements Box {
 			 span = new FloatSpan(xmin.floatValue(),xmax.floatValue(),xmin_inc,xmax_inc);
 		}
 		if(tmin != null && tmax != null){
-			p = new Period(tmin,tmax,tmin_inc,tmax_inc);
+			p = new tstzspan(tmin,tmax,tmin_inc,tmax_inc);
 		}
         assert span != null;
         assert p != null;
@@ -325,11 +326,12 @@ public class TBox implements Box {
 	/**
 	 * Returns the temporal span of "this".
 	 * <p>
-	 *         MEOS Functions:
-	 *             <li>tbox_to_period</li>
+	 * MEOS Functions:
+	 * <li>tbox_to_period</li>
+	 *
 	 * @return a {@link Period} instance
 	 */
-	public Period to_period(){
+	public tstzset to_period(){
 		functions.meos_initialize("UTC");
 		return new Period(functions.tbox_to_period(this._inner));
 	}

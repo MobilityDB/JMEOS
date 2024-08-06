@@ -1,10 +1,11 @@
 package types.collections.geo;
-import functions.functions;
 import jnr.ffi.Pointer;
+import org.checkerframework.checker.units.qual.C;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import types.collections.base.Set;
 import utils.ConversionUtils;
+import functions.functions;
 
 
 /**
@@ -178,7 +179,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public Geometry intersection_geom(Geometry geom) throws ParseException {
         return ConversionUtils.gserialized_to_shapely_geometry(
-                functions.intersection_geoset_geo(this._inner, ConversionUtils.geometry_to_gserialized(geom)),15);
+                functions.intersection_set_geo(this._inner, ConversionUtils.geometry_to_gserialized(geom)),15);
     }
 
     /**
@@ -213,11 +214,36 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public GeoSet minus(Object geo, String type){
         if(geo instanceof Geometry){
-            return factory(type, functions.minus_geoset_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
+            return factory(type, functions.minus_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
         } else if (geo instanceof GeoSet) {
             return factory(type, functions.minus_set_set(this._inner, ((GeoSet)geo)._inner));
         }
         return null;
+    }
+
+/*
+        Returns the difference of ``other`` and ``self``.
+
+        Args:
+            other: A :class:`Geometry` instance
+
+        Returns:
+            A :class:`Geometry` instance.
+
+        MEOS Functions:
+            minus_geo_set
+
+        See Also:
+            :meth:`minus`
+*/
+    public Geometry subtract_from(Object geo, String type) throws ParseException {
+        Pointer result= functions.minus_geo_set(ConversionUtils.geometry_to_gserialized((Geometry) geo), this._inner);
+        if(result != null) {
+            return ConversionUtils.gserialized_to_shapely_geometry(result, 15);
+        }
+        else {
+            return null;
+        }
     }
 
 
@@ -234,7 +260,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public GeoSet union(Object geo, String type){
         if(geo instanceof Geometry){
-            return factory(type, functions.union_geoset_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
+            return factory(type, functions.union_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
         } else if (geo instanceof GeoSet) {
             return factory(type, functions.union_set_set(this._inner, ((GeoSet)geo)._inner));
         }

@@ -1,8 +1,8 @@
 package types.collections.number;
 import types.collections.base.Base;
 import types.collections.base.Span;
-import functions.functions;
 import jnr.ffi.Pointer;
+import functions.functions;
 
 /**
  * Class for representing sets of contiguous integer values between a lower and
@@ -21,8 +21,7 @@ import jnr.ffi.Pointer;
  *         >>> IntSpan(lower=2, upper=5, lower_inc=False, upper_inc=True)
  *         >>> IntSpan(lower='2', upper='5', upper_inc=True)
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class IntSpan extends Span<Integer> implements Number{
     private final Pointer _inner;
@@ -106,8 +105,9 @@ public class IntSpan extends Span<Integer> implements Number{
     /**
      * Return a copy of "this".
      * <p>
-     *         MEOS Functions:
-     *             <li>span_copy</li>
+     * MEOS Functions:
+     * <li>span_copy</li>
+     *
      * @return a new IntSpan instance
      */
     public IntSpan copy(){
@@ -121,7 +121,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
 
     /**
-     * Returns a Period from its WKB representation in hex-encoded ASCII.
+     * Returns a tstzspan from its WKB representation in hex-encoded ASCII.
      *
      *  <p>
      *
@@ -129,7 +129,7 @@ public class IntSpan extends Span<Integer> implements Number{
      *             <li>span_from_hexwkb</li>
      *
      * @param str WKB representation in hex-encoded ASCII
-     * @return a new {@link types.collections.time.Period} instance
+     * @return
      */
     public IntSpan from_hexwkb(String str){
         return new IntSpan(functions.span_from_hexwkb(str));
@@ -183,7 +183,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
 
     public FloatSpan tofloatspan(){
-        return new FloatSpan(functions.intspan_floatspan(this._inner));
+        return new FloatSpan(functions.intspan_to_floatspan(this._inner));
     }
 
 
@@ -239,7 +239,63 @@ public class IntSpan extends Span<Integer> implements Number{
      * @return Returns a "float" representing the width of the span
      */
     public float width(){
-        return (float) functions.span_width(this._inner);
+        return (float) functions.intspan_width(this._inner);
+    }
+
+    /* ------------------------- Transformations ------------------------------- */
+
+
+    /**
+     * Return a new "IntSpanSet" with the lower and upper bounds shifted by
+     *         "delta".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspanset_shift_scale</li>
+     *
+     *
+     * @param delta The value to shift by
+     * @return A new {@link IntSpanSet} instance
+     */
+
+    public IntSpan shift(int delta){
+        return this.shift_scale(delta,0);
+    }
+
+
+    /**
+     * Return a new "IntSpanSet" with the lower and upper bounds scaled so
+     *         that the width is "width".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspanset_shift_scale</li>
+     *
+     * @param width The new width
+     * @return a new {@link IntSpanSet} instance
+     */
+
+    public IntSpan scale(int width){
+        return this.shift_scale(0,width);
+    }
+
+
+
+    /**
+     * Return a new "IntSpanSet" with the lower and upper bounds shifted by
+     *         "delta" and scaled so that the width is "width".
+     *
+     *  <p>
+     *         MEOS Functions:
+     *             <li>floatspanset_shift_scale</li>
+     *
+     * @param delta The value to shift by
+     * @param width v
+     * @return a new {@link IntSpanSet} instance
+     */
+
+    public IntSpan shift_scale(int delta, int width){
+        return new IntSpan(functions.intspanset_shift_scale(this._inner,delta,width,delta != 0,width!=0));
     }
 
 
@@ -263,7 +319,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_adjacent(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.adjacent_intspan_int(this._inner, (int) other);
+            return functions.adjacent_span_int(this._inner, (int) other);
         }
         else {
             return super.is_adjacent((Base) other);
@@ -286,7 +342,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean contains(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.contains_intspan_int(this._inner, (int) other);
+            return functions.contains_span_int(this._inner, (int) other);
         }
         else {
             return super.contains((Base) other);
@@ -309,7 +365,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_same(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.span_eq(this._inner, functions.int_to_intspan((int)other));
+            return functions.span_eq(this._inner, functions.int_to_span((int)other));
         }
         else {
             return super.is_same((Base) other);
@@ -338,7 +394,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.left_intspan_int(this._inner, (int) other);
+            return functions.left_span_int(this._inner, (int) other);
         }
         else {
             return super.is_left((Base) other);
@@ -363,7 +419,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_over_or_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overleft_intspan_int(this._inner, (int) other);
+            return functions.overleft_span_int(this._inner, (int) other);
         }
         else {
             return super.is_over_or_left((Base) other);
@@ -387,7 +443,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.right_intspan_int(this._inner, (int) other);
+            return functions.right_span_int(this._inner, (int) other);
         }
         else {
             return super.is_right((Base) other);
@@ -412,7 +468,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public boolean is_over_or_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overright_intspan_int(this._inner, (int) other);
+            return functions.overright_span_int(this._inner, (int) other);
         }
         else {
             return super.is_over_or_right((Base) other);
@@ -440,15 +496,32 @@ public class IntSpan extends Span<Integer> implements Number{
      */
     public Float distance(Object other) throws Exception {
         if (other instanceof Integer){
-            return (float) functions.distance_intspan_int(this._inner, (int) other);
+            return (float) functions.distance_span_int(this._inner, (int) other);
         }
-        else {
-            return super.distance((Base) other);
-        }
+        return 0f;
     }
 
 
     /* ------------------------- Set Operations -------------------------------- */
+
+
+    public IntSpan intersection(Object other) throws Exception {
+        Pointer result = null;
+        if ((other instanceof Integer) || (other instanceof Float)){
+            result= functions.intersection_span_int(this._inner, (int) other);
+        }
+        else if (other instanceof IntSpan){
+            result= functions.intersection_span_span(this._inner, ((IntSpan) other)._inner);
+        }
+        else if (other instanceof IntSpanSet){
+            result= functions.intersection_spanset_span(this._inner, ((IntSpanSet) other).get_inner());
+        }
+        else{
+            IntSpanSet tmp= (IntSpanSet) super.intersection((Base) other);
+            result= tmp.get_inner();
+        }
+        return new IntSpan(result);
+    }
 
 
     /**
@@ -466,7 +539,7 @@ public class IntSpan extends Span<Integer> implements Number{
     public IntSpanSet minus(Object other){
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.minus_intspan_int(this._inner,(int)other);
+            result = functions.minus_span_int(this._inner,(int)other);
         }
         else if (other instanceof IntSpan) {
             result = functions.minus_span_span(this._inner,((IntSpan) other).get_inner());
@@ -494,7 +567,7 @@ public class IntSpan extends Span<Integer> implements Number{
     public IntSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.union_intspan_int(this._inner,(int)other);
+            result = functions.union_span_int(this._inner,(int)other);
         }
         else if (other instanceof IntSpan) {
             result = functions.union_span_span(this._inner,((IntSpan) other).get_inner());
@@ -508,7 +581,4 @@ public class IntSpan extends Span<Integer> implements Number{
         }
         return new IntSpanSet(result);
     }
-
-
-
 }

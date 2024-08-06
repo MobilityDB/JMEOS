@@ -91,10 +91,8 @@ public class TextSetTest {
 
 
     @Test
-    public void testUnion() {
+    public void testUnion() throws Exception {
         assertEquals(tset.union(new TextSet("{A}")).toString(),"{\"A\", \"BB\", \"ccc\"}");
         assertEquals(tset.union(new TextSet("{a, BB, ccc}")).toString(),"{\"A\", \"BB\", \"a\", \"ccc\"}");
     }
-
-
 }

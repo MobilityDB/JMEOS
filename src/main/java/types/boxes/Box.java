@@ -1,7 +1,7 @@
 package types.boxes;
 
 import types.TemporalObject;
-import types.collections.time.Period;
+import types.collections.time.tstzset;
 
 
 /**
@@ -11,6 +11,5 @@ import types.collections.time.Period;
  * @since 10/07/2023
  */
 public interface Box extends TemporalObject{
-    Period to_period();
-
+    tstzset to_period();
 }

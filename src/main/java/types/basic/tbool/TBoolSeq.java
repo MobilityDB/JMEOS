@@ -88,8 +88,4 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 		return inner;
 	}
 
-
-
-
-
 }

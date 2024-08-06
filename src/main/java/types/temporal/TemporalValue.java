@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 /**
  * Wrapper class that consists in the value and a timestamp
  *
+ * @author ARIJIT SAMAL
  * @param <V> Could be Integer, Boolean, Float, String, etc
  */
 public class TemporalValue<V extends Serializable> implements Serializable {

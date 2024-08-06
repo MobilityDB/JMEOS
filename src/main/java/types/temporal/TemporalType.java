@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 /**
  * Classification of temporal types
+ * @author ARIJIT SAMAL
  */
 public enum TemporalType {
 	TEMPORAL_INSTANT,

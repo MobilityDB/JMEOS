@@ -1,10 +1,22 @@
 package types.collections.base;
 
+import com.google.common.primitives.Ints;
 import jnr.ffi.Pointer;
 import functions.functions;
-import types.collections.time.Period;
+import types.collections.number.FloatSpan;
+import types.collections.number.FloatSpanSet;
+import types.collections.number.IntSpan;
+import types.collections.number.IntSpanSet;
+import types.collections.time.dateset;
+import types.collections.time.datespan;
+import types.collections.time.datespanset;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,13 +38,13 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     public SpanSet(String str){
         this._inner = createStringInner(str);
     }
-    public SpanSet(List<Period> periods){this._inner = createListInner(periods);}
+//    public SpanSet(List<tstzspan> periods){this._inner = createListInner(periods);}
 
 
     public abstract Pointer get_inner();
     public abstract Pointer createInner(Pointer inner);
     public abstract Pointer createStringInner(String str);
-    public abstract Pointer createListInner(List<Period> periods);
+//    public abstract Pointer createListInner(List<tstzspan> periods);
 
 
     /* ------------------------- Conversions ----------------------------------- */
@@ -40,6 +52,90 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
 
     /* ------------------------- Accessors ------------------------------------- */
+
+    /**
+     * Returns the copy of a span
+     *
+     * @return Pointer type
+     */
+
+    public Pointer copy() {
+        return functions.spanset_copy(this._inner);
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation.
+     * @return Pointer type
+     */
+    public Pointer from_wkb(Pointer wkb, long size) {
+        return functions.spanset_from_wkb(wkb, size);
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
+     *
+     * @return T type
+     */
+    public Pointer from_hexwkb(String hexwkb) {
+        return functions.spanset_from_hexwkb(hexwkb);
+    }
+
+
+    /**
+     * Returns the WKB representation
+     * @return Pointer type
+     */
+    public Pointer as_wkb(byte variant) {
+        return functions.spanset_as_wkb(this._inner, variant);
+    }
+
+    /**
+     * Returns the WKB representation in hex-encoded ASCII.
+     * @return String type
+     */
+    public String as_hexwkb(byte variant) {
+        return functions.spanset_as_hexwkb(this._inner, variant);
+    }
+
+    /**
+     * Returns a tstzspan set containing span
+     *
+     * @return String type
+     */
+//    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.spanset_span(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public <T> T to_span(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.spanset_span(this._inner);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
+    }
+
+    /**
+     * Returns a tstzspan set containing spans
+     *
+     * @return String type
+     */
+//    public T to_spans(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer[] spanPointer = functions.spanset_spans(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance((Object) spanPointer);
+//    }
+
+//    public List<T> to_spans(){
+//        Pointer ps = functions.spanset_spans(this._inner);
+//        List<T> spanList = new ArrayList<T>(this.num_spans());
+//        System.out.println(this.num_spans());
+//        long pointerSize= Long.BYTES;
+//        for (long i=0; i<this.num_spans(); i++){
+//            Pointer p= ps.getPointer((long) i*pointerSize);
+////            System.out.println(new IntSpan(p).lower().toString());
+////            System.out.println(new IntSpan(p).upper().toString());
+//            spanList.add(new T(p));
+//        }
+//        return spanList;
+//    }
 
 
     /**
@@ -50,25 +146,24 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *             <li>spanset_num_spans</li>
      * @return An {@link Integer}
      */
-    public int num_spans(){
+    public int num_spans()
+    {
         return functions.spanset_num_spans(this._inner);
     }
 
     /*
-      Returns the first span in "this".
+    Returns the first span in "this".
       <p>
 
               MEOS Functions:
                   <li>spanset_start_span</li>
 
-      @return A {@link Span} instance
-     */
-    /*
-    public Span start_span(){
-        return new Span(functions.spanset_start_span(this._inner));
+    @return A {@link Span} instance
+    */
+    public T start_span(Class<T> start_span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer startSpanPointer = functions.spanset_start_span(this._inner);
+        return start_span.getConstructor(Pointer.class).newInstance(startSpanPointer);
     }
-
-     */
 
     /*
       Returns the last span in "this".
@@ -79,13 +174,10 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
       @return A {@link Span} instance
      */
-    /*
-    public Span end_span(){
-        return new Span(functions.spanset_end_span(this._inner));
+    public T end_span(Class<T> end_span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer endSpanPointer= functions.spanset_end_span(this._inner);
+        return end_span.getConstructor(Pointer.class).newInstance(endSpanPointer);
     }
-
-     */
-
 
     /*
       Returns the n-th span in "this".
@@ -96,13 +188,55 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
       @param n number of Span
      * @return A {@link Span} instance
      */
-    /*
-    public Span span_n(int n){
-        return new Span(functions.spanset_span_n(this._inner,n));
+    public T span_n(Class<T>span_n, int n) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanNPointer= functions.spanset_span_n(this._inner, n+1);
+        return span_n.getConstructor(Pointer.class).newInstance(spanNPointer);
     }
 
+    /*
+    spanset spans
      */
+//    public T spans(Class<T>spans) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer[] spansPointer= functions.spanset_spans(this._inner);
+//        return spans.getConstructor(Pointer.class).newInstance(spansPointer);
+//    }
 
+    private static final Map<Class<?>, Long> POINTER_SIZES = new HashMap<>();
+
+    static {
+        // Initialize pointer sizes for each class
+        POINTER_SIZES.put(Integer.class, (long) Integer.BYTES);
+        POINTER_SIZES.put(Long.class, (long) Long.BYTES);
+        POINTER_SIZES.put(Pointer.class, (long) Long.BYTES);
+        POINTER_SIZES.put(Double.class, (long) Double.BYTES);
+        POINTER_SIZES.put(IntSpanSet.class, (long) Integer.BYTES);
+        POINTER_SIZES.put(FloatSpanSet.class, (long) Double.BYTES);
+        POINTER_SIZES.put(datespanset.class, (long) Long.BYTES);
+    }
+
+    private long getPointerSize(Class<?> spanType) {
+        Long size = POINTER_SIZES.get(spanType);
+        if (size == null) {
+            throw new IllegalArgumentException("Pointer size not defined for class: " + spanType.getName());
+        }
+        return size;
+    }
+
+    public <T> List<T> spans(Class<T> spanType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, InvocationTargetException {
+        Pointer ps = functions.spanset_spans(this._inner);
+        int numSpans = this.num_spans();
+        List<T> spanList = new ArrayList<>(numSpans);
+
+        long pointerSize = getPointerSize(spanType);
+        Constructor<T> constructor = spanType.getConstructor(Pointer.class);
+
+        for (long i = 0; i < numSpans; i++) {
+            Pointer p = ps.getPointer(i * pointerSize);
+            T span = constructor.newInstance(p);
+            spanList.add(span);
+        }
+        return spanList;
+    }
 
     /**
      * Return the hash representation of "this".
@@ -228,19 +362,20 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     /**
      * Returns whether the bounding span of "this" is the same as the bounding span of "other".
      *
-     *  <p>
-     *
-     *         See Also:
-     *              {@link types.collections.time.Period#is_same(Base)}
-     *
      *             
      * @param other A time or temporal object to compare to "this".
      * @return True if same, False otherwise.
      * @throws Exception
      */
     public boolean is_same(Base other) throws Exception {
-        return true;
-        //return this.to_span().is_same(other);
+        if (other instanceof SpanSet<?>){
+            return functions.spanset_eq(this._inner, ((SpanSet<?>) other)._inner);
+        } else if (other instanceof Span<?>) {
+            return functions.spanset_eq(this._inner,functions.span_to_spanset(((Span<?>) other).get_inner()));
+        }
+        else {
+            throw new Exception("Operation not supported with this type");
+        }
     }
 
 
@@ -368,18 +503,20 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      * @return A {@link Float} instance
      * @throws Exception
      */
-    public float distance(Base other) throws Exception {
-        if (other instanceof Span<?>){
-            return (float) functions.distance_spanset_span(this._inner, ((Span<?>) other).get_inner());
-        } else if (other instanceof SpanSet<?>) {
-            return (float) functions.distance_spanset_spanset(this._inner,((SpanSet<?>) other)._inner);
-        }
-        else {
-            throw new Exception("Operation not supported with this type");
-        }
+//    public float distance(Base other) throws Exception {
+//        if (other instanceof Span<?>) {
+//            return (float) functions.distance_floatspanset_floatspan(this._inner, ((Span<?>) other).get_inner());
+//        } else if (other instanceof SpanSet<?>) {
+//            return (float) functions.distance_floatspanset_floatspanset(this._inner,((SpanSet<?>) other)._inner);
+//        }
+//        else {
+//            throw new Exception("Operation not supported with this type");
+//        }
+//    }
+
+    public void distance(Base other) throws Exception {
+        throw new Exception("Operation not supported with"+other+"type");
     }
-
-
 
     /* ------------------------- Set Operations -------------------------------- */
 
@@ -419,8 +556,6 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *              <li>minus_spanset_span</li>
      *              <li>minus_spanset_spanset</li>
      *
-     * @param other temporal object to diff with
-     * @return A {@link types.collections.time.PeriodSet} instance.
      * @throws Exception
      */
     public Base minus(Base other) throws Exception {
@@ -435,7 +570,13 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     }
 
 
+    public Base mul(Base other) throws Exception {
+        return intersection(other);
+    }
 
+    public Base sub(Base other) throws Exception {
+        return minus(other);
+    }
 
     /**
      * Returns the temporal union of "this" and "other".
@@ -446,9 +587,6 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *         <li>union_periodset_timestamp</li>
      *         <li>union_spanset_spanset</li>
      *         <li>union_spanset_span</li>
-     *
-     * @param other temporal object to merge with
-     * @return A {@link types.collections.time.PeriodSet} instance.
      * @throws Exception
      */
     public Base union(Base other) throws Exception {
@@ -462,7 +600,9 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
         }
     }
 
-
+    public Base add(Base other) throws Exception {
+        return union(other);
+    }
 
     /* ------------------------- Comparisons ----------------------------------- */
 
@@ -587,29 +727,10 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      * @throws Exception
      */
     public boolean greaterThanOrEqual(Base other) throws Exception {
-        if (other instanceof SpanSet<?>){
-            return functions.spanset_ge(this._inner,((SpanSet<?>) other)._inner);
-        }
-        else {
+        if (other instanceof SpanSet<?>) {
+            return functions.spanset_ge(this._inner, ((SpanSet<?>) other)._inner);
+        } else {
             throw new Exception("Operation not supported with this type");
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
