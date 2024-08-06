@@ -1,10 +1,22 @@
 package types.collections.base;
 
+import com.google.common.primitives.Ints;
 import jnr.ffi.Pointer;
-
-import java.lang.reflect.InvocationTargetException;
-
 import functions.functions;
+import types.collections.number.FloatSpan;
+import types.collections.number.FloatSpanSet;
+import types.collections.number.IntSpan;
+import types.collections.number.IntSpanSet;
+import types.collections.time.dateset;
+import types.collections.time.datespan;
+import types.collections.time.datespanset;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,13 +38,13 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
     public SpanSet(String str){
         this._inner = createStringInner(str);
     }
-//    public SpanSet(List<Period> periods){this._inner = createListInner(periods);}
+//    public SpanSet(List<tstzspan> periods){this._inner = createListInner(periods);}
 
 
     public abstract Pointer get_inner();
     public abstract Pointer createInner(Pointer inner);
     public abstract Pointer createStringInner(String str);
-//    public abstract Pointer createListInner(List<Period> periods);
+//    public abstract Pointer createListInner(List<tstzspan> periods);
 
 
     /* ------------------------- Conversions ----------------------------------- */
@@ -61,6 +73,7 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 
     /**
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
+     *
      * @return T type
      */
     public Pointer from_hexwkb(String hexwkb) {
@@ -89,9 +102,15 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *
      * @return String type
      */
-    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.spanset_span(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public <T> T to_span(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.spanset_span(this._inner);
-        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
@@ -102,6 +121,20 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 //    public T to_spans(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 //        Pointer[] spanPointer = functions.spanset_spans(this._inner);
 //        return spantype.getConstructor(Pointer.class).newInstance((Object) spanPointer);
+//    }
+
+//    public List<T> to_spans(){
+//        Pointer ps = functions.spanset_spans(this._inner);
+//        List<T> spanList = new ArrayList<T>(this.num_spans());
+//        System.out.println(this.num_spans());
+//        long pointerSize= Long.BYTES;
+//        for (long i=0; i<this.num_spans(); i++){
+//            Pointer p= ps.getPointer((long) i*pointerSize);
+////            System.out.println(new IntSpan(p).lower().toString());
+////            System.out.println(new IntSpan(p).upper().toString());
+//            spanList.add(new T(p));
+//        }
+//        return spanList;
 //    }
 
 
@@ -167,6 +200,43 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
 //        Pointer[] spansPointer= functions.spanset_spans(this._inner);
 //        return spans.getConstructor(Pointer.class).newInstance(spansPointer);
 //    }
+
+    private static final Map<Class<?>, Long> POINTER_SIZES = new HashMap<>();
+
+    static {
+        // Initialize pointer sizes for each class
+        POINTER_SIZES.put(Integer.class, (long) Integer.BYTES);
+        POINTER_SIZES.put(Long.class, (long) Long.BYTES);
+        POINTER_SIZES.put(Pointer.class, (long) Long.BYTES);
+        POINTER_SIZES.put(Double.class, (long) Double.BYTES);
+        POINTER_SIZES.put(IntSpanSet.class, (long) Integer.BYTES);
+        POINTER_SIZES.put(FloatSpanSet.class, (long) Double.BYTES);
+        POINTER_SIZES.put(datespanset.class, (long) Long.BYTES);
+    }
+
+    private long getPointerSize(Class<?> spanType) {
+        Long size = POINTER_SIZES.get(spanType);
+        if (size == null) {
+            throw new IllegalArgumentException("Pointer size not defined for class: " + spanType.getName());
+        }
+        return size;
+    }
+
+    public <T> List<T> spans(Class<T> spanType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, InvocationTargetException {
+        Pointer ps = functions.spanset_spans(this._inner);
+        int numSpans = this.num_spans();
+        List<T> spanList = new ArrayList<>(numSpans);
+
+        long pointerSize = getPointerSize(spanType);
+        Constructor<T> constructor = spanType.getConstructor(Pointer.class);
+
+        for (long i = 0; i < numSpans; i++) {
+            Pointer p = ps.getPointer(i * pointerSize);
+            T span = constructor.newInstance(p);
+            spanList.add(span);
+        }
+        return spanList;
+    }
 
     /**
      * Return the hash representation of "this".

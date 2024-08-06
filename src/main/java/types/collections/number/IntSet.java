@@ -2,11 +2,11 @@ package types.collections.number;
 import types.collections.base.Base;
 import types.collections.base.Set;
 import jnr.ffi.Pointer;
-import functions.functions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import functions.functions;
 
 /**
  * Class for representing a set of text values.
@@ -20,8 +20,7 @@ import java.util.Objects;
  *     strings or integers.
  * <p>
  *         >>> IntSet(elements=[1, '2', 3, '56'])
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class IntSet extends Set<Integer> implements Number{
     private final Pointer _inner;

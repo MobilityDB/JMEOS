@@ -1,13 +1,16 @@
 package types.collections.number;
-import jnr.ffi.StructLayout;
+import jnr.ffi.annotations.In;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
 import jnr.ffi.Pointer;
-
-import java.lang.annotation.Native;
-import java.util.ArrayList;
-import java.util.List;
 import functions.functions;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -25,8 +28,7 @@ import functions.functions;
  *         >>> IntSpanSet(span_list=['[8, 10]', '[11, 12]'])
  *         >>> IntSpanSet(span_list=[IntSpan('[8, 10]'), IntSpan('[11, 12]')])
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class IntSpanSet extends SpanSet<Integer> implements Number{
     private final Pointer _inner;
@@ -56,7 +58,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
     }
 
 //    @Override
-//    public Pointer createListInner(List<Period> periods){
+//    public Pointer createListInner(List<tstzspan> periods){
 //        return null;
 //    }
 
@@ -175,11 +177,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
         return new IntSpan(functions.spanset_span_n(this._inner, n));
     }
 
+
     public List<IntSpan> spans(){
         Pointer ps = functions.spanset_spans(this._inner);
         List<IntSpan> spanList = new ArrayList<IntSpan>(this.num_spans());
         System.out.println(this.num_spans());
-        long pointerSize= Long.BYTES;
+        long pointerSize= Integer.BYTES;
         for (long i=0; i<this.num_spans(); i++){
             Pointer p= ps.getPointer((long) i*pointerSize);
 //            System.out.println(new IntSpan(p).lower().toString());

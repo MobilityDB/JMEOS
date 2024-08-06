@@ -3,7 +3,6 @@ import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
 import functions.functions;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +21,7 @@ import java.util.List;
  *         >>> FloatSpanSet(span_list=['[8, 10]', '[11, 12]'])
  *         >>> FloatSpanSet(span_list=[FloatSpan('[8, 10]'), FloatSpan('[11, 12]')])
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class FloatSpanSet extends SpanSet<Float> implements Number{
 
@@ -53,7 +51,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
 //    @Override
-//    public Pointer createListInner(List<Period> periods){
+//    public Pointer createListInner(List<tstzspan> periods){
 //        return null;
 //    }
 

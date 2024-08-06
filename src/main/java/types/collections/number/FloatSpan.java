@@ -22,8 +22,7 @@ import functions.functions;
  *         >>> FloatSpan(lower=2.0, upper=5.8, lower_inc=False, upper_inc=True)
  *         >>> FloatSpan(lower='2.0', upper='5.8', upper_inc=True)
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class FloatSpan extends Span<Float> implements Number{
     private final Pointer _inner;

@@ -21,8 +21,7 @@ import functions.functions;
  *         >>> IntSpan(lower=2, upper=5, lower_inc=False, upper_inc=True)
  *         >>> IntSpan(lower='2', upper='5', upper_inc=True)
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class IntSpan extends Span<Integer> implements Number{
     private final Pointer _inner;
@@ -122,7 +121,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
 
     /**
-     * Returns a Period from its WKB representation in hex-encoded ASCII.
+     * Returns a tstzspan from its WKB representation in hex-encoded ASCII.
      *
      *  <p>
      *

@@ -1,14 +1,11 @@
 package collections.number;
 
-import functions.functions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import types.collections.number.FloatSpan;
 import types.collections.number.FloatSpanSet;
-import types.collections.number.IntSpan;
-import types.collections.number.IntSpanSet;
 import functions.*;
 
 import java.sql.SQLException;

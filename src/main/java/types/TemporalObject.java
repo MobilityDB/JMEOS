@@ -7,4 +7,5 @@ package types;
  * @since 12/08/2023
  */
 public interface TemporalObject {
+//    TemporalObject time();
 }

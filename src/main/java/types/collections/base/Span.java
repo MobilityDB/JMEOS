@@ -1,10 +1,10 @@
 package types.collections.base;
 
 import jnr.ffi.Pointer;
-
-import java.lang.reflect.InvocationTargetException;
-
 import functions.functions;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -122,9 +122,15 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns a tstzspan set containing span
      * @return String type
      */
-    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.span_to_spanset(this._inner);
-        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.span_to_spanset(this._inner);
+//        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.set_to_spanset(this._inner);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
@@ -473,6 +479,15 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     public Base mul(Base other) throws Exception {
         return intersection(other);
+    }
+
+    public Base minus(Base other) throws Exception {
+        if (other instanceof Span<?>){
+            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_span_span(this._inner, ((Span<?>) other).get_inner()));
+        }
+        else {
+            throw new Exception("Operation not supported with this type");
+        }
     }
 
     /**

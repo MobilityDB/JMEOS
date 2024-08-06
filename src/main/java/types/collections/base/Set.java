@@ -3,6 +3,7 @@ package types.collections.base;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.io.ParseException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import functions.functions;
@@ -109,14 +110,26 @@ public abstract class Set<T extends Object> implements Collection, Base {
         return functions.set_as_hexwkb(this._inner, variant);
     }
 
-    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.set_to_span(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public <T> T to_span(Class<T> spanType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_to_span(this._inner);
-        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+        Constructor<T> constructor = spanType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
-    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.set_to_spanset(this._inner);
+//        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_to_spanset(this._inner);
-        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
@@ -412,8 +425,22 @@ public abstract class Set<T extends Object> implements Collection, Base {
 //        }
 //    }
 
+
+
     public void distance(Base other) throws Exception {
         throw new Exception("Operation not supported with "+ other + " type");
+    }
+
+
+    public boolean is_adjacent(Base other) throws Exception {
+        if (other instanceof Span<?>){
+            return functions.adjacent_span_span(this._inner, ((Span<?>) other).get_inner());
+        } else if (other instanceof SpanSet<?>) {
+            return functions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
+        }
+        else {
+            throw new Exception("Operation not supported with this type");
+        }
     }
 
 
