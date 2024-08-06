@@ -5,18 +5,17 @@ import jnr.ffi.Pointer;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
 import types.collections.time.Time;
-import types.collections.time.TimestampSet;
+import types.collections.time.tstzspanset;
 import types.temporal.*;
 
 
 /**
  * Class that represents the MobilityDB type TText used for {@link TTextInst}, {@link TTextSeq} and {@link TTextSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TText {
     String customType = "String";
@@ -52,9 +51,9 @@ public interface TText {
      *         MEOS Functions:
      *         <ul>
      *             <li>ttextinst_make</li>
-     *             <li>ttextseq_from_base_timestampset</li>
-     *             <li>ttextseq_from_base_period</li>
-     *             <li>ttextseqset_from_base_periodset</li>
+     *             <li>ttextseq_from_base_tstzspanset</li>
+     *             <li>ttextseq_from_base_tstzset</li>
+     *             <li>ttextseqset_from_base_tstzspan</li>
      *         </ul>
      *
      * @param value String value.
@@ -62,14 +61,14 @@ public interface TText {
      * @return A new temporal boolean.
      */
     static Temporal from_base_time(String value, Time base){
-        if (base instanceof TimestampSet){
-            return new TTextSeq(functions.ttextseq_from_base_timestampset(functions.cstring2text(value),((TimestampSet) base).get_inner()));
+        if (base instanceof tstzspanset){
+            return new TTextSeq(functions.ttextseqset_from_base_tstzspanset(functions.cstring2text(value),((tstzspanset) base).get_inner()));
 
-        } else if (base instanceof Period) {
-            return new TTextSeq(functions.ttextseq_from_base_period(functions.cstring2text(value),((Period) base).get_inner()));
+        } else if (base instanceof tstzset) {
+            return new TTextSeq(functions.ttextseq_from_base_tstzset(functions.cstring2text(value),((tstzset) base).get_inner()));
 
-        } else if (base instanceof PeriodSet) {
-            return new TTextSeqSet(functions.ttextseqset_from_base_periodset(functions.cstring2text(value),((PeriodSet) base).get_inner()));
+        } else if (base instanceof tstzspan) {
+            return new TTextSeqSet(functions.ttextseq_from_base_tstzspan(functions.cstring2text(value),((tstzspan) base).get_inner()));
         }
 
         return null;
@@ -172,7 +171,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean always_equal(String value){
-        return functions.ttext_always_eq(getTextInner(),functions.cstring2text(value));
+        return functions.always_eq_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
     /**
@@ -187,7 +186,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean always_not_equal(String value){
-        return ! (functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value)));
+        return (functions.always_ne_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
 
@@ -203,7 +202,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean always_less(String value){
-        return functions.ttext_always_lt(getTextInner(),functions.cstring2text(value));
+        return functions.always_lt_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
 
@@ -220,7 +219,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean always_less_or_equal(String value){
-        return functions.ttext_always_le(getTextInner(),functions.cstring2text(value));
+        return functions.always_le_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
     /**
@@ -236,7 +235,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean always_greater_or_equal(String value){
-        return ! (functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value)));
+        return (functions.always_ge_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
     /**
@@ -251,7 +250,7 @@ public interface TText {
      * 	 *            " `False`" otherwise.
      */
     default boolean always_greater(String value){
-        return ! (functions.ttext_ever_le(getTextInner(),functions.cstring2text(value)));
+        return (functions.always_gt_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
     /**
@@ -266,7 +265,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean ever_less(String value){
-        return functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value));
+        return functions.ever_lt_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
 
@@ -283,7 +282,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean ever_less_or_equal(String value){
-        return functions.ttext_ever_le(getTextInner(),functions.cstring2text(value));
+        return functions.ever_le_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
 
@@ -299,7 +298,7 @@ public interface TText {
      * 	 *             otherwise.
      */
     default boolean ever_equal(String value){
-        return functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value));
+        return functions.ever_eq_ttext_text(getTextInner(),functions.cstring2text(value)) > 0;
     }
 
     /**
@@ -314,7 +313,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean ever_not_equal(String value){
-        return ! (functions.ttext_always_eq(getTextInner(),functions.cstring2text(value)));
+        return (functions.ever_ne_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
     /**
@@ -330,7 +329,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean ever_greater_or_equal(String value){
-        return ! (functions.ttext_always_lt(getTextInner(),functions.cstring2text(value)));
+        return (functions.ever_ge_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
     /**
@@ -345,7 +344,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean ever_greater(String value){
-        return ! (functions.ttext_always_le(getTextInner(),functions.cstring2text(value)));
+        return (functions.ever_gt_ttext_text(getTextInner(),functions.cstring2text(value))) > 0;
     }
 
     /**
@@ -360,7 +359,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean never_equal(String value){
-        return ! (functions.ttext_ever_eq(getTextInner(),functions.cstring2text(value)));
+        return ! (this.ever_equal(value));
     }
 
 
@@ -376,7 +375,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean never_not_equal(String value){
-        return functions.ttext_always_eq(getTextInner(),functions.cstring2text(value));
+        return ! (this.never_not_equal(value));
     }
 
     /**
@@ -391,7 +390,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean never_less(String value){
-        return ! (functions.ttext_ever_lt(getTextInner(),functions.cstring2text(value)));
+        return ! (this.ever_less(value));
     }
 
 
@@ -408,7 +407,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean never_less_or_equal(String value){
-        return ! (functions.ttext_ever_le(getTextInner(),functions.cstring2text(value)));
+        return ! (this.ever_less_or_equal(value));
     }
 
     /**
@@ -424,7 +423,7 @@ public interface TText {
      * 	 *             "value", "False" otherwise.
      */
     default boolean never_greater_or_equal(String value){
-        return functions.ttext_always_lt(getTextInner(),functions.cstring2text(value));
+        return ! (this.ever_greater_or_equal(value));
     }
 
     /**
@@ -439,7 +438,7 @@ public interface TText {
      * 	 *             "False" otherwise.
      */
     default boolean never_greater(String value){
-        return functions.ttext_always_le(getTextInner(),functions.cstring2text(value));
+        return ! (this.ever_greater(value));
     }
 
 

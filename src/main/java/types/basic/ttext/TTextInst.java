@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal text instant class inherited from temporal instant.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TTextInst extends TInstant<String> implements TText {
 
@@ -40,7 +39,7 @@ public class TTextInst extends TInstant<String> implements TText {
 	 */
 	public TTextInst(String value)  {
 		super(value);
-		this.inner = functions.ttextinst_in(value);
+		this.inner = functions.ttext_in(value);
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class TTextInst extends TInstant<String> implements TText {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.ttextinst_in(str);
+		return functions.ttext_in(str);
 	}
 
 	@Override

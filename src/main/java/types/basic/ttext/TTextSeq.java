@@ -11,8 +11,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal text sequence class inherited from temporal sequence.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TTextSeq extends TSequence<String> implements TText{
 	private Pointer inner;
