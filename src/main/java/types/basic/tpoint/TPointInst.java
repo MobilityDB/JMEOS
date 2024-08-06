@@ -8,8 +8,7 @@ import org.locationtech.jts.geom.Point;
 /**
  * Base abstract class for TGeomPointInt and TGeogPointInt
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class TPointInst extends TInstant<Point> implements TPoint{
 
