@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal geographic point sequence set class inherited from temporal point sequence set and implementing temporal geographic point.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TGeogPointSeqSet extends TPointSeqSet implements TGeogPoint {
 
