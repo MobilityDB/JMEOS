@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal geometric point instant class inherited from temporal point instant and implementing temporal geometric point.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TGeomPointInst extends TPointInst implements TGeomPoint {
 	private Pointer inner;
@@ -36,13 +35,13 @@ public class TGeomPointInst extends TPointInst implements TGeomPoint {
 	 */
 	public TGeomPointInst(String value){
 		super(value);
-		this.inner = functions.tgeompointinst_in(value);
+		this.inner = functions.tgeompoint_in(value);
 	}
 
 
 	@Override
 	public Pointer createStringInner(String str) {
-		return functions.tgeompointinst_in(str);
+		return functions.tgeompoint_in(str);
 	}
 
 	@Override
