@@ -23,7 +23,6 @@ import utils.ConversionUtils;
 
 /**
  * Class that represents the MobilityDB type TGeomPoint used for {@link TGeomPointInst}, {@link TGeomPointSeq} and {@link TGeomPointSeqSet}
- *
  * @author ARIJIT SAMAL
  */
 public interface TGeomPoint extends TPoint {
