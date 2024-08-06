@@ -34,9 +34,7 @@ public enum TInterpolation {
                 return TInterpolation.DISCRETE;
             case "linear":
                 return TInterpolation.LINEAR;
-            case "stepwise":
-                return TInterpolation.STEPWISE;
-            case "step":
+            case "stepwise", "step":
                 return TInterpolation.STEPWISE;
             case "none":
                 if (none) {
