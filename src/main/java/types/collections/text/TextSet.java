@@ -17,8 +17,7 @@ import functions.functions;
  * <p>
  *         >>> TextSet(elements=['a', 'b', 'c', 'def'])
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TextSet extends Set<String> {
     private Pointer _inner;
