@@ -1,16 +1,23 @@
 package types.boxes;
 
+import com.google.common.primitives.Floats;
 import jnr.ffi.Pointer;
+import org.locationtech.jts.triangulate.ConstraintVertex;
+import types.basic.tfloat.TFloat;
+import types.basic.tint.TInt;
 import types.basic.tnumber.TNumber;
 import functions.functions;
 import types.collections.base.Span;
 import types.collections.number.FloatSpan;
+import functions.*;
 import types.collections.number.IntSpan;
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.tstzspanset;
 import types.collections.time.Time;
+import utils.ConversionUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 
@@ -35,6 +42,8 @@ import java.time.LocalDateTime;
  *     Note that you can create a TBox with only the numerical or the temporal dimension. In these cases, it will be
  *     equivalent to a {@link tstzset} (if it only has temporal dimension) or to a
  *     floatrange (if it only has the numeric dimension).
+ *
+ * @author ARIJIT SAMAL
  */
 public class TBox implements Box {
 	private boolean xmin_inc = true;
@@ -179,10 +188,10 @@ public class TBox implements Box {
 	public static TBox from_value_span(Span span) {
 		TBox tbox = null;
 		if(span instanceof IntSpan){
-			tbox = new TBox(functions.numspan_to_tbox(span.get_inner()));
+			tbox = new TBox(functions.span_to_tbox(span.get_inner()));
 		}
 		else if (span instanceof FloatSpan){
-			tbox = new TBox(functions.numspan_to_tbox(span.get_inner()));
+			tbox = new TBox(functions.span_to_tbox(span.get_inner()));
 		}
 		return tbox;
 	}
@@ -209,14 +218,14 @@ public class TBox implements Box {
 	 */
 	public static TBox from_time(Time time) throws Exception {
 		TBox tbox = null;
-		if (time instanceof Period){
-			tbox = new TBox(functions.period_to_tbox(((Period) time).get_inner()));
+		if (time instanceof tstzset){
+			tbox = new TBox(functions.set_to_tbox(((tstzset) time).get_inner()));
 		}
-		else if (time instanceof PeriodSet){
-			tbox = new TBox(functions.periodset_to_tbox(((PeriodSet) time).get_inner()));
+		else if (time instanceof tstzspan){
+			tbox = new TBox(functions.span_to_tbox(((tstzspan) time).get_inner()));
 		}
-		else if (time instanceof TimestampSet){
-			tbox = new TBox(functions.timestampset_to_tbox(((TimestampSet) time).get_inner()));
+		else if (time instanceof tstzspanset){
+			tbox = new TBox(functions.spanset_to_tbox(((tstzspanset) time).get_inner()));
 		}
 		else {
 			throw new Exception("Operation not supported with this type.");
@@ -241,23 +250,35 @@ public class TBox implements Box {
 	 * @param time temporal span of the TBox
 	 * @return A new {@link TBox} instance
 	 */
-	public static TBox from_value_time(Object value, Period time){
+	public static TBox from_value_time(Object value, Object time){
 		TBox tbox = null;
 		if (value instanceof Integer) {
-			if (time instanceof Period) {
-				tbox = new TBox(functions.int_period_to_tbox(((Integer) value).intValue(), time.get_inner()));
+			if (time instanceof LocalDateTime) {
+				tbox = new TBox(functions.int_timestamptz_to_tbox((Integer) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+			}
+			else if (time instanceof tstzspan) {
+				tbox = new TBox(functions.int_tstzspan_to_tbox((Integer) value, ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof Float) {
-			if (time instanceof Period) {
-				tbox = new TBox(functions.float_period_to_tbox(((Float) value).floatValue(), time.get_inner()));
+			if (time instanceof LocalDateTime) {
+				tbox = new TBox(functions.float_timestamptz_to_tbox((Float) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+			}
+			else if (time instanceof tstzspan) {
+				tbox = new TBox(functions.float_tstzspan_to_tbox((Float) value, ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof IntSpan) {
-			if (time instanceof Period) {
-				tbox = new TBox(functions.span_period_to_tbox(((IntSpan) value).get_inner(), time.get_inner()));
+			if (time instanceof LocalDateTime) {
+				tbox = new TBox(functions.numspan_timestamptz_to_tbox(((IntSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+			}
+			else if (time instanceof tstzspan) {
+				tbox = new TBox(functions.numspan_tstzspan_to_tbox(((IntSpan) value).get_inner(), ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof FloatSpan) {
-			if (time instanceof Period) {
-				tbox = new TBox(functions.span_period_to_tbox(((FloatSpan) value).get_inner(), time.get_inner()));
+			if (time instanceof LocalDateTime) {
+				tbox = new TBox(functions.numspan_timestamptz_to_tbox(((FloatSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+			}
+			else if (time instanceof tstzspan) {
+				tbox = new TBox(functions.numspan_tstzspan_to_tbox(((FloatSpan) value).get_inner(), ((tstzspan) time).get_inner()));
 			}
 		}
 		return tbox;
@@ -329,11 +350,12 @@ public class TBox implements Box {
 	 * MEOS Functions:
 	 * <li>tbox_to_period</li>
 	 *
-	 * @return a {@link Period} instance
+	 * @return a {@link tstzset} instance
 	 */
-	public tstzset to_period(){
-		functions.meos_initialize("UTC");
-		return new Period(functions.tbox_to_period(this._inner));
+	public tstzspan to_period(){
+		error_handler_fn errorHandler = new error_handler();
+		functions.meos_initialize("UTC", errorHandler);
+		return new tstzspan(functions.tbox_to_tstzspan(this._inner));
 	}
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -384,12 +406,14 @@ public class TBox implements Box {
 	 */
 	public TBox expand(Object obj)   {
 		Pointer result = null;
-		if(obj instanceof TBox){
-			result = functions.tbox_copy(this._inner);
-			functions.tbox_expand(((TBox) obj).get_inner(),result);
+		if(obj instanceof Duration){
+			result= functions.tbox_expand_time(this._inner, ConversionUtils.timedelta_to_interval((Duration) obj));
 		}
-		else if(obj instanceof Integer || obj instanceof Float){
-			result = functions.tbox_expand_value(this._inner,(float)obj);
+		else if(obj instanceof Integer){
+			result = functions.tbox_expand_int(this._inner,(int)obj);
+		}
+		else if(obj instanceof Float){
+			result = functions.tbox_expand_float(this._inner,(float)obj);
 		}
 		return new TBox(result);
 	}
@@ -833,16 +857,31 @@ public class TBox implements Box {
 	 *             <li>nad_tbox_tbox</li>
 	 *
 	 *
-	 * @param other temporal object to compare with
 	 * @return A {@link Float} with the distance between the nearest points of "this" and "other".
 	 */
+
+	public boolean is_float(){
+		TBox tbox= new TBox(this._inner);
+		tstzspan t= new tstzspan(functions.stbox_to_tstzspan(this._inner));
+		FloatSpan f= new FloatSpan(functions.spanset_span(tbox.get_inner()));
+        return tbox.get_inner() == t.get_inner();
+	}
+
 	public float nearest_approach_distance(Object other) {
 		float result = 0.0f;
 		if(other instanceof TBox){
-			result = (float) functions.nad_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			if (this.is_float()){
+				return (float) functions.nad_tboxfloat_tboxfloat(this._inner, ((TBox) other)._inner);
+			}
+			else{
+				return (float) functions.nad_tboxint_tboxint(this._inner, ((TBox) other)._inner);
+			}
 		}
-		else if(other instanceof TNumber){
-			result = (float) functions.nad_tbox_tbox(((TNumber) other).getNumberInner(), this._inner);
+		else if(other instanceof TInt){
+			result = (float) functions.nad_tint_tbox(((TInt) other).getNumberInner(), this._inner);
+		}
+		else if(other instanceof TFloat){
+			result = (float) functions.nad_tfloat_tbox(((TFloat) other).getNumberInner(), this._inner);
 		}
 
 		return result;
@@ -990,6 +1029,8 @@ public class TBox implements Box {
 		return this._inner;
 	}
 
-
+//	public float get_xmin(){
+//		return
+//	}
 
 }
