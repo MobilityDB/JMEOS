@@ -89,10 +89,9 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
      * @return T type
      */
-    public Pointer from_hexwkb(String hexwkb) {
+    private Pointer from_hexwkb(String hexwkb) {
         return functions.set_from_hexwkb(hexwkb);
     }
-
 
     /**
      * Returns the WKB representation

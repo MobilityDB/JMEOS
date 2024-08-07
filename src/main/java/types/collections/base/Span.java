@@ -97,7 +97,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
      * @return T type
      */
-    Pointer from_hexwkb(String hexwkb)
+    private Pointer from_hexwkb(String hexwkb)
     {
         return functions.span_from_hexwkb(hexwkb);
     }
