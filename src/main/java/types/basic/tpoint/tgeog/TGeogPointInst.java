@@ -36,12 +36,12 @@ public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	 */
 	public TGeogPointInst(String value){
 		super(value);
-		this.inner = functions.tgeompoint_in(value);
+		this.inner = functions.tgeogpoint_in(value);
 	}
 
 	@Override
 	public Pointer createStringInner(String str) {
-		return functions.tgeompoint_in(str);
+		return functions.tgeogpoint_in(str);
 	}
 
 	@Override
