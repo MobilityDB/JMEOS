@@ -10,7 +10,6 @@ import java.io.Serializable;
  * @param <V> base classe such as integer, boolean, text
  *
  * @author ARIJIT SAMAL
- * @since 10/09/2023
  */
 public abstract class TSequence<V extends Serializable> extends Temporal<V> {
 	protected boolean stepwise;
