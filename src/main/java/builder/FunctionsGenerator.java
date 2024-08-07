@@ -488,7 +488,8 @@ public class FunctionsGenerator {
 		
 		builder.append("""
 				public interface MeosLibrary {
-					MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, "meos").getLibraryInstance();
+				    String libraryPath = "libmeos.so";
+					MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryPath).getLibraryInstance();
 					MeosLibrary meos = MeosLibrary.INSTANCE;
 				""");
 		BuilderUtils.appendStringBuilders(functionsBuilder, builder, "\t", "\n");
