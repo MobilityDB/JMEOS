@@ -112,6 +112,11 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 //		return new tstzset(result);
 //	}
 
+	public static tstzset from_hexwkb(String hexwkb) {
+		Pointer result = functions.span_from_hexwkb(hexwkb);
+		return new tstzset(result);
+	}
+
     /* ------------------------- Output ---------------------------------------- */
 
 
@@ -295,7 +300,7 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 			return this.is_adjacent(((Temporal<?>) other).time());
 		}
 		else if (other instanceof Box){
-			return functions.adjacent_span_span(functions.set_to_span(this._inner), ((Box) other).to_period()._inner);
+			return functions.adjacent_span_span(functions.set_to_span(this._inner), ((Box) other).to_period().get_inner());
 		}
 		else{
 			return super.is_adjacent((Base) other);
