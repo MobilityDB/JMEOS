@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import types.collections.time.tstzset;
-import types.temporal.Temporal;
-import utils.ConversionUtils;
-import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.tstzspanset;
+import functions.*;
+import types.temporal.Temporal;
+import utils.ConversionUtils;
 import functions.functions;
 import javax.naming.OperationNotSupportedException;
 
@@ -39,8 +39,7 @@ import javax.naming.OperationNotSupportedException;
  *<p>
  *         >>> STBox(xmin=1.0, xmax=4.0, ymin=2.0, ymax=5.0, tmin=datetime(2001, 1, 1), tmax=datetime(2001, 1, 2))
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class STBox implements Box {
 	private final OffsetDateTime tMin = null;
@@ -73,10 +72,10 @@ public class STBox implements Box {
 		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
-				case Period p -> other_box = new STBox(functions.period_to_stbox(p.get_inner()));
-				case PeriodSet ps -> other_box = new STBox(functions.periodset_to_stbox(ps.get_inner()));
-				case Temporal t -> other_box = new STBox(functions.period_to_stbox(functions.temporal_to_period(t.getInner())));
-				case TimestampSet ts -> other_box = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
+				case tstzset p -> other_box = new STBox(functions.tstzset_to_stbox(p.get_inner()));
+				case tstzspan ps -> other_box = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
+				case Temporal t -> other_box = new STBox(functions.tstzset_to_stbox(functions.temporal_to_tstzspan(t.getInner())));
+				case tstzspanset ts -> other_box = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
 				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 			}
 		}
@@ -129,15 +128,15 @@ public class STBox implements Box {
 	 * @param geodetic boolean geodetic
 	 */
 	public STBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax, LocalDateTime tmin, LocalDateTime tmax, boolean tmin_inc, boolean tmax_inc, boolean geodetic){
-		Pointer period=null;
+		Pointer tstzspan=null;
 		boolean hast = tmin != null && tmax != null;
 		boolean hasx = !Float.isNaN(xmin) && !Float.isNaN(xmax) && !Float.isNaN(ymin) && !Float.isNaN(ymax);
 		boolean hasz = !Float.isNaN(zmin) && !Float.isNaN(zmax);
 		if (hast){
-			period = new Period(tmin, tmax, tmin_inc, tmax_inc).get_inner();
+			tstzspan = new tstzspan(tmin, tmax, tmin_inc, tmax_inc).get_inner();
 		}
 
-		this._inner = functions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, period);
+		this._inner = functions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, tstzspan);
 	}
 
 
@@ -233,9 +232,9 @@ public class STBox implements Box {
 	 *         MEOS Functions:
 	 *         <ul>
 	 *             <li>timestamp_to_stbox</li>
-	 *             <li>timestampset_to_stbox</li>
-	 *             <li>period_to_stbox</li>
-	 *             <li>periodset_to_stbox</li>
+	 *             <li>tstzspanset_to_stbox</li>
+	 *             <li>tstzset_to_stbox</li>
+	 *             <li>tstzspan_to_stbox</li>
 	 *         </ul>
 	 * @param other a Time instance
 	 * @return a new STBox instance
@@ -243,9 +242,9 @@ public class STBox implements Box {
 	public static STBox from_time(Time other) {
 		STBox returnValue;
 		switch (other){
-			case Period p -> returnValue = new STBox(functions.period_to_stbox(p.get_inner()));
-			case PeriodSet ps -> returnValue = new STBox(functions.periodset_to_stbox(ps.get_inner()));
-			case TimestampSet ts -> returnValue = new STBox(functions.timestampset_to_stbox(ts.get_inner()));
+			case tstzset p -> returnValue = new STBox(functions.tstzset_to_stbox(p.get_inner()));
+			case tstzspan ps -> returnValue = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
+			case tstzspanset ts -> returnValue = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -275,8 +274,8 @@ public class STBox implements Box {
         return from_geometry_datetime(value,time);
     }
 
-    public STBox from_space_period(Geometry value, Pointer time ){
-        return from_geometry_period(value,time);
+    public STBox from_space_tstzset(Geometry value, Pointer time ){
+        return from_geometry_tstzset(value,time);
     }
 
      */
@@ -289,7 +288,7 @@ public class STBox implements Box {
 	 *
 	 *         MEOS Functions:
 	 *             <li>geo_timestamp_to_stbox</li>
-	 *             <li>geo_period_to_stbox</li>
+	 *             <li>geo_tstzset_to_stbox</li>
 	 * @param geometry A {@link Geometry} instance representing the space dimension.
 	 * @param datetime A `{@link Time} instance representing the time dimension.
 	 * @param geodetic Whether to create a geodetic or geometric "STBox".
@@ -297,7 +296,7 @@ public class STBox implements Box {
 	 */
 	public static STBox from_geometry_datetime(Geometry geometry, LocalDateTime datetime, boolean geodetic){
         Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
-        Pointer result = functions.geo_timestamp_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
+        Pointer result = functions.geo_timestamptz_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
         return new STBox(result);
     }
 
@@ -309,15 +308,15 @@ public class STBox implements Box {
 	 *
 	 *         MEOS Functions:
 	 *             <li>geo_timestamp_to_stbox</li>
-	 *             <li>geo_period_to_stbox</li>
+	 *             <li>geo_tstzset_to_stbox</li>
 	 * @param geometry A {@link Geometry} instance representing the space dimension.
-	 * @param period A `{@link Period} instance representing the time dimension.
+	 * @param tstzset A `{@link tstzset} instance representing the time dimension.
 	 * @param geodetic Whether to create a geodetic or geometric "STBox".
 	 * @return A new {@link STBox} instance.
 	 */
-    public static STBox from_geometry_period(Geometry geometry, Period period, boolean geodetic){
+    public static STBox from_geometry_tstzspan(Geometry geometry, tstzset tstzset, boolean geodetic){
 		Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
-        Pointer result = functions.geo_period_to_stbox(gs,period.get_inner());
+        Pointer result = functions.geo_tstzspan_to_stbox(gs,tstzset.get_inner());
         return new STBox(result);
     }
 
@@ -356,16 +355,16 @@ public class STBox implements Box {
     /* ------------------------- Conversions ---------------------------------- */
 
 	/**
-	 * Returns the temporal dimension of "this" as a "Period" instance.
+	 * Returns the temporal dimension of "this" as a "tstzset" instance.
 	 * <p>
 	 * MEOS Functions:
-	 * <li>stbox_to_period</li>
+	 * <li>stbox_to_tstzset</li>
 	 *
-	 * @return a new Period instance
+	 * @return a new tstzset instance
 	 */
-    public tstzset to_period() {
-        Pointer result = functions.stbox_to_period(this._inner);
-        return new Period(result);
+    public tstzset to_tstzspan() {
+        Pointer result = functions.stbox_to_tstzspan(this._inner);
+        return new tstzset(result);
     }
 
 
@@ -622,7 +621,7 @@ public class STBox implements Box {
 	 */
 	public STBox expand_stbox(STBox stbox, STBox other) {
 		Pointer result = functions.stbox_copy(this._inner);
-		functions.stbox_expand(other._inner, result);
+//		functions.stbox_expand_space(other._inner, result);
 		return new STBox(result);
 	}
 
@@ -646,7 +645,7 @@ public class STBox implements Box {
 	public STBox expand_numerical(Number value) {
 		STBox result = null;
 		if(value instanceof Integer || value instanceof Float){
-			result = new STBox(functions.stbox_expand_space(this.get_inner(), value.floatValue()));
+			result = new STBox(functions.stbox_expand_space(this.get_inner(), (double) value.floatValue()));
 		}
 		return result;
 	}
@@ -979,13 +978,13 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *         See Also:
-	 * 				{@link Period#is_before(TemporalObject)}
+	 * 				{@link tstzset#is_before(TemporalObject)}
 	 * 	<p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly before "other", "false" otherwise.
 	 */
 	public boolean is_before(TemporalObject other) throws Exception {
-		return this.to_period().is_before(other);
+		return this.to_tstzspan().is_before(other);
 	}
 
 
@@ -995,13 +994,13 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *     See Also:
-	 * 	 			{@link Period#is_over_or_before(TemporalObject)}
+	 * 	 			{@link tstzset#is_over_or_before(TemporalObject)}
 	 * 	 </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is before "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_before(TemporalObject other) throws Exception {
-		return this.to_period().is_over_or_before(other);
+		return this.to_tstzspan().is_over_or_before(other);
 	}
 
 
@@ -1010,13 +1009,13 @@ public class STBox implements Box {
 	 *
 	 * <p>
 	 *      See Also:
-	 * 	 			{@link Period#is_after(TemporalObject)}
+	 * 	 			{@link tstzset#is_after(TemporalObject)}
 	 *     </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is strictly after "other", "false" otherwise.
 	 */
 	public boolean is_after(TemporalObject other) throws Exception {
-		return this.to_period().is_after(other);
+		return this.to_tstzspan().is_after(other);
 	}
 
 
@@ -1026,13 +1025,13 @@ public class STBox implements Box {
 	 *
 	 *  <p>
 	 *      See Also:
-	 * 				{@link Period#is_over_or_after(TemporalObject)}
+	 * 				{@link tstzset#is_over_or_after(TemporalObject)}
 	 *      </p>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is after "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_after(TemporalObject other) throws Exception {
-		return this.to_period().is_over_or_after(other);
+		return this.to_tstzspan().is_over_or_after(other);
 	}
 
     /* ------------------------- Distance Operations --------------------------- */
@@ -1204,5 +1203,16 @@ public class STBox implements Box {
 		}
 	}
 
+	@Override
+	public tstzspan to_period(){
+		error_handler_fn errorHandler = new error_handler();
+		functions.meos_initialize("UTC", errorHandler);
+		return new tstzspan(functions.stbox_to_tstzspan(this._inner));
+	}
 
+
+//	@Override
+//	public tstzset to_period() {
+//		return null;
+//	}
 }
