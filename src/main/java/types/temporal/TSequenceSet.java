@@ -74,6 +74,4 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 		String value = toString();
 		return value != null ? value.hashCode() : 0;
 	}
-	
-
 }

@@ -21,6 +21,10 @@ import types.basic.ttext.TTextSeqSet;
 
 import static types.temporal.TemporalType.*;
 
+/**
+ * Final class for assigning temporal types
+ * @author ARIJIT SAMAL
+ **/
 
 public final class Factory{
 

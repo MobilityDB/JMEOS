@@ -5,7 +5,6 @@ package types.temporal;
  * Enumeration of the interpolation type associating it with the corresponding MEOS value.
  *
  * @author ARIJIT SAMAL
- * @since 10/09/2023
  */
 public enum TInterpolation {
     NONE(0),
