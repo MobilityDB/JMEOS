@@ -97,9 +97,14 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
      * @return T type
      */
-    private Pointer from_hexwkb(String hexwkb)
-    {
-        return functions.span_from_hexwkb(hexwkb);
+//    public static T from_hexwkb(String hexwkb)
+//    {
+//        return functions.span_from_hexwkb(hexwkb);
+//    }
+    public static <T> T from_hexwkb(String hexwkb, Class<T> spanType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.span_from_hexwkb(hexwkb);
+        Constructor<T> constructor = spanType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
@@ -114,8 +119,10 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns the WKB representation in hex-encoded ASCII.
      * @return String type
      */
-    public String as_hexwkb(byte variant) {
-        return functions.span_as_hexwkb(this._inner, variant);
+    public String as_hexwkb() {
+        String[] result= new String[]{functions.span_as_hexwkb(this._inner, (byte) -1)};
+//        System.out.println(result[0]);
+        return result[0];
     }
 
     /**
