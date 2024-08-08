@@ -4,6 +4,7 @@ import functions.functions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +59,17 @@ class tstzsetTest {
     @Test
     public void testHexwkbConstructor() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
-        tstzset tsett = types.collections.time.tstzset.from_hexwkb("012100000040021FFE3402000000B15A26350200");
-        System.out.println(tsett.toString());
+//        tstzset tsett = types.collections.time.tstzset.from_hexwkb("012100000040021FFE3402000000B15A26350200");
+        String hexwkb_string= tset.as_hexwkb();
+		System.out.println(hexwkb_string);
+        tstzset p = types.collections.time.tstzset.from_hexwkb(hexwkb_string);
+		System.out.println(p.toString());
         List<LocalDateTime> list = new ArrayList<>();
         list.add(LocalDateTime.of(2019, 9, 1, 0, 0,0));
         list.add(LocalDateTime.of(2019, 9, 2, 0, 0,0));
         list.add(LocalDateTime.of(2019, 9, 3, 0, 0,0));
         System.out.println(list);
-        assert_tstzset_equality(tsett,list);
+        assert_tstzset_equality(p,list);
     }
 
 
@@ -96,7 +100,8 @@ class tstzsetTest {
     public void testTimestampConversion() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         tstzspanset pset = new tstzspanset("{[2019-09-01 00:00:00+00, 2019-09-01 00:00:00+00], [2019-09-02 00:00:00+00, 2019-09-02 00:00:00+00], [2019-09-03 00:00:00+00, 2019-09-03 00:00:00+00]}");
-        tstzspan converted = tset.to_span();
+        tstzspanset converted = tset.to_spanset();
+        System.out.println(converted.toString());
         assertEquals(converted.toString(),pset.toString());
     }
 
@@ -104,8 +109,9 @@ class tstzsetTest {
     @Test
     public void testtstzsetConversion() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
-        tstzset p = new tstzset("[2019-09-01 00:00:00+00, 2019-09-03 00:00:00+00]");
-        tstzset converted = tset;
+        tstzspan p = new tstzspan("[2019-09-01 00:00:00+00, 2019-09-03 00:00:00+00]");
+        tstzspan converted = tset.to_span();
+        System.out.println(converted.toString());
         assertEquals(converted.toString(),p.toString());
     }
 
@@ -185,6 +191,7 @@ class tstzsetTest {
     public void testDistanceFunction() throws Exception {
         functions.meos_initialize("UTC", errorHandler);
         tstzset tmp_set = new tstzset("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}");
+        System.out.println(Duration.ofSeconds((long) functions.distance_tstzset_tstzset(tset.get_inner(), tmp_set.get_inner())));
         tset.distance(tmp_set);
     }
 

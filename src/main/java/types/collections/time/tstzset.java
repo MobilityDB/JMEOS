@@ -113,7 +113,7 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 //	}
 
 	public static tstzset from_hexwkb(String hexwkb) {
-		Pointer result = functions.span_from_hexwkb(hexwkb);
+		Pointer result = functions.set_from_hexwkb(hexwkb);
 		return new tstzset(result);
 	}
 
@@ -157,8 +157,8 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 		return new tstzspan(functions.set_to_span(this._inner));
 	}
 
-	public tstzspan to_spanset() {
-		return new tstzspan(functions.set_to_spanset(this._inner));
+	public tstzspanset to_spanset() {
+		return new tstzspanset(functions.set_to_spanset(this._inner));
 	}
 
 	/**
@@ -583,7 +583,6 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	}
 
     /* ------------------------- Distance Operations --------------------------- */
-
 	public Duration distance(Object other) throws Exception {
 		Duration answer = null;
 		if (other instanceof LocalDateTime) {
@@ -591,21 +590,45 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 		} else if (other instanceof tstzset) {
 			answer= Duration.ofSeconds((long)functions.distance_tstzset_tstzset(this._inner, ((tstzset) other)._inner));
 		} else if (other instanceof tstzspan) {
-			answer= Duration.ofSeconds((long)this.to_spanset().distance((TemporalObject) other));
+			answer= Duration.ofSeconds((long)this.to_span().distance((TemporalObject) other));
 //					Duration.ofSeconds((long)functions.distance_tstzspanset_tstzspan(this.to_spanset(tstzspan.class).get_inner(), ((tstzspan) other).get_inner()));
 		} else if (other instanceof tstzspanset) {
-			answer= Duration.ofSeconds((long)this.to_spanset().distance((TemporalObject) other));
+			answer= Duration.ofSeconds((long)this.to_span().distance((TemporalObject) other));
 //					Duration.ofSeconds((long)functions.distance_tstzspanset_tstzspanset(this.to_spanset(tstzspan.class).get_inner(), ((tstzspanset) other).get_inner()));
 		} else if (other instanceof Temporal) {
 			answer= Duration.ofSeconds((long)this.to_span().distance((TemporalObject) other));
 		} else if (other instanceof Box) {
 			answer= Duration.ofSeconds((long)this.to_span().distance((TemporalObject) other));
 		} else {
-			super.distance((Base) other);
+			throw new Exception("Operation not supported with "+ other + " type");
 		}
         return answer;
     }
 
+//	public Duration distance(Object other) throws Exception {
+//		Duration answer = switch (other) {
+//            case LocalDateTime localDateTime -> Duration.ofSeconds((long) functions.distance_set_timestamptz(this._inner, ConversionUtils.datetimeToTimestampTz(localDateTime)));
+//            case tstzset tstzset -> Duration.ofSeconds((long) functions.distance_tstzset_tstzset(this._inner, tstzset._inner));
+//            case tstzspan tstzspan -> Duration.ofSeconds((long) tstzspan.distance((TemporalObject) other));
+//            case tstzspanset tstzspanset -> Duration.ofSeconds((long) tstzspanset.to_span().distance((TemporalObject) other));
+//            case Temporal ts -> Duration.ofSeconds((long) this.to_span().distance((TemporalObject) other));
+//            case Box box -> Duration.ofSeconds((long) this.to_span().distance((TemporalObject) other));
+//            case null, default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+//        };
+//        return answer;
+//	}
+
+
+//	public double distance(TemporalObject other) throws Exception {
+//		double returnValue;
+//		switch (other){
+//			case tstzspan p -> returnValue = this.to_span().distance(other);
+//			case tstzset ts -> returnValue = functions.distance_tstzspanset_tstzspan(ts.get_inner(),this._inner);
+//			case Box b -> returnValue = functions.distance_tstzspan_tstzspan(this._inner, b.to_period().get_inner());
+//			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
+//		}
+//		return returnValue;
+//	}
 
 
 
