@@ -491,7 +491,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         } else if (other instanceof datespanset) {
             answer= this.to_spanset(datespanset.class).distance(other);
         } else {
-            super.distance((Base) other);
+            throw new Exception("Operation not supported with "+ other + " type");
         }
         return answer;
     }

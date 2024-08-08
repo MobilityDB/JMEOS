@@ -475,7 +475,7 @@ public class IntSet extends Set<Integer> implements Number{
             answer= this.to_spanset().distance(other);
         }
         else {
-            super.distance((Base) other);
+            throw new Exception("Operation not supported with "+ other + " type");
         }
         return answer;
     }

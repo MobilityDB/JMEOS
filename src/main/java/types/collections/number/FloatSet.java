@@ -490,7 +490,7 @@ public class FloatSet extends Set<Float> implements Number{
             answer= this.to_spanset().distance(other);
         }
         else {
-            super.distance((Base) other);
+            throw new Exception("Operation not supported with "+ other + " type");
         }
         return answer;
     }

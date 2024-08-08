@@ -105,8 +105,10 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * Returns the WKB representation in hex-encoded ASCII.
      * @return String type
      */
-    public String as_hexwkb(byte variant) {
-        return functions.set_as_hexwkb(this._inner, variant);
+    public String as_hexwkb() {
+        String[] result= new String[]{functions.set_as_hexwkb(this._inner, (byte) -1)};
+//        System.out.println(result[0]);
+        return result[0];
     }
 
 //    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -425,11 +427,22 @@ public abstract class Set<T extends Object> implements Collection, Base {
 //    }
 
 
+//    public <T> T distance(Object other) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+////        Pointer spanPointer = functions.set_to_spanset(this._inner);
+////        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+//        return constructor.newInstance(spanPointer);
+//    }
 
-    public void distance(Base other) throws Exception {
+
+    private void distance(Base other) throws Exception {
         throw new Exception("Operation not supported with "+ other + " type");
     }
 
+//    public <T> T distance(Object other) throws Exception {
+//        throw new Exception("Operation not supported with " + other + " type");
+//    }
+
+//    public abstract T distance(Object other) throws Exception;
 
     public boolean is_adjacent(Base other) throws Exception {
         if (other instanceof Span<?>){
