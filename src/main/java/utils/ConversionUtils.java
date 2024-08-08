@@ -17,6 +17,9 @@ import org.locationtech.jts.io.WKTWriter;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import functions.functions;
 
 /**
@@ -68,7 +71,36 @@ public class ConversionUtils {
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
-		return Duration.parse(functions.pg_interval_out(p));
+		String res= functions.pg_interval_out(p);
+		System.out.println(res);
+		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
+		Matcher matcher = pattern.matcher(res);
+
+		if (matcher.matches()) {
+			// Extract days from the string
+			int days = Integer.parseInt(matcher.group(1));
+
+			// Initialize hours, minutes, and seconds to zero
+			int hours = 0;
+			int minutes = 0;
+			int seconds = 0;
+
+			// If the time component is present, extract hours, minutes, and seconds
+			if (matcher.group(2) != null) {
+				hours = Integer.parseInt(matcher.group(2));
+				minutes = Integer.parseInt(matcher.group(3));
+				seconds = Integer.parseInt(matcher.group(4));
+			}
+
+			// Calculate the total duration in seconds
+			long totalSeconds = days * 86400L + hours * 3600L + minutes * 60L + seconds;
+
+			System.out.println(Duration.ofSeconds(totalSeconds));
+			// Create and return the Duration object
+			return Duration.ofSeconds(totalSeconds);
+		} else {
+			throw new IllegalArgumentException("Invalid interval format");
+		}
 	}
 
 	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {
