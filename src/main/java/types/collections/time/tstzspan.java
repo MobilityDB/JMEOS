@@ -244,8 +244,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	 * @return Instance of tstzspan class
 	 */
 	public static tstzspan from_hexwkb(String hexwkb) {
-		Pointer result = functions.span_from_hexwkb(hexwkb);
-		return new tstzspan(result);
+		return new tstzspan(functions.span_from_hexwkb(hexwkb));
 	}
 
 
@@ -282,7 +281,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	 * @return tstzspanset instance
 	 */
 	public tstzspanset to_spanset(){
-		return new tstzspanset(functions.span_to_spanset(functions.span_to_spanset(this._inner)));
+		return new tstzspanset(functions.span_to_spanset(this._inner));
 	}
 
 
@@ -385,8 +384,9 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	 * </p>
 	 * @return a float representing the duration of the period in seconds
 	 */
-	public float duration_in_second(){
-		return (float) functions.floatspan_width(this._inner);
+	public long duration_in_second(){
+		return this.duration().toSeconds();
+
 	}
 
 	/**
@@ -789,8 +789,8 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 		switch (other){
 			case tstzspan p -> returnValue = functions.distance_tstzspan_tstzspan(this._inner,p.get_inner());
 			case tstzspanset ps -> returnValue = functions.distance_tstzspanset_tstzspan(ps.get_inner(),this._inner);
-			case tstzset ts -> returnValue = ts.to_spanset().distance(other);
-			case Box b -> returnValue = this.distance((Time) b.to_period());
+			case tstzset ts -> returnValue = ts.to_span().distance(other);
+			case Box b -> returnValue = functions.distance_tstzspan_tstzspan(this._inner, b.to_period().get_inner());
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
