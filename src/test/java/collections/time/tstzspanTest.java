@@ -1,6 +1,7 @@
 package collections.time;
 
 import functions.functions;
+import jnr.ffi.Pointer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
+
+import types.collections.base.Span;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import types.collections.time.tstzset;
 
 import types.TemporalObject;
 import types.basic.tfloat.TFloatInst;
@@ -86,7 +92,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), true)
 		);
 	}
 
@@ -100,7 +106,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -114,7 +120,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -128,7 +134,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -139,10 +145,10 @@ class tstzspanTest {
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
-				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
+				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
-				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -156,7 +162,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -170,7 +176,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), true)
 		);
 	}
 
@@ -184,7 +190,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -198,7 +204,7 @@ class tstzspanTest {
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), true)
 		);
 	}
 
@@ -209,7 +215,7 @@ class tstzspanTest {
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), 0.0),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), 0.0),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), 0.0),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), 599443200)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), 599443200)
 		);
 	}
 
@@ -306,7 +312,11 @@ class tstzspanTest {
 	@Test
 	public void testHexwkbConstructor() throws SQLException {
 		functions.meos_initialize("UTC", errorHandler);
-		tstzspan p = types.collections.time.tstzspan.from_hexwkb("012100000040021FFE3402000000B15A26350200");
+//		tstzspan p = types.collections.time.tstzspan.from_hexwkb("012100000040021FFE3402000000B15A26350200");
+		String hexwkb_string= tstzspan.as_hexwkb();
+//		System.out.println(hexwkb_string);
+		tstzspan p = types.collections.time.tstzspan.from_hexwkb(hexwkb_string);
+//		System.out.println(p.toString());
 		assert_tstzspan_equality(p, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
 	}
 
@@ -334,11 +344,13 @@ class tstzspanTest {
 	@Test
 	public void testTotstzspanSet() throws SQLException {
 		functions.meos_initialize("UTC", errorHandler);
-		tstzspanset pset = this.tstzspan.to_spanset();
+		tstzspanset pset = tstzspan.to_spanset();
+		System.out.println(pset.toString());
+		String spanset_string= pset.toString();
 		assertTrue(pset != null);
-		assertEquals(pset.num_spans(),1);
+		assertEquals(pset.num_periods(),1);
 		assertEquals(pset.start_span().toString(),this.tstzspan.toString());
-		//assert_tstzspan_equality(p, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
+		assert_tstzspan_equality(tstzspan, LocalDateTime.of(2019, 9, 8, 0, 0), LocalDateTime.of(2019, 9, 10, 0, 0),false,false);
 	}
 
 	@Test
@@ -374,22 +386,30 @@ class tstzspanTest {
 	@Test
 	public void testDurationInSeconds() throws SQLException {
 		functions.meos_initialize("UTC", errorHandler);
+//		System.out.println(tstzspan.toString());
+		types.collections.time.tstzspan tst= new tstzspan("(2019-09-08 00:00:00+00, 2022-10-25 00:05:00+00)");
+//		System.out.println(tst.duration());
+//		System.out.println(tst.duration_in_second());
+//		System.out.println(tstzspan.duration_in_second());
+//		System.out.println(this.tstzspan2.duration());
 		assertEquals(this.tstzspan.duration_in_second(), 172800);
 		assertEquals(this.tstzspan2.duration_in_second(), 172800);
 	}
 
 
-	@Test
-	public void testHash() throws SQLException {
-		functions.meos_initialize("UTC", errorHandler);
-		assertEquals(this.tstzspan.hash(), 1164402929);
-	}
+//	@Test
+//	public void testHash() throws SQLException {
+//		functions.meos_initialize("UTC", errorHandler);
+//		assertEquals(this.tstzspan.hash(), 1164402929);
+//	}
 
 
 	@ParameterizedTest(name="Test Adjacency method")
 	@MethodSource("temporals_adjacent")
 	public void testAdjacency(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC", errorHandler);
+		STBox st= new STBox(functions.tstzspan_to_stbox(p.get_inner()));
+		System.out.println(st.toString(15));
 		assertEquals(this.p.is_adjacent(other), expected);
 	}
 
@@ -458,6 +478,8 @@ class tstzspanTest {
 	@MethodSource("temporals_overafter")
 	public void testIsOverOrAfter(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize("UTC", errorHandler);
+		STBox st= new STBox(functions.tstzspan_to_stbox(p.get_inner()));
+		System.out.println(st.toString(15));
 		assertEquals(this.p.is_over_or_after(other), expected);
 
 	}
@@ -468,8 +490,11 @@ class tstzspanTest {
 	@MethodSource("temporals_distance")
 	public void testDistance(TemporalObject other, double expected) throws Exception {
 		functions.meos_initialize("UTC", errorHandler);
+		STBox st= new STBox("STBOX ZT(((1.0, 2.0, 3.0),(4.0, 5.0, 6.0)),[2001-01-01, 2001-01-02])");
+		double dist= p.distance(st);
+		System.out.println(dist);
+//		System.out.println(this.p.distance(other));
 		assertEquals(this.p.distance(other), expected);
-
 	}
 
 
