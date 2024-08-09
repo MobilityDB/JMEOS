@@ -10,8 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Abstract class that represents a span of temporal object
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class Span<T extends Object> implements Collection, Base{
     private Pointer _inner;
