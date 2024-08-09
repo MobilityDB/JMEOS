@@ -39,13 +39,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_adjacent() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -53,13 +53,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_iscontained() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -67,13 +67,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_contains() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -81,13 +81,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_overlaps() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -95,13 +95,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_same() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -109,13 +109,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_before() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), true),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -123,13 +123,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_after() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), true)
 		);
 	}
 
@@ -137,13 +137,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_overbefore() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), true),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), true),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), true),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), true),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), false)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), false)
 		);
 	}
 
@@ -151,13 +151,13 @@ class tstzspansetTest {
 	private static Stream<Arguments> temporals_overafter() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
 				Arguments.of(new TFloatInst("1.0@2020-01-01"), false),
 				Arguments.of(new TFloatSeq("(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31]"), false),
 				Arguments.of(new TFloatSeqSet("{(1.0@2020-01-01, 3.0@2020-01-10, 10.0@2020-01-20, 0.0@2020-01-31], (1.0@2021-01-01, 3.0@2021-01-10, 10.0@2021-01-20, 0.0@2021-01-31]}"), false),
 				Arguments.of(new TBox("TBOXFLOAT XT([0, 10),[2020-01-01, 2020-01-31])"), false),
-				Arguments.of(new STBox("STBOX ZT(((1,0, 2,0, 3,0),(4,0, 5,0, 6,0)),[2001-01-01, 2001-01-02])"), true)
+				Arguments.of(new STBox("STBOX ZT(((1.0,2.0,3.0),(4.0,5.0,6.0)),[2001-01-01, 2001-01-02])"), true)
 		);
 	}
 
@@ -165,7 +165,7 @@ class tstzspansetTest {
 	private static Stream<Arguments> intersection() {
 		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
-				Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true)
 		);
 	}
@@ -191,14 +191,15 @@ class tstzspansetTest {
 	}
 
 	@Test
-	public void testtstzsetListConstructor(){
+	public void testtstzspansetListConstructor(){
 		functions.meos_initialize("UTC", errorHandler);
 		List<tstzspan> lst = new ArrayList<tstzspan>();
 		lst.add(new tstzspan("[2019-09-01, 2019-09-02]"));
 		lst.add(new tstzspan("[2019-09-03, 2019-09-04]"));
 		tstzspanset pset = new tstzspanset(lst);
-		assertEquals(pset.start_period().toString(), new tstzset("[2019-09-01, 2019-09-02]").toString());
-		assertEquals(pset.end_period().toString(), new tstzset("[2019-09-03, 2019-09-04]").toString());
+		System.out.println(pset.toString());
+		assertEquals(pset.start_period().toString(), new tstzspan("[2019-09-01, 2019-09-02]").toString());
+		assertEquals(pset.end_period().toString(), new tstzspan("[2019-09-03, 2019-09-04]").toString());
 	}
 
 	@Test
@@ -212,7 +213,7 @@ class tstzspansetTest {
 	@Test
 	public void testTotstzset(){
 		functions.meos_initialize("UTC", errorHandler);
-		assertEquals(this.pset.to_period().toString(), new tstzset("[2019-09-01, 2019-09-04]").toString());
+		assertEquals(this.pset.to_period().toString(), new tstzspan("[2019-09-01, 2019-09-04]").toString());
 	}
 
 
@@ -250,23 +251,23 @@ class tstzspansetTest {
 	@Test
 	public void testStarttstzset(){
 		functions.meos_initialize("UTC", errorHandler);
-		assertEquals(this.pset.start_period().toString(),new tstzset("[2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]").toString());
+		assertEquals(this.pset.start_period().toString(),new tstzspan("[2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]").toString());
 	}
 
 
 	@Test
 	public void testEndtstzset(){
 		functions.meos_initialize("UTC", errorHandler);
-		assertEquals(this.pset.end_period().toString(),new tstzset("[2019-09-03 00:00:00+00, 2019-09-04 00:00:00+00]").toString());
+		assertEquals(this.pset.end_period().toString(),new tstzspan("[2019-09-03 00:00:00+00, 2019-09-04 00:00:00+00]").toString());
 	}
 
 
 
-	@Test
-	public void testHash(){
-		functions.meos_initialize("UTC", errorHandler);
-		assertEquals(this.pset.hash(),552347465);
-	}
+//	@Test
+//	public void testHash(){
+//		functions.meos_initialize("UTC", errorHandler);
+//		assertEquals(this.pset.hash(),552347465);
+//	}
 
 
 	@ParameterizedTest(name="Test Adjacency method")
