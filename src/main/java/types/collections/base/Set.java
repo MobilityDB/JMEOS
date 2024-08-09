@@ -11,8 +11,7 @@ import functions.functions;
 /**
  * Abstract class that represents a set of temporal object
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class Set<T extends Object> implements Collection, Base {
     private Pointer _inner;

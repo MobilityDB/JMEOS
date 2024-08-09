@@ -22,8 +22,7 @@ import java.util.Map;
 /**
  * Abstract class that represents a set of span of temporal object
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class SpanSet<T extends Object> implements Collection, Base {
     private Pointer _inner = null;
