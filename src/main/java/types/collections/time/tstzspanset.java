@@ -69,18 +69,20 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @param periods - an array of Periods separated by a comma
 	 */
 	public tstzspanset(List<tstzspan> periods)  {
-		super((Pointer) periods);
+//		super((Pointer) periods);
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 
 		for (int i = 0; i < periods.size(); i++) {
 			tstzspan period = periods.get(i);
+			System.out.println(period.toString());
 			sb.append(period.toString());
 			if (i < periods.size() - 1) {
 				sb.append(", ");
 			}
 		}
 		sb.append("}");
+		System.out.println(sb);
 		this._inner = functions.tstzspanset_in(sb.toString());
 	}
 
