@@ -30,7 +30,7 @@ class tstzsetTest {
     private static Stream<Arguments> times() {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new tstzset("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
+                Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
                 Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
                 Arguments.of(new tstzset("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}"), false)
         );
