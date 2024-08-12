@@ -442,7 +442,7 @@ public class TBox implements Box {
 	 */
 	public TBox round(int maxdd)  {
 		Pointer new_inner = functions.tbox_copy(this._inner);
-		functions.tbox_round(new_inner,maxdd);
+		new_inner= functions.tbox_round(new_inner,maxdd);
 		return new TBox(new_inner);
 	}
 
