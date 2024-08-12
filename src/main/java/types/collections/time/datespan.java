@@ -43,7 +43,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
     public datespan(String str) {
         super(str);
-        _inner = functions.dateset_in(str);
+        _inner = functions.datespan_in(str);
     }
 
 /*
