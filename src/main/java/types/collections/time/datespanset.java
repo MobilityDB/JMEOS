@@ -45,7 +45,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
 
     public datespanset(String str) {
         super(str);
-        _inner = functions.dateset_in(str);
+        _inner = functions.datespanset_in(str);
     }
 
 /*
