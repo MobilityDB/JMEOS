@@ -187,6 +187,7 @@ class tstzspansetTest {
 	@Test
 	public void testStringConstructor(){
 		functions.meos_initialize("UTC", errorHandler);
+		System.out.println(pset.toString());
 		assert_tstzspanset_equality(this.pset,null);
 	}
 
