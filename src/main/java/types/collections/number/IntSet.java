@@ -360,7 +360,7 @@ public class IntSet extends Set<Integer> implements Number{
      * *             intersection is empty.
      * @throws Exception
      */
-    public Pointer intersection(Object other) throws Exception{
+    public IntSet intersection(Object other) throws Exception{
         Pointer result = null;
         if (other instanceof Integer){
             result= functions.intersection_set_int(this._inner, (int) other);
@@ -369,9 +369,9 @@ public class IntSet extends Set<Integer> implements Number{
             result= functions.intersection_set_set(this._inner, ((IntSet) other)._inner);
         }
         else {
-            super.intersection((Base) other);
+            throw new Exception("Operation not supported with this type");
         }
-        return result;
+        return new IntSet(result);
     }
 
     /**

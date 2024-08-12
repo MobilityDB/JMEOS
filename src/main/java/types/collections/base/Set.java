@@ -80,24 +80,36 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * Returns a `TsTzSpan` from its WKB representation.
      * @return Pointer type
      */
-    public Pointer from_wkb(Pointer wkb, long size) {
-        return functions.stbox_from_wkb(wkb, size);
+//    public Pointer from_wkb(Pointer wkb, long size) {
+//        return functions.set_from_wkb(wkb, size);
+//    }
+
+    public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.set_from_wkb(wkb, size);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
      * @return T type
      */
-    private Pointer from_hexwkb(String hexwkb) {
-        return functions.set_from_hexwkb(hexwkb);
+//    private Pointer from_hexwkb(String hexwkb) {
+//        return functions.set_from_hexwkb(hexwkb);
+//    }
+
+    public <T> T from_hexwkb(String hexwkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.set_from_hexwkb(hexwkb);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
      * Returns the WKB representation
      * @return Pointer type
      */
-    public Pointer as_wkb(byte variant) {
-        return functions.set_as_wkb(this._inner, variant);
+    public Pointer as_wkb() {
+        return functions.set_as_wkb(this._inner, (byte) 4);
     }
 
     /**
@@ -457,7 +469,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
     /* ------------------------- Set Operations -------------------------------- */
 
-    public Base intersection(Base other) throws Exception {
+    private Base intersection(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_set_set(this._inner, ((Set<?>) other)._inner));
         }
