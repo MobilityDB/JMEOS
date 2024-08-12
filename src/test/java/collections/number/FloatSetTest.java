@@ -160,7 +160,7 @@ public class FloatSetTest {
     @Test
     public void testIntersection() throws Exception {
         FloatSet fl = new FloatSet("{1}");
-        FloatSet fs= (FloatSet) this.floatset.intersection(this.other2);
+        FloatSet fs= this.floatset.intersection(this.other2);
         assertEquals(fs.toString(15),fl.toString(15));
     }
 

@@ -373,7 +373,7 @@ public class FloatSet extends Set<Float> implements Number{
      *      *             intersection is empty.
      * @throws Exception
      */
-    public Pointer intersection(Object other) throws Exception{
+    public FloatSet intersection(Object other) throws Exception{
         Pointer result = null;
         if ((other instanceof Float) || (other instanceof Integer)){
             result= functions.intersection_set_float(this._inner, (float) other);
@@ -382,9 +382,9 @@ public class FloatSet extends Set<Float> implements Number{
             result= functions.intersection_set_set(this._inner, ((FloatSet) other)._inner);
         }
         else {
-            super.intersection((Base) other);
+            throw new Exception("Operation not supported with this type");
         }
-        return result;
+        return new FloatSet(result);
     }
 
     /**
