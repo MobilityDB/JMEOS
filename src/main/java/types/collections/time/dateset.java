@@ -1,6 +1,7 @@
 package types.collections.time;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.annotations.In;
 import org.locationtech.jts.io.ParseException;
 import types.collections.base.*;
 
@@ -44,23 +45,40 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
         _inner = inner;
     }
 
-    public dateset(String str){
-        super(str);
-        _inner = functions.dateset_in(str);
+    public dateset(String value){
+        super(value);
+        _inner = functions.dateset_in(value);
     }
 
-/*
-        Returns the duration of the time ignoring gaps, i.e. the duration from
-        the first timestamp to the last one.
+    public dateset(List<LocalDate> dates)  {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
 
-        Returns:
-            A :class:`datetime.timedelta` instance representing the duration of ``self``
+        for (int i = 0; i < dates.size(); i++) {
+            LocalDate date = dates.get(i);
+            System.out.println(date.toString());
+            sb.append(date.toString());
+            if (i < dates.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("}");
+//        System.out.println(sb);
+        _inner = functions.dateset_in(sb.toString());
+    }
 
-        MEOS Functions:
-            tstzspan_duration
-*/
+    /*
+            Returns the duration of the time ignoring gaps, i.e. the duration from
+            the first timestamp to the last one.
+
+            Returns:
+                A :class:`datetime.timedelta` instance representing the duration of ``self``
+
+            MEOS Functions:
+                tstzspan_duration
+    */
     public Duration duration() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return this.to_spanset(dateset.class).duration();
+        return this.to_spanset(datespanset.class).duration(false);
     }
 
     @Override
@@ -84,12 +102,13 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
     }
 
 /*
-Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries  
+Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
 */
 
     public LocalDate date_adt_to_date(int ts){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.ofEpochDay(ts);
+        String dateStr= functions.pg_date_out(ts);
+        return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     /*
@@ -120,17 +139,16 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return date_adt_to_date(functions.dateset_end_value(this._inner));
     }
 
-/*
-        Returns the n-th date in ``self``.
-        Returns:
-            A :class:`date` instance
+    /*
+            Returns the n-th date in ``self``.
+            Returns:
+                A :class:`date` instance
 
-        MEOS Functions:
-            dateset_value_n
-*/
+            MEOS Functions:
+                dateset_value_n
+    */
     public LocalDate element_n(int n) throws Exception {
-        super.element_n(n);
-        return date_adt_to_date(Objects.requireNonNull(functions.dateset_value_n(this._inner, n + 1)).getInt(Long.BYTES));
+        return this.elements().get(n);
     }
 
 /*
@@ -146,8 +164,9 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         Pointer dp= functions.dateset_values(this._inner);
         long size= this.num_elements();
         List<LocalDate> datelist= new ArrayList<LocalDate>();
-        for(int i=0; i<this.num_elements(); i++) {
-            datelist.add(date_adt_to_date(dp.getInt((long) i *Long.BYTES)));
+        for(int i=0; i<size; i++) {
+            int res= dp.getInt((long) i *Integer.BYTES);
+            datelist.add(date_adt_to_date(res));
         }
         return datelist;
     }
@@ -221,28 +240,28 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new dateset(functions.dateset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
     }
 
-/*
-        Returns whether ``self`` temporally contains ``content``.
+    /*
+            Returns whether ``self`` temporally contains ``content``.
 
-        Examples:
-            >>> DateSet('{2012-01-01, 2012-01-04}').contains(parse('2012-01-01').date())
-            >>> True
-            >>> DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01}'))
-            >>> True
-            >>> DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01, 2012-01-03}'))
-            >>> False
+            Examples:
+                >>> DateSet('{2012-01-01, 2012-01-04}').contains(parse('2012-01-01').date())
+                >>> True
+                >>> DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01}'))
+                >>> True
+                >>> DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01, 2012-01-03}'))
+                >>> False
 
-        Args:
-            content: temporal object to compare with
+            Args:
+                content: temporal object to compare with
 
-        Returns:
-            True if contains, False otherwise
+            Returns:
+                True if contains, False otherwise
 
-        MEOS Functions:
-            contains_set_date, contains_set_set, contains_spanset_spanset
-*/
+            MEOS Functions:
+                contains_set_date, contains_set_set, contains_spanset_spanset
+    */
     public int dateToTimestamp(LocalDate date){
-        return (int)date.toEpochDay() * (86400); // convert days t secoonds
+       return functions.pg_date_in(date.toString());
     }
 
     public boolean contains(Object other) throws Exception {
@@ -521,13 +540,14 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     public LocalDateTime intersection(Object other) throws Exception {
         LocalDateTime result = null;
         if (other instanceof LocalDate){
-           Pointer resultPointer= functions.intersection_set_date(this._inner, dateToTimestamp((LocalDate) other));
-           int resultTimestamp= resultPointer.getInt(0);
-           result = timestampToLocalDateTime(resultTimestamp);
+            System.out.println(dateToTimestamp((LocalDate) other));
+            Pointer resultPointer= functions.intersection_set_date(this._inner, dateToTimestamp((LocalDate) other));
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
+            result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof dateset){
             Pointer resultPointer= functions.intersection_set_set(this._inner, ((dateset) other)._inner);
-            int resultTimestamp= resultPointer.getInt(0);
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
             result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof datespan){
@@ -537,7 +557,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             this.to_spanset(datespanset.class).intersection(other);
         }
         else{
-            super.intersection((Base) other);
+            throw new Exception("Operation not supported with this type");
         }
         return result;
     }
