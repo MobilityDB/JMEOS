@@ -88,8 +88,10 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns a `TsTzSpan` from its WKB representation.
      * @return Pointer type
      */
-    public Pointer from_wkb(long size) {
-        return functions.span_from_wkb(this._inner, size);
+    public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = functions.span_from_wkb(wkb, size);
+        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
+        return constructor.newInstance(spanPointer);
     }
 
     /**
@@ -110,8 +112,8 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns the WKB representation
      * @return Pointer type
      */
-    public Pointer as_wkb(byte variant) {
-        return functions.span_as_wkb(this._inner, variant);
+    public Pointer as_wkb() {
+        return functions.span_as_wkb(this._inner, (byte) 4);
     }
 
     /**
@@ -134,7 +136,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
 //    }
 
     public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.set_to_spanset(this._inner);
+        Pointer spanPointer = functions.span_to_spanset(this._inner);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -448,7 +450,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
 //        }
 //    }
 
-    public void distance(Base other) throws Exception {
+    private void distance(Base other) throws Exception {
         throw new Exception("Operation not supported with " + other + " type");
     }
 
@@ -471,7 +473,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @throws Exception
      */
 
-    public Base intersection(Base other) throws Exception {
+    private Base intersection(Base other) throws Exception {
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
@@ -487,7 +489,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
         return intersection(other);
     }
 
-    public Base minus(Base other) throws Exception {
+    private Base minus(Base other) throws Exception {
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_span_span(this._inner, ((Span<?>) other).get_inner()));
         }
@@ -509,7 +511,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @param other temporal object to merge with
      * @throws Exception
      */
-    public Base union(Base other) throws Exception {
+    private Base union(Base other) throws Exception {
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
