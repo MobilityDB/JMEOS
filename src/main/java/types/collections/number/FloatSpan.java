@@ -468,7 +468,7 @@ public class FloatSpan extends Span<Float> implements Number{
             answer= (float) functions.distance_span_float(this._inner, (float) other);
         }
         else if ((other instanceof FloatSet)){
-            super.distance(((FloatSet) other).to_spanset());
+            answer= (float) functions.distance_floatset_floatset(this._inner, ((FloatSet) other).get_inner());
         }
         else if ((other instanceof FloatSpanSet)){
             answer= (float) functions.distance_floatspanset_floatspan(this._inner, ((FloatSpanSet) other).get_inner());
@@ -477,7 +477,7 @@ public class FloatSpan extends Span<Float> implements Number{
             answer= (float) functions.distance_floatspan_floatspan(this._inner, ((FloatSpan) other)._inner);
         }
         else {
-            super.distance((Base) other);
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return answer;
     }
@@ -508,9 +508,11 @@ public class FloatSpan extends Span<Float> implements Number{
         else if (other instanceof FloatSpanSet){
             result= functions.intersection_spanset_span(this._inner, ((FloatSpanSet) other).get_inner());
         }
-        else{
-            FloatSpan tmp= (FloatSpan) super.intersection((Base) other);
-            result= tmp.get_inner();
+        else if ((other instanceof FloatSet)){
+            result= functions.intersection_set_set(this._inner, ((FloatSet) other).get_inner());
+        }
+        else {
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return new FloatSpan(result);
     }
@@ -558,7 +560,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @param other object to merge with
      * @return A {@link FloatSpanSet} instance.
      */
-    public FloatSpanSet union(Object other){
+    public FloatSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
             result = functions.union_span_float(this._inner, (double) other);
@@ -570,7 +572,7 @@ public class FloatSpan extends Span<Float> implements Number{
             result = functions.union_spanset_span(((FloatSpanSet) other).get_inner(), this._inner);
         }
         else {
-            //result = super.union(other);
+            throw new Exception("Operation not supported with this type");
         }
         return new FloatSpanSet(result);
     }
