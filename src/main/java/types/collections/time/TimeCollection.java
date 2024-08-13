@@ -20,5 +20,4 @@ public interface TimeCollection<T> extends Collection<T> {
     default boolean is_after(Object other) throws Exception {
         return this.is_right((Base)other);
     }
-
 }
