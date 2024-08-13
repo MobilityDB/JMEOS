@@ -482,7 +482,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
         return intersection(other);
     }
 
-    public Base minus(Base other) throws Exception {
+    private Base minus(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_set_set(this._inner, ((Set<?>) other).get_inner()));
         }
@@ -503,7 +503,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
         return subtract_from(other);
     }
 
-    public Base union(Base other) throws Exception {
+    private Base union(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_set_set(this._inner, ((Set<?>) other)._inner));
         }
