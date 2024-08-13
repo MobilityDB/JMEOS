@@ -212,7 +212,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             dateset_shift_scale
 */
 
-    public dateset shift(Integer shift, Integer duration){
+    public dateset shift(Integer shift){
         return new dateset(this.shift_scale(shift, 0)._inner);
     }
 
@@ -462,25 +462,25 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-//    @Override
-//    public boolean is_before(Object other) throws Exception {
-//        return TimeCollection.super.is_before(other);
-//    }
+    @Override
+    public boolean is_before(Object other) throws Exception {
+        return TimeCollection.super.is_before(other);
+    }
 
-//    @Override
-//    public boolean is_over_or_before(Object other) throws Exception {
-//        return TimeCollection.super.is_over_or_before(other);
-//    }
-//
-//    @Override
-//    public boolean is_over_or_after(Object other) throws Exception {
-//        return TimeCollection.super.is_over_or_after(other);
-//    }
-//
-//    @Override
-//    public boolean is_after(Object other) throws Exception {
-//        return TimeCollection.super.is_after(other);
-//    }
+    @Override
+    public boolean is_over_or_before(Object other) throws Exception {
+        return TimeCollection.super.is_over_or_before(other);
+    }
+
+    @Override
+    public boolean is_over_or_after(Object other) throws Exception {
+        return TimeCollection.super.is_over_or_after(other);
+    }
+
+    @Override
+    public boolean is_after(Object other) throws Exception {
+        return TimeCollection.super.is_after(other);
+    }
 
     /*---------------Distance Operations-------------------*/
 
@@ -586,22 +586,28 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         LocalDateTime result = null;
         if (other instanceof LocalDate){
             Pointer resultPointer= functions.minus_set_date(this._inner, dateToTimestamp((LocalDate) other));
-            int resultTimestamp= resultPointer.getInt(0);
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
             result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof dateset){
             Pointer resultPointer= functions.minus_set_set(this._inner, ((dateset) other)._inner);
-            int resultTimestamp= resultPointer.getInt(0);
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
             result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof datespan){
-            this.to_spanset(datespan.class).minus(other);
+            datespan ds = this.to_span(datespan.class);
+            Pointer resultPointer= functions.minus_span_span(ds.get_inner(), ((datespan) other).get_inner());
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
+            result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof datespanset){
-            this.to_spanset(datespanset.class).minus(other);
+            datespanset dss = this.to_spanset(datespanset.class);
+            Pointer resultPointer= functions.minus_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
+            result = timestampToLocalDateTime(resultTimestamp);
         }
         else{
-            super.minus((Base) other);
+            throw new Exception("Operation not supported with this type");
         }
         return result;
     }
@@ -643,16 +649,18 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             result = new dateset(resultPointer);
         }
         else if (other instanceof datespan){
-            this.to_spanset(datespan.class).union(other);
+            datespan ds = this.to_span(datespan.class);
+            Pointer resultPointer= functions.union_span_span(ds.get_inner(), ((datespan) other).get_inner());
+            result = new dateset(resultPointer);
         }
         else if (other instanceof datespanset){
-            this.to_spanset(datespanset.class).union(other);
+            datespanset dss = this.to_spanset(datespanset.class);
+            Pointer resultPointer= functions.union_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());
+            result = new dateset(resultPointer);
         }
         else{
-            super.union((Base) other);
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return result;
     }
-
-
 }

@@ -130,6 +130,30 @@ class datesetTest {
         assertEquals(expectedElements, dset.elements());
     }
 
+    // Transformation tests
+    @Test
+    public void testScale() throws ParseException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        dateset expected_dateset = new dateset("{2019-09-25, 2019-10-03, 2019-10-11}");
+        System.out.println(dset.scale(15).toString());
+        assertEquals(expected_dateset.toString(), dset.scale(15).toString());
+    }
+
+    @Test
+    public void testShift() throws ParseException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        dateset expected_dateset = new dateset("{2019-10-10, 2019-10-11, 2019-10-12}");
+        System.out.println(dset.shift(15).toString());
+        assertEquals(expected_dateset.toString(), dset.shift(15).toString());
+    }
+
+    @Test
+    public void testShiftScale() throws ParseException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        dateset expected_dateset = new dateset("{2019-10-10, 2019-10-18, 2019-10-26}");
+        System.out.println(dset.shift_scale(15, 15).toString());
+        assertEquals(expected_dateset.toString(), dset.shift_scale(15, 15).toString());
+    }
+
+
+
     // Position Functions Tests
     @ParameterizedTest
     @CsvSource({
@@ -242,76 +266,44 @@ class datesetTest {
         dset.intersection(dateValue);
     }
 
-//    @Test
-//    public void testUnion() {
-//        DateSpan datespan = new DateSpan("(2020-01-01, 2020-01-31)");
-//        DateSpanSet datespanset = new DateSpanSet("{(2020-01-01, 2020-01-31), (2021-01-01, 2021-01-31)}");
-//        DateSet dateset = new DateSet("{2020-01-01, 2020-01-31}");
-//        LocalDate dateValue = LocalDate.of(2020, 1, 1);
-//
-//        dateSet.union(datespan);
-//        dateSet.union(datespanset);
-//        dateSet.union(dateset);
-//        dateSet.union(dateValue);
-//    }
-//
-//    @Test
-//    public void testDifference() {
-//        DateSpan datespan = new DateSpan("(2020-01-01, 2020-01-31)");
-//        DateSpanSet datespanset = new DateSpanSet("{(2020-01-01, 2020-01-31), (2021-01-01, 2021-01-31)}");
-//        DateSet dateset = new DateSet("{2020-01-01, 2020-01-31}");
-//        LocalDate dateValue = LocalDate.of(2020, 1, 1);
-//
-//        dateSet.difference(datespan);
-//        dateSet.difference(datespanset);
-//        dateSet.difference(dateset);
-//        dateSet.difference(dateValue);
-//    }
-//
-//    // Comparison Functions Tests
-//    @Test
-//    public void testCompareFunctions() {
-//        DateSet otherSet = new DateSet("{2020-01-01, 2020-01-31}");
-//
-//        assertTrue(dateSet.isBefore(otherSet));
-//        assertFalse(dateSet.isOverOrBefore(otherSet));
-//        assertFalse(dateSet.isOverOrAfter(otherSet));
-//        assertTrue(dateSet.isAfter(otherSet));
-//    }
-//
-//    // Functions Functions Tests
-//    @Test
-//    public void testApplyFunction() {
-//        dateSet.applyFunction((date) -> date.plusDays(1));
-//        assertEquals(LocalDate.of(2019, 9, 26), dateSet.startElement());
-//    }
-//
-//    @Test
-//    public void testMap() {
-//        DateSet newSet = dateSet.map((date) -> date.plusDays(1));
-//        assertEquals(LocalDate.of(2019, 9, 26), newSet.startElement());
-//    }
-//
-//    @Test
-//    public void testFilter() {
-//        DateSet newSet = dateSet.filter((date) -> date.isAfter(LocalDate.of(2019, 9, 25)));
-//        assertEquals(2, newSet.numElements());
-//    }
-//
-//    // Misc Functions Tests
-//    @Test
-//    public void testIterator() {
-//        int count = 0;
-//        for (LocalDate date : dateSet) {
-//            count++;
-//        }
-//        assertEquals(3, count);
-//    }
-//
-//    @Test
-//    public void testEqualsAndHashCode() {
-//        DateSet otherSet = new DateSet("{2019-09-25, 2019-09-26, 2019-09-27}");
-//        assertEquals(dateSet, otherSet);
-//        assertEquals(dateSet.hashCode(), otherSet.hashCode());
-//    }
+    @Test
+    public void testUnion() throws Exception {
+        datespan datespan = new datespan("(2020-01-01, 2020-01-31)");
+        datespanset datespanset = new datespanset("{(2020-01-01, 2020-01-31), (2021-01-01, 2021-01-31)}");
+        dateset dateset = new dateset("{2020-01-01, 2020-01-31}");
+        LocalDate dateValue = LocalDate.of(2020, 1, 1);
+
+        dset.union(datespan);
+        dset.union(datespanset);
+        dset.union(dateset);
+        dset.union(dateValue);
+    }
+
+    @Test
+    public void testMinus() throws Exception {
+        datespan datespan = new datespan("(2020-01-01, 2020-01-31)");
+        datespanset datespanset = new datespanset("{(2020-01-01, 2020-01-31), (2021-01-01, 2021-01-31)}");
+        dateset dateset = new dateset("{2020-01-01, 2020-01-31}");
+        LocalDate dateValue = LocalDate.of(2020, 1, 1);
+
+        System.out.println(dset.minus(datespan));
+        dset.minus(datespan);
+        System.out.println(dset.minus(datespanset));
+        dset.minus(datespanset);
+        System.out.println(dset.minus(dateset));
+        dset.minus(dateset);
+        System.out.println(dset.minus(dateValue));
+        dset.minus(dateValue);
+    }
+
+    // Comparison Functions Tests
+    @Test
+    public void testCompareFunctions() throws Exception {
+        dateset otherSet = new dateset("{2020-01-01, 2020-01-31}");
+
+        assertTrue(dset.is_before(otherSet));
+        assertTrue(dset.is_over_or_before(otherSet));
+        assertFalse(dset.is_over_or_after(otherSet));
+        assertFalse(dset.is_after(otherSet));
+    }
 }
