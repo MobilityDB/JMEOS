@@ -551,10 +551,16 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof datespan){
-            result = this.to_spanset(datespan.class).intersection(other);
+            datespan ds = this.to_span(datespan.class);
+            Pointer resultPointer = functions.intersection_span_span(ds.get_inner(), ((datespan) other).get_inner());
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
+            result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof datespanset){
-            this.to_spanset(datespanset.class).intersection(other);
+            datespanset dss = this.to_spanset(datespanset.class);
+            Pointer resultPointer = functions.intersection_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());
+            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
+            result = timestampToLocalDateTime(resultTimestamp);
         }
         else{
             throw new Exception("Operation not supported with this type");
