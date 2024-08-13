@@ -227,15 +227,15 @@ class datesetTest {
     // Set Functions Tests
     @Test
     public void testIntersection() throws Exception {
-        datespan datespan1 = new datespan("[2019-09-25, 2019-09-29)");
+        datespan datespan1 = new datespan("[2019-09-25, 2019-09-29]");
         datespanset datespanset1 = new datespanset("{(2019-01-01, 2019-04-28), (2019-07-05, 2019-12-31)}");
         dateset dateset1 = new dateset("{2019-09-25, 2019-09-26}");
         LocalDate dateValue = LocalDate.of(2019, 9, 25);
 
-//        System.out.println(dset.intersection(datespan1).toString());
-//        dset.intersection(datespan1);
-//        System.out.println(dset.intersection(datespanset1).toString());
-//        dset.intersection(datespanset1);
+        System.out.println(dset.intersection(datespan1).toString());
+        dset.intersection(datespan1);
+        System.out.println(dset.intersection(datespanset1).toString());
+        dset.intersection(datespanset1);
         System.out.println(dset.intersection(dateset1).toString());
         dset.intersection(dateset1);
         System.out.println(dset.intersection(dateValue).toString());
