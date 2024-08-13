@@ -516,9 +516,11 @@ public class IntSpan extends Span<Integer> implements Number{
         else if (other instanceof IntSpanSet){
             result= functions.intersection_spanset_span(this._inner, ((IntSpanSet) other).get_inner());
         }
-        else{
-            IntSpanSet tmp= (IntSpanSet) super.intersection((Base) other);
-            result= tmp.get_inner();
+        else if ((other instanceof IntSet)){
+            result= functions.intersection_set_set(this._inner, ((IntSet) other).get_inner());
+        }
+        else {
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return new IntSpan(result);
     }
@@ -576,8 +578,7 @@ public class IntSpan extends Span<Integer> implements Number{
             result = functions.union_spanset_span(((IntSpanSet) other).get_inner(), this._inner);
         }
         else {
-            IntSpanSet tmp = (IntSpanSet) super.union((Base)other);
-            result = tmp.get_inner();
+            throw new Exception("Operation not supported with this type");
         }
         return new IntSpanSet(result);
     }

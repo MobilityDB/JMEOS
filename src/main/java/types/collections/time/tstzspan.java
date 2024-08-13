@@ -820,7 +820,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
             case tstzspan p -> returnValue = new tstzspan(functions.intersection_span_span(this._inner,p.get_inner()));
             case tstzspanset ps -> returnValue = new tstzspanset(functions.intersection_spanset_span(ps.get_inner(), this._inner));
             case tstzset ts -> returnValue = new tstzset(functions.intersection_spanset_span(functions.set_to_spanset(ts.get_inner()),this._inner));
-            default -> returnValue = (Time) super.intersection((Base) other);
+            default -> returnValue = (Time) new Exception("Operation not supported with this type");
         }
         return returnValue;
     }
