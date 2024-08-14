@@ -180,15 +180,16 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
     public List<IntSpan> spans(){
         Pointer ps = functions.spanset_spans(this._inner);
-        List<IntSpan> spanList = new ArrayList<IntSpan>(this.num_spans());
+        List<IntSpan> spanList = new ArrayList<IntSpan>();
         System.out.println(this.num_spans());
-        long pointerSize= Integer.BYTES;
+        long pointerSize= Long.BYTES;
         for (long i=0; i<this.num_spans(); i++){
             Pointer p= ps.getPointer((long) i*pointerSize);
 //            System.out.println(new IntSpan(p).lower().toString());
 //            System.out.println(new IntSpan(p).upper().toString());
             spanList.add(new IntSpan(p));
         }
+//        System.out.println(spanList);
         return spanList;
     }
     /* ------------------------- Transformations ------------------------------- */
@@ -458,14 +459,17 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      */
     public float distance(Object other) throws Exception {
         float answer = 0;
-        switch (other) {
-            case Integer i -> answer = (float) functions.distance_spanset_int(this._inner, (int) other);
-            case IntSet intSet -> super.distance(intSet.to_spanset());
-            case IntSpan intSpan ->
-                    answer = (float) functions.distance_intspanset_intspan(this._inner, ((IntSpan) other).get_inner());
-            case IntSpanSet intSpanSet ->
-                    answer = (float) functions.distance_intspanset_intspanset(this._inner, ((IntSpanSet) other).get_inner());
-            case null, default -> super.distance((Base) other);
+        if (other instanceof Integer) {
+            answer = (float) functions.distance_spanset_int(this._inner, (int) other);
+        } else if (other instanceof IntSet) {
+            IntSpan is = ((IntSet) other).to_span(IntSpan.class);
+            answer = (float) functions.distance_intspanset_intspan(this._inner, (is).get_inner());
+        } else if (other instanceof IntSpan) {
+            answer = (float) functions.distance_intspanset_intspan(this._inner, ((IntSpan) other).get_inner());
+        } else if (other instanceof IntSpanSet) {
+            answer = (float) functions.distance_intspanset_intspanset(this._inner, ((IntSpanSet) other).get_inner());
+        } else {
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return answer;
     }
