@@ -562,7 +562,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public FloatSpanSet union(Object other) throws Exception {
         Pointer result = null;
-        if (other instanceof Integer){
+        if (other instanceof Integer || other instanceof Double || other instanceof Float){
             result = functions.union_span_float(this._inner, (double) other);
         }
         else if (other instanceof FloatSpan) {
