@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import functions.functions;
 import utils.ConversionUtils;
 
@@ -45,6 +47,36 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         super(str);
         _inner = functions.datespan_in(str);
     }
+
+//    // Formatter for parsing date strings
+//    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+//
+//    // Constructor accepting String bounds with default inclusivity
+//    public datespan(String lower, String upper) {
+//        this(lower, upper, true, false);
+//    }
+//
+//    // Constructor accepting String bounds with specified inclusivity
+//    public datespan(String lower, String upper, boolean lowerInc, boolean upperInc) {
+//        try {
+//            this.lower = LocalDate.parse(lower, formatter);
+//            this.upper = LocalDate.parse(upper, formatter);
+//        } catch (DateTimeParseException e) {
+//            throw new IllegalArgumentException("Invalid date format. Use 'YYYY-MM-DD'.", e);
+//        }
+//        this.lowerInc = lowerInc;
+//        this.upperInc = upperInc;
+//        _inner= functions.datespan_make(time)
+//    }
+//
+//    // Constructor accepting LocalDate bounds with specified inclusivity
+//    public datespan(LocalDate lower, LocalDate upper, boolean lowerInc, boolean upperInc) {
+//        this.lower = lower;
+//        this.upper = upper;
+//        this.lowerInc = lowerInc;
+//        this.upperInc = upperInc;
+//    }
+
 
 /*
         Returns a :class:`DateSpanSet` set containing ``self``.
