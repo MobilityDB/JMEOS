@@ -489,7 +489,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
         return intersection(other);
     }
 
-    private Base minus(Base other) throws Exception {
+    protected Base minus(Base other) throws Exception {
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_span_span(this._inner, ((Span<?>) other).get_inner()));
         }
@@ -511,7 +511,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @param other temporal object to merge with
      * @throws Exception
      */
-    private Base union(Base other) throws Exception {
+    protected Base union(Base other) throws Exception {
         if (other instanceof Span<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
