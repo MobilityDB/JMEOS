@@ -172,8 +172,8 @@ public class IntSpanSetTest {
             s= s + i.toString() + ", ";
         }
         s= s.substring(0, s.length()-2) + "}";
-        IntSpanSet intSpanSet1= new IntSpanSet(s);
         System.out.println(s);
+        IntSpanSet intSpanSet1= new IntSpanSet(s);
         assert_intspanset_equality(intSpanSet1, 8, 10, 11, 13, true, false, true, false);
     }
 
