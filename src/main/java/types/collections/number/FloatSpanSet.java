@@ -1,4 +1,5 @@
 package types.collections.number;
+import com.google.common.primitives.Floats;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
@@ -447,15 +448,18 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @throws Exception
      */
     public float distance(Object other) throws Exception {
-        float answer = 0 ;
-        switch (other) {
-            case Integer i -> answer = (float) functions.distance_spanset_float(this._inner, (float) other);
-            case FloatSet floatSet -> super.distance(floatSet.to_spanset());
-            case FloatSpan floatSpan ->
-                    answer = (float) functions.distance_floatspanset_floatspan(this._inner, ((FloatSpan) other).get_inner());
-            case FloatSpanSet floatSpanSet ->
-                    answer = (float) functions.distance_floatspanset_floatspanset(this._inner, ((FloatSpanSet) other).get_inner());
-            case null, default -> super.distance((Base) other);
+        float answer = 0;
+        if (other instanceof Float) {
+            answer = (float) functions.distance_spanset_float(this._inner, (int) other);
+        } else if (other instanceof FloatSet) {
+            FloatSpan fs = ((FloatSet) other).to_span(FloatSpan.class);
+            answer = (float) functions.distance_intspanset_intspan(this._inner, (fs).get_inner());
+        } else if (other instanceof FloatSpan) {
+            answer = (float) functions.distance_intspanset_intspan(this._inner, ((FloatSpan) other).get_inner());
+        } else if (other instanceof FloatSpanSet) {
+            answer = (float) functions.distance_intspanset_intspanset(this._inner, ((FloatSpanSet) other).get_inner());
+        } else {
+            throw new Exception("Operation not supported with " + other + " type");
         }
         return answer;
     }
