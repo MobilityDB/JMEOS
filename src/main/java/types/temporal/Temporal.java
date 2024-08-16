@@ -11,7 +11,12 @@ import types.collections.time.tstzspanset;
 import utils.ConversionUtils;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Objects;
 
 import static types.temporal.TemporalType.*;
 
@@ -48,7 +53,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public abstract TemporalType getTemporalType();
 
 
-    public Temporal _factory(Pointer inner, String customType, TemporalType temporalType){
+    public static Temporal _factory(Pointer inner, String customType, TemporalType temporalType){
         return Factory.create_temporal(inner, customType, temporalType);
     }
 
@@ -85,7 +90,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return A temporal object from a MF-JSON string.
      */
 //    public Temporal from_mfjson(String str){
-//        Pointer result = functions.temporal_as_(str);
+//        Pointer result = functions.temporal_as_=(str);
 //        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
 //    }
 
@@ -126,6 +131,45 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public String as_mfjson(){
         return this.as_mfjson(true,3,6,null);
     }
+
+//    public Temporal from_merge(Pointer temporals, String customType, TemporalType temporalType){
+//        List<Temporal> temporal_list = new ArrayList<>();
+//        for(int i=0; i<this.num_instants(); i++){
+//            Pointer p = temporals.getPointer((long) i *Long.BYTES);
+//            Temporal t = this._factory(p, customType, temporalType);
+//            temporal_list.add(t);
+//        }
+//        int count= (int) temporals.size();
+//        Pointer result= functions.temporal_merge_array(temporals, count);
+//        return this._factory(result, customType, temporalType);
+//    }
+
+//    public Temporal fromMerge(String customType, TemporalType temporalType, Temporal... temporals) throws Exception {
+//        // Create a List to store the non-null temporals' _inner objects
+//        List<Pointer> _temporals = new ArrayList<>();
+//
+//        // Iterate through the provided temporals and add their _inner objects if they are not null
+//        for (Temporal temp : temporals) {
+//            if (temp != null) {
+//                _temporals.add(temp.getInner()); // Assuming get_inner() is a method to access _inner in Java
+//            }
+//        }
+//
+//        // If the temporal objects are stored as a List, we must convert the List to a Pointer for the merge function
+//        // Assuming you need a single Pointer object, you can use the JNA function to handle array conversion
+//        Pointer temporalArray = new Memory(_temporals.size() * Native.POINTER_SIZE);
+//
+//        // Fill the memory with the Pointer values
+//        for (int i = 0; i < _temporals.size(); i++) {
+//            temporalArray.setPointer(i * Native.POINTER_SIZE, _temporals.get(i));
+//        }
+//
+//        // Call the merging function, passing the Pointer and its length
+//        Pointer result = functions.temporal_merge_array(temporalArray, _temporals.size());
+//
+//        // Return the result using the Temporal factory method
+//        return Temporal._factory(result); // Assuming _factory() is implemented to create a Temporal object from the result pointer
+//    }
 
 
 
@@ -262,6 +306,21 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(functions.temporal_instant_n(this.inner, n+1), this.getCustomType(), TEMPORAL_INSTANT);
     }
 
+//    public List<Temporal> instants(){
+//        functions.temporal_instants(this.inner);
+//    }
+
+//    public abstract Temporal value_at_timestamp();
+
+    public Duration duration(boolean ignore_gaps){
+        ignore_gaps = false;
+        return ConversionUtils.interval_to_timedelta(functions.temporal_duration(this.inner, ignore_gaps));
+    }
+
+    public tstzspan tstzspan(){
+        return this.timespan();
+    }
+
     /**
      * Returns the number of timestamps in "this".
      * <p>
@@ -297,6 +356,27 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public LocalDateTime end_timestamp(){
         return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamptz(this.inner));
     }
+
+    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
+        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
+    }
+
+    public LocalDateTime timestamp_n(int n){
+        return timestampToLocalDateTime(Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1)).getInt(Integer.BYTES));
+    }
+
+//    public List<LocalDateTime> timestamps(){
+//        int count;
+//        Pointer p =
+//        Pointer array= functions.temporal_timestamps(this.inner, count);
+//        List<LocalDateTime> datetime
+//        for(int i=0;i<this.num_timestamps(); i++){
+//            Integer p= array.getInt((long) i *Integer.BYTES);
+//
+//        }
+//    }
+
 
     /**
      * Returns the hash of the temporal object.
