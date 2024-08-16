@@ -554,8 +554,8 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         if (other instanceof LocalDate) {
             answer= Duration.ofSeconds(functions.distance_span_date(this._inner, dateToTimestamp((LocalDate) other)));
         } else if (other instanceof dateset) {
-            datespan ds = ((dateset) other).to_span(datespan.class);
-            answer= Duration.ofSeconds(functions.distance_datespan_datespan(this._inner, ds.get_inner()));
+            datespanset ds = ((dateset) other).to_spanset(datespanset.class);
+            answer= Duration.ofSeconds(functions.distance_datespanset_datespan(ds.get_inner(), this.get_inner()));
         } else if (other instanceof datespan) {
             answer= Duration.ofSeconds(functions.distance_datespan_datespan(this._inner, ((datespan)other)._inner));
         } else if (other instanceof datespanset) {
@@ -596,8 +596,8 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             result = timestampToLocalDateTime(resultTimestamp);
         }
         else if (other instanceof dateset){
-            datespan ds = ((dateset) other).to_span(datespan.class);
-            Pointer resultPointer= functions.intersection_span_span(this._inner, ds.get_inner());
+            datespanset ds = ((dateset) other).to_spanset(datespanset.class);
+            Pointer resultPointer= functions.intersection_spanset_span(ds.get_inner(), this.get_inner());
             int resultTimestamp= resultPointer.getInt(Integer.BYTES);
             result = timestampToLocalDateTime(resultTimestamp);
         }
@@ -637,8 +637,8 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             result = new datespanset(resultPointer);
         }
         else if (other instanceof dateset){
-            datespan ds = ((dateset) other).to_span(datespan.class);
-            Pointer resultPointer= functions.minus_span_span(this._inner, (ds).get_inner());
+            datespanset ds = ((dateset) other).to_spanset(datespanset.class);
+            Pointer resultPointer= functions.minus_spanset_span((ds).get_inner(), this._inner);
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespan){
@@ -687,8 +687,8 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             result = new datespanset(resultPointer);
         }
         else if (other instanceof dateset){
-            datespan ds = ((dateset) other).to_span(datespan.class);
-            Pointer resultPointer= functions.union_span_span(this._inner, (ds).get_inner());
+            datespanset ds = ((dateset) other).to_spanset(datespanset.class);
+            Pointer resultPointer= functions.union_spanset_span((ds).get_inner(), this.get_inner());
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespan){
