@@ -30,6 +30,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: List src/lib directory contents
+        run: ls -l src/lib
+
+      - name: Set up LD_LIBRARY_PATH
+        run: |
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/src/lib
+            echo $LD_LIBRARY_PATH
+              
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
 
