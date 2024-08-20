@@ -40,11 +40,13 @@ jobs:
       - name: Check if libmeos.so exists
         run: ls -l $LD_LIBRARY_PATH/libmeos.so
 
-      - name: Check dependencies of libmeos.so
-        run: ldd $LD_LIBRARY_PATH/libmeos.so
-
       - name: Verify architecture compatibility
         run: file $LD_LIBRARY_PATH/libmeos.so
+
+      - name: Test libmeos.so loading
+        run: |
+            ldd src/lib/libmeos.so
+            nm -D src/lib/libmeos.so
 
       - name: Ensure correct permissions
         run: chmod +x $LD_LIBRARY_PATH/libmeos.so
