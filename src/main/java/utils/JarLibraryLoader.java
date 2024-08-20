@@ -157,7 +157,7 @@ public class JarLibraryLoader<T> {
 			}
 
 			// Return the loaded library instance
-			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
+			return LibraryLoader.create(libraryClass).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
 			throw e;
