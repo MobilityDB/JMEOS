@@ -106,6 +106,7 @@ public class JarLibraryLoader<T> {
 	public T getLibraryInstance(){
 		String libraryPath;
 		if (System.getenv("GITHUB_WORKFLOW") != null) {
+			System.out.println("Running on GitHub Workflow");
 			// Use the LD_LIBRARY_PATH to locate the library
 			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
 			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
