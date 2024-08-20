@@ -145,6 +145,6 @@ public class JarLibraryLoader<T> {
 		System.load(libraryPath + "/libmeos.so");
 		System.out.println("library loaded from the path successfully!");
 
-		return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
+		return LibraryLoader.create(libraryClass).load(libName);
 	}
 }
