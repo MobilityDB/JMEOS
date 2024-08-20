@@ -1,0 +1,73 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: List src/lib directory contents
+        run: ls -l src/lib
+
+      - name: Set up LD_LIBRARY_PATH
+        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+
+      - name: Check if libmeos.so exists
+        run: ls -l /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+
+      - name: Check dependencies of libmeos.so
+        run: ldd /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+
+      - name: Verify architecture compatibility
+        run: file /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+
+      - name: Print current working directory
+        run: pwd
+
+      - name: List files in the project directory
+        run: ls -R
+
+      - name: Ensure correct permissions
+        run: chmod +x /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+
+      - name: Build with Maven
+        run: mvn -B clean package --file pom.xml
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Install packages
+        run: mvn install
+
+      - name: Generate Javadoc
+        run: mvn javadoc:javadoc
+
+      - name: Upload Javadoc as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: javadoc
+          path: target/site/apidocs
