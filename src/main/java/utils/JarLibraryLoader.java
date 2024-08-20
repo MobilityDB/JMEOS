@@ -143,7 +143,7 @@ public class JarLibraryLoader<T> {
 		try {
 			// Load the library explicitly
 			System.out.println("Loading library from: " + libraryPath);
-			System.load(libraryPath + "libmeos.so");
+			System.load(libraryPath + "meos.so");
 			System.out.println("Library loaded successfully!");
 
 			// Check if the file exists and is readable
