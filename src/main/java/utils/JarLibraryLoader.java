@@ -105,6 +105,7 @@ public class JarLibraryLoader<T> {
 	 */
 	public T getLibraryInstance(){
 		String libraryPath;
+		String libName;
 		if (System.getenv("GITHUB_WORKFLOW") != null) {
 			System.out.println("Running on GitHub Workflow");
 			// Use the LD_LIBRARY_PATH to locate the library
@@ -115,6 +116,7 @@ public class JarLibraryLoader<T> {
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 			}
+			libName= "libmeos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
@@ -122,17 +124,19 @@ public class JarLibraryLoader<T> {
 			libraryPath = projectPath + "/src/lib";
 			System.out.println(libraryPath);
 //			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
-//            System.out.println("File copied successfully to: " + projectPath + "/src/lib");
-//            return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+//          System.out.println("File copied successfully to: " + projectPath + "/src/lib");
+//          return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			libName= "libmeos.so";
         } else if (getOSName().equals("Running on Windows")) {
 			System.out.println("In Windows");
 			libraryPath = projectPath + "\\src\\lib";
 			System.out.println("Looking for library at: " + projectPath + libraryPath);
 //			return LibraryLoader.create(libraryClass).search(projectPath + "\\src\\lib").load(libraryName);
+			libName= "libmeos.so";
 		} else {
 			throw new UnsupportedOperationException("JMEOS is only supported on Linux and Windows OS");
 		}
 		}
-		return LibraryLoader.create(libraryClass).search(libraryPath).load(libraryName);
+		return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 	}
 }
