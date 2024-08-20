@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - JMEOS-working
   pull_request:
     branches:
       - main
