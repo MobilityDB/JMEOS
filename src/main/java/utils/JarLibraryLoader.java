@@ -117,6 +117,7 @@ public class JarLibraryLoader<T> {
 //				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 //			}
 			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
+//			/home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
 			System.out.println(libraryPath);
 			libName= "meos";
 		}
@@ -156,7 +157,7 @@ public class JarLibraryLoader<T> {
 			}
 
 			// Return the loaded library instance
-			return LibraryLoader.create(libraryClass).load(libName);
+			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
 			throw e;
