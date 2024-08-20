@@ -34,6 +34,9 @@ jobs:
       - name: Print current working directory
         run: pwd
         
+      - name: Check for the library
+        run: ls -la /home/runner/work/JMEOS/JMEOS/src/lib
+        
       - name: Set up LD_LIBRARY_PATH
         run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
 
