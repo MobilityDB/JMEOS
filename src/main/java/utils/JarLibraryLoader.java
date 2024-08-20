@@ -110,6 +110,7 @@ public class JarLibraryLoader<T> {
 			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
 			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
 				libraryPath = ldLibraryPath + "/src/lib";
+				System.out.println(libraryPath);
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 			}
@@ -118,6 +119,7 @@ public class JarLibraryLoader<T> {
 		if (getOSName().equals("Linux")) {
 			System.out.println("Running on Linux");
 			libraryPath = projectPath + "/src/lib";
+			System.out.println(libraryPath);
 //			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
 //            System.out.println("File copied successfully to: " + projectPath + "/src/lib");
 //            return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
