@@ -110,7 +110,7 @@ public class JarLibraryLoader<T> {
 			// Use the LD_LIBRARY_PATH to locate the library
 			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
 			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
-				libraryPath = ldLibraryPath + "/src/lib";
+				libraryPath = ldLibraryPath;
 				System.out.println(libraryPath);
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
