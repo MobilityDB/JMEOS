@@ -108,15 +108,17 @@ public class JarLibraryLoader<T> {
 		String libName;
 		if (System.getenv("GITHUB_WORKFLOW") != null) {
 			System.out.println("Running on GitHub Workflow");
-			// Use the LD_LIBRARY_PATH to locate the library
-			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
-			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
-				libraryPath = ldLibraryPath;
-				System.out.println(libraryPath);
-			} else {
-				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
-			}
-			libName= "meos.so";
+//			// Use the LD_LIBRARY_PATH to locate the library
+//			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
+//			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
+//				libraryPath = ldLibraryPath;
+//				System.out.println(libraryPath);
+//			} else {
+//				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
+//			}
+			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
+			System.out.println(libraryPath);
+			libName= "meos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
