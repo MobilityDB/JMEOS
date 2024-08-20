@@ -65,6 +65,4 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	public Pointer getNumberInner(){
 		return inner;
 	}
-
-
 }
