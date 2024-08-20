@@ -35,7 +35,7 @@ jobs:
         run: pwd
         
       - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib/" >> $GITHUB_ENV
 
       - name: Check if libmeos.so exists
         run: ls -l $LD_LIBRARY_PATH/libmeos.so
