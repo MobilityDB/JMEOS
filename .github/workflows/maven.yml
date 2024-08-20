@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - JMEOS-working
   pull_request:
     branches:
       - main
@@ -30,29 +31,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: List src/lib directory contents
-        run: ls -l src/lib
-
+      - name: Print current working directory
+        run: pwd
+        
       - name: Set up LD_LIBRARY_PATH
         run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
 
       - name: Check if libmeos.so exists
-        run: ls -l /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
-
-      - name: Check dependencies of libmeos.so
-        run: ldd /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+        run: ls -l $LD_LIBRARY_PATH/libmeos.so
 
       - name: Verify architecture compatibility
-        run: file /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+        run: file $LD_LIBRARY_PATH/libmeos.so
 
-      - name: Print current working directory
-        run: pwd
-
-      - name: List files in the project directory
-        run: ls -R
+      - name: Test libmeos.so loading
+        run: |
+            ldd src/lib/libmeos.so
+            nm -D src/lib/libmeos.so
 
       - name: Ensure correct permissions
-        run: chmod +x /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
