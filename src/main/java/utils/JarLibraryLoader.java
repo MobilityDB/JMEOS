@@ -116,8 +116,7 @@ public class JarLibraryLoader<T> {
 //			} else {
 //				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 //			}
-			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
-//			/home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+			libraryPath="/home/runner/work/JMEOS/JMEOS/src";
 			System.out.println(libraryPath);
 			libName= "meos";
 		}
@@ -144,20 +143,20 @@ public class JarLibraryLoader<T> {
 		try {
 			// Load the library explicitly
 			System.out.println("Loading library from: " + libraryPath);
-			System.load(libraryPath + "meos.so");
-			System.out.println("Library loaded successfully!");
+//			System.load(libraryPath + "meos.so");
+//			System.out.println("Library loaded successfully!");
 
-			// Check if the file exists and is readable
-			File libFile = new File(libraryPath);
-			if (!libFile.exists()) {
-				System.err.println("Library file does not exist at: " + libraryPath);
-			}
-			if (!libFile.canRead()) {
-				System.err.println("Library file is not readable at: " + libraryPath);
-			}
+//			// Check if the file exists and is readable
+//			File libFile = new File(libraryPath);
+//			if (!libFile.exists()) {
+//				System.err.println("Library file does not exist at: " + libraryPath);
+//			}
+//			if (!libFile.canRead()) {
+//				System.err.println("Library file is not readable at: " + libraryPath);
+//			}
 
 			// Return the loaded library instance
-			return LibraryLoader.create(libraryClass).load(libName);
+			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
 			throw e;
