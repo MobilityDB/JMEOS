@@ -139,6 +139,12 @@ public class JarLibraryLoader<T> {
 			throw new UnsupportedOperationException("JMEOS is only supported on Linux and Windows OS");
 		}
 		}
+
+		// Attempt to load the library explicitly
+		System.out.println("Loading library from: " + libraryPath);
+		System.load(libraryPath + "/libmeos.so");
+		System.out.println("library loaded from the path successfully!");
+
 		return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 	}
 }
