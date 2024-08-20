@@ -116,7 +116,7 @@ public class JarLibraryLoader<T> {
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 			}
-			libName= "libmeos";
+			libName= "libmeos.so";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
