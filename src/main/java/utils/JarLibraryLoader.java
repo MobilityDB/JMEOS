@@ -140,11 +140,29 @@ public class JarLibraryLoader<T> {
 		}
 		}
 
-		// Attempt to load the library explicitly
-		System.out.println("Loading library from: " + libraryPath);
-		System.load(libraryPath + "/libmeos.so");
-		System.out.println("library loaded from the path successfully!");
+		try {
+			// Load the library explicitly
+			System.out.println("Loading library from: " + libraryPath);
+			System.load(libraryPath + "libmeos.so");
+			System.out.println("Library loaded successfully!");
 
-		return LibraryLoader.create(libraryClass).load(libName);
+			// Check if the file exists and is readable
+			File libFile = new File(libraryPath);
+			if (!libFile.exists()) {
+				System.err.println("Library file does not exist at: " + libraryPath);
+			}
+			if (!libFile.canRead()) {
+				System.err.println("Library file is not readable at: " + libraryPath);
+			}
+
+			// Return the loaded library instance
+			return LibraryLoader.create(libraryClass).load(libName);
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println("Error loading native library: " + e.getMessage());
+			throw e;
+		} catch (Exception e) {
+			System.err.println("Unexpected error: " + e.getMessage());
+			throw new RuntimeException(e);
+		}
 	}
 }
