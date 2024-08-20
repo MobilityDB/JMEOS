@@ -34,9 +34,7 @@ jobs:
         run: ls -l src/lib
 
       - name: Set up LD_LIBRARY_PATH
-        run: |
-            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/src/lib
-            echo $LD_LIBRARY_PATH
+        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
             
       - name: Check if libmeos.so exists
         run: ls -l /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
@@ -46,6 +44,15 @@ jobs:
       
       - name: Verify architecture compatibility
         run: file /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
+
+      - name: Print current working directory
+        run: pwd
+      
+      - name: List files in the project directory
+        run: ls -R
+
+      - name: Ensure correct permissions
+        run: chmod +x /home/runner/work/JMEOS/JMEOS/src/lib/libmeos.so
         
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
