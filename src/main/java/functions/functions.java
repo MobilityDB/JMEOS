@@ -11,13 +11,14 @@ import java.time.*;
 public class functions {
 	public interface MeosLibrary {
 
-		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src";
+		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src/lib";
 
 		String libraryName= "meos";
 
 //		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
 
-		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
+		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).load(libraryName);
+//				LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
