@@ -23,36 +23,36 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Print current working directory
-        run: pwd
-        
-      - name: Check for the library
-        run: ls -la /home/runner/work/JMEOS/JMEOS/src/lib
-        
-      - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
-
-      - name: Check if libmeos.so exists
-        run: ls -l $LD_LIBRARY_PATH/libmeos.so
-
-      - name: Verify architecture compatibility
-        run: file $LD_LIBRARY_PATH/libmeos.so
-
-      - name: Test libmeos.so loading
-        run: |
-            ldd src/lib/libmeos.so
-            nm -D src/lib/libmeos.so
-
-      - name: Ensure correct permissions
-        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
+#      - name: Cache Maven packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#
+#      - name: Print current working directory
+#        run: pwd
+#
+#      - name: Check for the library
+#        run: ls -la /home/runner/work/JMEOS/JMEOS/src/lib
+#
+#      - name: Set up LD_LIBRARY_PATH
+#        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+#
+#      - name: Check if libmeos.so exists
+#        run: ls -l $LD_LIBRARY_PATH/libmeos.so
+#
+#      - name: Verify architecture compatibility
+#        run: file $LD_LIBRARY_PATH/libmeos.so
+#
+#      - name: Test libmeos.so loading
+#        run: |
+#          ldd src/lib/libmeos.so
+#          nm -D src/lib/libmeos.so
+#
+#      - name: Ensure correct permissions
+#        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
