@@ -116,7 +116,7 @@ public class JarLibraryLoader<T> {
 //			} else {
 //				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 //			}
-			libraryPath="/home/runner/work/JMEOS/JMEOS/src";
+			libraryPath="/home/runner/work/JMEOS/JMEOS";
 			System.out.println(libraryPath);
 			libName= "meos";
 		}
