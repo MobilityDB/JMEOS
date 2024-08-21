@@ -141,7 +141,9 @@ public class JarLibraryLoader<T> {
 		}
 
 		try {
+			System.load(libraryPath+"/"+libName);
 			System.out.println("Loading library from: " + libraryPath);
+			System.out.println("Library loaded successfully!");
 			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
