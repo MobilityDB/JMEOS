@@ -1,6 +1,8 @@
 package types.basic.tnumber;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import types.TemporalObject;
 import types.basic.tfloat.TFloat;
 import types.basic.tfloat.TFloatInst;
@@ -10,11 +12,22 @@ import types.basic.tint.TInt;
 import types.boxes.TBox;
 import functions.functions;
 import types.collections.number.*;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
 import types.temporal.Factory;
+import types.temporal.Temporal;
 import types.temporal.TemporalType;
+import utils.ConversionUtils;
 
 import javax.naming.OperationNotSupportedException;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -555,5 +568,104 @@ public interface TNumber {
         else{
             throw new OperationNotSupportedException("Operand not supported");
         }
+    }
+
+    /* --------------------------------------------- Split Operations ---------------------------------------------- */
+
+/*
+        Splits `self` into fragments with respect to value buckets
+
+        Args:
+            start: Start value of the first value bucket.
+            size: Size of the value buckets.
+
+        Returns:
+            A list of temporal ints.
+
+        MEOS Functions:
+            tint_value_split
+*/
+//    private Pointer createEmptyPointerArray(Runtime runtime) {
+//        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+//        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), *Long.BYTES); // Adjust size as needed
+//        return listPointer;
+//    }
+
+    private Pointer createEmptyPointerArray(Runtime runtime, int size) {
+        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), size*Long.BYTES); // Adjust size as needed
+        return listPointer;
+    }
+
+    default List<TNumber> value_split(int size, int start){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer listPointer = createEmptyPointerArray(runtime, size);
+        Pointer result= functions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
+        List<TNumber> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= result.getPointer((long) i *Long.BYTES);
+            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
+    }
+
+/*
+        Splits `self` into fragments with respect to value and tstzspan buckets.
+
+        Args:
+            value_size: Size of the value buckets.
+            duration: Duration of the tstzspan buckets.
+            value_start: Start value of the first value bucket. If None, the
+                start value used by default is 0
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+
+        Returns:
+            A list of temporal integers.
+
+        MEOS Functions:
+*/
+
+    default List<TNumber> value_time_split(Object duration, int value_size, int value_start, Object time_start){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        if(time_start != null){
+            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        }
+        else{
+            if(time_start instanceof LocalDateTime){
+                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+            }
+            else{
+                st= functions.pg_timestamptz_in(time_start.toString(), -1);
+            }
+
+            if(duration instanceof Duration){
+                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+            }
+            else{
+                dt= functions.pg_interval_in(duration.toString(), -1);
+            }
+        }
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);
+        Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
+        Pointer p= functions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);
+        List<TNumber> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= p.getPointer((long) i *Long.BYTES);
+            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
     }
 }
