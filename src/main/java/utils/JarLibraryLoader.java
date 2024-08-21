@@ -112,19 +112,19 @@ public class JarLibraryLoader<T> {
 			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
 			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
 				libraryPath = ldLibraryPath;
-				System.out.println(libraryPath);
+				System.out.println("GitHub workflow remote environment path: " + libraryPath);
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 			}
 //			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
-			System.out.println(libraryPath);
+//			System.out.println(libraryPath);
 			libName= "meos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
 			System.out.println("Running on Linux");
 			libraryPath = projectPath + "/src/lib";
-			System.out.println(libraryPath);
+			System.out.println("Linux path: " + libraryPath);
 //			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
 //          System.out.println("File copied successfully to: " + projectPath + "/src/lib");
 //          return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
