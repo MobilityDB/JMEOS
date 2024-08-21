@@ -15,9 +15,7 @@ public class functions {
 
 		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src/lib";
 
-		String libraryName= "meos";
-        
-        String libName = Platform.getNativePlatform().getStandardCLibraryName();
+		String libraryName= "libmeos";
 
 //		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
 
