@@ -12,9 +12,11 @@ import types.collections.time.tstzspan;
 import types.collections.time.tstzspanset;
 import utils.ConversionUtils;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.time.*;
 import java.util.*;
+import java.util.List;
 
 import static types.temporal.TemporalType.*;
 
@@ -76,6 +78,53 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public Temporal from_hexwkb(String str){
         Pointer result = functions.temporal_from_hexwkb(str);
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
+/*
+        Returns a temporal object from WKB bytes.
+
+        Args:
+            wkb: The WKB string.
+
+        Returns:
+            A temporal object from WKB bytes.
+
+        MEOS Functions:
+            temporal_from_wkb
+*/
+
+    public Temporal from_wkb(Pointer wkb, long size){
+        Pointer result= functions.temporal_from_wkb(wkb, size);
+        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
+/*
+        Returns the temporal object as a hex-encoded WKB string.
+
+        Returns:
+            The temporal object as a hex-encoded WKB string.
+
+        MEOS Functions:
+            temporal_as_hexwkb
+*/
+    public String as_hexwkb(Pointer wkb, long size){
+        String[] result= new String[]{functions.temporal_as_hexwkb(this.inner, (byte) -1)};
+//        System.out.println(result[0]);
+        return result[0];
+    }
+
+/*
+        Returns the temporal object as a hex-encoded WKB string.
+
+        Returns:
+            The temporal object as a hex-encoded WKB string.
+
+        MEOS Functions:
+            temporal_as_wkb
+*/
+    public Pointer as_wkb(){
+        Pointer result= functions.temporal_as_wkb(this.inner, (byte) 4);
+        return result;
     }
 
     /**
