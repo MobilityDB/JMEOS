@@ -10,8 +10,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal geographic point instant class inherited from temporal point instant and implementing temporal geographic point.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	private Pointer inner;
@@ -37,12 +36,12 @@ public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	 */
 	public TGeogPointInst(String value){
 		super(value);
-		this.inner = functions.tgeompoint_in(value);
+		this.inner = functions.tgeogpoint_in(value);
 	}
 
 	@Override
 	public Pointer createStringInner(String str) {
-		return functions.tgeompoint_in(str);
+		return functions.tgeogpoint_in(str);
 	}
 
 	@Override

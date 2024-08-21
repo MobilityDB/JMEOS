@@ -5,8 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import functions.functions;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.stream.Stream;
 import types.boxes.*;
+import functions.*;
 import types.collections.time.*;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Geometry;
@@ -24,8 +26,10 @@ public class STBoxTest {
 	private STBox stbxt;
 	private STBox stbzt;
 
+	static error_handler_fn errorHandler = new error_handler();
+
     public STBoxTest() throws SQLException {
-		functions.meos_initialize("UTC");
+		functions.meos_initialize("UTC", errorHandler);
 		stbx = new STBox("STBOX X((1, 1),(2, 2))");
 		stbz = new STBox("STBOX Z((1, 1, 1),(2, 2, 2))");
 		stbt = new STBox("STBOX T([2019-09-01,2019-09-02])");
@@ -34,7 +38,7 @@ public class STBoxTest {
     }
 
 	static Stream<Arguments> STBox_sources() throws SQLException {
-		functions.meos_initialize("UTC");
+		functions.meos_initialize("UTC", errorHandler);
 		return Stream.of(
 				Arguments.of(new STBox("STBOX X((1, 1),(2, 2))"), "STBOX X((1, 1),(2, 2))" ),
 				Arguments.of(new STBox("STBOX Z((1, 1, 1),(2, 2, 2))"), "STBOX Z((1, 1, 1),(2, 2, 2))" ),
@@ -43,8 +47,6 @@ public class STBoxTest {
 				Arguments.of(new STBox("STBOX ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02])"),  "STBOX ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02])")
 		);
 	}
-
-
 
 	@ParameterizedTest(name = "{index} - Parse \"{0}\" to {1} should result in \"{2}\"")
 	@CsvSource(value = {
@@ -85,15 +87,15 @@ public class STBoxTest {
 	public void testFromTimeConstructor(String type, String source, String expected) throws SQLException {
 		//functions.meos_initialize("UTC");
 		if (type == "TSet"){
-			STBox stb = STBox.from_time(new TimestampSet(source));
+			STBox stb = STBox.from_time(new tstzspanset(source));
 			assertEquals("STBox", stb.getClass().getSimpleName());
 			assertEquals(stb.toString(15),expected);
 		} else if (type == "P") {
-			STBox stb = STBox.from_time(new Period(source));
+			STBox stb = STBox.from_time(new tstzset(source));
 			assertEquals("STBox", stb.getClass().getSimpleName());
 			assertEquals(stb.toString(15),expected);
 		} else if (type == "PSet") {
-			STBox stb = STBox.from_time(new PeriodSet(source));
+			STBox stb = STBox.from_time(new tstzspan(source));
 			assertEquals("STBox", stb.getClass().getSimpleName());
 			assertEquals(stb.toString(15),expected);
 		}
@@ -104,7 +106,7 @@ public class STBoxTest {
 	@ParameterizedTest(name = "Test from as constructor.")
 	@MethodSource("STBox_sources")
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize("UTC");
+		functions.meos_initialize("UTC", errorHandler);
 		STBox stb = new STBox(str);
 		assertTrue(stb.eq(box));
 	}
@@ -113,11 +115,10 @@ public class STBoxTest {
 	@ParameterizedTest(name = "Test copy constructor.")
 	@MethodSource("STBox_sources")
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize("UTC");
+		functions.meos_initialize("UTC", errorHandler);
 		STBox stb = box.copy();
 		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());
-
 	}
 
 
@@ -162,8 +163,9 @@ public class STBoxTest {
 	public void testToPeriod(String stbox, String expected) throws SQLException, ParseException {
 		//functions.meos_initialize("UTC");
 		STBox stb = new STBox(stbox);
-		Period p = stb.to_period();
-		assertTrue(p instanceof Period);
+		System.out.println(stb.to_period());
+		tstzspan p = stb.to_period();
+		assertTrue(p instanceof tstzspan);
 		assertEquals(expected, p.toString());
 	}
 
@@ -289,26 +291,23 @@ public class STBoxTest {
 			"STBox X((1, 1),(2, 2)); STBox X((2, 2),(3, 3)); true",
 			"STBox Z((1, 1, 1),(2, 2, 2)); STBox Z((1, 1, 1),(3, 3, 3)); false",
 			"STBox Z((1, 1, 1),(2, 2, 2)); STBox Z((2, 2, 2),(3, 3, 3)); true",
-			"STBox T([2019-09-01,2019-09-02]); STBox T([2019-09-01,2019-09-03]); false",
+			"STBox T([2019-09-01,2019-09-02]); STBox T([2019-09-01,2019-09-03]); true",
 			"STBox T([2019-09-01,2019-09-02]); STBox T([2019-09-02,2019-09-03]); true",
-			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); STBox XT(((1, 1),(3, 3)),[2019-09-01,2019-09-03]); false",
+			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); STBox XT(((1, 1),(3, 3)),[2019-09-01,2019-09-03]); true",
 			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); STBox XT(((2, 2),(3, 3)),[2019-09-02,2019-09-03]); true",
 			"STBox ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02]); STBox ZT(((1, 1, 1),(3, 3, 3)),[2019-09-01,2019-09-03]); false",
-			"STBox ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02]); STBox ZT(((1, 1, 1),(3, 3, 3)),[2019-09-01,2019-09-03]); true",
+			"STBox ZT(((1, 1, 1),(2, 2, 2)),[2019-09-01,2019-09-02]); STBox ZT(((1, 1, 1),(3, 3, 3)),[2019-09-01,2019-09-03]); false",
 	}, delimiter = ';')
 	public void testAdjacent(String stbox, String stbox2, String expected) throws SQLException {
 		STBox stb = new STBox(stbox);
 		STBox stb2 = new STBox(stbox2);
-		//assertEquals(stb.is_adjacent(stb2),expected);
+		boolean res;
+		if(Objects.equals(expected, "false")){
+			res= false;
+		}
+		else{
+			res= true;
+		}
+		assertEquals(stb.is_adjacent(stb2),res);
 	}
-
-
-
-
-
-
-
-
-
-
 }

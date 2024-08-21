@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * Temporal float sequence class inherited from temporal sequence.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TFloatSeq extends TSequence<Float> implements TFloat {
 	private Pointer inner;
@@ -39,7 +38,8 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	 * @param value - the string with the TFloatSeq value
 	 */
 	public TFloatSeq(String value){
-		this(value,3);
+		super(value);
+		this.inner = functions.tfloat_in(value);
 	}
 
 
@@ -49,10 +49,9 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	 * @param value - the string with the TFloatSeq value
 	 * @param interpolation - interpolation value
 	 */
-	public TFloatSeq(String value, int interpolation)   {
-		super(value);
-		this.inner = functions.tfloatseq_in(value, interpolation);
-	}
+//	public TFloatSeq(String value)   {
+//
+//	}
 
 
 	/**
@@ -89,8 +88,5 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	public Pointer getNumberInner(){
 		return inner;
 	}
-
-
-
 	
 }

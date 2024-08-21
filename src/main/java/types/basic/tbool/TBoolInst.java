@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal boolean instant class inherited from temporal instant.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TBoolInst extends TInstant<Boolean> implements TBool {
 	private Pointer inner;
@@ -38,7 +37,7 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	 */
 	public TBoolInst(String value) {
 		super(value);
-		this.inner = functions.tboolinst_in(value);
+		this.inner = functions.tbool_in(value);
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tboolinst_in(str);
+		return functions.tbool_in(str);
 	}
 
 	@Override

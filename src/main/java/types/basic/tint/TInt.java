@@ -1,26 +1,21 @@
 package types.basic.tint;
-
 import functions.functions;
 import jnr.ffi.Pointer;
 import types.basic.tfloat.TFloat;
-import types.basic.tfloat.TFloatInst;
-import types.basic.tfloat.TFloatSeq;
-import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tnumber.TNumber;
 import types.collections.number.IntSpan;
 import types.collections.number.IntSpanSet;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
 import types.collections.time.Time;
-import types.collections.time.TimestampSet;
+import types.collections.time.tstzspanset;
 import types.temporal.*;
 
 
 /**
  * Class that represents the MobilityDB type TInt used for {@link TIntInst}, {@link TIntSeq} and {@link TIntSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TInt extends TNumber {
 	String customType = "Integer";
@@ -59,7 +54,7 @@ public interface TInt extends TNumber {
 	 *         MEOS Functions:
 	 *         <ul>
 	 *             <li>tintinst_make</li>
-	 *             <li>tintseq_from_base_timestampset</li>
+	 *             <li>tintseq_from_base_tstzspanset</li>
 	 *             <li>tintseq_from_base_time</li>
 	 *             <li>tintseqset_from_base_time</li>
 	 *         </ul>
@@ -69,12 +64,12 @@ public interface TInt extends TNumber {
 	 * @return A new temporal float.
 	 */
 	static TInt from_base_time(int value, Time base, TInterpolation interpolation){
-		if (base instanceof TimestampSet) {
-			return new TIntSeq(functions.tintseq_from_base_timestampset(value, ((TimestampSet) base).get_inner()));
-		} else if (base instanceof Period) {
-			return new TIntSeq(functions.tintseq_from_base_period(value, ((Period) base).get_inner()));
-		} else if (base instanceof PeriodSet) {
-			return new TIntSeqSet(functions.tintseqset_from_base_periodset(value, ((PeriodSet) base).get_inner()));
+		if (base instanceof tstzspanset) {
+			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
+		} else if (base instanceof tstzset) {
+			return new TIntSeq(functions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));
+		} else if (base instanceof tstzspan) {
+			return new TIntSeqSet(functions.tintseq_from_base_tstzspan(value, ((tstzspan) base).get_inner()));
 		}
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
 	}
@@ -242,7 +237,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_equal(int value){
-		return functions.tint_always_eq(getNumberInner(),value);
+		return functions.always_eq_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -257,7 +252,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_not_equal(int value){
-		return ! (functions.tint_ever_eq(getNumberInner(),value));
+		return (functions.ever_ne_tint_int(getNumberInner(),value)) > 0;
 	}
 
 
@@ -273,7 +268,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_less(int value){
-		return functions.tint_always_lt(getNumberInner(),value);
+		return functions.always_lt_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -290,7 +285,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean always_less_or_equal(int value){
-		return functions.tint_always_le(getNumberInner(),value);
+		return functions.always_le_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -306,7 +301,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean always_greater_or_equal(int value){
-		return ! (functions.tint_ever_lt(getNumberInner(),value));
+		return (functions.ever_lt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -321,7 +316,7 @@ public interface TInt extends TNumber {
 	 * 	 *            " `False`" otherwise.
 	 */
 	default boolean always_greater(int value){
-		return ! (functions.tint_ever_le(getNumberInner(),value));
+		return (functions.always_gt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -336,7 +331,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_less(int value){
-		return functions.tint_ever_lt(getNumberInner(),value);
+		return functions.ever_lt_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -353,7 +348,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean ever_less_or_equal(int value){
-		return functions.tint_ever_le(getNumberInner(),value);
+		return functions.ever_le_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -369,7 +364,7 @@ public interface TInt extends TNumber {
 	 * 	 *             otherwise.
 	 */
 	default boolean ever_equal(int value){
-		return functions.tint_ever_eq(getNumberInner(),value);
+		return functions.ever_eq_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -384,7 +379,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_not_equal(int value){
-		return ! (functions.tint_always_eq(getNumberInner(),value));
+		return (functions.ever_ne_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -401,7 +396,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean ever_greater_or_equal(int value){
-		return ! (functions.tint_always_lt(getNumberInner(),value));
+		return (functions.ever_ge_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -416,7 +411,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_greater(int value){
-		return ! (functions.tint_always_le(getNumberInner(),value));
+		return (functions.ever_gt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -431,7 +426,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean never_equal(int value){
-		return ! (functions.tint_ever_eq(getNumberInner(),value));
+		return ! (this.ever_equal(value));
 	}
 
 
@@ -447,7 +442,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean never_not_equal(int value){
-		return functions.tint_always_eq(getNumberInner(),value);
+		return ! (this.ever_equal(value));
 	}
 
 	/**
@@ -462,7 +457,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean never_less(int value){
-		return ! (functions.tint_ever_lt(getNumberInner(),value));
+		return ! (this.ever_less(value));
 	}
 
 
@@ -479,7 +474,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean never_less_or_equal(int value){
-		return ! (functions.tint_ever_le(getNumberInner(),value));
+		return ! (this.ever_less_or_equal(value));
 	}
 
 	/**
@@ -495,7 +490,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean never_greater_or_equal(int value){
-		return functions.tint_always_lt(getNumberInner(),value);
+		return !(this.ever_greater_or_equal(value));
 	}
 
 	/**
@@ -510,7 +505,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean never_greater(int value){
-		return functions.tint_always_le(getNumberInner(),value);
+		return !(this.ever_greater(value));
 	}
 
 
@@ -529,9 +524,9 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_equal_number(Integer other){
+	default Temporal temporal_equal(Object other){
 		if ((other instanceof Integer)){
-			return Factory.create_temporal(functions.teq_tint_int(getNumberInner(), other.intValue()), getCustomType(),getTemporalType());
+			return Factory.create_temporal(functions.teq_tint_int(getNumberInner(), ((Integer) other)), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -554,7 +549,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
 	default Temporal temporal_not_equal_number(Integer other){
-		if ((other instanceof Integer)){
+		if ((other != null)){
 			return Factory.create_temporal(functions.tne_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
@@ -579,7 +574,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
 	default Temporal temporal_less_number(Integer other){
-		if ((other instanceof Integer)){
+		if ((other != null)){
 			return Factory.create_temporal(functions.tlt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
@@ -604,7 +599,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
 	default Temporal temporal_less_or_equal_number(Integer other){
-		if ((other instanceof Integer)){
+		if ((other != null)){
 			return Factory.create_temporal(functions.tle_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
@@ -628,7 +623,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
 	default Temporal temporal_greater_or_equal_number(Integer other){
-		if ((other instanceof Integer)){
+		if ((other != null)){
 			return Factory.create_temporal(functions.tge_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
@@ -661,36 +656,4 @@ public interface TInt extends TNumber {
 
 
     /* ------------------------- Restrictions ---------------------------------- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

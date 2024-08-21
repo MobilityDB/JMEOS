@@ -1,7 +1,6 @@
 package types.collections.geo;
-
-import jnr.ffi.Pointer;
 import functions.functions;
+import jnr.ffi.Pointer;
 
 
 /**

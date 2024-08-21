@@ -1,19 +1,20 @@
 package types.temporal;
 
+import functions.functions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import types.TemporalObject;
 import types.collections.base.Base;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import utils.ConversionUtils;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-
-import functions.functions;
-import types.collections.time.Time;
-import types.collections.time.TimestampSet;
-import utils.ConversionUtils;
+import java.time.*;
+import java.util.*;
 
 import static types.temporal.TemporalType.*;
 
@@ -21,8 +22,7 @@ import static types.temporal.TemporalType.*;
  * Abstract class for Temporal sub types
  * @param <V> - Base type of the temporal data type eg. Integer, Boolean
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class Temporal<V extends Serializable> implements Serializable, TemporalObject {
     private Pointer inner;
@@ -51,7 +51,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     public abstract TemporalType getTemporalType();
 
 
-    public Temporal _factory(Pointer inner, String customType, TemporalType temporalType){
+    public static Temporal _factory(Pointer inner, String customType, TemporalType temporalType){
         return Factory.create_temporal(inner, customType, temporalType);
     }
 
@@ -87,10 +87,10 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @param str The MF-JSON string.
      * @return A temporal object from a MF-JSON string.
      */
-    public Temporal from_mfjson(String str){
-        Pointer result = functions.temporal_from_mfjson(str);
-        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
-    }
+//    public Temporal from_mfjson(String str){
+//        Pointer result = functions.temporal_as_=(str);
+//        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+//    }
 
 
 
@@ -130,6 +130,77 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return this.as_mfjson(true,3,6,null);
     }
 
+    /*
+            Returns a temporal object that is the result of merging the given
+            temporal objects.
+
+            Args:
+                *temporals: The temporal objects to merge.
+
+            Returns:
+                A temporal object that is the result of merging the given temporal
+                objects.
+
+            MEOS Functions:
+                temporal_merge_array
+    */
+    public Temporal from_merge(Pointer temporals){
+        List<Temporal> temporal_list = new ArrayList<>();
+        for(int i=0; i<this.num_instants(); i++){
+            Pointer p = temporals.getPointer((long) i *Long.BYTES);
+            if (p!=null){
+                Temporal t = Factory.create_temporal(p, this.getCustomType(), this.getTemporalType());
+                temporal_list.add(t);
+            }
+        }
+        int length_list= temporal_list.size();
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer temporalP = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);
+        // Copy the array elements into the allocated memory
+        for (int i = 0; i < length_list; i++) {
+            temporalP.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());
+        }
+        Pointer result= functions.temporal_merge_array(temporalP, length_list);
+        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
+
+    /*
+            Returns a temporal object that is the result of merging the given
+            temporal objects.
+
+            Args:
+                temporals: The temporal objects to merge.
+
+            Returns:
+                A temporal object that is the result of merging the given temporal
+                objects.
+    */
+    public Temporal from_merge_array(List<Temporal> temporals) {
+        List<Temporal> temporal_list = new ArrayList<>();
+        for (int i = 0; i < temporals.size(); i++) {
+            Pointer p = temporals.get(i).getInner();
+            if (p != null) {
+                Temporal t = Factory.create_temporal(p, this.getCustomType(), this.getTemporalType());
+                temporal_list.add(t);
+            }
+        }
+        int length = temporal_list.size();
+
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer temporalPointer = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);
+        // Copy the array elements into the allocated memory
+        for (int i = 0; i < length; i++) {
+            temporalPointer.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());
+        }
+        Pointer result = functions.temporal_merge_array(temporalPointer, length);
+        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
 
 
     /** ------------------------- Accessors ---------------------------------------- */
@@ -147,19 +218,19 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *
      * @return The bounding box of `self`.
      */
-    public Period bounding_box(){
-        return new Period(functions.temporal_to_period(this.inner));
+    public tstzspan bounding_box(){
+        return new tstzspan(functions.temporal_to_tstzspan(this.inner));
     }
 
     /**
-     * Returns the {@link PeriodSet} on which `self` is defined.
+     * Returns the {@link tstzspanset} on which `self` is defined.
      *
      *         MEOS Functions:
      *             temporal_time
-     * @return the {@link PeriodSet}  on which `self` is defined.
+     * @return the {@link tstzspanset}  on which `self` is defined.
      */
-    public PeriodSet time(){
-        return new PeriodSet(functions.temporal_time(this.inner));
+    public tstzspanset time(){
+        return new tstzspanset(functions.temporal_time(this.inner));
     }
 
 
@@ -170,27 +241,27 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
 
     /**
-     * Returns the {@link Period} on which "this" is defined ignoring
+     * Returns the {@link tstzset} on which "this" is defined ignoring
      *         potential time gaps.
      * <p>
      *         MEOS Functions:
      *             <li>temporal_to_period</li>
      * @return
      */
-    public Period period(){
+    public tstzspan period(){
         return this.timespan();
     }
 
     /**
-     * Returns the {@link Period} on which "this" is defined ignoring
+     * Returns the {@link tstzspan} on which "this" is defined ignoring
      *         potential time gaps.
      * <p>
      *         MEOS Functions:
      *             <li>temporal_to_period</li>
      * @return
      */
-    public Period timespan(){
-        return new Period(functions.temporal_to_period(this.inner));
+    public tstzspan timespan(){
+        return new tstzspan(functions.temporal_to_tstzspan(this.inner));
     }
 
 
@@ -265,6 +336,21 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(functions.temporal_instant_n(this.inner, n+1), this.getCustomType(), TEMPORAL_INSTANT);
     }
 
+//    public List<Temporal> instants(){
+//        functions.temporal_instants(this.inner);
+//    }
+
+//    public abstract Temporal value_at_timestamp();
+
+    public Duration duration(boolean ignore_gaps){
+        ignore_gaps = false;
+        return ConversionUtils.interval_to_timedelta(functions.temporal_duration(this.inner, ignore_gaps));
+    }
+
+    public tstzspan tstzspan(){
+        return this.timespan();
+    }
+
     /**
      * Returns the number of timestamps in "this".
      * <p>
@@ -286,7 +372,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the first timestamp in "this".
      */
     public LocalDateTime start_timestamp(){
-        return ConversionUtils.timestamptz_to_datetime(functions.temporal_start_timestamp(this.inner));
+        return ConversionUtils.timestamptz_to_datetime(functions.temporal_start_timestamptz(this.inner));
     }
 
 
@@ -298,8 +384,93 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the last timestamp in "this".
      */
     public LocalDateTime end_timestamp(){
-        return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamp(this.inner));
+        return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamptz(this.inner));
     }
+
+    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
+        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
+    }
+
+    public LocalDateTime timestamp_n(int n){
+        return timestampToLocalDateTime(Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1)).getInt(Integer.BYTES));
+    }
+
+/*
+        Returns the timestamps in `self`.
+
+        MEOS Functions:
+            temporal_timestamps
+*/
+
+    public List<LocalDateTime> timestamps(){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer array= functions.temporal_timestamps(this.inner, intPointer);
+        List<LocalDateTime> datetimeList= new ArrayList<LocalDateTime>();
+        for(int i=0;i<this.num_timestamps(); i++){
+            int p= array.getInt((long) i *Integer.BYTES);
+            LocalDateTime ldt= timestampToLocalDateTime(p);
+            datetimeList.add(ldt);
+        }
+        return datetimeList;
+    }
+
+
+    /*
+            Returns the instants in `self`.
+
+            MEOS Functions:
+                temporal_instants
+    */
+    public List<Temporal> instants(){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer array= functions.temporal_instants(this.inner, intPointer);
+        List<Temporal> instantList= new ArrayList<Temporal>();
+        for(int i=0; i<this.num_instants(); i++){
+            Pointer p= array.getPointer((long) i *Integer.BYTES);
+            Temporal t= Factory.create_temporal(p, this.getCustomType(),this.getTemporalType());
+            instantList.add(t);
+        }
+        return instantList;
+    }
+
+    /*
+            Returns the list of values taken by `self`.
+    */
+    public List<Temporal> values(){
+        List<Temporal> temporalList = new ArrayList<>();
+        temporalList= this.instants();
+        return temporalList;
+    }
+
+    /*
+            Returns the temporal segments in `self`.
+
+            MEOS Functions:
+                temporal_segments
+    */
+    public List<Temporal> segments(){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer array= functions.temporal_segments(this.inner, intPointer);
+        List<Temporal> segmentList= new ArrayList<Temporal>();
+        int num_segments= functions.temporal_num_sequences(this.inner);
+        for(int i=0;i<num_segments; i++){
+            Pointer p= array.getPointer((long) i *Long.BYTES);
+            Temporal t= Factory.create_temporal(p, this.getCustomType(),this.getTemporalType());
+            segmentList.add(t);
+        }
+        return segmentList;
+    }
+
 
     /**
      * Returns the hash of the temporal object.
@@ -331,6 +502,139 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     }
 
+    /*
+        Returns a new :class:`Temporal` with the temporal dimension shifted by
+        ``delta``.
+
+        Args:
+            delta: :class:`datetime.timedelta` instance to shift
+
+        MEOS Functions:
+            temporal_shift_time
+*/
+
+    public Temporal shift_time(Duration duration){
+        Pointer shifted= functions.temporal_shift_time(this.inner, ConversionUtils.timedelta_to_interval(duration));
+        return Factory.create_temporal(shifted,this.getCustomType(),this.getTemporalType());
+    }
+
+    /*
+            Returns a new :class:`Temporal` scaled so the temporal dimension has
+            duration ``duration``.
+
+            Args:
+                duration: :class:`datetime.timedelta` instance representing the
+                duration of the new temporal
+
+            MEOS Functions:
+                temporal_scale_time
+    */
+    public Temporal scale_time(Duration duration){
+        Pointer scaled= functions.temporal_scale_time(this.inner, ConversionUtils.timedelta_to_interval(duration));
+        return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());
+    }
+
+    /*
+            Returns a new :class:`Temporal` with the time dimension shifted by
+            ``shift`` and scaled so the temporal dimension has duration
+            ``duration``.
+
+            Args:
+                shift: :class:`datetime.timedelta` instance to shift
+                duration: :class:`datetime.timedelta` instance representing the
+                duration of the new temporal
+
+            MEOS Functions:
+                temporal_shift_scale_time
+    */
+    public Temporal shift_scale_time(Duration shift, Duration scale){
+        Pointer scaled= functions.temporal_shift_scale_time(this.inner, ConversionUtils.timedelta_to_interval(shift), ConversionUtils.timedelta_to_interval(scale));
+        return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());
+    }
+
+    /*
+            Returns a new :class:`Temporal` downsampled with respect to ``duration``.
+
+            Args:
+                duration: A :class:`str` or :class:`timedelta` with the duration of
+                    the temporal tiles.
+                start: A :class:`str` or :class:`datetime` with the start time of
+                    the temporal tiles. If None, the start time used by default is
+                    Monday, January 3, 2000.
+                interpolation: Interpolation of the resulting temporal object. If None,
+                    defaults to the interpolation of ``self``.
+            MEOS Functions:
+                temporal_tsample
+    */
+    public Temporal temporal_sample(Object duration, Object start, TInterpolation interpolation){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        TInterpolation intrp= null;
+        if (start == null){
+            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        }
+        else if (start instanceof LocalDateTime){
+            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);
+        }
+        else{
+            st= functions.pg_timestamptz_in(start.toString(), -1);
+        }
+
+        if(duration instanceof Duration){
+            dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+        }
+        else{
+            dt= functions.pg_interval_in(duration.toString(), -1);
+        }
+
+        if(interpolation == null){
+            intrp= this.interpolation();
+        }
+        else{
+            intrp= interpolation;
+        }
+        int intrp_val= intrp.getValue();
+        Pointer result= functions.temporal_tsample(this.inner, dt, st, intrp_val);
+        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
+    /*
+            Returns a new :class:`Temporal` with precision reduced to ``duration``.
+
+            Args:
+                duration: A :class:`str` or :class:`timedelta` with the duration
+                    of the temporal tiles.
+                start: A :class:`str` or :class:`datetime` with the start time of
+                    the temporal tiles. If None, the start time used by default is
+                    Monday, January 3, 2000.
+
+            MEOS Functions:
+                temporal_tprecision
+    */
+    public Temporal temporal_precision(Object duration, Object start){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        if (start == null){
+            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        }
+        else if (start instanceof LocalDateTime){
+            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);
+        }
+        else{
+            st= functions.pg_timestamptz_in(start.toString(), -1);
+        }
+
+        if(duration instanceof Duration){
+            dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+        }
+        else{
+            dt= functions.pg_interval_in(duration.toString(), -1);
+        }
+        Pointer result= functions.temporal_tprecision(this.inner, dt, st);
+        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    }
+
+
 
     /**
      * Returns "this" as a {@link TInstant}.
@@ -353,7 +657,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequence}.
      */
     public Temporal to_sequence(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE);
+        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE);
 
     }
 
@@ -366,8 +670,23 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequenceSet}
      */
     public Temporal to_sequenceset(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
+        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
 
+    }
+
+/*
+        Returns `self` as a :class:`pd.DataFrame` with two columns: `time`
+            and `value`.
+*/
+    public List<Map<String, Object>> toDataFrame() {
+        List<Map<String, Object>> dataFrame = new ArrayList<>();
+        for (int i = 0; i < this.timestamps().size(); i++) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("time", this.timestamps().get(i));
+            row.put("value", this.values().get(i));
+            dataFrame.add(row);
+        }
+        return dataFrame;
     }
 
 
@@ -375,6 +694,30 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     /* ------------------------- Modifications ---------------------------------------- */
 
+/*
+        Returns a new :class:`Temporal` object equal to `self` with `instant`
+        appended.
+
+        Args:
+            instant: :class:`TInstant` to append
+            max_dist: Maximum distance for defining a gap
+            max_time: Maximum time for defining a gap
+
+        MEOS Functions:
+            temporal_append_tinstant
+*/
+
+    public Temporal append_instant(TInstant instant, float max_dist, Duration max_time){
+        Pointer interv= null;
+        if (max_time==null){
+            interv=null;
+        }
+        else{
+            interv= ConversionUtils.timedelta_to_interval(max_time);
+        }
+        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), (double) max_dist, interv, false);
+        return Factory.create_temporal(resultPointer, this.getCustomType(), this.getTemporalType());
+    }
 
     /**
      * Returns a new {@link Temporal} object equal to "this" with "sequence"
@@ -411,6 +754,53 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
+/* Utility fucntion to crearte a pointer array*/
+    private Pointer createPointerArray(List<?> temporalList) throws Exception {
+//        Pointer pointerArray = Runtime.memoryManager().allocateDirect((temporalList.size() + 1) * Pointer.SIZE);
+
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer pointerArray = Memory.allocate(Runtime.getRuntime(runtime), (temporalList.size() + 1) * Long.BYTES);
+        pointerArray.putPointer(0, this.inner); // Add the current instance's inner pointer
+
+        for (int i = 0; i < temporalList.size(); i++) {
+            Object item = temporalList.get(i);
+            if (item instanceof Temporal) {
+                pointerArray.putPointer((long) (i + 1) * Long.SIZE, ((Temporal<?>) item).inner);
+            } else {
+                throw new Exception("List contains an unsupported type.");
+            }
+        }
+        return pointerArray;
+    }
+
+    /*
+            Returns a new :class:`Temporal` object that is the result of merging
+            `self` with `other`.
+
+            MEOS Functions:
+                temporal_merge, temporal_merge_array
+    */
+    public Temporal merge(Object other) throws Exception {
+        Pointer newTemp;
+        if (other == null) {
+            return this;
+        }
+        else if (other instanceof Temporal) {
+            Temporal<?> temporalOther = (Temporal<?>) other;
+            newTemp = functions.temporal_merge(this.inner, temporalOther.inner);
+        }
+        else if (other instanceof List<?>) {
+            List<?> otherList = (List<?>) other;
+            Pointer pointers = createPointerArray(otherList);
+
+            newTemp = functions.temporal_merge_array(pointers, otherList.size() + 1);
+        } else {
+            throw new Exception("Operation not supported with type " + other.getClass().getName());
+        }
+        return Factory.create_temporal(newTemp, this.getCustomType(), this.getTemporalType());
+    }
 
     /**
      * Returns a new {@link Temporal} object equal to "this" with "other"
@@ -465,6 +855,41 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(functions.temporal_update(this.inner,other.inner,connect),this.getCustomType(),this.getTemporalType());
     }
 
+    /*
+        Returns a new :class:`Temporal` object equal to `self` with elements at
+        `other` removed.
+
+        Args:
+            other: :class:`Time` object to remove from `self`
+            connect: whether to connect the potential gaps generated by the
+                deletions.
+
+        MEOS Functions:
+            temporal_update
+*/
+    public Temporal delete(Object other, Boolean connect) throws Exception {
+        Pointer new_inner=null;
+        if(other instanceof LocalDateTime){
+            new_inner= functions.temporal_delete_timestamptz(this.inner, ConversionUtils.datetimeToTimestampTz((LocalDateTime) other), connect);
+        }
+        else if(other instanceof tstzset){
+            new_inner= functions.temporal_delete_tstzset(this.inner, ((tstzset) other).get_inner(), connect);
+        }
+        else if(other instanceof tstzspan){
+            new_inner= functions.temporal_delete_tstzspan(this.inner, ((tstzspan) other).get_inner(), connect);
+        }
+        else if (other instanceof tstzspanset){
+            new_inner= functions.temporal_delete_tstzspanset(this.inner, ((tstzspanset) other).get_inner(), connect);
+        }
+        else{
+            throw new Exception("Operation not supported with type " + other.getClass().getName());
+        }
+        if(new_inner==this.inner){
+            return this;
+        }
+        return Factory.create_temporal(new_inner, this.getCustomType(), this.getTemporalType());
+    }
+
 
     /* ------------------------- Restrictions ---------------------------------- */
 
@@ -488,14 +913,14 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal at(Time other){
         Pointer result = null;
-        if (other instanceof Period){
-            result = functions.temporal_at_period(this.inner,((Period) other).get_inner());
+        if (other instanceof tstzset){
+            result = functions.temporal_at_tstzset(this.inner,((tstzset) other).get_inner());
 
-        } else if (other instanceof PeriodSet) {
-            result = functions.temporal_at_periodset(this.inner,((PeriodSet) other).get_inner());
+        } else if (other instanceof tstzspan) {
+            result = functions.temporal_at_tstzspan(this.inner,((tstzspan) other).get_inner());
 
-        } else if (other instanceof TimestampSet) {
-            result = functions.temporal_at_timestampset(this.inner,((TimestampSet) other).get_inner());
+        } else if (other instanceof tstzspanset) {
+            result = functions.temporal_at_tstzspanset(this.inner,((tstzspanset) other).get_inner());
         }
         return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());
     }
@@ -552,14 +977,14 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal minus(Time other){
         Pointer result = null;
-        if (other instanceof Period){
-            result = functions.temporal_minus_period(this.inner,((Period) other).get_inner());
+        if (other instanceof tstzset){
+            result = functions.temporal_minus_tstzset(this.inner,((tstzset) other).get_inner());
 
-        } else if (other instanceof PeriodSet) {
-            result = functions.temporal_minus_periodset(this.inner,((PeriodSet) other).get_inner());
+        } else if (other instanceof tstzspan) {
+            result = functions.temporal_minus_tstzspan(this.inner,((tstzspan) other).get_inner());
 
-        } else if (other instanceof TimestampSet) {
-            result = functions.temporal_minus_timestampset(this.inner,((TimestampSet) other).get_inner());
+        } else if (other instanceof tstzspanset) {
+            result = functions.temporal_minus_tstzspanset(this.inner,((tstzspanset) other).get_inner());
         }
         return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());
     }
@@ -604,7 +1029,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_adjacent(Base)}
+     *             {@link tstzset#is_adjacent(Base)}
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
@@ -619,7 +1044,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *   <p>
      *
      *         See Also:
-     *             {@link Period#is_adjacent(TemporalObject)}
+     *             {@link tstzset#is_adjacent(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if adjacent, False otherwise.
      */
@@ -635,7 +1060,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(TemporalObject)}
+     *             {@link tstzset#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
@@ -651,7 +1076,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_contained_in(TemporalObject)}
+     *             {@link tstzset#is_contained_in(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contained, False otherwise.
      */
@@ -668,7 +1093,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#contains(TemporalObject)}
+     *             {@link tstzset#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
@@ -684,7 +1109,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#contains(TemporalObject)}
+     *             {@link tstzset#contains(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if contains, False otherwise.
      */
@@ -701,7 +1126,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(TemporalObject)}
+     *             {@link tstzset#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
@@ -717,7 +1142,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#overlaps(TemporalObject)}
+     *             {@link tstzset#overlaps(TemporalObject)}
      * @param other A time or temporal object to compare to "this".
      * @return True if overlaps, False otherwise.
      */
@@ -734,7 +1159,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_same(TemporalObject)}
+     *             {@link tstzset#is_same(Time)} (TemporalObject)}
      * @param other A time or temporal object to compare to `self`.
      * @return True if same, False otherwise.
      */
@@ -752,7 +1177,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      *  <p>
      *
      *         See Also:
-     *             {@link Period#is_before(TemporalObject)}
+     *             {@link tstzset#is_before(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is before "other", False otherwise.
      */
@@ -767,7 +1192,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_before(TemporalObject)}
+     *             {@link tstzset#is_over_or_before(TemporalObject)}
      * @param other A time or temporal object to compare `self` to.
      * @return True if `self` is before `other` allowing overlap, False otherwise.
      */
@@ -781,7 +1206,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_after(TemporalObject)}
+     *             {@link tstzset#is_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other", False otherwise.
      */
@@ -797,7 +1222,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * <p>
      *
      *         See Also:
-     *             {@link Period#is_over_or_after(TemporalObject)}
+     *             {@link tstzset#is_over_or_after(TemporalObject)}
      * @param other A time or temporal object to compare "this" to.
      * @return True if "this" is after "other" allowing overlap, False otherwise.
      */
@@ -865,6 +1290,157 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return functions.temporal_simplify_dp(temp,dist,sync);
     }
 
+    /* ------------------------- Split Operations ----------------------------------- */
+
+/*
+        Returns a list of temporal objects of the same subtype as `self` with
+        the same values as `self` but split in temporal tiles of duration
+        `duration` starting at `start`.
+
+        Args:
+            duration: A :class:`str` or :class:`timedelta` with the duration
+                of the temporal tiles.
+            start: A :class:`str` or :class:`datetime` with the start time of
+                the temporal tiles. If None, the start time used by default is
+                Monday, January 3, 2000.
+
+        Returns:
+            A list of temporal objects of the same subtype as `self`.
+
+        MEOS Functions:
+            temporal_time_split
+*/
+
+    private Pointer createEmptyPointerArray(Runtime runtime) {
+        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), this.num_instants()*Long.BYTES); // Adjust size as needed
+        return listPointer;
+    }
+
+    public List<Temporal> time_split(Object duration, Object start){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        if(start == null){
+            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        }
+        else{
+            if(start instanceof LocalDateTime){
+                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);
+            }
+            else{
+                st= functions.pg_timestamptz_in(start.toString(), -1);
+            }
+
+            if(duration instanceof Duration){
+                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+            }
+            else{
+                dt= functions.pg_interval_in(duration.toString(), -1);
+            }
+        }
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer listPointer = createEmptyPointerArray(runtime);
+        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        List<Temporal> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= p.getPointer((long) i *Long.BYTES);
+            Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
+    }
+
+    /*
+            Returns a list of temporal objects of the same subtype as `self` with
+            the same values as `self` but split in n temporal tiles of equal
+            duration.
+
+            Args:
+                n: An :class:`int` with the number of temporal tiles.
+
+            Returns:
+                A list of temporal objects of the same subtype as `self`.
+
+            MEOS Functions:
+                temporal_time_split
+    */
+    public static long convertToTimestamp(LocalDateTime dateTime) {
+        // Converts LocalDateTime to a timestamp (seconds since the Unix epoch)
+        return dateTime.toEpochSecond(ZoneOffset.UTC);
+    }
+    public static Duration calculateDifference(LocalDateTime start, LocalDateTime end) {
+        // Calculate the duration between two LocalDateTime objects
+        return Duration.between(start, end);
+    }
+
+    public static Duration calculateIntermediateDuration(LocalDateTime start, LocalDateTime end, int n) {
+        // Convert LocalDateTime to epoch seconds (timestamp)
+        long startTimestamp = start.toEpochSecond(ZoneOffset.UTC);
+        long endTimestamp = end.toEpochSecond(ZoneOffset.UTC);
+
+        // Calculate the difference in seconds
+        long timestampDifference = endTimestamp - startTimestamp;
+
+        // Divide the difference by the given integer n
+        long dividedTimestampDifference = timestampDifference / n;
+
+        // Convert the divided difference back to a Duration
+        return Duration.ofSeconds(dividedTimestampDifference);
+    }
+
+    public List<Temporal> time_split_n(int n){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        if(this.start_timestamp() == this.end_timestamp()){
+            return Collections.singletonList(this);
+        }
+        st= functions.temporal_start_timestamptz(this.inner);
+        LocalDateTime start= this.start_timestamp();
+        LocalDateTime end= this.end_timestamp();
+        Duration dur= calculateIntermediateDuration(start, end, n);
+        dt = ConversionUtils.timedelta_to_interval(dur);
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer listPointer = createEmptyPointerArray(runtime);
+        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        List<Temporal> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= p.getPointer((long) i *Long.BYTES);
+            Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
+    }
+
+/*
+        Return the subsequences where the objects stay within an area with a
+        given maximum size for at least the specified duration.
+
+        Args:
+            max_distance: A :class:`float` with the maximum distance of a stop.
+            min_duration: A :class:`timedelta` with the minimum duration of
+                a stop.
+
+        Returns:
+            A :class:`SequenceSet` of the same subtype as `self` with the stops.
+
+        MEOS Functions:
+            temporal_stops
+*/
+
+
+    public Temporal stops(double max_distance, Duration max_duration){
+        Pointer new_inner= null;
+        new_inner= functions.temporal_stops(this.inner, max_distance, ConversionUtils.timedelta_to_interval(max_duration));
+        return Factory.create_temporal(new_inner, this.getCustomType(), this.getTemporalType());
+    }
 
     /* ------------------------- Comparisons ----------------------------------- */
 

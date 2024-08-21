@@ -9,6 +9,7 @@ import types.basic.tbool.TBoolInst;
 import types.basic.tbool.TBoolSeq;
 import types.basic.tbool.TBoolSeqSet;
 import types.temporal.TInterpolation;
+import functions.*;
 import types.temporal.Temporal;
 
 import java.sql.SQLException;
@@ -18,9 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InterpolationTest {
 
+    static error_handler_fn errorHandler = new error_handler();
 
     static Stream<Arguments> TInterp() throws SQLException {
-        functions.meos_initialize("UTC");
+        functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
                 Arguments.of("discrete", TInterpolation.DISCRETE),
                 Arguments.of("linear", TInterpolation.LINEAR),
@@ -33,11 +35,7 @@ public class InterpolationTest {
     @ParameterizedTest(name = "Test TInterpolation class.")
     @MethodSource("TInterp")
     public void testFromString(String base, TInterpolation expected) {
-        functions.meos_initialize("UTC");
+        functions.meos_initialize("UTC", errorHandler);
         assertEquals(TInterpolation.fromString(base),expected);
     }
-
-
-
-
 }

@@ -6,8 +6,7 @@ import types.temporal.TSequenceSet;
 
 /**
  * Base abstract class for TGeomPointSeqSet and TGeogPointSeqSet
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class TPointSeqSet extends TSequenceSet<TPoint> implements TPoint{
     public Pointer inner;

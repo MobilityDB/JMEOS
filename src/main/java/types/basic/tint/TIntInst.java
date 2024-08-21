@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal integer instant class inherited from temporal instant.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TIntInst extends TInstant<Integer> implements TInt{
 	private Pointer inner;
@@ -37,14 +36,14 @@ public class TIntInst extends TInstant<Integer> implements TInt{
 	 */
 	public TIntInst(String value) {
 		super(value);
-		this.inner = functions.tintinst_in(value);
+		this.inner = functions.tint_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tintinst_in(str);
+		return functions.tint_in(str);
 	}
 
 	@Override

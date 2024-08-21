@@ -21,6 +21,10 @@ import types.basic.ttext.TTextSeqSet;
 
 import static types.temporal.TemporalType.*;
 
+/**
+ * Final class for assigning temporal types
+ * @author ARIJIT SAMAL
+ **/
 
 public final class Factory{
 
@@ -75,10 +79,10 @@ public final class Factory{
         return sequence;
     }
 
-    private static Temporal create_sequenceset(Pointer inner, String customType){
+    private static Temporal create_sequenceset(Pointer inner, String customType) {
         TSequenceSet sequenceset = null;
-        switch (customType){
-            case "Integer" -> sequenceset =  new TIntSeqSet(inner);
+        switch (customType) {
+            case "Integer" -> sequenceset = new TIntSeqSet(inner);
             case "Float" -> sequenceset = new TFloatSeqSet(inner);
             case "Boolean" -> sequenceset = new TBoolSeqSet(inner);
             case "Geom" -> sequenceset = new TGeomPointSeqSet(inner);
@@ -87,6 +91,4 @@ public final class Factory{
         }
         return sequenceset;
     }
-
-
 }

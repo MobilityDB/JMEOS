@@ -556,13 +556,4 @@ public interface TNumber {
             throw new OperationNotSupportedException("Operand not supported");
         }
     }
-
-
-
-
-
-
-
-
-
 }

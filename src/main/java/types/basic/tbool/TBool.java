@@ -1,10 +1,10 @@
 package types.basic.tbool;
 
 import jnr.ffi.Pointer;
-import types.collections.time.Period;
-import types.collections.time.PeriodSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
 import types.collections.time.Time;
-import types.collections.time.TimestampSet;
+import types.collections.time.tstzspanset;
 import types.temporal.*;
 import functions.functions;
 
@@ -12,8 +12,7 @@ import functions.functions;
 /**
  * Class that represents the MobilityDB type TBool used for {@link TBoolInst}, {@link TBoolSeq} and {@link TBoolSeqSet}
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TBool {
     String customType = "Boolean";
@@ -59,14 +58,14 @@ public interface TBool {
      * @return A new temporal boolean.
      */
     static Temporal from_base_time(boolean value, Time base){
-        if (base instanceof TimestampSet){
-            return new TBoolSeq(functions.tboolseq_from_base_timestampset(value,((TimestampSet) base).get_inner()));
+        if (base instanceof tstzspanset){
+            return new TBoolSeq(functions.tboolseqset_from_base_tstzspanset(value,((tstzspanset) base).get_inner()));
 
-        } else if (base instanceof Period) {
-            return new TBoolSeq(functions.tboolseq_from_base_period(value,((Period) base).get_inner()));
+        } else if (base instanceof tstzset) {
+            return new TBoolSeq(functions.tboolseq_from_base_tstzset(value,((tstzset) base).get_inner()));
 
-        } else if (base instanceof PeriodSet) {
-            return new TBoolSeqSet(functions.tboolseqset_from_base_periodset(value,((PeriodSet) base).get_inner()));
+        } else if (base instanceof tstzspan) {
+            return new TBoolSeqSet(functions.tboolseq_from_base_tstzspan(value,((tstzspan) base).get_inner()));
         }
 
         return null;
@@ -127,7 +126,8 @@ public interface TBool {
      * @return True if "this" is always equal to "value", False otherwise.
      */
     default boolean always_eq(boolean value){
-        return functions.tbool_always_eq(getBoolInner(), value);
+        int result= functions.always_eq_tbool_bool(getBoolInner(), value);
+        return result > 0;
     }
 
 
@@ -142,7 +142,8 @@ public interface TBool {
      * @return True if "this" is ever equal to "value", False otherwise.
      */
     default boolean ever_eq(boolean value){
-        return functions.tbool_ever_eq(getBoolInner(), value);
+        int result= functions.ever_eq_tbool_bool(getBoolInner(), value);
+        return result > 0;
     }
 
     /**
@@ -156,7 +157,7 @@ public interface TBool {
      * @return True if "this" is never equal to "value", False otherwise.
      */
     default boolean never_eq(boolean value){
-        return !(functions.tbool_ever_eq(getBoolInner(), value));
+        return !(this.ever_eq(value));
     }
 
 
@@ -177,7 +178,7 @@ public interface TBool {
      * @param other A temporal or boolean object to compare to "this".
      * @return A {@link TBool} with the result of the temporal equality relation.
      */
-    default TBool temporal_equal_bool(boolean other){
+    default TBool temporal_equal(boolean other){
         return (TBool) Factory.create_temporal(functions.teq_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
@@ -197,7 +198,7 @@ public interface TBool {
      * @param other A temporal or boolean object to compare to "this".
      * @return A {@link TBool} with the result of the temporal inequality relation.
      */
-    default TBool temporal_not_equal_bool(boolean other){
+    default TBool temporal_not_equal(boolean other){
         return (TBool) Factory.create_temporal(functions.tne_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
@@ -221,7 +222,7 @@ public interface TBool {
      * @param other Time or value to restrict to.
      * @return A new temporal boolean.
      */
-    default TBool at_bool(boolean other){
+    default TBool at(boolean other){
         return (TBool) Factory.create_temporal(functions.tbool_at_value(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
@@ -244,7 +245,7 @@ public interface TBool {
      * @param other Time or value to restrict to the complement of.
      * @return A new temporal boolean.
      */
-    default TBool minus_bool(boolean other){
+    default TBool minus(boolean other){
         return (TBool) Factory.create_temporal(functions.tbool_minus_value(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
@@ -344,10 +345,10 @@ public interface TBool {
      * <p>
      *         MEOS Function:
      *             <li>tbool_when_true</li>
-     * @return A {@link PeriodSet} with the periods where "this" is True.
+     * @return A {@link tstzspan} with the periods where "this" is True.
      */
-    default PeriodSet when_true(){
-        return new PeriodSet(functions.tbool_when_true(getBoolInner()));
+    default tstzspan when_true(){
+        return new tstzspan(functions.tbool_when_true(getBoolInner()));
     }
 
 
@@ -357,10 +358,18 @@ public interface TBool {
      * <p>
      *         MEOS Function:
      *             <li>tbool_when_true</li>
-     * @return A {@link PeriodSet} with the periods where "this" is False.
+     * @return A {@link tstzspan} with the periods where "this" is False.
      */
-    default PeriodSet when_false(){
-        return new PeriodSet(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
+    default tstzspan when_false(){
+        return new tstzspan(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
+    }
+
+    default TBool neg(){
+        return this.temporal_not();
+    }
+
+    default TBool invert(){
+       return this.temporal_not();
     }
 	
 }

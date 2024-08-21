@@ -11,8 +11,7 @@ import java.util.*;
  *
  * @param <V> base classe such as integer, boolean, text
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 	protected ArrayList<TSequence<V>> sequenceList = new ArrayList<>();
@@ -75,6 +74,4 @@ public abstract class TSequenceSet<V extends Serializable> extends Temporal<V> {
 		String value = toString();
 		return value != null ? value.hashCode() : 0;
 	}
-	
-
 }

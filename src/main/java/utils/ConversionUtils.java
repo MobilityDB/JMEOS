@@ -1,22 +1,26 @@
 package utils;
 
 import com.google.common.collect.BoundType;
-import functions.functions;
+import functions.error_handler;
 import jnr.ffi.Pointer;
 import com.google.common.collect.Range;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.geom.Point;
-import types.temporal.TInstant;
-import types.temporal.TSequence;
-import types.temporal.TSequenceSet;
-import types.temporal.Temporal;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+//import types.temporal.TInstant;
+//import types.temporal.TSequence;
+//import types.temporal.TSequenceSet;
+//import types.temporal.Temporal;
 
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import functions.functions;
 
 /**
  * Class based on the manually-defined functions from PyMeos.
@@ -35,7 +39,8 @@ public class ConversionUtils {
 	 * @return offsetDateTime
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
-		functions.meos_initialize("UTC");
+		error_handler handler= new error_handler();
+		functions.meos_initialize("UTC", handler);
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		return functions.pg_timestamptz_in(formattedDt, -1);
 	}
@@ -66,7 +71,36 @@ public class ConversionUtils {
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
-		return Duration.parse(functions.pg_interval_out(p));
+		String res= functions.pg_interval_out(p);
+		System.out.println(res);
+		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
+		Matcher matcher = pattern.matcher(res);
+
+		if (matcher.matches()) {
+			// Extract days from the string
+			int days = Integer.parseInt(matcher.group(1));
+
+			// Initialize hours, minutes, and seconds to zero
+			int hours = 0;
+			int minutes = 0;
+			int seconds = 0;
+
+			// If the time component is present, extract hours, minutes, and seconds
+			if (matcher.group(2) != null) {
+				hours = Integer.parseInt(matcher.group(2));
+				minutes = Integer.parseInt(matcher.group(3));
+				seconds = Integer.parseInt(matcher.group(4));
+			}
+
+			// Calculate the total duration in seconds
+			long totalSeconds = days * 86400L + hours * 3600L + minutes * 60L + seconds;
+
+			System.out.println(Duration.ofSeconds(totalSeconds));
+			// Create and return the Duration object
+			return Duration.ofSeconds(totalSeconds);
+		} else {
+			throw new IllegalArgumentException("Invalid interval format");
+		}
 	}
 
 	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {
@@ -95,17 +129,17 @@ public class ConversionUtils {
 
 
 
-	public static TInstant asTInstant(Temporal temporal) {
-			return (TInstant) temporal;
-		}
-
-	public static TSequence asTSequence(Temporal temporal) {
-			return (TSequence) temporal;
-		}
-
-	public static TSequenceSet asTSequenceSet(Temporal temporal) {
-			return (TSequenceSet) temporal;
-		}
+//	public static TInstant asTInstant(Temporal temporal) {
+//			return (TInstant) temporal;
+//		}
+//
+//	public static TSequence asTSequence(Temporal temporal) {
+//			return (TSequence) temporal;
+//		}
+//
+//	public static TSequenceSet asTSequenceSet(Temporal temporal) {
+//			return (TSequenceSet) temporal;
+//		}
 
 
 	public static Pointer geo_to_gserialized(Geometry geom, boolean geodetic){
@@ -139,29 +173,21 @@ public class ConversionUtils {
 		return ptr;
 	}
 
-	public static Point gserialized_to_shapely_point(Pointer geom, int precision) throws ParseException {
-		String text = functions.gserialized_as_text(geom,precision);
-		WKTReader wktReader = new WKTReader();
-		Geometry geometry = wktReader.read(text);
-		int srid = functions.lwgeom_get_srid(geom);
-		if (srid > 0){
-			geometry.setSRID(srid);
-		}
+	public static Point gserialized_to_shapely_point(Pointer geom, int precision) throws ParseException, ParseException {
+        Geometry geometry = gserialized_to_shapely_geometry(geom, precision);
 		return (Point) geometry;
 	}
 
-
-	public static Geometry gserialized_to_shapely_geometry(Pointer geom, int precision) throws ParseException {
-		String text = functions.gserialized_as_text(geom,precision);
+	public static Geometry gserialized_to_shapely_geometry(Pointer geom, int precision) throws ParseException, ParseException {
+		String text = functions.geo_as_text(geom,precision);
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(text);
-		int srid = functions.lwgeom_get_srid(geom);
+		int srid = functions.geo_get_srid(geom);
 		if (srid > 0){
 			geometry.setSRID(srid);
 		}
 		return geometry;
 	}
-
 
 	public static String hexWKBToWKB(String hexWKB) {
 		if (hexWKB.length() % 2 != 0) {
@@ -182,9 +208,6 @@ public class ConversionUtils {
 
 	public static LocalDateTime string_to_LocalDateTime(String value){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
-		return dateTime;
+        return LocalDateTime.parse(value, formatter);
 	}
-
-
 }

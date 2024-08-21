@@ -8,8 +8,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal float instant class inherited from temporal instant.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TFloatInst extends TInstant<Float> implements TFloat{
 	private Pointer inner;
@@ -37,14 +36,14 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	 */
 	public TFloatInst(String value) {
 		super(value);
-		this.inner = functions.tfloatinst_in(value);
+		this.inner = functions.tfloat_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tfloatinst_in(str);
+		return functions.tfloat_in(str);
 	}
 
 	@Override
@@ -66,6 +65,4 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	public Pointer getNumberInner(){
 		return inner;
 	}
-
-
 }

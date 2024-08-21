@@ -4,8 +4,7 @@ package types.collections.base;
  * Class representing a collection of temporal object with same common behavior
  *
  * @param <T> Base type
- * @author Nidhal Mareghni
- * @since 23/09/2023
+ * @author Arijit Samal
  *
  */
 public interface Collection<T extends Object> {
@@ -27,6 +26,4 @@ public interface Collection<T extends Object> {
 
 
     /* ------------------------- Database Operations --------------------------- */
-
-
 }

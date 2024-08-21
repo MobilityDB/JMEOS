@@ -9,8 +9,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal geometric point sequence class inherited from temporal point sequence and implementing temporal geometric point.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TGeomPointSeq extends TPointSeq  implements TGeomPoint{
 

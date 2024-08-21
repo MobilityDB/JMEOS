@@ -14,11 +14,11 @@ import java.net.URL;
  * @since 13/08/2023
  */
 public class JarLibraryLoader<T> {
-	
+
 	private final Class<T> libraryClass;
 	private final String libraryName;
 	private final String projectPath = System.getProperty("user.dir");
-	
+
 	/**
 	 * Constructor of this class.
 	 *
@@ -29,7 +29,7 @@ public class JarLibraryLoader<T> {
 		this.libraryClass = libraryClass;
 		this.libraryName = libraryName;
 	}
-	
+
 	/**
 	 * Create a new instance of {@link JarLibraryLoader}
 	 *
@@ -41,7 +41,11 @@ public class JarLibraryLoader<T> {
 	public static <T> JarLibraryLoader<T> create(Class<T> libraryClass, String libraryName) {
 		return new JarLibraryLoader<>(libraryClass, libraryName);
 	}
-	
+
+	public void print_parent_dir() {
+		System.out.println(projectPath);
+	}
+
 	/**
 	 * Copies a file from the JAR resources to a specified destination on the local file system.
 	 *
@@ -51,21 +55,20 @@ public class JarLibraryLoader<T> {
 	 * @throws FileNotFoundException If the specified resource path cannot be found in the JAR resources.
 	 */
 	public static void copyFileFromJar(String resourcePath, String destinationPath) throws IOException {
-		// Créer le dossier parent s'il n'existe pas
 		File destinationFile = new File(destinationPath);
 		File parentDirectory = destinationFile.getParentFile();
 		if (!parentDirectory.exists()) {
 			parentDirectory.mkdirs();
 		}
-		
+
 		URL resourceUrl = JarLibraryLoader.class.getResource(resourcePath);
 		if (resourceUrl == null) {
 			throw new FileNotFoundException("Resource not found: " + resourcePath);
 		}
-		
+
 		try (InputStream inputStream = resourceUrl.openStream();
 			 OutputStream outputStream = new FileOutputStream(destinationPath)) {
-			
+
 			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = inputStream.read(buffer)) > 0) {
@@ -73,7 +76,7 @@ public class JarLibraryLoader<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Retrieves the name of the operating system on which the Java program is running.
 	 *
@@ -81,7 +84,7 @@ public class JarLibraryLoader<T> {
 	 */
 	public static String getOSName() {
 		String osName = System.getProperty("os.name").toLowerCase();
-		
+
 		if (osName.contains("win")) {
 			return "Windows";
 		} else if (osName.contains("mac")) {
@@ -94,7 +97,7 @@ public class JarLibraryLoader<T> {
 			return "Unknown";
 		}
 	}
-	
+
 	/**
 	 * Provide the library instance.
 	 *
@@ -102,17 +105,77 @@ public class JarLibraryLoader<T> {
 	 */
 	public T getLibraryInstance() {
 		if (getOSName().equals("Linux")) {
-			try {
-				copyFileFromJar("/jmeos/lib/libmeos.so", projectPath + "/src/lib/libmeos.so");
-				System.out.println("File copied successfully.");
-				
-				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
-			} catch (IOException e) {
-				System.out.println("Running in test mode");
-				return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
-			}
+            System.out.println("Running on Linux");
+//				copyFileFromJar("/jmeos/lib/libmeos.so", projectPath + "/src/lib/libmeos.so");
+            System.out.println("File copied successfully to: " + projectPath + "/src/lib");
+            return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+        } else if (getOSName().equals("Running on Windows")) {
+			System.out.println("In Windows");
+			String windowsLibraryPath = "\\src\\lib";
+			System.out.println("Looking for library at: " + projectPath + windowsLibraryPath);
+			return LibraryLoader.create(libraryClass).search(projectPath + "\\src\\lib").load(libraryName);
 		} else {
-			throw new UnsupportedOperationException("JMEOS is only supported on Linux OS");
+			throw new UnsupportedOperationException("JMEOS is only supported on Linux and Windows OS");
 		}
 	}
 }
+
+//public class JarLibraryLoader<T> {
+//
+//	private final Class<T> libraryClass;
+//	private final String libraryPath;
+//
+//	/**
+//	 * Constructor of this class.
+//	 *
+//	 * @param libraryClass Class of the library defined interface
+//	 * @param libraryPath  Path to the shared library file
+//	 */
+//	public JarLibraryLoader(Class<T> libraryClass, String libraryPath) {
+//		this.libraryClass = libraryClass;
+//		this.libraryPath = libraryPath;
+//	}
+//
+//	/**
+//	 * Create a new instance of {@link JarLibraryLoader}
+//	 *
+//	 * @param libraryClass Class of the library defined interface
+//	 * @param libraryPath  Path to the shared library file
+//	 * @param <T>          Library defined interface
+//	 * @return New instance of JarLibraryLoader
+//	 */
+//	public static <T> JarLibraryLoader<T> create(Class<T> libraryClass, String libraryPath) {
+//		return new JarLibraryLoader<>(libraryClass, libraryPath);
+//	}
+//
+//	/**
+//	 * Provide the library instance.
+//	 *
+//	 * @return The library instance
+//	 */
+//	public T getLibraryInstance() {
+//		return LibraryLoader.create(libraryClass).load(libraryPath);
+//	}
+//}
+
+//import functions.functions;
+//import jnr.ffi.LibraryLoader;
+//import jnr.ffi.Runtime;
+//import functions.error_handler_fn;
+//
+//public class jarLibraryLoader {
+//	public static void main(String[] args) {
+//		var lib = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
+//		var runtime = Runtime.getRuntime(lib);
+//		error_handler_fn error_handler= new error_handler_fn() {
+//			@Override
+//			public String handleError(int code1, int code2, String message) {
+//				return "error "+ message;
+//			}
+//		};
+//		lib.meos_initialize("UTC", error_handler);
+////		System.out.println(lib.get(first, second));
+////		var letterUnion = new LibMinimal.LetterUnion(runtime);
+////		lib.fill_letter_union(letterUnion);
+//	}
+//}

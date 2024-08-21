@@ -1,16 +1,17 @@
 package types.boxes;
 
 import types.TemporalObject;
-import types.collections.time.Period;
+import types.collections.base.Set;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
 
 
 /**
  * Interface to define a box from which STbox and TBox are inherited.
  *
- * @author Nidhal Mareghni
- * @since 10/07/2023
+ * @author ARIJIT SAMAL
  */
 public interface Box extends TemporalObject{
-    Period to_period();
-
+//    Set<Object> to_period();
+    tstzspan to_period();
 }

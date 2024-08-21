@@ -8,8 +8,7 @@ import types.temporal.TemporalType;
 /**
  * Temporal boolean sequence set class inherited from temporal sequence set.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 	private Pointer inner;
