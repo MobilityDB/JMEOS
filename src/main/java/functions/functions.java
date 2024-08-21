@@ -1,12 +1,14 @@
 package functions;
 
-import jnr.ffi.LibraryLoader;
-import jnr.ffi.Pointer;
-import jnr.ffi.Memory;
+import jnr.ffi.*;
 import jnr.ffi.Runtime;
+import org.w3c.dom.ls.LSOutput;
 import utils.JarLibraryLoader;
+import jnr.ffi.LibraryLoader;
 
 import java.time.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class functions {
 	public interface MeosLibrary {
@@ -14,10 +16,15 @@ public class functions {
 		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src/lib";
 
 		String libraryName= "meos";
+        
+        String libName = Platform.getNativePlatform().getStandardCLibraryName();
 
-		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
+//		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
 
-//		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
+//        Map<LibraryOption, Object> libraryOptions = new HashMap<>();
+//        libraryOptions.put(LibraryOption.LoadNow, true);
+//        libraryOptions.put(LibraryOption.IgnoreError, true);
+        MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).load(libraryName);
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
