@@ -108,17 +108,17 @@ public class JarLibraryLoader<T> {
 		String libName;
 		if (System.getenv("GITHUB_WORKFLOW") != null) {
 			System.out.println("Running on GitHub Workflow");
-//			// Use the LD_LIBRARY_PATH to locate the library
-//			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
-//			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
-//				libraryPath = ldLibraryPath;
-//				System.out.println(libraryPath);
-//			} else {
-//				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
-//			}
-			libraryPath="/home/runner/work/JMEOS/JMEOS";
+			// Use the LD_LIBRARY_PATH to locate the library
+			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
+			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
+				libraryPath = ldLibraryPath;
+				System.out.println(libraryPath);
+			} else {
+				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
+			}
+//			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
 			System.out.println(libraryPath);
-			libName= "libmeos";
+			libName= "meos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
@@ -141,21 +141,7 @@ public class JarLibraryLoader<T> {
 		}
 
 		try {
-			// Load the library explicitly
 			System.out.println("Loading library from: " + libraryPath);
-//			System.load(libraryPath + "meos.so");
-//			System.out.println("Library loaded successfully!");
-
-//			// Check if the file exists and is readable
-//			File libFile = new File(libraryPath);
-//			if (!libFile.exists()) {
-//				System.err.println("Library file does not exist at: " + libraryPath);
-//			}
-//			if (!libFile.canRead()) {
-//				System.err.println("Library file is not readable at: " + libraryPath);
-//			}
-
-			// Return the loaded library instance
 			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
