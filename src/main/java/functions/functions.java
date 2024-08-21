@@ -1,5 +1,6 @@
 package functions;
 
+import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
@@ -10,9 +11,13 @@ import java.time.*;
 public class functions {
 	public interface MeosLibrary {
 
-		String libraryPath= "libmeos.so";
+		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src";
 
-		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryPath).getLibraryInstance();
+		String libraryName= "meos";
+
+//		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
+
+		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
