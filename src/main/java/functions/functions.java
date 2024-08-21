@@ -15,10 +15,9 @@ public class functions {
 
 		String libraryName= "meos";
 
-//		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
+		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
 
-		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
-//				LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
+//		MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).search(libraryPath).load(libraryName);
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
