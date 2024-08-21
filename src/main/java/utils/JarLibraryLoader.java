@@ -142,6 +142,7 @@ public class JarLibraryLoader<T> {
 
 		try {
 			System.load(libraryPath+"/"+"libmeos.so");
+			System.setProperty("jnr.ffi.library.log", "true");
 			System.out.println("Loading library from: " + libraryPath);
 			System.out.println("Library loaded successfully!");
 			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
