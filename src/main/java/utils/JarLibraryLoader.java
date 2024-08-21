@@ -118,7 +118,7 @@ public class JarLibraryLoader<T> {
 //			}
 			libraryPath="/home/runner/work/JMEOS/JMEOS";
 			System.out.println(libraryPath);
-			libName= "meos";
+			libName= "libmeos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
