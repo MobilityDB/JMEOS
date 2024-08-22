@@ -78,6 +78,11 @@ public interface TFloat extends TNumber {
 	}
 
 
+//static TFloat from_mfjson() {
+//}
+		
+
+
     /* ------------------------- Output ---------------------------------------- */
 
 
