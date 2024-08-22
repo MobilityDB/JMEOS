@@ -23,6 +23,12 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Uninstall any pre-installed Maven
+        run: |
+          sudo apt-get remove --purge -y maven
+          sudo rm -f /usr/bin/mvn
+          sudo rm -rf /usr/share/maven /etc/maven /usr/local/maven /opt/apache-maven*
+
       - name: Install Maven 3.9.6
         run: |
           wget https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
