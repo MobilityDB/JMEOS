@@ -34,40 +34,56 @@ jobs:
       - name: Print current working directory
         run: pwd
 
-      - name: Check for the library
-        run: ls -la /home/runner/work/JMEOS/JMEOS/src/lib
+      # Fetch and install MEOS library
+      - name: Fetch MEOS sources
+        env:
+          BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
+        run: |
+          git clone --branch ${{ env.BRANCH_NAME }} --depth 1 https://github.com/MobilityDB/MobilityDB
 
+      - name: Install MEOS
+        run: |
+          mkdir MobilityDB/build
+          cd MobilityDB/build
+          cmake .. -DMEOS=on
+          make -j
+          sudo make install
+
+      # Copy the installed library to your project's src/lib directory
+      - name: Copy MEOS library to JMEOS/src/lib
+        run: |
+          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/src/lib/
+
+      # Check for the library in the src/lib directory
+      - name: Check for the library
+        run: ls -la $GITHUB_WORKSPACE/src/lib
+
+      # Set up the environment variable LD_LIBRARY_PATH
       - name: Set up LD_LIBRARY_PATH
         run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
 
+      # Check if libmeos.so exists in the target directory
       - name: Check if libmeos.so exists
         run: ls -l $LD_LIBRARY_PATH/libmeos.so
 
+      # Verify the architecture compatibility of the library
       - name: Verify architecture compatibility
         run: file $LD_LIBRARY_PATH/libmeos.so
 
+      # Test the MEOS library loading using ldd and nm
       - name: Test libmeos.so loading
         run: |
-          ldd src/lib/libmeos.so
-          nm -D src/lib/libmeos.so
+          ldd $LD_LIBRARY_PATH/libmeos.so
+          nm -D $LD_LIBRARY_PATH/libmeos.so
 
+      # Ensure that the library has the correct execution permissions
       - name: Ensure correct permissions
         run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
+      # Build your Maven project
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
 
+      # Run your Maven tests
       - name: Run tests
         run: mvn test
-
-      - name: Install packages
-        run: mvn install
-
-      - name: Generate Javadoc
-        run: mvn javadoc:javadoc
-
-      - name: Upload Javadoc as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: javadoc
-          path: target/site/apidocs
