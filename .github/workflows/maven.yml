@@ -85,9 +85,9 @@ jobs:
 #          ldd $LD_LIBRARY_PATH/libmeos.so
 #          nm -D $LD_LIBRARY_PATH/libmeos.so
 #
-#      # Ensure that the library has the correct execution permissions
-#      - name: Ensure correct permissions
-#        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
+      # Ensure that the library has the correct execution permissions
+      - name: Ensure correct permissions
+        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
       # Build your Maven project
       - name: Build with Maven
