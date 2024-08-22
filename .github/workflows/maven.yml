@@ -89,6 +89,10 @@ jobs:
       - name: Ensure correct permissions
         run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
-      # Build your Maven project
-      - name: Build with Maven
-        run: mvn clean install > maven-log-file.log
+#      # Build your Maven project
+#      - name: Build with Maven
+#        run: mvn clean install
+
+      # Run your Maven tests
+      - name: Run tests
+        run: mvn test
