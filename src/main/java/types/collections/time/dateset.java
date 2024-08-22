@@ -18,23 +18,24 @@ import java.util.Objects;
 import functions.functions;
 import utils.ConversionUtils;
 
-/*
-    Class for representing lists of distinct dates.
-
-    ``DateSet`` objects can be created with a single argument of type
-    string as in MobilityDB.
-
-        >>> DateSet(string='{2019-09-08, 2019-09-10, 2019-09-11}')
-
-    Another possibility is to give a tuple or list of composing dates,
-    which can be instances of ``str`` or ``date``. The composing dates
-    must be given in increasing order.
-
-        >>> DateSet(elements=['2019-09-08', '2019-09-10', '2019-09-11'])
-        >>> DateSet(elements=[parse('2019-09-08'), parse('2019-09-10'), parse('2019-09-11')])
-
-    @author ARIJIT SAMAL
-*/
+/**
+ *  Class for representing lists of distinct dates.
+ * <p>
+ *     ``DateSet`` objects can be created with a single argument of type
+ *     string as in MobilityDB.
+ * <p>
+ *         >>> DateSet(string='{2019-09-08, 2019-09-10, 2019-09-11}')
+ * <p>
+ *     Another possibility is to give a tuple or list of composing dates,
+ *     which can be instances of ``str`` or ``date``. The composing dates
+ *     must be given in increasing order.
+ * <p>
+ *         >>> DateSet(elements=['2019-09-08', '2019-09-10', '2019-09-11'])
+ *         <br>
+ *         >>> DateSet(elements=[parse('2019-09-08'), parse('2019-09-10'), parse('2019-09-11')])
+ *
+ *     @author ARIJIT SAMAL
+ */
 
 public class dateset extends Set<LocalDate> implements Time, TimeCollection{
 
