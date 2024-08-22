@@ -13,16 +13,11 @@ import java.util.Map;
 public class functions {
 	public interface MeosLibrary {
 
-		String libraryPath= "/home/runner/work/JMEOS/JMEOS/src/lib";
+		String gitLibraryPath= "/home/runner/work/JMEOS/JMEOS/src/lib";
 
 		String libraryName= "meos";
 
-//		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
-
-//        Map<LibraryOption, Object> libraryOptions = new HashMap<>();
-//        libraryOptions.put(LibraryOption.LoadNow, true);
-//        libraryOptions.put(LibraryOption.IgnoreError, true);
-        MeosLibrary INSTANCE = LibraryLoader.create(MeosLibrary.class).load(libraryName);
+		MeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryName).getLibraryInstance();
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
