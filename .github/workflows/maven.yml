@@ -38,6 +38,10 @@ jobs:
       - name: Install GEOS
         run: sudo apt-get install -y libgeos-dev
 
+      # Install PROJ library
+      - name: Install PROJ
+        run: sudo apt-get install proj-bin libproj-dev proj-data
+
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
         run: git clone https://github.com/MobilityDB/MobilityDB.git
