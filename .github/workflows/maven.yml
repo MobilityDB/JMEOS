@@ -91,7 +91,7 @@ jobs:
 
       # Run your Maven tests
       - name: Run tests
-        run: mvn test
+        run: mvn -X clean test
 
       # Build your Maven project
       - name: Build with Maven
