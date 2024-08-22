@@ -104,10 +104,6 @@ jobs:
       - name: Ensure correct permissions
         run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
-      # Run Maven tests
-      - name: Run tests
-        run: mvn -X clean test
-
       # Build Maven project
       - name: Build with Maven
         run: mvn clean install
