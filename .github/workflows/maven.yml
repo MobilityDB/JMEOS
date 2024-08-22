@@ -64,7 +64,8 @@ jobs:
       - name: Fetch MEOS sources
         run: git clone https://github.com/MobilityDB/MobilityDB.git
 
-      - name: Install MEOS
+      # install MObilityDB
+      - name: Install MobilityDB
         run: |
           mkdir MobilityDB/build
           cd MobilityDB/build
@@ -103,10 +104,10 @@ jobs:
       - name: Ensure correct permissions
         run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
-      # Run your Maven tests
+      # Run Maven tests
       - name: Run tests
-        run: mvn -X clean test
+        run: mvn clean test
 
-      # Build your Maven project
+      # Build Maven project
       - name: Build with Maven
         run: mvn clean install
