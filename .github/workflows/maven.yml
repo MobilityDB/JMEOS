@@ -63,36 +63,36 @@ jobs:
         run: |
           cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/src/lib/
 
-      # Check for the library in the src/lib directory
-      - name: Check for the library
-        run: ls -la $GITHUB_WORKSPACE/src/lib
+#      # Check for the library in the src/lib directory
+#      - name: Check for the library
+#        run: ls -la $GITHUB_WORKSPACE/src/lib
+#
+#      # Set up the environment variable LD_LIBRARY_PATH
+#      - name: Set up LD_LIBRARY_PATH
+#        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+#
+#      # Check if libmeos.so exists in the target directory
+#      - name: Check if libmeos.so exists
+#        run: ls -l $LD_LIBRARY_PATH/libmeos.so
+#
+#      # Verify the architecture compatibility of the library
+#      - name: Verify architecture compatibility
+#        run: file $LD_LIBRARY_PATH/libmeos.so
+#
+#      # Test the MEOS library loading using ldd and nm
+#      - name: Test libmeos.so loading
+#        run: |
+#          ldd $LD_LIBRARY_PATH/libmeos.so
+#          nm -D $LD_LIBRARY_PATH/libmeos.so
+#
+#      # Ensure that the library has the correct execution permissions
+#      - name: Ensure correct permissions
+#        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
 
-      # Set up the environment variable LD_LIBRARY_PATH
-      - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+      # Build your Maven project
+      - name: Build with Maven
+        run: mvn clean install
 
-      # Check if libmeos.so exists in the target directory
-      - name: Check if libmeos.so exists
-        run: ls -l $LD_LIBRARY_PATH/libmeos.so
-
-      # Verify the architecture compatibility of the library
-      - name: Verify architecture compatibility
-        run: file $LD_LIBRARY_PATH/libmeos.so
-
-      # Test the MEOS library loading using ldd and nm
-      - name: Test libmeos.so loading
-        run: |
-          ldd $LD_LIBRARY_PATH/libmeos.so
-          nm -D $LD_LIBRARY_PATH/libmeos.so
-
-      # Ensure that the library has the correct execution permissions
-      - name: Ensure correct permissions
-        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
-
-#      # Build your Maven project
-#      - name: Build with Maven
-#        run: mvn clean install
-
-      # Run your Maven tests
-      - name: Run tests
-        run: mvn test
+#      # Run your Maven tests
+#      - name: Run tests
+#        run: mvn test
