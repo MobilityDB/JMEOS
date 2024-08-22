@@ -116,15 +116,13 @@ public class JarLibraryLoader<T> {
 			} else {
 				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
 			}
-//			libraryPath="/home/runner/work/JMEOS/JMEOS/src/lib";
-//			System.out.println(libraryPath);
 			libName= "meos";
 		}
 		else {
 		if (getOSName().equals("Linux")) {
 			System.out.println("Running on Linux");
-			libraryPath = projectPath + "/src/lib";
-			System.out.println("Linux path: " + libraryPath);
+			libraryPath = projectPath + "/src";
+			System.out.println("Linux library path: " + libraryPath);
 //			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
 //          System.out.println("File copied successfully to: " + projectPath + "/src/lib");
 //          return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
@@ -141,10 +139,10 @@ public class JarLibraryLoader<T> {
 		}
 
 		try {
-			System.setProperty("jnr.ffi.library.log", "true");
-			System.load(libraryPath+"/"+"libmeos.so");
+//			System.setProperty("jnr.ffi.library.log", "true");
+//			System.load(libraryPath+"/"+"libmeos.so");
 			System.out.println("Loading library from: " + libraryPath);
-			System.out.println("Library loaded successfully!");
+//			System.out.println("Library loaded successfully!");
 			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error loading native library: " + e.getMessage());
