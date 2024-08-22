@@ -26,9 +26,18 @@ jobs:
         run: mvn -B javadoc:javadoc
         # By default, this generates Javadoc in the target/site/apidocs/ directory
 
+      - name: Verify Javadoc Directory
+        run: |
+          if [ -d "target/site/apidocs" ]; then
+          echo "Javadoc generated successfully";
+          ls -la target/site/apidocs;
+          else
+          echo "Javadoc directory not found!";
+          exit 1;
+          fi
+
       - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs
-          # This deploys the generated Javadoc from target/site/apidocs to the gh-pages branch
+          publish_dir: target/site/apidocs
