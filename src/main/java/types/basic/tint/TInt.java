@@ -222,15 +222,16 @@ public interface TInt extends TNumber {
 		return functions.tint_end_value(getNumberInner());
 	}
 
-/*
-        Returns the set of values of `self`.
-
-        Returns:
-            A :class:`set` with the values of `self`.
-
-        MEOS Functions:
-            tint_values
-*/
+/**
+ * Returns the set of values of `self`.
+ * <br>
+ *         Returns:
+ *             A :class:`set` with the values of `self`.
+ * <p>
+ *         MEOS Functions:
+ *             <li>tint_values</li>
+ *  @return A {@link IntSet}.
+ */
 	default IntSet value_set(){
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
