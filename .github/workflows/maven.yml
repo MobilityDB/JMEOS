@@ -67,9 +67,9 @@ jobs:
 #      - name: Check for the library
 #        run: ls -la $GITHUB_WORKSPACE/src/lib
 #
-#      # Set up the environment variable LD_LIBRARY_PATH
-#      - name: Set up LD_LIBRARY_PATH
-#        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+      # Set up the environment variable LD_LIBRARY_PATH
+      - name: Set up LD_LIBRARY_PATH
+        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
 #
 #      # Check if libmeos.so exists in the target directory
 #      - name: Check if libmeos.so exists
