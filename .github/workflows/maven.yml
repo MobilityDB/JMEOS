@@ -42,6 +42,10 @@ jobs:
       - name: Install PROJ
         run: sudo apt-get install proj-bin libproj-dev proj-data
 
+      # Install JSON-C library
+      - name: Install JSON-C
+        run: sudo apt install libjson-c-dev
+
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
         run: git clone https://github.com/MobilityDB/MobilityDB.git
