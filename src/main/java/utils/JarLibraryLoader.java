@@ -139,15 +139,10 @@ public class JarLibraryLoader<T> {
 		}
 
 		try {
-//			System.setProperty("jnr.ffi.library.log", "true");
-//			System.load(libraryPath+"/"+"libmeos.so");
 			System.out.println("Loading library from: " + libraryPath);
-//			System.out.println("Library loaded successfully!");
 			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Error loading native library: " + e.getMessage());
-			throw e;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			System.err.println("Unexpected error: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
