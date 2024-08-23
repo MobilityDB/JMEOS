@@ -738,7 +738,6 @@ public interface TFloat extends TNumber {
 		float value= floatPointer.getFloat(Float.BYTES);
 		return value;
 	}
-
 /**
         Returns the derivative of `self`.
 
