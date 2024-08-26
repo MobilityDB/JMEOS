@@ -83,7 +83,7 @@ public interface TFloat extends TNumber {
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
 	}
 
-/*
+/**
         Returns a temporal object from a MF-JSON string.
 
         Args:
