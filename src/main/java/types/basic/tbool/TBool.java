@@ -490,8 +490,8 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *             <li>tbool_when_true</li>
      * @return A {@link tstzspan} with the periods where "this" is True.
      */
-    default tstzspan when_true(){
-        return new tstzspan(functions.tbool_when_true(getBoolInner()));
+    default tstzspanset when_true(){
+        return new tstzspanset(functions.tbool_when_true(getBoolInner()));
     }
 
 
