@@ -33,8 +33,7 @@ import java.util.List;
 /**
  * Base interface that encompasses the Temporal float and Temporal integer interfaces.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TNumber {
     Pointer getNumberInner();
