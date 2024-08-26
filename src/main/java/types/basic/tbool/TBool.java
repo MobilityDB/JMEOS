@@ -1,12 +1,21 @@
 package types.basic.tbool;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
+import org.locationtech.jts.io.ParseException;
+import types.collections.base.Set;
+import types.collections.number.FloatSet;
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
 import functions.functions;
+import utils.ConversionUtils;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -70,6 +79,22 @@ public interface TBool {
 
         return null;
     }
+/**
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            tbool_from_mfjson
+*/
+    default TBool from_mfjson(String mfjson){
+        Pointer result= functions.tbool_from_mfjson(mfjson);
+        return (TBool) Factory.create_temporal(result, getCustomType(), getTemporalType());
+    }
 
 
     /* ------------------------- Output ---------------------------------- */
@@ -86,8 +111,74 @@ public interface TBool {
         return functions.tbool_out(getBoolInner());
     }
 
+    /**
+     * Returns the string representation of "this" in WKT format.
+     * <p>
+     *         MEOS Function:
+     *             <li>tbool_out</li>
+     * @return Returns the string representation of "this"
+     */
+    default String as_wkt(){
+        return functions.tbool_out(getBoolInner());
+    }
+
 
     /* ------------------------- Accessors ---------------------------------- */
+/**
+        Returns the unique values in `self`.
+
+        MEOS Function:
+            tbool_values
+ */
+    default Set<Boolean> value_set(){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer resPointer = functions.tbool_values(this.getBoolInner(), intPointer);
+        StringBuilder sb = null;
+        sb.append("{");
+        int count= intPointer.getInt(Integer.BYTES);
+        for (int i=0;i<count;i++){
+            boolean boolRes= false;
+            int res= resPointer.getInt((long) i *Integer.BYTES);
+            if(res>0){
+                boolRes= true;
+            }
+            sb.append(boolRes);
+            if(i<count-1){
+                sb.append(", ");
+            }
+        }
+        sb.append("}");
+        System.out.println(sb.toString());
+        return new Set<Boolean>(sb.toString()) {
+            @Override
+            public Pointer get_inner() {
+                return resPointer;
+            }
+
+            @Override
+            public Pointer createInner(Pointer inner) {
+                return inner;
+            }
+
+            @Override
+            public Pointer createStringInner(String str) {
+                return functions.tbool_in(str);
+            }
+
+            @Override
+            public Boolean start_element() throws ParseException {
+                return functions.tbool_start_value(this.get_inner());
+            }
+
+            @Override
+            public Boolean end_element() throws ParseException {
+                return functions.tbool_end_value(this.get_inner());
+            }
+        };
+    }
 
     /**
      * Returns the starting value of "this".
@@ -110,6 +201,29 @@ public interface TBool {
     default boolean end_value(){
         return functions.tbool_end_value(getBoolInner());
     }
+
+/**
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: Timestamp to get the value at.
+
+        Returns:
+            The value at the given timestamp.
+
+        MEOS Function:
+            tbool_value_at_timestamptz
+*/
+
+default boolean value_at_timestamp(LocalDateTime ts){
+    // Create a JNR-FFI runtime instance
+    Runtime runtime = Runtime.getSystemRuntime();
+    // Allocate memory for an integer (4 bytes) but do not set a value
+    Pointer boolPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+    boolean res= functions.tbool_value_at_timestamptz(this.getBoolInner(), ConversionUtils.datetimeToTimestampTz(ts), true, boolPointer);
+    int value= boolPointer.getInt(Integer.BYTES);
+    return value > 0;
+}
 
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
@@ -269,6 +383,22 @@ public interface TBool {
         return (TBool) Factory.create_temporal(functions.tand_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
     }
 
+/**
+        Returns the temporal conjunction of `this` and `other`.
+
+        Args:
+            other: A temporal or boolean object to combine with `this`.
+
+        Returns:
+            A :class:`TBool` with the temporal conjunction of `this` and `other`.
+
+        MEOS Functions:
+            tand_tbool_bool, tand_tbool_tbool
+*/
+    default TBool and(Object other){
+        return this.temporal_and((TBool) other);
+    }
+
 
     /**
      * Returns the temporal conjunction of "this" and "other".
@@ -287,9 +417,6 @@ public interface TBool {
         return (TBool) Factory.create_temporal(functions.tand_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
-
-
-
     /**
      * Returns the temporal disjunction of "this" and "other".
      *
@@ -305,6 +432,22 @@ public interface TBool {
      */
     default TBool temporal_or(TBool other){
         return (TBool) Factory.create_temporal(functions.tor_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
+    }
+
+    /**
+        Returns the temporal disjunction of `this` and `other`.
+
+        Args:
+            other: A temporal or boolean object to combine with `this`.
+
+        Returns:
+            A :class:`TBool` with the temporal disjunction of `this` and `other`.
+
+        MEOS Functions:
+            tor_tbool_bool, tor_tbool_tbool
+*/
+    default TBool or(Object other){
+        return this.temporal_or((TBool) other);
     }
 
 
@@ -363,11 +506,28 @@ public interface TBool {
     default tstzspan when_false(){
         return new tstzspan(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
     }
+/**
+        Returns the temporal negation of `this`.
 
+        Returns:
+            A :class:`TBool` with the temporal negation of `this`.
+
+        MEOS Function:
+            tnot_tbool
+*/
     default TBool neg(){
         return this.temporal_not();
     }
 
+/**
+        Returns the temporal negation of `self`.
+
+        Returns:
+            A :class:`TBool` with the temporal negation of `self`.
+
+        MEOS Function:
+            tnot_tbool
+*/
     default TBool invert(){
        return this.temporal_not();
     }
