@@ -83,6 +83,82 @@ public interface TNumber {
         return (float) functions.tnumber_twavg(getNumberInner());
     }
 
+    /* ------------------------- Transformations ---------------------------------- */
+
+/**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``delta``.
+
+        Args:
+            delta: value to shift
+
+        MEOS Functions:
+            tint_shift_value, tfloat_shift_value
+ */
+    default TNumber shift_value(Object delta) throws Exception {
+        Pointer shifted= null;
+        if(this instanceof TInt){
+            shifted= functions.tint_shift_value(this.getNumberInner(), (int) delta);
+        }
+        else if (this instanceof TFloat){
+            shifted= functions.tfloat_shift_value(this.getNumberInner(), (double) delta);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(shifted, getCustomType(), getTemporalType());
+    }
+
+/**
+        Returns a new :class:`TNumber` scaled so the value dimension has
+        width ``width``.
+
+        Args:
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_scale_value, tfloat_scale_value
+*/
+    default TNumber scale_value(Object width) throws Exception {
+        Pointer scaled= null;
+        if(this instanceof TInt){
+            scaled= functions.tint_scale_value(this.getNumberInner(), (int) width);
+        }
+        else if (this instanceof TFloat){
+            scaled= functions.tfloat_scale_value(this.getNumberInner(), (double) width);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());
+    }
+
+    /**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``shift`` and scaled so the value dimension has width ``width``.
+
+        Args:
+            shift: value to shift
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_shift_scale_value, tfloat_shift_scale_value
+*/
+    default TNumber shift_scale_value(Object shift, Object width) throws Exception {
+        Pointer scaled= null;
+        if(this instanceof TInt && shift!=null && width!=null){
+            scaled= functions.tint_shift_scale_value(this.getNumberInner(), (int) shift, (int) width);
+        }
+        else if (this instanceof TFloat && shift!=null && width!=null){
+            scaled= functions.tfloat_shift_scale_value(this.getNumberInner(), (double) shift, (double) width);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());
+    }
+
+
 
     /* ------------------------- Restrictions ---------------------------------- */
 
@@ -480,6 +556,140 @@ public interface TNumber {
         }
     }
 
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to add to
+            `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+ */
+    default TNumber _add(Object other) throws OperationNotSupportedException {
+        return this.add(other);
+    }
+
+
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to add to `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            add_int_tint, add_float_tfloat
+*/
+    default TNumber _radd(Object other) throws OperationNotSupportedException {
+        return this.radd(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` minus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            subtract from `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_tint_int, sub_tfloat_float, sub_tnumber_tnumber
+*/
+    default TNumber _sub(Object other) throws OperationNotSupportedException {
+        return this.sub(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `other` minus `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to subtract `self` to.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_int_tint, sub_float_tfloat
+*/
+    default TNumber _rsub(Object other) throws OperationNotSupportedException {
+        return this.rsub(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            multiply `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_tint_int, mult_tfloat_float, mult_tnumber_tnumber
+*/
+    default TNumber _mul(Object other) throws OperationNotSupportedException {
+        return this.mul(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied
+        by `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to multiply by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_int_tint, mult_float_tfloat
+*/
+    default  TNumber _rmul(Object other) throws OperationNotSupportedException {
+        return this.rmul(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` divided by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to divide
+            `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_tint_int, div_tfloat_float, div_tnumber_tnumber
+*/
+    default TNumber _trueDiv(Object other) throws OperationNotSupportedException {
+        return this.div(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `other` divided by
+        `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to divide by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_int_tint, div_float_tfloat
+*/
+    default TNumber _rTrueDiv(Object other) throws OperationNotSupportedException {
+        return this.rdiv(other);
+    }
+
 
     /**
      * Returns the absolute value of "this".
@@ -572,7 +782,7 @@ public interface TNumber {
 
     /* --------------------------------------------- Split Operations ---------------------------------------------- */
 
-/*
+/**
         Splits `self` into fragments with respect to value buckets
 
         Args:
@@ -614,7 +824,7 @@ public interface TNumber {
         return tempList;
     }
 
-/*
+/**
         Splits `self` into fragments with respect to value and tstzspan buckets.
 
         Args:
