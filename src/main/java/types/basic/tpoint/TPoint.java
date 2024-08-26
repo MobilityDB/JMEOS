@@ -1,6 +1,8 @@
 package types.basic.tpoint;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import types.TemporalObject;
 import types.basic.tbool.TBool;
 import types.basic.tfloat.TFloat;
@@ -8,11 +10,14 @@ import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TIntInst;
 import types.basic.tint.TIntSeq;
 import types.basic.tint.TIntSeqSet;
+import types.basic.tnumber.TNumber;
 import types.basic.tpoint.tgeog.TGeogPoint;
 import types.basic.tpoint.tgeom.TGeomPoint;
 import types.boxes.STBox;
+import types.collections.base.Set;
 import types.collections.geo.GeoSet;
 import types.collections.time.Time;
+import types.collections.time.tstzset;
 import types.temporal.*;
 import functions.functions;
 import org.locationtech.jts.geom.Geometry;
@@ -22,6 +27,9 @@ import utils.ConversionUtils;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that represents the MobilityDB type TPoint used for {@link TPointInst}, {@link TPointSeq} and {@link TPointSeqSet}
@@ -131,6 +139,31 @@ public interface TPoint extends Serializable {
 		return new STBox(functions.tpoint_to_stbox(getPointInner()));
 	}
 
+/**
+        Returns the values of the temporal point.
+
+        Returns:
+            A :class:`list` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            temporal_instants
+*/
+    default List<TPoint> values(int precision){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.temporal_instants(this.getPointInner(), intPointer);
+		List<TPoint> pointList= new ArrayList<>();
+		int count= intPointer.getInt(Integer.BYTES);
+		for(int i=0; i<count; i++){
+			Pointer res= resPointer.getPointer((long) i *Long.BYTES);
+			TPoint t= (TPoint) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+			pointList.add(t);
+		}
+		return pointList;
+	}
+
 	/**
 	 * Returns the start value of the temporal point.
 	 *
@@ -145,7 +178,6 @@ public interface TPoint extends Serializable {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);
 	}
 
-
 	/**
 	 * Returns the end value of the temporal point.
 	 *
@@ -158,6 +190,86 @@ public interface TPoint extends Serializable {
 	 */
 	default Point end_value(int precision) throws ParseException {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);
+	}
+
+/**
+        Returns the set of values of `self`.
+        Note that when the interpolation is linear, the set will contain only the waypoints.
+
+        Returns:
+            A :class:`set` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            tpoint_values
+*/
+//     default Set<Point> value_set(int precision) throws ParseException {
+//		 // Create a JNR-FFI runtime instance
+//		 Runtime runtime = Runtime.getSystemRuntime();
+//		 // Allocate memory for an integer (4 bytes) but do not set a value
+//		 Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+//		 Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+//		 List<TPoint> pointList= new ArrayList<>();
+//		 int count= intPointer.getInt(Integer.BYTES);
+//		 StringBuilder sb = null;
+//		 sb.append("{");
+//		 for(int i=0;i<count;i++) {
+//			 Point p= ConversionUtils.gserialized_to_shapely_point(resPointer.getPointer((long) i *Long.BYTES), precision);
+//			 sb.append(p);
+//			 if(i<count-1){
+//				 sb.append(", ");
+//			 }
+//		 }
+//		 sb.append("}");
+//		 System.out.println(sb.toString());
+//		 return new Set<Point>(sb.toString()) {
+//			 @Override
+//			 public Pointer get_inner() {
+//				 return resPointer;
+//			 }
+//
+//			 @Override
+//			 public Pointer createInner(Pointer inner) {
+//				 return inner;
+//			 }
+//
+//			 @Override
+//			 public Pointer createStringInner(String str) {
+//				 return functions.tgeom(str);
+//			 }
+//
+//			 @Override
+//			 public Point start_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(this.get_inner()), precision);
+//			 }
+//
+//			 @Override
+//			 public Point end_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(this.get_inner()), precision);
+//			 }
+//		 };
+//	 }
+
+/**
+        Returns the value of the temporal point at the given timestamp.
+
+        Args:
+            timestamp: A :class:`datetime` representing the timestamp.
+            precision: An :class:`int` representing the precision of the coordinates.
+
+        Returns:
+            A :class:`~shapely.geometry.Point` with the value.
+
+        MEOS Functions:
+            tpoint_value_at_timestamp
+*/
+	default Point value_at_timestamp(LocalDateTime ts, int precision) throws ParseException {
+		 // Create a JNR-FFI runtime instance
+		 Runtime runtime = Runtime.getSystemRuntime();
+		 // Allocate memory for an integer (4 bytes) but do not set a value
+		 Pointer geomPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);
+		 boolean b= functions.tpoint_value_at_timestamptz(this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true, geomPointer);
+		 Pointer geom= geomPointer.getPointer(Long.BYTES);
+		 return ConversionUtils.gserialized_to_shapely_point(geom, precision);
 	}
 
 
@@ -489,7 +601,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if left, False otherwise.
 	 */
@@ -505,7 +617,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or left, False otherwise.
 	 */
@@ -520,7 +632,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if right, False otherwise.
 	 */
@@ -537,7 +649,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or right, False otherwise.
 	 */
@@ -553,7 +665,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if below, False otherwise.
 	 */
@@ -568,7 +680,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or below, False otherwise.
 	 */
@@ -586,7 +698,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if above, False otherwise.
 	 */
@@ -602,7 +714,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or above, False otherwise.
 	 */
@@ -619,7 +731,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if front, False otherwise.
 	 */
@@ -637,7 +749,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or front, False otherwise.
 	 */
@@ -655,7 +767,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if behind, False otherwise.
 	 */
@@ -673,7 +785,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or behind, False otherwise.
 	 */
