@@ -1,12 +1,17 @@
 package types.basic.tpoint.tgeog;
 
 import functions.functions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import org.locationtech.jts.io.ParseException;
 import types.basic.tbool.TBool;
 import types.basic.tint.TIntInst;
 import types.basic.tint.TIntSeq;
 import types.basic.tint.TIntSeqSet;
 import types.basic.tpoint.tgeom.TGeomPoint;
+import types.collections.base.Set;
+import types.collections.geo.GeographySet;
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.Time;
@@ -19,6 +24,9 @@ import types.temporal.TemporalType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import utils.ConversionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -82,8 +90,27 @@ public interface TGeogPoint extends TPoint {
 		}
 	}
 
-
-
+	default GeographySet value_set(int precision) throws ParseException {
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+		List<TPoint> pointList= new ArrayList<>();
+		int count= intPointer.getInt(Integer.BYTES);
+		StringBuilder sb = null;
+		sb.append("{");
+		for(int i=0;i<count;i++) {
+			Point p= ConversionUtils.gserialized_to_shapely_point(resPointer.getPointer((long) i *Long.BYTES), precision);
+			sb.append(p);
+			if(i<count-1){
+				sb.append(", ");
+			}
+		}
+		sb.append("}");
+		System.out.println(sb.toString());
+		return new GeographySet(sb.toString());
+	}
 
     /* ------------------------- Conversions ---------------------------------- */
 
