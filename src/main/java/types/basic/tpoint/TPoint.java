@@ -1237,4 +1237,7 @@ public interface TPoint extends Serializable {
 //		STBox bbox= STBox.from_tpoint(this);
 //		tiles= bbox
 //	}
+	// implement the tile operation by pulling the latest meos.h and
+	// getting the new tile functions from it like stbox_space_time_tiles
+	// which is first used in STBox and then called here to make tiles
 }
