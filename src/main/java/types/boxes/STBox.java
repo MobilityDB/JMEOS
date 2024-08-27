@@ -1,5 +1,8 @@
 package types.boxes;
 
+import jnr.ffi.Memory;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
 import org.locationtech.jts.io.ParseException;
 import types.TemporalObject;
 import types.basic.tpoint.TPoint;
@@ -7,8 +10,12 @@ import types.collections.time.Time;
 import jnr.ffi.Pointer;
 import org.locationtech.jts.geom.Geometry;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
@@ -1210,9 +1217,191 @@ public class STBox implements Box {
 		return new tstzspan(functions.stbox_to_tstzspan(this._inner));
 	}
 
+	/* ------------------------- Splitting ----------------------------------- */
+/**
+        Returns a list of 4 (or 8 if `self`has Z dimension) :class:`STBox`
+        instances resulting from the quad  split of ``self``.
+<p>
+        Indices of returned array are as follows (back only present if Z
+        dimension is present):
+<p>
+           >>> #    (front)          (back)<br>
+           >>> # -------------   -------------<br>
+           >>> # |  2  |  3  |   |  6  |  7  |<br>
+           >>> # ------------- + -------------<br>
+           >>> # |  0  |  1  |   |  4  |  5  |<br>
+           >>> # -------------   -------------<br>
+<p>
+        Returns:<br>
+            A :class:`list` of :class:`STBox` instances.<br>
+<p>
+        MEOS Functions:<br>
+            stbox_quad_split
+*/
+	public List<STBox> quad_split_flat(){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		List<STBox> stBoxList= new ArrayList<>();
+		for(int i=0;i<count;i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			STBox stbox= new STBox(p);
+			stBoxList.add(stbox);
+		}
+		return stBoxList;
+	}
 
-//	@Override
-//	public tstzset to_period() {
-//		return null;
+	/**
+        Returns a 2D (YxX) or 3D (ZxYxX) list of :class:`STBox` instances
+        resulting from the quad split of ``self``.<p>
+
+        Indices of returned array are as follows:<p>
+
+           >>> #       (front)<br>
+           >>> # -------------------<br>
+           >>> # | [1][0] | [1][1] |<br>
+           >>> # -------------------<br>
+           >>> # | [0][0] | [0][1] |<br>
+           >>> # -------------------<br>
+	    <p>
+        If Z dimension is present:<br>
+
+           >>> #          (front)                      (back)<br>
+           >>> # -------------------------   -------------------------<br>
+           >>> # | [0][1][0] | [0][1][1] |   | [1][1][0] | [1][1][1] |<br>
+           >>> # ------------------------- + -------------------------<br>
+           >>> # | [0][0][0] | [0][0][1] |   | [1][0][0] | [1][0][1] |<br>
+           >>> # -------------------------   -------------------------<br>
+	    <p>
+
+        Returns:<br>
+            A 2D or 3D :class:`list` of :class:`STBox` instances.
+        <p>
+        MEOS Functions:<br>
+            stbox_quad_split
+
+    */
+	public List<List<List<STBox>>> quad_split() {
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer); // Populate boxes and count
+		List<STBox> boxes= new ArrayList<>();
+		for(int i=0;i<8;i++){
+			STBox stBox= new STBox(resPointer.getPointer(i*Long.BYTES));
+			boxes.add(stBox);
+		}
+
+		if (this.has_z()) {
+			// 3D case (ZxYxX)
+			List<List<List<STBox>>> result = new ArrayList<>();
+			// Front part
+			List<List<STBox>> front = new ArrayList<>();
+			front.add(List.of(boxes.get(0), boxes.get(1))); // [0][1][0], [0][1][1]
+			front.add(List.of(boxes.get(2), boxes.get(3))); // [0][0][0], [0][0][1]
+
+			// Back part
+			List<List<STBox>> back = new ArrayList<>();
+			back.add(List.of(boxes.get(4), boxes.get(5))); // [1][1][0], [1][1][1]
+			back.add(List.of(boxes.get(6), boxes.get(7))); // [1][0][0], [1][0][1]
+
+			result.add(front);
+			result.add(back);
+			return result;
+		} else {
+			// 2D case (YxX)
+			List<List<STBox>> result = new ArrayList<>();
+			result.add(List.of(boxes.get(0), boxes.get(1))); // [1][0], [1][1]
+			result.add(List.of(boxes.get(2), boxes.get(3))); // [0][0], [0][1]
+			return List.of(result);
+		}
+	}
+
+	/**
+        Returns a list of `STBox` instances representing the tiles of
+        ``self``.
+
+        Args:
+            size: The size of the spatial tiles. If the `STBox` instance has a
+                spatial dimension and this argument is not provided, the tiling
+                will be only temporal.
+            duration: The duration of the temporal tiles. If the `STBox`
+                instance has a time dimension and this argument is not
+                provided, the tiling will be only spatial.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            start: The start time of the temporal tiling. If not provided,
+                the start time used by default is Monday, January 3, 2000.
+
+        Returns:
+            A list of `STBox` instances.
+
+        MEOS Functions:
+            stbox_tile_list
+     */
+//	public List<STBox> tile(double size, Object duration, Geometry origin, Object start){
+//		double sz = Optional.of(size).orElse(
+//                (double) (Math.max(Math.max(xmax() - xmin(), ymax() - ymin()), has_z() ? zmax() - zmin() : 0) + 1)
+//        );
+//
+//		Pointer dt= null;
+//		if(duration instanceof Duration){
+//			dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+//		}
+//		else{
+//			if(duration instanceof String){
+//				dt= functions.pg_interval_in(duration.toString(), -1);
+//			}
+//			else dt = null;
+//		}
+//
+//		OffsetDateTime st= null;
+//		if(start instanceof LocalDateTime){
+//			st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);
+//		}
+//		else{
+//			if(start instanceof String){
+//				st= functions.pg_timestamptz_in(start.toString(), -1);
+//			}
+//			else{
+//				if(this.has_t()){
+//					st= functions.pg_timestamptz_in("2000-01-03", -1);
+//				}
+//				else{
+//					st= null;
+//				}
+//			}
+//		}
+//
+//		Pointer gs= null;
+//		if(origin!=null){
+//			gs= ConversionUtils.geo_to_gserialized(origin, this.geodetic());
+//		}
+//		else{
+//			if(this.geodetic()){
+//				gs= functions.pgis_geography_in("Point(0 0 0)", -1);
+//			}
+//			else{
+//				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+//			}
+//		}
+//
+//		// Create a JNR-FFI runtime instance
+//		Runtime runtime = Runtime.getSystemRuntime();
+//		// Allocate memory for an integer (4 bytes) but do not set a value
+//		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+//		Pointer resPointer= functions.stbox_space_time_tiles(this.get_inner(), sz, sz, sz, dt, gs, st);
+//		int count= intPointer.getInt(Integer.BYTES);
+//		List<STBox> stBoxes= new ArrayList<>();
+//		for(int i=0;i<count;i++){
+//			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+//			STBox s= new STBox(p);
+//			stBoxes.add(s);
+//		}
+//		return stBoxes;
 //	}
 }
