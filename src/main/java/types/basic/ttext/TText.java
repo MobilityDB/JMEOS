@@ -1,15 +1,25 @@
 package types.basic.ttext;
 
 import functions.functions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import org.locationtech.jts.io.ParseException;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
+import types.basic.tpoint.TPoint;
+import types.collections.base.Set;
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
+import utils.ConversionUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -75,6 +85,24 @@ public interface TText {
     }
 
 
+/**
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            ttext_from_mfjson
+*/
+    default TText from_mfjson(String mfjson){
+        Pointer result= functions.ttext_from_mfjson(mfjson);
+        return (TText) Factory.create_temporal(result, getCustomType(), getTemporalType());
+    }
+
+
     /* ------------------------- Output ---------------------------------- */
 
 
@@ -105,6 +133,61 @@ public interface TText {
 
     /* ------------------------- Accessors ---------------------------------- */
 
+    /**
+     Returns the set of unique values of the temporal string.
+
+     Returns:
+     A set of unique values.
+
+     MEOS Functions:
+     ttext_values
+     */
+
+    default Set<String> value_set(){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer resPointer= functions.ttext_values(this.getTextInner(), intPointer);
+        StringBuilder sb= null;
+        sb.append("{");
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0; i<count; i++){
+            Pointer res= resPointer.getPointer((long) i *Long.BYTES);
+            String resString= functions.text2cstring(res);
+            sb.append(resString);
+            if(i<count-1){
+                sb.append(", ");
+            }
+        }
+        sb.append("}");
+        return new Set<String>() {
+            @Override
+            public Pointer get_inner() {
+                return resPointer;
+            }
+
+            @Override
+            public Pointer createInner(Pointer inner) {
+                return inner;
+            }
+
+            @Override
+            public Pointer createStringInner(String str) {
+                return functions.ttext_in(str);
+            }
+
+            @Override
+            public String start_element() throws ParseException {
+                return functions.text2cstring(functions.ttext_min_value(getTextInner()));
+            }
+
+            @Override
+            public String end_element() throws ParseException {
+                return functions.text2cstring(functions.ttext_max_value(getTextInner()));
+            }
+        };
+    }
 
     /**
      * Returns the minimum value of the "this".
@@ -155,6 +238,58 @@ public interface TText {
         return functions.text2cstring(functions.ttext_end_value(getTextInner()));
     }
 
+
+ /**
+        Returns a new temporal string with the values of `self` converted to
+        upper case.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            ttext_upper
+*/
+    default TText upper(){
+        Pointer res= functions.ttext_upper(this.getTextInner());
+        return (TText) Factory.create_temporal(res, getCustomType(), getTemporalType());
+    }
+
+    /**
+            Returns a new temporal string with the values of `self` converted to
+            lower case.
+
+            Returns:
+                A new temporal string.
+
+            MEOS Functions:
+                ttext_lower
+    */
+    default TText lower(){
+        Pointer res= functions.ttext_lower(this.getTextInner());
+        return (TText) Factory.create_temporal(res, getCustomType(), getTemporalType());
+    }
+
+    /**
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: The moment to get the value.
+
+        Returns:
+            A string with the value of `self` at `timestamp`.
+
+        MEOS Functions:
+            ttext_value_at_timestamp
+    */
+
+    default String value_at_timestamp(LocalDateTime ts){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer textPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);
+        boolean result= functions.ttext_value_at_timestamptz(this.getTextInner(), ConversionUtils.datetimeToTimestampTz(ts), true, textPointer);
+        return functions.text2cstring(textPointer.getPointer(Long.BYTES));
+    }
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
 
@@ -587,8 +722,155 @@ public interface TText {
 
     /* ------------------------- Restrictions ---------------------------------- */
 
+    /**
+        Returns a new temporal string with the values of `self` restricted to
+        the time or value `other`.
 
+        Args:
+            other: Time or value to restrict to.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            ttext_at_value, temporal_at_timestamp, temporal_at_tstzset,
+            temporal_at_tstzspan, temporal_at_tstzspanset
+      */
+
+      private Pointer createPointerFromString(String str) {
+            // Get the runtime associated with the current MeosLibrary
+            Runtime runtime = Runtime.getSystemRuntime();
+
+            // Allocate memory for the string in native space and copy the string contents
+            Pointer pointer = Memory.allocate(Runtime.getRuntime(runtime), str.length()+1);
+            pointer.putString(0, str, str.length(), StandardCharsets.UTF_8);
+
+            return pointer;
+        }
+
+      default TText at(Object other) throws Exception {
+          Pointer res= null;
+          if(other instanceof String){
+              res= functions.ttext_at_value(this.getTextInner(), createPointerFromString((String) other));
+          }
+          else if(other instanceof List && ((List<?>) other).getFirst() instanceof String){
+              int count=0;
+              res=  functions.temporal_at_values(this.getTextInner(), functions.textset_make((Pointer) other, count));
+          }
+          else{
+              throw new Exception("type not supported");
+          }
+          return (TText) Factory.create_temporal(res, getCustomType(), getTemporalType());
+      }
+
+      /**
+        Returns a new temporal string with the values of `self` restricted to
+        the complement of the time or value `other`.
+
+        Args:
+            other: Time or value to restrict to the complement of.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            ttext_minus_value, temporal_minus_timestamp,
+            temporal_minus_tstzset, temporal_minus_tstzspan,
+            temporal_minus_tstzspanset
+       */
+
+      default TText minus(Object other) throws Exception {
+          Pointer res= null;
+          if(other instanceof String){
+              res= functions.ttext_minus_value(this.getTextInner(), createPointerFromString((String) other));
+          }
+          else if(other instanceof List && ((List<?>) other).getFirst() instanceof String){
+              int count=0;
+              res=  functions.temporal_minus_values(this.getTextInner(), functions.textset_make((Pointer) other, count));
+          }
+          else{
+              throw new Exception("type not supported");
+          }
+          return (TText) Factory.create_temporal(res, getCustomType(), getTemporalType());
+      }
 
     /* ------------------------- Text Operations ------------------------------ */
+
+    /**
+        Returns a new temporal string with the values of `self` concatenated
+        with the values of `other`.
+
+        Args:
+            other: Temporal string or string to concatenate.
+            other_before: If `True` the values of `other` are prepended to the
+            values of `self`.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            textcat_ttext_text, textcat_text_ttext, textcat_ttext_ttext
+
+     */
+    
+    default TText concatenate(Object other, boolean other_before) throws Exception {
+        Pointer res= null;
+        if(other instanceof String){
+            if(!other_before){
+                res= functions.textcat_ttext_text(this.getTextInner(), createPointerFromString((String) other));
+            }
+            else{
+                res= functions.textcat_text_ttext(createPointerFromString((String) other), this.getTextInner());
+            }
+        }
+        else if (other instanceof TText){
+            if(!other_before){
+                res= functions.textcat_ttext_ttext(this.getTextInner(), ((TText) other).getTextInner());
+            }
+            else{
+                res= functions.textcat_ttext_ttext(((TText) other).getTextInner(), this.getTextInner());
+            }
+        }
+        else{
+            throw new Exception("format not supported");
+        }
+        return (TText) Factory.create_temporal(res, getCustomType(), getTemporalType());
+    }
+
+
+/**
+        Returns a new temporal string with the values of `self` concatenated
+        with the values of `other`.
+
+        Args:
+            other: Temporal string or string to concatenate.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            textcat_ttext_text, textcat_text_ttext, textcat_ttext_ttext
+*/
+    default TText _add(Object other) throws Exception {
+        return this.concatenate(other, false);
+    }
+
+
+/**
+        Returns a new temporal string with the values of `other` concatenated
+        with the values of `self`.
+
+        Args:
+            other: Temporal string or string to concatenate.
+
+        Returns:
+            A new temporal string.
+
+        MEOS Functions:
+            textcat_ttext_text, textcat_text_ttext, textcat_ttext_ttext
+*/
+    default TText _radd(Object other) throws Exception {
+        return this.concatenate(other, true);
+    }
 
 }
