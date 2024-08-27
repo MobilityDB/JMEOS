@@ -872,5 +872,4 @@ public interface TText {
     default TText _radd(Object other) throws Exception {
         return this.concatenate(other, true);
     }
-
 }
