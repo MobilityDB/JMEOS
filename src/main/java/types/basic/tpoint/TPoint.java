@@ -29,7 +29,9 @@ import utils.Pair;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 /**
@@ -1240,4 +1242,138 @@ public interface TPoint extends Serializable {
 	// implement the tile operation by pulling the latest meos.h and
 	// getting the new tile functions from it like stbox_space_time_tiles
 	// which is first used in STBox and then called here to make tiles
+
+	/* ------------------------- Splitting Operations --------------------------- */
+
+    /**
+        Splits `self` into fragments with respect to space buckets
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal points.
+
+        MEOS Functions:
+            tpoint_value_split
+     */
+	private Pointer createEmptyPointerArray(Runtime runtime, int length) {
+		// Allocate memory for a list of integers
+		Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), length*Long.BYTES); // Adjust size as needed
+		return listPointer;
+	}
+
+	default List<Temporal> space_split(Float xsize, Float ysize, Float zsize, Geometry origin, boolean bitmatrix, boolean include_border){
+		Float ysz = (ysize != null) ? ysize : xsize;
+		Float zsz = (zsize != null) ? zsize : xsize;
+		Pointer gs= null;
+		boolean isTGeogPoint= this instanceof TGeogPoint;
+		if(origin != null){
+			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);
+		}
+        else{
+			if(isTGeogPoint){
+				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+			}
+			else{
+				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+			}
+		}
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		int length= runtime.longSize();
+		Pointer space_buckets = createEmptyPointerArray(runtime, length);
+		Pointer resPointer= functions.tpoint_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		List<Temporal> tempList= new ArrayList<>();
+		for(int i=0;i<count;i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+            tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
+		}
+		return tempList;
+	}
+
+   /**
+        Splits `self` into fragments with respect to space and tstzspan buckets.
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            duration: Duration of the tstzspan buckets.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal floats.
+
+        MEOS Functions:
+            tfloat_value_time_split
+    */
+	default List<Temporal> space_time_split(Float xsize, Object duration, Float ysize, Float zsize, Geometry origin, Object time_start, boolean bitmatrix, boolean include_border){
+		Float ysz = (ysize != null) ? ysize : xsize;
+		Float zsz = (zsize != null) ? zsize : xsize;
+		Pointer dt=  null;
+		if(duration instanceof Duration){
+			dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+		}
+		else{
+			dt= functions.pg_interval_in(duration.toString(), -1);
+		}
+
+		Pointer gs= null;
+		boolean isTGeogPoint= this instanceof TGeogPoint;
+		if(origin != null){
+			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);
+		}
+		else{
+			if(isTGeogPoint){
+				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+			}
+			else{
+				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+			}
+		}
+
+		OffsetDateTime st= null;
+		if(time_start!=null){
+			st= functions.pg_timestamptz_in("2000-01-03", -1);
+		}
+		else{
+			if(time_start instanceof LocalDateTime){
+				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+			}
+			else{
+				st= functions.pg_timestamptz_in(time_start.toString(), -1);
+			}
+		}
+
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		int length= runtime.longSize();
+		Pointer space_buckets = createEmptyPointerArray(runtime, length);
+		Pointer time_buckets = createEmptyPointerArray(runtime, length);
+		Pointer resPointer= functions.tpoint_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border, space_buckets, time_buckets, intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		List<Temporal> tempList= new ArrayList<>();
+		for(int i=0;i<count;i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
+		}
+		return tempList;
+	}
 }
