@@ -15,6 +15,8 @@ import types.collections.time.tstzspanset;
 import types.temporal.*;
 import utils.ConversionUtils;
 import types.collections.number.IntSet;
+
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
 
@@ -69,16 +71,17 @@ public interface TInt extends TNumber {
 	 * @param interpolation Interpolation of the temporal int.
 	 * @return A new temporal float.
 	 */
-	static TInt from_base_time(int value, Object base, TInterpolation interpolation){
+	static TInt from_base_time(int value, Object base, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		if (base instanceof LocalDateTime){
 			return new TIntInst(functions.tintinst_make(value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) base)));
 		}
 		if (base instanceof tstzspanset) {
-			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
+			return new TIntSeqSet(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
 		} else if (base instanceof tstzset) {
 			return new TIntSeq(functions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));
 		} else if (base instanceof tstzspan) {
-			return new TIntSeqSet(functions.tintseq_from_base_tstzspan(value, ((tstzspan) base).get_inner()));
+			tstzspanset ss= new tstzspanset(((tstzspan) base).to_spanset(tstzspanset.class).get_inner());
+			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ss.get_inner()));
 		}
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
 	}
