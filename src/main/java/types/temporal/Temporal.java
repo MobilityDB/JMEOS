@@ -80,7 +80,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
     }
 
-/*
+/**
         Returns a temporal object from WKB bytes.
 
         Args:
@@ -98,7 +98,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
     }
 
-/*
+/**
         Returns the temporal object as a hex-encoded WKB string.
 
         Returns:
@@ -113,7 +113,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return result[0];
     }
 
-/*
+/**
         Returns the temporal object as a hex-encoded WKB string.
 
         Returns:
@@ -137,7 +137,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return A temporal object from a MF-JSON string.
      */
 //    public Temporal from_mfjson(String str){
-//        Pointer result = functions.temporal_as_=(str);
+//        Pointer result = functions.temporal_as_(str);
 //        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
 //    }
 
@@ -179,7 +179,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return this.as_mfjson(true,3,6,null);
     }
 
-    /*
+    /**
             Returns a temporal object that is the result of merging the given
             temporal objects.
 
@@ -216,7 +216,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
-    /*
+    /**
             Returns a temporal object that is the result of merging the given
             temporal objects.
 
@@ -408,8 +408,8 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the number of timestamps in "this".
      */
     public int num_timestamps(){
-        System.out.println("ici");
-        System.out.println(this.inner);
+//        System.out.println("ici");
+//        System.out.println(this.toString());
         return functions.temporal_num_timestamps(this.inner);
     }
 
@@ -706,8 +706,8 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequence}.
      */
     public Temporal to_sequence(TInterpolation interpolation){
+        System.out.println(interpolation.toString());
         return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE);
-
     }
 
     /**
