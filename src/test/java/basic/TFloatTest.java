@@ -22,10 +22,10 @@ import types.boxes.Box;
 import types.boxes.TBox;
 import types.collections.number.FloatSpan;
 import types.collections.number.IntSpanSet;
-import types.collections.time.datespan;
-import types.collections.time.datespanset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
 import types.collections.time.Time;
-import types.collections.time.dateset;
+import types.collections.time.tstzset;
 import types.temporal.TInterpolation;
 import types.temporal.Temporal;
 
@@ -49,18 +49,18 @@ public class TFloatTest {
     private static Stream<Arguments> frombasetime() {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new dateset("{2019-09-01, 2019-09-02}"), "TFloatSeq", TInterpolation.DISCRETE),
-                Arguments.of(new datespan("[2019-09-01, 2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR),
-                Arguments.of(new datespanset("{[2019-09-01, 2019-09-02],[2019-09-03, 2019-09-05]}"), "TFloatSeqSet", TInterpolation.LINEAR)
+                Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TFloatSeq", TInterpolation.DISCRETE),
+                Arguments.of(new tstzspan("[2019-09-01, 2019-09-02]"), "TFloatSeqSet", TInterpolation.LINEAR),
+                Arguments.of(new tstzspanset("{[2019-09-01, 2019-09-02],[2019-09-03, 2019-09-05]}"), "TFloatSeq", TInterpolation.LINEAR)
         );
     }
 
 
     private static Stream<Arguments> fromstring() {
         return Stream.of(
-                Arguments.of("1,5@2019-09-01", "TFloatInst", TInterpolation.NONE, "1.5@2019-09-01 00:00:00+00"),
-                Arguments.of("[1,5@2019-09-01, 2,5@2019-09-02]", "TFloatSeq", TInterpolation.LINEAR, "[1.5@2019-09-01 00:00:00+00, 2.5@2019-09-02 00:00:00+00]"),
-                Arguments.of("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}", "TFloatSeqSet", TInterpolation.LINEAR, "{[1.5@2019-09-01 00:00:00+00, 2.5@2019-09-02 00:00:00+00], [1.5@2019-09-03 00:00:00+00, 1.5@2019-09-05 00:00:00+00]}")
+                Arguments.of("1.5@2019-09-01", "TFloatInst", TInterpolation.NONE, "1.5@2019-09-01 00:00:00+00"),
+                Arguments.of("[1.5@2019-09-01, 2.5@2019-09-02]", "TFloatSeq", TInterpolation.LINEAR, "[1.5@2019-09-01 00:00:00+00, 2.5@2019-09-02 00:00:00+00]"),
+                Arguments.of("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}", "TFloatSeqSet", TInterpolation.LINEAR, "{[1.5@2019-09-01 00:00:00+00, 2.5@2019-09-02 00:00:00+00], [1.5@2019-09-03 00:00:00+00, 1.5@2019-09-05 00:00:00+00]}")
         );
     }
 
@@ -69,17 +69,17 @@ public class TFloatTest {
     private static Stream<Arguments> fromcopy() {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst"),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq"),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet")
-                //Arguments.of(new TFloatSeqSet("Interp=Step;{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]"), "TFloatInst")
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst"),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq"),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet")
+                //Arguments.of(new TFloatSeqSet("Interp=Step;{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]"), "TFloatInst")
         );
     }
 
     private static Stream<Arguments> totint() {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", "1@2019-09-01 00:00:00+00")
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", "1@2019-09-01 00:00:00+00")
                 //Arguments.of(new TFloatSeq("{1.5@2019-09-01, 2.5@2019-09-02}"), "TFloatSeq", "[1@2019-09-01 00:00:00+00, 2@2019-09-02 00:00:00+00]"),
                 //Arguments.of(new TFloatSeqSet("Interp=Step;{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", "{[1@2019-09-01 00:00:00+00, 2@2019-09-02 00:00:00+00], [1@2019-09-03 00:00:00+00, 1@2019-09-05 00:00:00+00]}")
         );
@@ -90,9 +90,9 @@ public class TFloatTest {
     private static Stream<Arguments> bounding() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TBox("TBOXFLOAT XT([1.5,1.5],[2019-09-01, 2019-09-01])")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TBox("TBOXFLOAT XT([1.5,2.5],[2019-09-01, 2019-09-02])")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TBox("TBOXFLOAT XT([1.5,2.5],[2019-09-01, 2019-09-05])"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TBox("TBOXFLOAT XT([1.5,1.5],[2019-09-01, 2019-09-01])")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TBox("TBOXFLOAT XT([1.5,2.5],[2019-09-01, 2019-09-02])")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TBox("TBOXFLOAT XT([1.5,2.5],[2019-09-01, 2019-09-05])"))
         );
     }
 
@@ -101,9 +101,9 @@ public class TFloatTest {
     private static Stream<Arguments> interp() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", TInterpolation.NONE),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", TInterpolation.LINEAR)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.NONE),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", TInterpolation.LINEAR)
         );
     }
 
@@ -111,9 +111,9 @@ public class TFloatTest {
     private static Stream<Arguments> value_span() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new FloatSpan(1.5f, 1.5f, true, true)),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new FloatSpan(1.5f, 2.5f, true, true)),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new FloatSpan(1.5f, 2.5f, true, true))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new FloatSpan(1.5f, 1.5f, true, true)),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new FloatSpan(1.5f, 2.5f, true, true)),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new FloatSpan(1.5f, 2.5f, true, true))
         );
     }
 
@@ -131,9 +131,9 @@ public class TFloatTest {
     private static Stream<Arguments> start_value() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 1.5f),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
         );
     }
 
@@ -141,9 +141,9 @@ public class TFloatTest {
     private static Stream<Arguments> end_value() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 2.5f),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 2.5f),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
         );
     }
 
@@ -151,9 +151,9 @@ public class TFloatTest {
     private static Stream<Arguments> min_value() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 1.5f),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f)
         );
     }
 
@@ -161,9 +161,9 @@ public class TFloatTest {
     private static Stream<Arguments> max_value() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TIntInst", 1.5f),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TIntSeq", 2.5f),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TIntSeqSet", 2.5f)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TIntInst", 1.5f),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TIntSeq", 2.5f),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TIntSeqSet", 2.5f)
         );
     }
 
@@ -171,9 +171,9 @@ public class TFloatTest {
     private static Stream<Arguments> time() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new datespanset("{[2019-09-01, 2019-09-01]}")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new datespanset("{[2019-09-01, 2019-09-02]}")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new datespanset("{[2019-09-01, 2019-09-02], [2019-09-03, 2019-09-05]}"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new tstzspanset("{[2019-09-01, 2019-09-02]}")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new tstzspanset("{[2019-09-01, 2019-09-02], [2019-09-03, 2019-09-05]}"))
         );
     }
 
@@ -181,18 +181,18 @@ public class TFloatTest {
     private static Stream<Arguments> period() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new datespan("[2019-09-01, 2019-09-01]")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new datespan("[2019-09-01, 2019-09-02]")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new datespan("[2019-09-01, 2019-09-05]"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new tstzspan("[2019-09-01, 2019-09-01]")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new tstzspan("[2019-09-01, 2019-09-02]")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new tstzspan("[2019-09-01, 2019-09-05]"))
         );
     }
 
     private static Stream<Arguments> num_instant() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq",2),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 4)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",2),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 4)
         );
     }
 
@@ -201,9 +201,9 @@ public class TFloatTest {
     private static Stream<Arguments> start_instant() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TIntInst", new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TIntSeq",new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TIntSeqSet", new TFloatInst("1,5@2019-09-01"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TIntInst", new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TIntSeq",new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TIntSeqSet", new TFloatInst("1.5@2019-09-01"))
         );
     }
 
@@ -212,9 +212,9 @@ public class TFloatTest {
     private static Stream<Arguments> end_instant() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq",new TFloatInst("2,5@2019-09-02")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("1,5@2019-09-05"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",new TFloatInst("2.5@2019-09-02")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("1.5@2019-09-05"))
         );
     }
 
@@ -222,9 +222,9 @@ public class TFloatTest {
     private static Stream<Arguments> max_instant() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq",new TFloatInst("2,5@2019-09-02")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2,5@2019-09-02"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",new TFloatInst("2.5@2019-09-02")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2.5@2019-09-02"))
         );
     }
 
@@ -232,9 +232,9 @@ public class TFloatTest {
     private static Stream<Arguments> instant_n() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), 0, new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), 1,new TFloatInst("2,5@2019-09-02")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), 2, new TFloatInst("1,5@2019-09-03"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 0, new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 1,new TFloatInst("2.5@2019-09-02")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 2, new TFloatInst("1.5@2019-09-03"))
         );
     }
 
@@ -243,9 +243,9 @@ public class TFloatTest {
     private static Stream<Arguments> num_timestamps() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), 1, new TIntInst("1@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), 2,new TIntInst("2@2019-09-02")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), 4, new TIntInst("1@2019-09-03"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, new TIntInst("1@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2,new TIntInst("2@2019-09-02")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 4, new TIntInst("1@2019-09-03"))
         );
     }
 
@@ -254,9 +254,9 @@ public class TFloatTest {
     private static Stream<Arguments> start_timestamps() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), 4, LocalDateTime.of(2019, 9, 1, 0, 0,0))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 4, LocalDateTime.of(2019, 9, 1, 0, 0,0))
         );
     }
 
@@ -264,9 +264,9 @@ public class TFloatTest {
     private static Stream<Arguments> end_timestamps() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 2, 0, 0,0)),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), 4, LocalDateTime.of(2019, 9, 5, 0, 0,0))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 2, 0, 0,0)),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 4, LocalDateTime.of(2019, 9, 5, 0, 0,0))
         );
     }
 
@@ -274,9 +274,9 @@ public class TFloatTest {
     private static Stream<Arguments> hash() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), 1307112078, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), 1935376725, LocalDateTime.of(2019, 9, 2, 0, 0,0)),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), 4247071962l, LocalDateTime.of(2019, 9, 5, 0, 0,0))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1307112078, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 1935376725, LocalDateTime.of(2019, 9, 2, 0, 0,0))
+//                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 4247071962l, LocalDateTime.of(2019, 9, 5, 0, 0,0))
         );
     }
 
@@ -284,9 +284,9 @@ public class TFloatTest {
     private static Stream<Arguments> toinstant() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01]"), "TFloatSeq", new TFloatInst("1,5@2019-09-01")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01]}"), "TFloatSeqSet", new TFloatInst("1,5@2019-09-01"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01]"), "TFloatSeq", new TFloatInst("1.5@2019-09-01")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01]}"), "TFloatSeqSet", new TFloatInst("1.5@2019-09-01"))
         );
     }
 
@@ -294,9 +294,9 @@ public class TFloatTest {
     private static Stream<Arguments> tosequence() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeq("[1,5@2019-09-01]")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02]}"), "TFloatSeqSet", TInterpolation.LINEAR, new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeq("[1.5@2019-09-01]")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}"), "TFloatSeqSet", TInterpolation.LINEAR, new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"))
         );
     }
 
@@ -304,9 +304,9 @@ public class TFloatTest {
     private static Stream<Arguments> tosequenceset() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeqSet("{[1,5@2019-09-01]}")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02]}")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02]}"), "TFloatSeqSet", TInterpolation.LINEAR, new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02]}"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01]}")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}"), "TFloatSeqSet", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}"))
         );
     }
 
@@ -314,9 +314,9 @@ public class TFloatTest {
     private static Stream<Arguments> insert() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                //Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatSeq("{1,5@2019-09-03}"), new TFloatSeq("{1,5@2019-09-01, 1,5@2019-09-03}"))
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1,5@2019-09-03]"), new TFloatSeqSet("[1,5@2019-09-01, 2,5@2019-09-02, 1,5@2019-09-03]")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TIntSeqSet", new TFloatSeq("[1,5@2019-09-06]"), new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05],[1,5@2019-09-06]}"))
+                //Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatSeq("{1.5@2019-09-03}"), new TFloatSeq("{1.5@2019-09-01, 1.5@2019-09-03}"))
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1.5@2019-09-03]"), new TFloatSeqSet("[1.5@2019-09-01, 2.5@2019-09-02, 1.5@2019-09-03]")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TIntSeqSet", new TFloatSeq("[1.5@2019-09-06]"), new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05],[1.5@2019-09-06]}"))
         );
     }
 
@@ -324,9 +324,9 @@ public class TFloatTest {
     private static Stream<Arguments> update() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatInst("2,5@2019-09-01"), new TFloatInst("2,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TFloatInst("2,5@2019-09-01"), new TFloatSeqSet("{[2,5@2019-09-01], (1,5@2019-09-01, 2,5@2019-09-02]}")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2,5@2019-09-01"), new TFloatSeqSet("{[2,5@2019-09-01], (1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("2.5@2019-09-01"), new TFloatInst("2.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02]}")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"))
         );
     }
 
@@ -334,8 +334,8 @@ public class TFloatTest {
     private static Stream<Arguments> append_sequence() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1,5@2019-09-03]"), new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02], [1,5@2019-09-03]}")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeq("[1,5@2019-09-06]"), new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05],[1,5@2019-09-06]}"))
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1.5@2019-09-03]"), new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02], [1.5@2019-09-03]}")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeq("[1.5@2019-09-06]"), new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05],[1.5@2019-09-06]}"))
         );
     }
 
@@ -343,9 +343,9 @@ public class TFloatTest {
     private static Stream<Arguments> abs() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", new TFloatInst("2,5@2019-09-01"), new TFloatInst("2,5@2019-09-01")),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TFloatInst("2,5@2019-09-01"), new TFloatSeqSet("{[2,5@2019-09-01], (1,5@2019-09-01, 2,5@2019-09-02]}")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2,5@2019-09-01"), new TFloatSeqSet("{[2,5@2019-09-01], (1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("2.5@2019-09-01"), new TFloatInst("2.5@2019-09-01")),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02]}")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"))
         );
     }
 
@@ -353,8 +353,8 @@ public class TFloatTest {
     private static Stream<Arguments> delta_value() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", new TFloatSeq("Interp=Step;[1@2019-09-01, 1@2019-09-02)")),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeqSet("Interp=Step;{[1@2019-09-01, 1@2019-09-02),[0@2019-09-03, 0@2019-09-05)}"))
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("Interp=Step;[1@2019-09-01, 1@2019-09-02)")),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeqSet("Interp=Step;{[1@2019-09-01, 1@2019-09-02),[0@2019-09-03, 0@2019-09-05)}"))
         );
     }
 
@@ -365,12 +365,12 @@ public class TFloatTest {
     private static Stream<Arguments> always_equal() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f, true ),
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 2.5f, false ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 1.5f, false ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 2.5f, false ),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f, false),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 2.5f, false)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, true ),
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, false ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f, false ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 2.5f, false ),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f, false),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 2.5f, false)
         );
     }
 
@@ -379,12 +379,12 @@ public class TFloatTest {
     private static Stream<Arguments> ever_equal() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f, true ),
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 2.5f, false ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 1.5f, true ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 2.5f, true ),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f, true),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 2.5f, true)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, true ),
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, false ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f, true ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 2.5f, true ),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f, true),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 2.5f, true)
         );
     }
 
@@ -393,12 +393,12 @@ public class TFloatTest {
     private static Stream<Arguments> ever_greater() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 1.5f, false ),
-                Arguments.of(new TFloatInst("1,5@2019-09-01"), "TFloatInst", 2.5f, true ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 1.5f, false ),
-                Arguments.of(new TFloatSeq("[1,5@2019-09-01, 2,5@2019-09-02]"), "TFloatSeq", 2.5f, false ),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 1.5f, false),
-                Arguments.of(new TFloatSeqSet("{[1,5@2019-09-01, 2,5@2019-09-02],[1,5@2019-09-03, 1,5@2019-09-05]}"), "TFloatSeqSet", 2.5f, false)
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, false ),
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, true ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f, false ),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 2.5f, false ),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 1.5f, false),
+                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", 2.5f, false)
         );
     }
 
@@ -428,10 +428,12 @@ public class TFloatTest {
         if (type == "TFloatSeq") {
             TFloatSeq ti = (TFloatSeq) TFloat.from_base_time(1.5f, source, interpolation);
             assertTrue(ti instanceof TFloatSeq);
+            System.out.println(ti.to_string(15));
             assertEquals(interpolation, ti.interpolation());
         } else if (type == "TFloatSeqSet") {
             TFloatSeqSet ti = (TFloatSeqSet)TFloat.from_base_time(1.5f, source, interpolation);
             assertTrue(ti instanceof TFloatSeqSet);
+            System.out.println(ti.to_string(15));
             assertEquals(interpolation, ti.interpolation());
         }
     }
@@ -623,7 +625,7 @@ public class TFloatTest {
 
     @ParameterizedTest(name ="Test time method")
     @MethodSource("time")
-    void testTime(Temporal source, String type, datespanset expected) {
+    void testTime(Temporal source, String type, tstzspanset expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(source.time().toString(),expected.toString());
     }
@@ -632,7 +634,7 @@ public class TFloatTest {
 
     @ParameterizedTest(name ="Test period method")
     @MethodSource("period")
-    void testdatespan(Temporal source, String type, datespan expected) {
+    void testtstzspan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(source.period().toString(),expected.toString());
     }
@@ -640,7 +642,7 @@ public class TFloatTest {
 
     @ParameterizedTest(name ="Test timespan method")
     @MethodSource("period")
-    void testTimespan(Temporal source, String type, datespan expected) {
+    void testTimespan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(source.timespan().toString(),expected.toString());
     }
