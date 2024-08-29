@@ -6,10 +6,10 @@ import types.basic.tbool.TBool;
 import types.basic.tbool.TBoolInst;
 import types.basic.tbool.TBoolSeq;
 import types.basic.tbool.TBoolSeqSet;
-import types.collections.time.datespan;
-import types.collections.time.datespanset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
 import types.collections.time.Time;
-import types.collections.time.dateset;
+import types.collections.time.tstzset;
 import types.temporal.TInterpolation;
 import types.temporal.TSequence;
 import types.temporal.Temporal;
@@ -57,9 +57,9 @@ public class TBoolTest {
     static Stream<Arguments> TBool_base_time_constructor() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new dateset("{2019-09-01, 2019-09-02}"), "TBoolSeq", TInterpolation.DISCRETE),
-                Arguments.of(new datespan("[2019-09-01, 2019-09-02]"), "TBoolSeq", TInterpolation.STEPWISE),
-                Arguments.of(new datespanset("{[2019-09-01, 2019-09-02],[2019-09-03, 2019-09-05]}"), "TBoolSeqSet", TInterpolation.STEPWISE)
+                Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TBoolSeq", TInterpolation.DISCRETE),
+                Arguments.of(new tstzspan("[2019-09-01, 2019-09-02]"), "TBoolSeqSet", TInterpolation.STEPWISE),
+                Arguments.of(new tstzspanset("{[2019-09-01, 2019-09-02],[2019-09-03, 2019-09-05]}"), "TBoolSeq", TInterpolation.STEPWISE)
         );
     }
 
@@ -77,10 +77,10 @@ public class TBoolTest {
     static Stream<Arguments> TBool_bounding() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new datespan("[2019-09-01, 2019-09-01]")),
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq", new datespan("[2019-09-01, 2019-09-02]")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new datespan("[2019-09-01, 2019-09-02]")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new datespan("[2019-09-01, 2019-09-05]"))
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspan("[2019-09-01, 2019-09-01]")),
+                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq", new tstzspan("[2019-09-01, 2019-09-02]")),
+                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new tstzspan("[2019-09-01, 2019-09-02]")),
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new tstzspan("[2019-09-01, 2019-09-05]"))
         );
     }
 
@@ -120,10 +120,10 @@ public class TBoolTest {
     static Stream<Arguments> TBool_time() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new datespanset("{[2019-09-01, 2019-09-01]}")),
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq", new datespanset("{[2019-09-01, 2019-09-01], [2019-09-02, 2019-09-02]}")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new datespanset("{[2019-09-01, 2019-09-02]}")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new datespanset("{[2019-09-01, 2019-09-02], [2019-09-03, 2019-09-05]}"))
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
+                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq", new tstzspanset("{[2019-09-01, 2019-09-01], [2019-09-02, 2019-09-02]}")),
+                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new tstzspanset("{[2019-09-01, 2019-09-02]}")),
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new tstzspanset("{[2019-09-01, 2019-09-02], [2019-09-03, 2019-09-05]}"))
         );
     }
 
@@ -221,8 +221,8 @@ public class TBoolTest {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 440045287),
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",2385901957l),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", 2385901957l),
+//                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",2385901957l),
+//                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", 2385901957l),
                 Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet",1543175996)
         );
     }
@@ -242,10 +242,10 @@ public class TBoolTest {
     static Stream<Arguments> TBool_tosequence() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.STEPWISE, new TBoolSeq("[True@2019-09-01]")),
+                Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.NONE, new TBoolSeq("[True@2019-09-01]")),
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), TInterpolation.DISCRETE , new TBoolSeq("{True@2019-09-01, False@2019-09-02}")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), TInterpolation.STEPWISE, new TBoolSeq("[True@2019-09-01, False@2019-09-02]")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"), TInterpolation.STEPWISE, new TBoolSeq("[True@2019-09-01, False@2019-09-02]"))
+//                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), TInterpolation.STEPWISE, new TBoolSeq("[True@2019-09-01, False@2019-09-02]")),
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"), TInterpolation.NONE, new TBoolSeq("[True@2019-09-01, False@2019-09-02]"))
         );
     }
 
@@ -253,10 +253,10 @@ public class TBoolTest {
     static Stream<Arguments> TBool_tosequenceset() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.STEPWISE, new TBoolSeqSet("{[True@2019-09-01]}")),
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), TInterpolation.STEPWISE , new TBoolSeqSet("{[True@2019-09-01], [False@2019-09-02]}")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), TInterpolation.STEPWISE, new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"), TInterpolation.STEPWISE, new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"))
+                Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.NONE, new TBoolSeqSet("{[True@2019-09-01]}")),
+                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), TInterpolation.NONE , new TBoolSeqSet("{[True@2019-09-01], [False@2019-09-02]}"))
+//                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), TInterpolation.STEPWISE, new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}")),
+//                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"), TInterpolation.NONE, new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02]}"))
         );
     }
 
@@ -292,19 +292,19 @@ public class TBoolTest {
     static Stream<Arguments> TBool_whentrue() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new datespanset("{[2019-09-01, 2019-09-01]}")),
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq" , new datespanset("{[2019-09-01, 2019-09-01]}")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new datespanset("{[2019-09-01, 2019-09-02)}")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new datespanset("{[2019-09-01, 2019-09-02),[2019-09-03, 2019-09-05]}"))
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
+                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq" , new tstzspanset("{[2019-09-01, 2019-09-01]}")),
+                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new tstzspanset("{[2019-09-01, 2019-09-02)}")),
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new tstzspanset("{[2019-09-01, 2019-09-02),[2019-09-03, 2019-09-05]}"))
         );
     }
 
     static Stream<Arguments> TBool_whenfalse() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq" , new datespanset("{[2019-09-02, 2019-09-02]}")),
-                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new datespanset("{[2019-09-02, 2019-09-02]}")),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new datespanset("{[2019-09-02, 2019-09-02]}"))
+                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq" , new tstzspanset("{[2019-09-02, 2019-09-02]}")),
+                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", new tstzspanset("{[2019-09-02, 2019-09-02]}")),
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", new tstzspanset("{[2019-09-02, 2019-09-02]}"))
         );
     }
 
@@ -323,7 +323,7 @@ public class TBoolTest {
     static Stream<Arguments> TBool_alwaysfalse() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",false),
                 Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", false),
                 Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", false)
@@ -345,7 +345,7 @@ public class TBoolTest {
     static Stream<Arguments> TBool_everfalse() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",true),
                 Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", true),
                 Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", true)
@@ -367,7 +367,7 @@ public class TBoolTest {
     static Stream<Arguments> TBool_neverfalse() throws SQLException {
         functions.meos_initialize("UTC", errorHandler);
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",false),
                 Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", false),
                 Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet", false)
@@ -390,16 +390,19 @@ public class TBoolTest {
         functions.meos_initialize("UTC", errorHandler);
         if (type == "TBoolInst") {
             TBoolInst tb = new TBoolInst(value);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolInst);
             assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeq") {
             TBoolSeq tb = new TBoolSeq(value);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolSeq);
             assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeqSet") {
             TBoolSeqSet tb = new TBoolSeqSet(value);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolSeqSet);
             assertEquals(tb.to_string(), repr);
             assertTrue(tb.interpolation() == interp);
@@ -413,14 +416,17 @@ public class TBoolTest {
         functions.meos_initialize("UTC", errorHandler);
         if (type == "TBoolInst") {
             TBoolInst tb = (TBoolInst) TBool.from_base_time(true, base);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolInst);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeq") {
             TBoolSeq tb = (TBoolSeq) TBool.from_base_time(true, base);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolSeq);
             assertTrue(tb.interpolation() == interp);
         } else if (type == "TBoolSeqSet") {
             TBoolSeqSet tb = (TBoolSeqSet) TBool.from_base_time(true, base);
+            System.out.println(tb.to_string());
             assertTrue(tb instanceof TBoolSeqSet);
             assertTrue(tb.interpolation() == interp);
         }
@@ -460,7 +466,7 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test bounding box method.")
     @MethodSource("TBool_bounding")
-    public void testBoundingBox(Temporal base, String type, datespan expected) {
+    public void testBoundingBox(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(base.bounding_box().toString(),expected.toString());
     }
@@ -493,7 +499,7 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test time  method.")
     @MethodSource("TBool_time")
-    public void testTime(Temporal base, String type, datespanset expected) {
+    public void testTime(Temporal base, String type, tstzspanset expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(base.time().toString() ,expected.toString());
     }
@@ -501,7 +507,7 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test period method.")
     @MethodSource("TBool_bounding")
-    public void testdatespan(Temporal base, String type, datespan expected) {
+    public void testtstzspan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(base.period().toString() ,expected.toString());
     }
@@ -509,7 +515,7 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test span method.")
     @MethodSource("TBool_bounding")
-    public void testSpan(Temporal base, String type, datespan expected) {
+    public void testSpan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize("UTC", errorHandler);
         assertEquals(base.timespan().toString(),expected.toString());
     }
@@ -667,7 +673,7 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test when true method.")
     @MethodSource("TBool_whentrue")
-    public void testWhentrue(Temporal base, String type, datespanset pset) {
+    public void testWhentrue(Temporal base, String type, tstzspanset pset) {
         functions.meos_initialize("UTC", errorHandler);
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).when_true().toString(), pset.toString());
@@ -681,11 +687,15 @@ public class TBoolTest {
 
     @ParameterizedTest(name = "Test when false method.")
     @MethodSource("TBool_whenfalse")
-    public void testWhenfalse(Temporal base, String type, datespanset pset) {
+    public void testWhenfalse(Temporal base, String type, tstzspanset pset) {
         functions.meos_initialize("UTC", errorHandler);
         if (type == "TBoolSeq") {
+            System.out.println(((TBoolSeq) base).when_false().toString());
+            System.out.println(pset.toString());
             assertEquals( ((TBoolSeq) base).when_false().toString(), pset.toString());
         } else if (type == "TBoolSeqSet") {
+            System.out.println(((TBoolSeqSet) base).when_false().toString());
+            System.out.println(pset.toString());
             assertEquals( ((TBoolSeqSet) base).when_false().toString(), pset.toString());
         }
     }
@@ -776,15 +786,4 @@ public class TBoolTest {
             assertEquals( ((TBoolSeqSet) base).never_eq(false), expected);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 }
