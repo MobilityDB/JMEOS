@@ -18,20 +18,20 @@ import java.util.Objects;
 import functions.functions;
 import utils.ConversionUtils;
 
-/*
-    Class for representing lists of disjoint tstzspans.
+/**
+    Class for representing lists of disjoint tstzspans.<p>
 
     :class:``DateSpanSet`` objects can be created with a single argument of type string
-    as in MobilityDB.
+    as in MobilityDB.<p>
 
-        >>> DateSpanSet(string='{[2019-09-08, 2019-09-10], [2019-09-11, 2019-09-12]}')
+        >>> DateSpanSet(string='{[2019-09-08, 2019-09-10], [2019-09-11, 2019-09-12]}')<p>
 
-    Another possibility is to give a list specifying the composing
-    tstzspans, which can be instances  of :class:``str`` or :class:``DateSpan``.
-    The composing datespans must be given in increasing order.
+    Another possibility is to give a list specifying the composing<br>
+    tstzspans, which can be instances  of :class:``str`` or :class:``DateSpan``.<br>
+    The composing datespans must be given in increasing order.<p>
 
-        >>> DateSpanSet(span_list=['[2019-09-08, 2019-09-10]', '[2019-09-11, 2019-09-12]'])
-        >>> DateSpanSet(span_list=[TsTzSpan('[2019-09-08, 2019-09-10]'), TsTzSpan('[2019-09-11, 2019-09-12]')])
+        >>> DateSpanSet(span_list=['[2019-09-08, 2019-09-10]', '[2019-09-11, 2019-09-12]'])<br>
+        >>> DateSpanSet(span_list=[TsTzSpan('[2019-09-08, 2019-09-10]'), TsTzSpan('[2019-09-11, 2019-09-12]')])<p>
     @author ARIJIT SAMAL
 */
 
@@ -88,7 +88,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
         _inner = functions.datespanset_in(sb.toString());
     }
 
-/*
+/**
         Returns a :class:`DateSpanSet` set containing ``self``.
 
         Returns:
@@ -102,7 +102,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
         return super.to_span(datespan.class);
     }
 
-/*
+/**
         Returns a :class:`TsTzSpan equivalent to ``self``.
 
         Returns:
@@ -116,7 +116,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
         return new tstzspanset(functions.datespanset_to_tstzspanset(this._inner));
     }
 
-    /*
+    /**
             Returns the duration of ``self``.
 
             Returns:
@@ -157,7 +157,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
         return date_adt_to_date(functions.datespanset_end_date(this._inner));
     }
 
-/*
+/**
         Returns the n-th date in ``self``.
         Returns:
             A :class:`date` instance
@@ -181,7 +181,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
         return functions.datespanset_out(this.get_inner());
     }
 
-/*
+/**
 Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
 */
 
@@ -191,7 +191,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
-    /*
+    /**
             Returns the first date in ``self``.
             Returns:
                 A :class:`date` instance
@@ -204,7 +204,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespan(functions.spanset_start_span(this._inner));
     }
 
-/*
+/**
         Returns the last date in ``self``.
         Returns:
             A :class:`date` instance
@@ -239,7 +239,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
 
 
-/*
+/**
         Returns a new :class:`DateSpan` that starts as ``self`` but has
         duration ``duration``.
 
@@ -262,7 +262,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespan(this.shift_scale(0, duration).get_inner());
     }
 
-/*
+/**
         Returns a new :class:`DateSpan` that is the result of shifting ``self`` by
         ``delta``.
 
@@ -284,7 +284,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespanset(this.shift_scale(shift, 0).get_inner());
     }
 
-/*
+/**
         Returns a new :class:`DateSpan` that starts at ``self`` shifted by ``shift`` and
         has duration ``duration``
 
@@ -308,7 +308,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespanset(functions.datespanset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
     }
 
-    /*
+    /**
             Returns whether ``self`` temporally contains ``content``.
 
             Examples:
@@ -341,7 +341,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is adjacent to ``other``. That is, they share
         a bound but only one of them contains it.
 
@@ -365,7 +365,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
 
 
-/*
+/**
         Returns whether ``self`` temporally overlaps ``other``. That is, both
         share at least an instant
 
@@ -396,7 +396,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is strictly before ``other``. That is,
         ``self`` ends before ``other`` starts.
 
@@ -427,7 +427,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is before ``other`` allowing overlap. That is,
         ``self`` ends before ``other`` ends (or at the same time).
 
@@ -458,7 +458,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is after ``other`` allowing overlap. That is,
         ``self`` starts after ``other`` starts (or at the same time).
 
@@ -490,7 +490,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
 
 
-/*
+/**
         Returns whether ``self`` is strictly after ``other``. That is, ``self``
         starts after ``other`` ends.
 
@@ -544,7 +544,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     /*---------------Distance Operations-------------------*/
 
 
-/*
+/**
         Returns the temporal distance between ``self`` and ``other``.
 
         Args:
@@ -578,12 +578,16 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     /*---------------Set Operations-------------------*/
 
-    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    /**
+     *
+     * Convert timestamp (number of seconds since epoch) to LocalDateTime
+     */
+
     public static LocalDateTime timestampToLocalDateTime(int timestamp) {
         return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
     }
 
-/*
+/**
         Returns the temporal intersection of ``self`` and ``other``.
 
         Args:
@@ -622,7 +626,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-/*
+/**
         Returns the temporal difference of ``self`` and ``other``.
 
         Args:
@@ -660,7 +664,11 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-    // Convert timestamp (number of seconds since epoch) to LocalDate
+    /**
+     *
+     * convert timestamp (number of seconds since epoch) to LocalDate
+     */
+
     public static LocalDate timestampToLocalDate(int timestamp) {
         return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days
     }
@@ -672,7 +680,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return timestampToLocalDate(resultTimestamp);
     }
 
-/*
+/**
         Returns the temporal union of ``self`` and ``other``.
 
         Args:
