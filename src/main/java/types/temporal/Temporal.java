@@ -445,7 +445,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return timestampToLocalDateTime(Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1)).getInt(Integer.BYTES));
     }
 
-/*
+/**
         Returns the timestamps in `self`.
 
         MEOS Functions:
@@ -468,7 +468,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
 
-    /*
+    /**
             Returns the instants in `self`.
 
             MEOS Functions:
@@ -489,7 +489,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return instantList;
     }
 
-    /*
+    /**
             Returns the list of values taken by `self`.
     */
     public List<Temporal> values(){
@@ -498,7 +498,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return temporalList;
     }
 
-    /*
+    /**
             Returns the temporal segments in `self`.
 
             MEOS Functions:
@@ -551,7 +551,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     }
 
-    /*
+    /**
         Returns a new :class:`Temporal` with the temporal dimension shifted by
         ``delta``.
 
@@ -567,7 +567,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(shifted,this.getCustomType(),this.getTemporalType());
     }
 
-    /*
+    /**
             Returns a new :class:`Temporal` scaled so the temporal dimension has
             duration ``duration``.
 
@@ -583,7 +583,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());
     }
 
-    /*
+    /**
             Returns a new :class:`Temporal` with the time dimension shifted by
             ``shift`` and scaled so the temporal dimension has duration
             ``duration``.
@@ -601,7 +601,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());
     }
 
-    /*
+    /**
             Returns a new :class:`Temporal` downsampled with respect to ``duration``.
 
             Args:
@@ -647,7 +647,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
     }
 
-    /*
+    /**
             Returns a new :class:`Temporal` with precision reduced to ``duration``.
 
             Args:
@@ -743,7 +743,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     /* ------------------------- Modifications ---------------------------------------- */
 
-/*
+/**
         Returns a new :class:`Temporal` object equal to `self` with `instant`
         appended.
 
@@ -824,7 +824,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return pointerArray;
     }
 
-    /*
+    /**
             Returns a new :class:`Temporal` object that is the result of merging
             `self` with `other`.
 
@@ -904,7 +904,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(functions.temporal_update(this.inner,other.inner,connect),this.getCustomType(),this.getTemporalType());
     }
 
-    /*
+    /**
         Returns a new :class:`Temporal` object equal to `self` with elements at
         `other` removed.
 
@@ -1341,7 +1341,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     /* ------------------------- Split Operations ----------------------------------- */
 
-/*
+/**
         Returns a list of temporal objects of the same subtype as `self` with
         the same values as `self` but split in temporal tiles of duration
         `duration` starting at `start`.
@@ -1403,7 +1403,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return tempList;
     }
 
-    /*
+    /**
             Returns a list of temporal objects of the same subtype as `self` with
             the same values as `self` but split in n temporal tiles of equal
             duration.
@@ -1468,7 +1468,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return tempList;
     }
 
-/*
+/**
         Return the subsequences where the objects stay within an area with a
         given maximum size for at least the specified duration.
 
