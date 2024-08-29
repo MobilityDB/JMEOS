@@ -503,8 +503,8 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *             <li>tbool_when_true</li>
      * @return A {@link tstzspan} with the periods where "this" is False.
      */
-    default tstzspan when_false(){
-        return new tstzspan(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
+    default tstzspanset when_false(){
+        return new tstzspanset(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
     }
 /**
         Returns the temporal negation of `this`.
