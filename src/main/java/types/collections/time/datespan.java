@@ -15,23 +15,24 @@ import java.time.format.DateTimeParseException;
 import functions.functions;
 import utils.ConversionUtils;
 
-/*
+/**
     Class for representing sets of contiguous dates between a lower and
-    an upper bound. The bounds may be inclusive or not.
+    an upper bound. The bounds may be inclusive or not.<p>
 
     ``DateSpan`` objects can be created with a single argument of type string
-    as in MobilityDB.
+    as in MobilityDB.<p>
 
-        >>> DateSpan('(2019-09-08, 2019-09-10)')
+        >>> DateSpan('(2019-09-08, 2019-09-10)')<p>
 
-    Another possibility is to provide the ``lower`` and ``upper`` named
-    parameters (of type str or date), and optionally indicate whether the
-    bounds are inclusive or exclusive (by default, the lower bound is inclusive
-    and the upper is exclusive):
+    Another possibility is to provide the ``lower`` and ``upper`` named<br>
+    parameters (of type str or date), and optionally indicate whether the<br>
+    bounds are inclusive or exclusive (by default, the lower bound is inclusive<br>
+    and the upper is exclusive):<br>
 
-        >>> DateSpan(lower='2019-09-08', upper='2019-09-10')
-        >>> DateSpan(lower='2019-09-08', upper='2019-09-10', lower_inc=False, upper_inc=True)
-        >>> DateSpan(lower=parse('2019-09-08'), upper=parse('2019-09-10'), upper_inc=True)
+        >>> DateSpan(lower='2019-09-08', upper='2019-09-10')<br>
+        >>> DateSpan(lower='2019-09-08', upper='2019-09-10', lower_inc=False, upper_inc=True)<br>
+        >>> DateSpan(lower=parse('2019-09-08'), upper=parse('2019-09-10'), upper_inc=True)<p>
+ @author ARIJIT SAMAL
 */
 
 public class datespan extends Span<LocalDate> implements Time, TimeCollection{
@@ -78,7 +79,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 //    }
 
 
-/*
+/**
         Returns a :class:`DateSpanSet` set containing ``self``.
 
         Returns:
@@ -92,7 +93,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         return new datespanset(String.valueOf(super.to_spanset(datespan.class)));
     }
 
-/*
+/**
         Returns a :class:`TsTzSpan equivalent to ``self``.
 
         Returns:
@@ -106,7 +107,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         return new tstzspan(functions.datespan_to_tstzspan(this._inner));
     }
 
-/*
+/**
         Returns the duration of ``self``.
 
         Returns:
@@ -120,7 +121,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         return ConversionUtils.interval_to_timedelta(functions.datespan_duration(this._inner));
     }
 
-/*
+/**
         Returns the duration of ``self``.
 
         Returns:
@@ -189,7 +190,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         return functions.datespan_out(this.get_inner());
     }
 
-/*
+/**
 Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
 */
 
@@ -199,7 +200,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
-    /*
+    /**
             Returns the first date in ``self``.
             Returns:
                 A :class:`date` instance
@@ -213,7 +214,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return date_adt_to_date(functions.datespanset_start_date(dss.get_inner()));
     }
 
-/*
+/**
         Returns the last date in ``self``.
         Returns:
             A :class:`date` instance
@@ -227,7 +228,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return date_adt_to_date(functions.datespanset_end_date(dss.get_inner()));
     }
 
-/*
+/**
         Returns a new :class:`DateSpan` that starts as ``self`` but has
         duration ``duration``.
 
@@ -250,7 +251,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespan(this.shift_scale(0, duration)._inner);
     }
 
-/*
+/**
         Returns a new :class:`DateSpan` that is the result of shifting ``self`` by
         ``delta``.
 
@@ -272,7 +273,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespan(this.shift_scale(shift, 0)._inner);
     }
 
-/*
+/**
         Returns a new :class:`DateSpan` that starts at ``self`` shifted by ``shift`` and
         has duration ``duration``
 
@@ -296,7 +297,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new datespan(functions.datespan_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
     }
 
-/*
+/**
         Returns whether ``self`` temporally contains ``content``.
 
         Examples:
@@ -332,7 +333,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is adjacent to ``other``. That is, they share
         a bound but only one of them contains it.
 
@@ -356,7 +357,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
     
 
-/*
+/**
         Returns whether ``self`` temporally overlaps ``other``. That is, both
         share at least an instant
 
@@ -387,7 +388,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is strictly before ``other``. That is,
         ``self`` ends before ``other`` starts.
 
@@ -418,7 +419,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is before ``other`` allowing overlap. That is,
         ``self`` ends before ``other`` ends (or at the same time).
 
@@ -449,7 +450,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is after ``other`` allowing overlap. That is,
         ``self`` starts after ``other`` starts (or at the same time).
 
@@ -481,7 +482,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
 
 
-/*
+/**
         Returns whether ``self`` is strictly after ``other``. That is, ``self``
         starts after ``other`` ends.
 
@@ -535,7 +536,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     /*---------------Distance Operations-------------------*/
 
 
-/*
+/**
         Returns the temporal distance between ``self`` and ``other``.
 
         Args:
@@ -569,12 +570,16 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     /*---------------Set Operations-------------------*/
 
-    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    /**
+     *
+     * Convert timestamp (number of seconds since epoch) to LocalDateTime
+     */
+
     public static LocalDateTime timestampToLocalDateTime(int timestamp) {
         return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
     }
 
-/*
+/**
         Returns the temporal intersection of ``self`` and ``other``.
 
         Args:
@@ -617,7 +622,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-/*
+/**
         Returns the temporal difference of ``self`` and ``other``.
 
         Args:
@@ -655,7 +660,11 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-    // Convert timestamp (number of seconds since epoch) to LocalDate
+    /**
+     *
+     * Convert timestamp (number of seconds since epoch) to LocalDate
+     */
+
     public static LocalDate timestampToLocalDate(int timestamp) {
         return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days
     }
@@ -667,7 +676,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return timestampToLocalDate(resultTimestamp);
     }
 
-/*
+/**
         Returns the temporal union of ``self`` and ``other``.
 
         Args:
