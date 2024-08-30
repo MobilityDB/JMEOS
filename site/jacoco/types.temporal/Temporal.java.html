@@ -1,0 +1,1587 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Temporal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.temporal</a> &gt; <span class="el_source">Temporal.java</span></div><h1>Temporal.java</h1><pre class="source lang-java linenums">package types.temporal;
+
+import functions.functions;
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import types.TemporalObject;
+import types.collections.base.Base;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import utils.ConversionUtils;
+
+import java.awt.*;
+import java.io.Serializable;
+import java.time.*;
+import java.util.*;
+import java.util.List;
+
+import static types.temporal.TemporalType.*;
+
+/**
+ * Abstract class for Temporal sub types
+ * @param &lt;V&gt; - Base type of the temporal data type eg. Integer, Boolean
+ *
+ * @author ARIJIT SAMAL
+ */
+public abstract class Temporal&lt;V extends Serializable&gt; implements Serializable, TemporalObject {
+    private Pointer inner;
+
+    /** ------------------------- Constructors ---------------------------------------- */
+
+<span class="fc" id="L34">    public Temporal(){</span>
+<span class="fc" id="L35">    }</span>
+
+<span class="fc" id="L37">    public Temporal(String str){</span>
+<span class="fc" id="L38">        this.inner = createStringInner(str);</span>
+<span class="fc" id="L39">    }</span>
+
+<span class="fc" id="L41">    public Temporal(Pointer inner){</span>
+<span class="fc" id="L42">        this.inner = createInner(inner);</span>
+<span class="fc" id="L43">    }</span>
+
+<span class="nc" id="L45">    public Temporal(String customType, TemporalType temporalType) {</span>
+        //this.customType = customType;
+        //this.temporalType = temporalType;
+<span class="nc" id="L48">    }</span>
+
+    public abstract Pointer createStringInner(String str);
+    public abstract Pointer createInner(Pointer inner);
+    public abstract String getCustomType();
+    public abstract TemporalType getTemporalType();
+
+
+    public static Temporal _factory(Pointer inner, String customType, TemporalType temporalType){
+<span class="nc" id="L57">        return Factory.create_temporal(inner, customType, temporalType);</span>
+    }
+
+    /**
+     * Returns a copy of the temporal object.
+     *
+     * @return a copy of the object
+     */
+    public Temporal copy(){
+<span class="fc" id="L66">        return Factory.create_temporal(functions.temporal_copy(this.inner),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+     * Returns a temporal object from a hex-encoded WKB string.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_from_hexwkb&lt;/li&gt;
+     *
+     * @param str The hex-encoded WKB string.
+     * @return  A temporal object from a hex-encoded WKB string.
+     */
+    public Temporal from_hexwkb(String str){
+<span class="nc" id="L79">        Pointer result = functions.temporal_from_hexwkb(str);</span>
+<span class="nc" id="L80">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+/**
+        Returns a temporal object from WKB bytes.
+
+        Args:
+            wkb: The WKB string.
+
+        Returns:
+            A temporal object from WKB bytes.
+
+        MEOS Functions:
+            temporal_from_wkb
+*/
+
+    public Temporal from_wkb(Pointer wkb, long size){
+<span class="nc" id="L97">        Pointer result= functions.temporal_from_wkb(wkb, size);</span>
+<span class="nc" id="L98">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+/**
+        Returns the temporal object as a hex-encoded WKB string.
+
+        Returns:
+            The temporal object as a hex-encoded WKB string.
+
+        MEOS Functions:
+            temporal_as_hexwkb
+*/
+    public String as_hexwkb(Pointer wkb, long size){
+<span class="nc" id="L111">        String[] result= new String[]{functions.temporal_as_hexwkb(this.inner, (byte) -1)};</span>
+//        System.out.println(result[0]);
+<span class="nc" id="L113">        return result[0];</span>
+    }
+
+/**
+        Returns the temporal object as a hex-encoded WKB string.
+
+        Returns:
+            The temporal object as a hex-encoded WKB string.
+
+        MEOS Functions:
+            temporal_as_wkb
+*/
+    public Pointer as_wkb(){
+<span class="nc" id="L126">        Pointer result= functions.temporal_as_wkb(this.inner, (byte) 4);</span>
+<span class="nc" id="L127">        return result;</span>
+    }
+
+    /**
+     * Returns a temporal object from a MF-JSON string.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_from_mfjson&lt;/li&gt;
+     *
+     * @param str The MF-JSON string.
+     * @return A temporal object from a MF-JSON string.
+     */
+//    public Temporal from_mfjson(String str){
+//        Pointer result = functions.temporal_as_(str);
+//        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+//    }
+
+
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+    /**
+     * Returns the temporal object as a MF-JSON string.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_as_mfjson&lt;/li&gt;
+     *
+     * @param with_bbox Whether to include the bounding box in the output.
+     * @param flags The flags to use for the output.
+     * @param precision The precision to use for the output.
+     * @param srs The SRS to use for the output.
+     * @return The temporal object as a MF-JSON string.
+     */
+    public String as_mfjson(boolean with_bbox, int flags, int precision, String srs){
+<span class="fc" id="L164">        return functions.temporal_as_mfjson(this.inner,with_bbox,flags,precision,srs);</span>
+    }
+
+
+    /**
+     * Returns the temporal object as a MF-JSON string.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_as_mfjson&lt;/li&gt;
+     *
+     * @return The temporal object as a MF-JSON string.
+     */
+    public String as_mfjson(){
+<span class="fc" id="L179">        return this.as_mfjson(true,3,6,null);</span>
+    }
+
+    /**
+            Returns a temporal object that is the result of merging the given
+            temporal objects.
+
+            Args:
+                *temporals: The temporal objects to merge.
+
+            Returns:
+                A temporal object that is the result of merging the given temporal
+                objects.
+
+            MEOS Functions:
+                temporal_merge_array
+    */
+    public Temporal from_merge(Pointer temporals){
+<span class="nc" id="L197">        List&lt;Temporal&gt; temporal_list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        for(int i=0; i&lt;this.num_instants(); i++){</span>
+<span class="nc" id="L199">            Pointer p = temporals.getPointer((long) i *Long.BYTES);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">            if (p!=null){</span>
+<span class="nc" id="L201">                Temporal t = Factory.create_temporal(p, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L202">                temporal_list.add(t);</span>
+            }
+        }
+<span class="nc" id="L205">        int length_list= temporal_list.size();</span>
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L207">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L209">        Pointer temporalP = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);</span>
+        // Copy the array elements into the allocated memory
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        for (int i = 0; i &lt; length_list; i++) {</span>
+<span class="nc" id="L212">            temporalP.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());</span>
+        }
+<span class="nc" id="L214">        Pointer result= functions.temporal_merge_array(temporalP, length_list);</span>
+<span class="nc" id="L215">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+
+    /**
+            Returns a temporal object that is the result of merging the given
+            temporal objects.
+
+            Args:
+                temporals: The temporal objects to merge.
+
+            Returns:
+                A temporal object that is the result of merging the given temporal
+                objects.
+    */
+    public Temporal from_merge_array(List&lt;Temporal&gt; temporals) {
+<span class="nc" id="L231">        List&lt;Temporal&gt; temporal_list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">        for (int i = 0; i &lt; temporals.size(); i++) {</span>
+<span class="nc" id="L233">            Pointer p = temporals.get(i).getInner();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">            if (p != null) {</span>
+<span class="nc" id="L235">                Temporal t = Factory.create_temporal(p, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L236">                temporal_list.add(t);</span>
+            }
+        }
+<span class="nc" id="L239">        int length = temporal_list.size();</span>
+
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L242">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L244">        Pointer temporalPointer = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);</span>
+        // Copy the array elements into the allocated memory
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        for (int i = 0; i &lt; length; i++) {</span>
+<span class="nc" id="L247">            temporalPointer.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());</span>
+        }
+<span class="nc" id="L249">        Pointer result = functions.temporal_merge_array(temporalPointer, length);</span>
+<span class="nc" id="L250">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+
+
+    /** ------------------------- Accessors ---------------------------------------- */
+
+
+    public Pointer getInner(){
+<span class="fc" id="L259">        return this.inner;</span>
+    }
+
+    /**
+     * Returns the bounding box of &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_period&lt;/li&gt;
+     *
+     * @return The bounding box of `self`.
+     */
+    public tstzspan bounding_box(){
+<span class="fc" id="L271">        return new tstzspan(functions.temporal_to_tstzspan(this.inner));</span>
+    }
+
+    /**
+     * Returns the {@link tstzspanset} on which `self` is defined.
+     *
+     *         MEOS Functions:
+     *             temporal_time
+     * @return the {@link tstzspanset}  on which `self` is defined.
+     */
+    public tstzspanset time(){
+<span class="fc" id="L282">        return new tstzspanset(functions.temporal_time(this.inner));</span>
+    }
+
+
+
+    public TInterpolation interpolation(){
+<span class="fc" id="L288">        return TInterpolation.fromString(functions.temporal_interp(this.inner),true);</span>
+    }
+
+
+    /**
+     * Returns the {@link tstzset} on which &quot;this&quot; is defined ignoring
+     *         potential time gaps.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_period&lt;/li&gt;
+     * @return
+     */
+    public tstzspan period(){
+<span class="fc" id="L301">        return this.timespan();</span>
+    }
+
+    /**
+     * Returns the {@link tstzspan} on which &quot;this&quot; is defined ignoring
+     *         potential time gaps.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_period&lt;/li&gt;
+     * @return
+     */
+    public tstzspan timespan(){
+<span class="fc" id="L313">        return new tstzspan(functions.temporal_to_tstzspan(this.inner));</span>
+    }
+
+
+    /**
+     * Returns the number of instants in &quot;this&quot;.
+     *
+     *         MEOS Functions:
+     *             temporal_num_instants
+     * @return Returns the number of instants in &quot;this&quot;.
+     */
+    public int num_instants(){
+<span class="fc" id="L325">        return functions.temporal_num_instants(this.inner);</span>
+    }
+
+
+    /**
+     * Returns the first instant in &quot;this&quot;.
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_start_instant&lt;/li&gt;
+     * @return Returns the first instant in &quot;this&quot;.
+     */
+    public Temporal start_instant(){
+<span class="fc" id="L337">        return Factory.create_temporal(functions.temporal_start_instant(this.inner), this.getCustomType(), TEMPORAL_INSTANT);</span>
+    }
+
+    /**
+     * Returns the last instant in &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_end_instant&lt;/li&gt;
+     * @return Returns the last instant in &quot;this&quot;.
+     */
+    public Temporal end_instant(){
+<span class="fc" id="L348">        return Factory.create_temporal(functions.temporal_end_instant(this.inner), this.getCustomType(), TEMPORAL_INSTANT);</span>
+    }
+
+
+    /**
+     * Returns the instant in &quot;this&quot; with the minimum value.
+     *         If multiple instants have the minimum value, the first one is returned.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_min_instant&lt;/li&gt;
+     * @return Returns the instant in &quot;this&quot; with the minimum value.
+     */
+    public Temporal min_instant(){
+<span class="fc" id="L361">        return Factory.create_temporal(functions.temporal_min_instant(this.inner), this.getCustomType(), TEMPORAL_INSTANT);</span>
+    }
+
+    /**
+     * Returns the instant in &quot;this&quot; with the maximum value.
+     *         If multiple instants have the maximum value, the first one is returned.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_max_instant&lt;/li&gt;
+     * @return Returns the instant in &quot;this&quot; with the maximum value.
+     */
+    public Temporal max_instant(){
+<span class="fc" id="L373">        return Factory.create_temporal(functions.temporal_max_instant(this.inner), this.getCustomType(), TEMPORAL_INSTANT);</span>
+    }
+
+    /**
+     * Returns the n-th instant in &quot;this&quot;. (0-based)
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_instant_n&lt;/li&gt;
+     * @param n instant
+     * @return a new Temporal
+     */
+    public Temporal instant_n(int n){
+<span class="fc" id="L385">        return Factory.create_temporal(functions.temporal_instant_n(this.inner, n+1), this.getCustomType(), TEMPORAL_INSTANT);</span>
+    }
+
+//    public List&lt;Temporal&gt; instants(){
+//        functions.temporal_instants(this.inner);
+//    }
+
+//    public abstract Temporal value_at_timestamp();
+
+    public Duration duration(boolean ignore_gaps){
+<span class="nc" id="L395">        ignore_gaps = false;</span>
+<span class="nc" id="L396">        return ConversionUtils.interval_to_timedelta(functions.temporal_duration(this.inner, ignore_gaps));</span>
+    }
+
+    public tstzspan tstzspan(){
+<span class="nc" id="L400">        return this.timespan();</span>
+    }
+
+    /**
+     * Returns the number of timestamps in &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_num_timestamps&lt;/li&gt;
+     * @return Returns the number of timestamps in &quot;this&quot;.
+     */
+    public int num_timestamps(){
+//        System.out.println(&quot;ici&quot;);
+//        System.out.println(this.toString());
+<span class="fc" id="L413">        return functions.temporal_num_timestamps(this.inner);</span>
+    }
+
+    /**
+     * Returns the first timestamp in &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_start_timestamps&lt;/li&gt;
+     * @return Returns the first timestamp in &quot;this&quot;.
+     */
+    public LocalDateTime start_timestamp(){
+<span class="fc" id="L424">        return ConversionUtils.timestamptz_to_datetime(functions.temporal_start_timestamptz(this.inner));</span>
+    }
+
+
+    /**
+     * Returns the last timestamp in &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_end_timestamps&lt;/li&gt;
+     * @return Returns the last timestamp in &quot;this&quot;.
+     */
+    public LocalDateTime end_timestamp(){
+<span class="fc" id="L436">        return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamptz(this.inner));</span>
+    }
+
+    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
+<span class="nc" id="L441">        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);</span>
+    }
+
+    public LocalDateTime timestamp_n(int n){
+<span class="nc" id="L445">        return timestampToLocalDateTime(Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1)).getInt(Integer.BYTES));</span>
+    }
+
+/**
+        Returns the timestamps in `self`.
+
+        MEOS Functions:
+            temporal_timestamps
+*/
+
+    public List&lt;LocalDateTime&gt; timestamps(){
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L457">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L459">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L460">        Pointer array= functions.temporal_timestamps(this.inner, intPointer);</span>
+<span class="nc" id="L461">        List&lt;LocalDateTime&gt; datetimeList= new ArrayList&lt;LocalDateTime&gt;();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        for(int i=0;i&lt;this.num_timestamps(); i++){</span>
+<span class="nc" id="L463">            int p= array.getInt((long) i *Integer.BYTES);</span>
+<span class="nc" id="L464">            LocalDateTime ldt= timestampToLocalDateTime(p);</span>
+<span class="nc" id="L465">            datetimeList.add(ldt);</span>
+        }
+<span class="nc" id="L467">        return datetimeList;</span>
+    }
+
+
+    /**
+            Returns the instants in `self`.
+
+            MEOS Functions:
+                temporal_instants
+    */
+    public List&lt;Temporal&gt; instants(){
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L479">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L481">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L482">        Pointer array= functions.temporal_instants(this.inner, intPointer);</span>
+<span class="nc" id="L483">        List&lt;Temporal&gt; instantList= new ArrayList&lt;Temporal&gt;();</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        for(int i=0; i&lt;this.num_instants(); i++){</span>
+<span class="nc" id="L485">            Pointer p= array.getPointer((long) i *Integer.BYTES);</span>
+<span class="nc" id="L486">            Temporal t= Factory.create_temporal(p, this.getCustomType(),this.getTemporalType());</span>
+<span class="nc" id="L487">            instantList.add(t);</span>
+        }
+<span class="nc" id="L489">        return instantList;</span>
+    }
+
+    /**
+            Returns the list of values taken by `self`.
+    */
+    public List&lt;Temporal&gt; values(){
+<span class="nc" id="L496">        List&lt;Temporal&gt; temporalList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L497">        temporalList= this.instants();</span>
+<span class="nc" id="L498">        return temporalList;</span>
+    }
+
+    /**
+            Returns the temporal segments in `self`.
+
+            MEOS Functions:
+                temporal_segments
+    */
+    public List&lt;Temporal&gt; segments(){
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L509">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L511">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L512">        Pointer array= functions.temporal_segments(this.inner, intPointer);</span>
+<span class="nc" id="L513">        List&lt;Temporal&gt; segmentList= new ArrayList&lt;Temporal&gt;();</span>
+<span class="nc" id="L514">        int num_segments= functions.temporal_num_sequences(this.inner);</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">        for(int i=0;i&lt;num_segments; i++){</span>
+<span class="nc" id="L516">            Pointer p= array.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L517">            Temporal t= Factory.create_temporal(p, this.getCustomType(),this.getTemporalType());</span>
+<span class="nc" id="L518">            segmentList.add(t);</span>
+        }
+<span class="nc" id="L520">        return segmentList;</span>
+    }
+
+
+    /**
+     * Returns the hash of the temporal object.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_hash&lt;/li&gt;
+     * @return The hash of the temporal object.
+     */
+    public long hash(){
+<span class="fc" id="L534">        return functions.temporal_hash(this.inner);</span>
+    }
+
+    /* ------------------------- Transformations ---------------------------------------- */
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; with the given
+     *         interpolation.
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_set_interpolation&lt;/li&gt;
+     * @param interpolation int value
+     * @return Returns a new {@link Temporal} object equal to &quot;this&quot; with the given
+     *      *         interpolation.
+     */
+    public Temporal set_interpolation(TInterpolation interpolation){
+<span class="fc" id="L550">        return Factory.create_temporal(functions.temporal_set_interp(this.inner, interpolation.getValue()),this.getCustomType(),this.getTemporalType());</span>
+
+    }
+
+    /**
+        Returns a new :class:`Temporal` with the temporal dimension shifted by
+        ``delta``.
+
+        Args:
+            delta: :class:`datetime.timedelta` instance to shift
+
+        MEOS Functions:
+            temporal_shift_time
+*/
+
+    public Temporal shift_time(Duration duration){
+<span class="nc" id="L566">        Pointer shifted= functions.temporal_shift_time(this.inner, ConversionUtils.timedelta_to_interval(duration));</span>
+<span class="nc" id="L567">        return Factory.create_temporal(shifted,this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+            Returns a new :class:`Temporal` scaled so the temporal dimension has
+            duration ``duration``.
+
+            Args:
+                duration: :class:`datetime.timedelta` instance representing the
+                duration of the new temporal
+
+            MEOS Functions:
+                temporal_scale_time
+    */
+    public Temporal scale_time(Duration duration){
+<span class="nc" id="L582">        Pointer scaled= functions.temporal_scale_time(this.inner, ConversionUtils.timedelta_to_interval(duration));</span>
+<span class="nc" id="L583">        return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+            Returns a new :class:`Temporal` with the time dimension shifted by
+            ``shift`` and scaled so the temporal dimension has duration
+            ``duration``.
+
+            Args:
+                shift: :class:`datetime.timedelta` instance to shift
+                duration: :class:`datetime.timedelta` instance representing the
+                duration of the new temporal
+
+            MEOS Functions:
+                temporal_shift_scale_time
+    */
+    public Temporal shift_scale_time(Duration shift, Duration scale){
+<span class="nc" id="L600">        Pointer scaled= functions.temporal_shift_scale_time(this.inner, ConversionUtils.timedelta_to_interval(shift), ConversionUtils.timedelta_to_interval(scale));</span>
+<span class="nc" id="L601">        return Factory.create_temporal(scaled,this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+            Returns a new :class:`Temporal` downsampled with respect to ``duration``.
+
+            Args:
+                duration: A :class:`str` or :class:`timedelta` with the duration of
+                    the temporal tiles.
+                start: A :class:`str` or :class:`datetime` with the start time of
+                    the temporal tiles. If None, the start time used by default is
+                    Monday, January 3, 2000.
+                interpolation: Interpolation of the resulting temporal object. If None,
+                    defaults to the interpolation of ``self``.
+            MEOS Functions:
+                temporal_tsample
+    */
+    public Temporal temporal_sample(Object duration, Object start, TInterpolation interpolation){
+<span class="nc" id="L619">        OffsetDateTime st= null;</span>
+<span class="nc" id="L620">        Pointer dt= null;</span>
+<span class="nc" id="L621">        TInterpolation intrp= null;</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">        if (start == null){</span>
+<span class="nc" id="L623">            st= functions.pg_timestamptz_in(&quot;2000-01-03&quot;, -1);</span>
+        }
+<span class="nc bnc" id="L625" title="All 2 branches missed.">        else if (start instanceof LocalDateTime){</span>
+<span class="nc" id="L626">            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);</span>
+        }
+        else{
+<span class="nc" id="L629">            st= functions.pg_timestamptz_in(start.toString(), -1);</span>
+        }
+
+<span class="nc bnc" id="L632" title="All 2 branches missed.">        if(duration instanceof Duration){</span>
+<span class="nc" id="L633">            dt= ConversionUtils.timedelta_to_interval((Duration) duration);</span>
+        }
+        else{
+<span class="nc" id="L636">            dt= functions.pg_interval_in(duration.toString(), -1);</span>
+        }
+
+<span class="nc bnc" id="L639" title="All 2 branches missed.">        if(interpolation == null){</span>
+<span class="nc" id="L640">            intrp= this.interpolation();</span>
+        }
+        else{
+<span class="nc" id="L643">            intrp= interpolation;</span>
+        }
+<span class="nc" id="L645">        int intrp_val= intrp.getValue();</span>
+<span class="nc" id="L646">        Pointer result= functions.temporal_tsample(this.inner, dt, st, intrp_val);</span>
+<span class="nc" id="L647">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+    /**
+            Returns a new :class:`Temporal` with precision reduced to ``duration``.
+
+            Args:
+                duration: A :class:`str` or :class:`timedelta` with the duration
+                    of the temporal tiles.
+                start: A :class:`str` or :class:`datetime` with the start time of
+                    the temporal tiles. If None, the start time used by default is
+                    Monday, January 3, 2000.
+
+            MEOS Functions:
+                temporal_tprecision
+    */
+    public Temporal temporal_precision(Object duration, Object start){
+<span class="nc" id="L664">        OffsetDateTime st= null;</span>
+<span class="nc" id="L665">        Pointer dt= null;</span>
+<span class="nc bnc" id="L666" title="All 2 branches missed.">        if (start == null){</span>
+<span class="nc" id="L667">            st= functions.pg_timestamptz_in(&quot;2000-01-03&quot;, -1);</span>
+        }
+<span class="nc bnc" id="L669" title="All 2 branches missed.">        else if (start instanceof LocalDateTime){</span>
+<span class="nc" id="L670">            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);</span>
+        }
+        else{
+<span class="nc" id="L673">            st= functions.pg_timestamptz_in(start.toString(), -1);</span>
+        }
+
+<span class="nc bnc" id="L676" title="All 2 branches missed.">        if(duration instanceof Duration){</span>
+<span class="nc" id="L677">            dt= ConversionUtils.timedelta_to_interval((Duration) duration);</span>
+        }
+        else{
+<span class="nc" id="L680">            dt= functions.pg_interval_in(duration.toString(), -1);</span>
+        }
+<span class="nc" id="L682">        Pointer result= functions.temporal_tprecision(this.inner, dt, st);</span>
+<span class="nc" id="L683">        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+
+
+    /**
+     * Returns &quot;this&quot; as a {@link TInstant}.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_tinstant&lt;/li&gt;
+     * @return Returns &quot;this&quot; as a {@link TInstant}.
+     */
+    public Temporal to_instant(){
+<span class="fc" id="L696">        return Factory.create_temporal(functions.temporal_to_tinstant(this.inner),this.getCustomType(),TEMPORAL_INSTANT);</span>
+    }
+
+
+    /**
+     * Converts &quot;this&quot; into a {@link TSequence}.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_sequence&lt;/li&gt;
+     * @param interpolation int value
+     * @return a new {@link TSequence}.
+     */
+    public Temporal to_sequence(TInterpolation interpolation){
+<span class="fc" id="L709">        System.out.println(interpolation.toString());</span>
+<span class="fc" id="L710">        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE);</span>
+    }
+
+    /**
+     * Returns &quot;this&quot; as a new {@link TSequenceSet}.
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_to_tsequenceset&lt;/li&gt;
+     * @param interpolation int value
+     * @return a new {@link TSequenceSet}
+     */
+    public Temporal to_sequenceset(TInterpolation interpolation){
+<span class="fc" id="L722">        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);</span>
+
+    }
+
+/*
+        Returns `self` as a :class:`pd.DataFrame` with two columns: `time`
+            and `value`.
+*/
+    public List&lt;Map&lt;String, Object&gt;&gt; toDataFrame() {
+<span class="nc" id="L731">        List&lt;Map&lt;String, Object&gt;&gt; dataFrame = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L732" title="All 2 branches missed.">        for (int i = 0; i &lt; this.timestamps().size(); i++) {</span>
+<span class="nc" id="L733">            Map&lt;String, Object&gt; row = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L734">            row.put(&quot;time&quot;, this.timestamps().get(i));</span>
+<span class="nc" id="L735">            row.put(&quot;value&quot;, this.values().get(i));</span>
+<span class="nc" id="L736">            dataFrame.add(row);</span>
+        }
+<span class="nc" id="L738">        return dataFrame;</span>
+    }
+
+
+
+
+    /* ------------------------- Modifications ---------------------------------------- */
+
+/**
+        Returns a new :class:`Temporal` object equal to `self` with `instant`
+        appended.
+
+        Args:
+            instant: :class:`TInstant` to append
+            max_dist: Maximum distance for defining a gap
+            max_time: Maximum time for defining a gap
+
+        MEOS Functions:
+            temporal_append_tinstant
+*/
+
+    public Temporal append_instant(TInstant instant, float max_dist, Duration max_time){
+<span class="nc" id="L760">        Pointer interv= null;</span>
+<span class="nc bnc" id="L761" title="All 2 branches missed.">        if (max_time==null){</span>
+<span class="nc" id="L762">            interv=null;</span>
+        }
+        else{
+<span class="nc" id="L765">            interv= ConversionUtils.timedelta_to_interval(max_time);</span>
+        }
+<span class="nc" id="L767">        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), (double) max_dist, interv, false);</span>
+<span class="nc" id="L768">        return Factory.create_temporal(resultPointer, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; with &quot;sequence&quot;
+     *         appended.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_append_tsequence&lt;/li&gt;
+     * @param sequence sequence: a {@link TSequence} to append
+     * @return a new {@link Temporal} object
+     */
+    public Temporal append_sequence(TSequence sequence){
+<span class="fc" id="L783">        return Factory.create_temporal(functions.temporal_append_tsequence(this.inner, sequence.getInner(), false), this.getCustomType(), this.getTemporalType());</span>
+    }
+
+
+
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; with &quot;other&quot;
+     *         inserted.
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_insert&lt;/li&gt;
+     *
+     * @param other {@link Temporal} object to insert in &quot;this&quot;
+     * @return Returns a new {@link Temporal} object equal to &quot;this&quot; with &quot;other&quot;
+     *      *         inserted.
+     */
+    public Temporal insert(Temporal other){
+<span class="fc" id="L802">        return insert(other,true);</span>
+    }
+
+
+/* Utility fucntion to crearte a pointer array*/
+    private Pointer createPointerArray(List&lt;?&gt; temporalList) throws Exception {
+//        Pointer pointerArray = Runtime.memoryManager().allocateDirect((temporalList.size() + 1) * Pointer.SIZE);
+
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L811">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L813">        Pointer pointerArray = Memory.allocate(Runtime.getRuntime(runtime), (temporalList.size() + 1) * Long.BYTES);</span>
+<span class="nc" id="L814">        pointerArray.putPointer(0, this.inner); // Add the current instance's inner pointer</span>
+
+<span class="nc bnc" id="L816" title="All 2 branches missed.">        for (int i = 0; i &lt; temporalList.size(); i++) {</span>
+<span class="nc" id="L817">            Object item = temporalList.get(i);</span>
+<span class="nc bnc" id="L818" title="All 2 branches missed.">            if (item instanceof Temporal) {</span>
+<span class="nc" id="L819">                pointerArray.putPointer((long) (i + 1) * Long.SIZE, ((Temporal&lt;?&gt;) item).inner);</span>
+            } else {
+<span class="nc" id="L821">                throw new Exception(&quot;List contains an unsupported type.&quot;);</span>
+            }
+        }
+<span class="nc" id="L824">        return pointerArray;</span>
+    }
+
+    /**
+            Returns a new :class:`Temporal` object that is the result of merging
+            `self` with `other`.
+
+            MEOS Functions:
+                temporal_merge, temporal_merge_array
+    */
+    public Temporal merge(Object other) throws Exception {
+        Pointer newTemp;
+<span class="nc bnc" id="L836" title="All 2 branches missed.">        if (other == null) {</span>
+<span class="nc" id="L837">            return this;</span>
+        }
+<span class="nc bnc" id="L839" title="All 2 branches missed.">        else if (other instanceof Temporal) {</span>
+<span class="nc" id="L840">            Temporal&lt;?&gt; temporalOther = (Temporal&lt;?&gt;) other;</span>
+<span class="nc" id="L841">            newTemp = functions.temporal_merge(this.inner, temporalOther.inner);</span>
+<span class="nc" id="L842">        }</span>
+<span class="nc bnc" id="L843" title="All 2 branches missed.">        else if (other instanceof List&lt;?&gt;) {</span>
+<span class="nc" id="L844">            List&lt;?&gt; otherList = (List&lt;?&gt;) other;</span>
+<span class="nc" id="L845">            Pointer pointers = createPointerArray(otherList);</span>
+
+<span class="nc" id="L847">            newTemp = functions.temporal_merge_array(pointers, otherList.size() + 1);</span>
+<span class="nc" id="L848">        } else {</span>
+<span class="nc" id="L849">            throw new Exception(&quot;Operation not supported with type &quot; + other.getClass().getName());</span>
+        }
+<span class="nc" id="L851">        return Factory.create_temporal(newTemp, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; with &quot;other&quot;
+     *         inserted.
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_insert&lt;/li&gt;
+     *
+     * @param other {@link Temporal} object to insert in &quot;this&quot;
+     * @param connect wether to connect the inserted elements with the existing
+     *      *                 elements.
+     * @return Returns a new {@link Temporal} object equal to &quot;this&quot; with &quot;other&quot;
+     *      *         inserted.
+     */
+    public Temporal insert(Temporal other, boolean connect){
+<span class="fc" id="L869">        return Factory.create_temporal(functions.temporal_insert(this.inner,other.inner,connect),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; updated with
+     *         &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_update&lt;/li&gt;
+     * @param other {@link Temporal} object to update &quot;this&quot; with
+     * @return Returns a new {@link Temporal} object equal to &quot;this&quot; updated with
+     *      *         &quot;other&quot;.
+     */
+    public Temporal update(Temporal other){
+<span class="fc" id="L886">        return update(other, true);</span>
+    }
+
+    /**
+     * Returns a new {@link Temporal} object equal to &quot;this&quot; updated with
+     *         &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_update&lt;/li&gt;
+     * @param other {@link Temporal} object to update &quot;this&quot; with
+     * @param connect wether to connect the updated elements with the
+     *      *                 existing elements.
+     * @return Returns a new {@link Temporal} object equal to &quot;this&quot; updated with
+     *      *         &quot;other&quot;.
+     */
+    public Temporal update(Temporal other, boolean connect){
+<span class="fc" id="L904">        return Factory.create_temporal(functions.temporal_update(this.inner,other.inner,connect),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+        Returns a new :class:`Temporal` object equal to `self` with elements at
+        `other` removed.
+
+        Args:
+            other: :class:`Time` object to remove from `self`
+            connect: whether to connect the potential gaps generated by the
+                deletions.
+
+        MEOS Functions:
+            temporal_update
+*/
+    public Temporal delete(Object other, Boolean connect) throws Exception {
+<span class="nc" id="L920">        Pointer new_inner=null;</span>
+<span class="nc bnc" id="L921" title="All 2 branches missed.">        if(other instanceof LocalDateTime){</span>
+<span class="nc" id="L922">            new_inner= functions.temporal_delete_timestamptz(this.inner, ConversionUtils.datetimeToTimestampTz((LocalDateTime) other), connect);</span>
+        }
+<span class="nc bnc" id="L924" title="All 2 branches missed.">        else if(other instanceof tstzset){</span>
+<span class="nc" id="L925">            new_inner= functions.temporal_delete_tstzset(this.inner, ((tstzset) other).get_inner(), connect);</span>
+        }
+<span class="nc bnc" id="L927" title="All 2 branches missed.">        else if(other instanceof tstzspan){</span>
+<span class="nc" id="L928">            new_inner= functions.temporal_delete_tstzspan(this.inner, ((tstzspan) other).get_inner(), connect);</span>
+        }
+<span class="nc bnc" id="L930" title="All 2 branches missed.">        else if (other instanceof tstzspanset){</span>
+<span class="nc" id="L931">            new_inner= functions.temporal_delete_tstzspanset(this.inner, ((tstzspanset) other).get_inner(), connect);</span>
+        }
+        else{
+<span class="nc" id="L934">            throw new Exception(&quot;Operation not supported with type &quot; + other.getClass().getName());</span>
+        }
+<span class="nc bnc" id="L936" title="All 2 branches missed.">        if(new_inner==this.inner){</span>
+<span class="nc" id="L937">            return this;</span>
+        }
+<span class="nc" id="L939">        return Factory.create_temporal(new_inner, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+
+    /* ------------------------- Restrictions ---------------------------------- */
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; restricted to
+     *         the time &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;temporal_at_timestamp&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_timestampset&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_period&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_periodset&lt;/li&gt;
+     *        &lt;/ul&gt;
+     *
+     * @param other A time object to restrict the values of &quot;this&quot; to.
+     * @return A new temporal object of the same subtype as `self`
+     */
+    public Temporal at(Time other){
+<span class="nc" id="L964">        Pointer result = null;</span>
+<span class="nc bnc" id="L965" title="All 2 branches missed.">        if (other instanceof tstzset){</span>
+<span class="nc" id="L966">            result = functions.temporal_at_tstzset(this.inner,((tstzset) other).get_inner());</span>
+
+<span class="nc bnc" id="L968" title="All 2 branches missed.">        } else if (other instanceof tstzspan) {</span>
+<span class="nc" id="L969">            result = functions.temporal_at_tstzspan(this.inner,((tstzspan) other).get_inner());</span>
+
+<span class="nc bnc" id="L971" title="All 2 branches missed.">        } else if (other instanceof tstzspanset) {</span>
+<span class="nc" id="L972">            result = functions.temporal_at_tstzspanset(this.inner,((tstzspanset) other).get_inner());</span>
+        }
+<span class="nc" id="L974">        return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());</span>
+    }
+
+
+    /**
+     * Returns a new temporal object containing the times &quot;this&quot; is at its
+     *         minimum value.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_at_min&lt;/li&gt;
+     *
+     * @return A new temporal object of the same subtype as `self`.
+     */
+    public Temporal at_min(){
+<span class="nc" id="L990">        return Factory.create_temporal(functions.temporal_at_min(this.inner),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+
+    /**
+     * Returns a new temporal object containing the times &quot;this&quot; is at its
+     *         maximum value.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_at_max&lt;/li&gt;
+     *
+     * @return A new temporal object of the same subtype as `self`.
+     */
+    public Temporal at_max(){
+<span class="nc" id="L1006">        return Factory.create_temporal(functions.temporal_at_max(this.inner),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; removing those
+     *         happening at &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;temporal_minus_timestamp&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_timestampset&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_period&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_periodset&lt;/li&gt;
+     *         &lt;/ul&gt;
+     *
+     * @param other A time object to remove from &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     */
+    public Temporal minus(Time other){
+<span class="nc" id="L1028">        Pointer result = null;</span>
+<span class="nc bnc" id="L1029" title="All 2 branches missed.">        if (other instanceof tstzset){</span>
+<span class="nc" id="L1030">            result = functions.temporal_minus_tstzset(this.inner,((tstzset) other).get_inner());</span>
+
+<span class="nc bnc" id="L1032" title="All 2 branches missed.">        } else if (other instanceof tstzspan) {</span>
+<span class="nc" id="L1033">            result = functions.temporal_minus_tstzspan(this.inner,((tstzspan) other).get_inner());</span>
+
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">        } else if (other instanceof tstzspanset) {</span>
+<span class="nc" id="L1036">            result = functions.temporal_minus_tstzspanset(this.inner,((tstzspanset) other).get_inner());</span>
+        }
+<span class="nc" id="L1038">        return Factory.create_temporal(result, this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+     * Returns a new temporal object containing the times &quot;this&quot; is not at
+     *         its minimum value.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_minus_min&lt;/li&gt;
+     *
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     */
+    public Temporal minus_min(){
+<span class="nc" id="L1052">        return Factory.create_temporal(functions.temporal_minus_min(this.inner),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /**
+     * Returns a new temporal object containing the times &quot;this&quot; is not at
+     *         its maximum value.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_minus_max&lt;/li&gt;
+     *
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     */
+    public Temporal minus_max(){
+<span class="nc" id="L1066">        return Factory.create_temporal(functions.temporal_minus_max(this.inner),this.getCustomType(),this.getTemporalType());</span>
+    }
+
+    /* ------------------------- Topological Operations ------------------------ */
+
+
+    /**
+     * Returns whether the bounding box of &quot;this&quot; is adjacent to the bounding
+     *         box of &quot;other&quot;. Temporal subclasses may override this method to provide
+     *         more specific behavior related to their types a check adjacency over
+     *         more dimensions.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_adjacent(Base)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if adjacent, False otherwise.
+     */
+    public boolean is_adjacent(TemporalObject other) throws Exception {
+<span class="nc" id="L1086">        return this.bounding_box().is_adjacent(other);</span>
+    }
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; is temporally adjacent
+     *         to the bounding period of &quot;other&quot;.
+     *
+     *   &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_adjacent(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if adjacent, False otherwise.
+     */
+    public boolean is_temporally_adjacent(TemporalObject other) throws Exception {
+<span class="nc" id="L1101">        return this.period().is_adjacent(other);</span>
+    }
+
+    /**
+     * Returns whether the bounding period of &quot;this &quot;is contained in the
+     *         bounding period of &quot;other&quot;. Temporal subclasses may override this
+     *         method to provide more specific behavior related to their types
+     *
+     *  &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_contained_in(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if contained, False otherwise.
+     */
+    public boolean is_contained_in(TemporalObject other) throws Exception {
+<span class="nc" id="L1117">        return this.bounding_box().is_contained_in(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; is contained in the
+     *         bounding period of &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_contained_in(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if contained, False otherwise.
+     */
+    public boolean is_temporally_contained_in(TemporalObject other) throws Exception {
+<span class="nc" id="L1133">        return this.period().is_contained_in(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; contains the bounding
+     *         period of &quot;other&quot;. Temporal subclasses may override this method to
+     *         provide more specific behavior related to their types
+     *
+     *  &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#contains(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if contains, False otherwise.
+     */
+    public boolean contains(TemporalObject other) throws Exception {
+<span class="nc" id="L1150">        return this.bounding_box().contains(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; contains the bounding
+     *         period of &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#contains(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if contains, False otherwise.
+     */
+    public boolean temporally_contains(TemporalObject other) throws Exception {
+<span class="nc" id="L1166">        return this.period().contains(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; overlaps the bounding
+     *         period of &quot;other&quot;. Temporal subclasses may override this method to
+     *         provide more specific behavior related to their types
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#overlaps(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if overlaps, False otherwise.
+     */
+    public boolean overlaps(TemporalObject other) throws Exception {
+<span class="nc" id="L1183">        return this.bounding_box().overlaps(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; overlaps the bounding
+     *         period of &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#overlaps(TemporalObject)}
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if overlaps, False otherwise.
+     */
+    public boolean temporally_overlaps(TemporalObject other) throws Exception {
+<span class="nc" id="L1199">        return this.period().overlaps(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding period of &quot;this&quot; is the same as the
+     *         bounding period of &quot;other&quot;. Temporal subclasses may override this
+     *         method to provide more specific behavior related to their types
+     *
+     *  &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_same(Time)} (TemporalObject)}
+     * @param other A time or temporal object to compare to `self`.
+     * @return True if same, False otherwise.
+     */
+    public boolean is_same(TemporalObject other) throws Exception {
+<span class="nc" id="L1216">        return this.bounding_box().is_same(other);</span>
+    }
+
+
+    /* ------------------------- Position Operations --------------------------- */
+
+
+    /**
+     * Returns whether &quot;this&quot; is before &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_before(TemporalObject)}
+     * @param other A time or temporal object to compare &quot;this&quot; to.
+     * @return True if &quot;this&quot; is before &quot;other&quot;, False otherwise.
+     */
+    public boolean is_before(TemporalObject other) throws Exception {
+<span class="nc" id="L1234">        return this.period().is_before((Time)other);</span>
+    }
+
+    /**
+     * Returns whether &quot;this&quot; is before &quot;other&quot; allowing overlap. That is,
+     *         &quot;this&quot; doesn't extend after &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_over_or_before(TemporalObject)}
+     * @param other A time or temporal object to compare `self` to.
+     * @return True if `self` is before `other` allowing overlap, False otherwise.
+     */
+    public boolean is_over_or_before(TemporalObject other) throws Exception {
+<span class="nc" id="L1249">        return this.period().is_over_or_before((Time)other);</span>
+    }
+
+    /**
+     * Returns whether &quot;this&quot; is after &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_after(TemporalObject)}
+     * @param other A time or temporal object to compare &quot;this&quot; to.
+     * @return True if &quot;this&quot; is after &quot;other&quot;, False otherwise.
+     */
+    public boolean is_after(TemporalObject other) throws Exception {
+<span class="nc" id="L1263">        return this.period().is_after((Time)other);</span>
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is after &quot;other&quot; allowing overlap. That is,
+     *         &quot;this&quot; doesn't extend before &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         See Also:
+     *             {@link tstzset#is_over_or_after(TemporalObject)}
+     * @param other A time or temporal object to compare &quot;this&quot; to.
+     * @return True if &quot;this&quot; is after &quot;other&quot; allowing overlap, False otherwise.
+     */
+    public boolean is_over_or_after(TemporalObject other) throws Exception {
+<span class="nc" id="L1279">        return this.period().is_over_or_after((Time)other);</span>
+    }
+
+
+
+    /* ------------------------- Similarity Operations ------------------------- */
+
+    /**
+     * Returns the Frechet distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_frechet_distance&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Float} with the Frechet distance.
+     */
+    public float frechet_distance(Temporal other){
+<span class="nc" id="L1297">        return (float) functions.temporal_frechet_distance(this.inner,other.getInner());</span>
+    }
+
+    /**
+     * Returns the Dynamic Time Warp distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_dyntimewarp_distance&lt;/li&gt;
+     *
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Float} with the Dynamic Time Warp distance.
+     */
+    public float dyntimewarp_distance(Temporal other){
+<span class="nc" id="L1312">        return (float) functions.temporal_dyntimewarp_distance(this.inner,other.getInner());</span>
+    }
+
+    /**
+     * Returns the Hausdorff distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_hausdorff_distance&lt;/li&gt;
+     *
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Float} with the Hausdorff distance.
+     */
+    public float hausdorff_distance(Temporal other){
+<span class="nc" id="L1327">        return (float) functions.temporal_hausdorff_distance(this.inner,other.getInner());</span>
+    }
+
+
+    /**
+     * Return the simplified trip using Douglas-Peucker algorithm
+     * @param temp Pointer object
+     * @param dist distance
+     * @param sync synchronization
+     * @return a new Pointer object
+     */
+    public Pointer temporal_simplify_dp(Pointer temp, double dist, boolean sync){
+<span class="nc" id="L1339">        return functions.temporal_simplify_dp(temp,dist,sync);</span>
+    }
+
+    /* ------------------------- Split Operations ----------------------------------- */
+
+/**
+        Returns a list of temporal objects of the same subtype as `self` with
+        the same values as `self` but split in temporal tiles of duration
+        `duration` starting at `start`.
+
+        Args:
+            duration: A :class:`str` or :class:`timedelta` with the duration
+                of the temporal tiles.
+            start: A :class:`str` or :class:`datetime` with the start time of
+                the temporal tiles. If None, the start time used by default is
+                Monday, January 3, 2000.
+
+        Returns:
+            A list of temporal objects of the same subtype as `self`.
+
+        MEOS Functions:
+            temporal_time_split
+*/
+
+    private Pointer createEmptyPointerArray(Runtime runtime) {
+        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+<span class="nc" id="L1365">        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), this.num_instants()*Long.BYTES); // Adjust size as needed</span>
+<span class="nc" id="L1366">        return listPointer;</span>
+    }
+
+    public List&lt;Temporal&gt; time_split(Object duration, Object start){
+<span class="nc" id="L1370">        OffsetDateTime st= null;</span>
+<span class="nc" id="L1371">        Pointer dt= null;</span>
+<span class="nc bnc" id="L1372" title="All 2 branches missed.">        if(start == null){</span>
+<span class="nc" id="L1373">            st= functions.pg_timestamptz_in(&quot;2000-01-03&quot;, -1);</span>
+        }
+        else{
+<span class="nc bnc" id="L1376" title="All 2 branches missed.">            if(start instanceof LocalDateTime){</span>
+<span class="nc" id="L1377">                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);</span>
+            }
+            else{
+<span class="nc" id="L1380">                st= functions.pg_timestamptz_in(start.toString(), -1);</span>
+            }
+
+<span class="nc bnc" id="L1383" title="All 2 branches missed.">            if(duration instanceof Duration){</span>
+<span class="nc" id="L1384">                dt= ConversionUtils.timedelta_to_interval((Duration) duration);</span>
+            }
+            else{
+<span class="nc" id="L1387">                dt= functions.pg_interval_in(duration.toString(), -1);</span>
+            }
+        }
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L1391">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L1393">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L1394">        Pointer listPointer = createEmptyPointerArray(runtime);</span>
+<span class="nc" id="L1395">        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);</span>
+<span class="nc" id="L1396">        List&lt;Temporal&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L1397">        int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L1398" title="All 2 branches missed.">        for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L1399">            Pointer res= p.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L1400">            Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L1401">            tempList.add(t);</span>
+        }
+<span class="nc" id="L1403">        return tempList;</span>
+    }
+
+    /**
+            Returns a list of temporal objects of the same subtype as `self` with
+            the same values as `self` but split in n temporal tiles of equal
+            duration.
+
+            Args:
+                n: An :class:`int` with the number of temporal tiles.
+
+            Returns:
+                A list of temporal objects of the same subtype as `self`.
+
+            MEOS Functions:
+                temporal_time_split
+    */
+    public static long convertToTimestamp(LocalDateTime dateTime) {
+        // Converts LocalDateTime to a timestamp (seconds since the Unix epoch)
+<span class="nc" id="L1422">        return dateTime.toEpochSecond(ZoneOffset.UTC);</span>
+    }
+    public static Duration calculateDifference(LocalDateTime start, LocalDateTime end) {
+        // Calculate the duration between two LocalDateTime objects
+<span class="nc" id="L1426">        return Duration.between(start, end);</span>
+    }
+
+    public static Duration calculateIntermediateDuration(LocalDateTime start, LocalDateTime end, int n) {
+        // Convert LocalDateTime to epoch seconds (timestamp)
+<span class="nc" id="L1431">        long startTimestamp = start.toEpochSecond(ZoneOffset.UTC);</span>
+<span class="nc" id="L1432">        long endTimestamp = end.toEpochSecond(ZoneOffset.UTC);</span>
+
+        // Calculate the difference in seconds
+<span class="nc" id="L1435">        long timestampDifference = endTimestamp - startTimestamp;</span>
+
+        // Divide the difference by the given integer n
+<span class="nc" id="L1438">        long dividedTimestampDifference = timestampDifference / n;</span>
+
+        // Convert the divided difference back to a Duration
+<span class="nc" id="L1441">        return Duration.ofSeconds(dividedTimestampDifference);</span>
+    }
+
+    public List&lt;Temporal&gt; time_split_n(int n){
+<span class="nc" id="L1445">        OffsetDateTime st= null;</span>
+<span class="nc" id="L1446">        Pointer dt= null;</span>
+<span class="nc bnc" id="L1447" title="All 2 branches missed.">        if(this.start_timestamp() == this.end_timestamp()){</span>
+<span class="nc" id="L1448">            return Collections.singletonList(this);</span>
+        }
+<span class="nc" id="L1450">        st= functions.temporal_start_timestamptz(this.inner);</span>
+<span class="nc" id="L1451">        LocalDateTime start= this.start_timestamp();</span>
+<span class="nc" id="L1452">        LocalDateTime end= this.end_timestamp();</span>
+<span class="nc" id="L1453">        Duration dur= calculateIntermediateDuration(start, end, n);</span>
+<span class="nc" id="L1454">        dt = ConversionUtils.timedelta_to_interval(dur);</span>
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L1456">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L1458">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L1459">        Pointer listPointer = createEmptyPointerArray(runtime);</span>
+<span class="nc" id="L1460">        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);</span>
+<span class="nc" id="L1461">        List&lt;Temporal&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L1462">        int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L1463" title="All 2 branches missed.">        for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L1464">            Pointer res= p.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L1465">            Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L1466">            tempList.add(t);</span>
+        }
+<span class="nc" id="L1468">        return tempList;</span>
+    }
+
+/**
+        Return the subsequences where the objects stay within an area with a
+        given maximum size for at least the specified duration.
+
+        Args:
+            max_distance: A :class:`float` with the maximum distance of a stop.
+            min_duration: A :class:`timedelta` with the minimum duration of
+                a stop.
+
+        Returns:
+            A :class:`SequenceSet` of the same subtype as `self` with the stops.
+
+        MEOS Functions:
+            temporal_stops
+*/
+
+
+    public Temporal stops(double max_distance, Duration max_duration){
+<span class="nc" id="L1489">        Pointer new_inner= null;</span>
+<span class="nc" id="L1490">        new_inner= functions.temporal_stops(this.inner, max_distance, ConversionUtils.timedelta_to_interval(max_duration));</span>
+<span class="nc" id="L1491">        return Factory.create_temporal(new_inner, this.getCustomType(), this.getTemporalType());</span>
+    }
+
+    /* ------------------------- Comparisons ----------------------------------- */
+
+
+    /**
+     * Returns whether &quot;this&quot; is equal to &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             temporal_eq
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the equality relation.
+     */
+    public boolean eq(Temporal other){
+<span class="nc" id="L1508">        return functions.temporal_eq(this.inner,other.getInner());</span>
+    }
+
+    /**
+     * Returns whether &quot;this&quot; is not equal to &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_ne&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the not equal relation.
+     */
+    public boolean notEquals(Temporal other){
+<span class="nc" id="L1522">        return functions.temporal_ne(this.inner,other.getInner());</span>
+    }
+
+    /**
+     * Returns whether &quot;this&quot; is less than &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_lt&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the less than relation.
+     */
+    public boolean lessThan(Temporal other){
+<span class="nc" id="L1536">        return functions.temporal_lt(this.inner,other.getInner());</span>
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is less or equal than &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_le&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the less or equal than relation.
+     */
+    public boolean lessThanOrEqual(Temporal other){
+<span class="nc" id="L1551">        return functions.temporal_le(this.inner,other.getInner());</span>
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is greater than &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_gt&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the greater than relation.
+     */
+    public boolean greaterThan(Temporal other){
+<span class="nc" id="L1566">        return functions.temporal_gt(this.inner,other.getInner());</span>
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is greater or equal than &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;temporal_ge&lt;/li&gt;
+     * @param other A temporal object to compare to &quot;this&quot;.
+     * @return A {@link Boolean} with the result of the greater or equal than
+     *      *             relation.
+     */
+    public boolean greaterThanOrEqual(Temporal other){
+<span class="nc" id="L1582">        return functions.temporal_ge(this.inner,other.getInner());</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

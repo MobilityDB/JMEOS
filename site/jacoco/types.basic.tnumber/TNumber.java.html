@@ -1,0 +1,881 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TNumber.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.basic.tnumber</a> &gt; <span class="el_source">TNumber.java</span></div><h1>TNumber.java</h1><pre class="source lang-java linenums">package types.basic.tnumber;
+
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import types.TemporalObject;
+import types.basic.tfloat.TFloat;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tfloat.TFloatSeq;
+import types.basic.tfloat.TFloatSeqSet;
+import types.basic.tint.TInt;
+import types.boxes.TBox;
+import functions.functions;
+import types.collections.number.*;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
+import types.temporal.Factory;
+import types.temporal.Temporal;
+import types.temporal.TemporalType;
+import utils.ConversionUtils;
+
+import javax.naming.OperationNotSupportedException;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * Base interface that encompasses the Temporal float and Temporal integer interfaces.
+ *
+ * @author ARIJIT SAMAL
+ */
+public interface TNumber {
+    Pointer getNumberInner();
+    String getCustomType();
+    TemporalType getTemporalType();
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+
+    /**
+     * Returns the bounding box of &quot;this&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;tbox_tnumber&lt;/li&gt;
+     * @return The bounding box of &quot;this&quot;.
+     */
+    default TBox bounding_tbox() throws SQLException {
+<span class="nc" id="L56">        return new TBox(functions.tnumber_to_tbox(getNumberInner()));</span>
+    }
+
+
+    /**
+     * Returns the integral of &quot;this&quot;.
+     *
+     * &lt;p&gt;
+     *         MEOS Function:
+     *             &lt;li&gt;tnumber_integral&lt;/li&gt;
+     * @return The integral of &quot;this&quot;.
+     */
+    default float integral(){
+<span class="nc" id="L69">        return (float) functions.tnumber_integral(getNumberInner());</span>
+    }
+
+    /**
+     * Returns the time weighted average of &quot;this&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Function:
+     *             &lt;li&gt;tnumber_twavg&lt;/li&gt;
+     * @return The time weighted average of &quot;this&quot;.
+     */
+    default float time_weighted_average(){
+<span class="nc" id="L82">        return (float) functions.tnumber_twavg(getNumberInner());</span>
+    }
+
+    /* ------------------------- Transformations ---------------------------------- */
+
+/**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``delta``.
+
+        Args:
+            delta: value to shift
+
+        MEOS Functions:
+            tint_shift_value, tfloat_shift_value
+ */
+    default TNumber shift_value(Object delta) throws Exception {
+<span class="nc" id="L98">        Pointer shifted= null;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if(this instanceof TInt){</span>
+<span class="nc" id="L100">            shifted= functions.tint_shift_value(this.getNumberInner(), (int) delta);</span>
+        }
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        else if (this instanceof TFloat){</span>
+<span class="nc" id="L103">            shifted= functions.tfloat_shift_value(this.getNumberInner(), (double) delta);</span>
+        }
+        else{
+<span class="nc" id="L106">            throw new Exception(&quot;Operation not supported for this object&quot;);</span>
+        }
+<span class="nc" id="L108">        return (TNumber) Factory.create_temporal(shifted, getCustomType(), getTemporalType());</span>
+    }
+
+/**
+        Returns a new :class:`TNumber` scaled so the value dimension has
+        width ``width``.
+
+        Args:
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_scale_value, tfloat_scale_value
+*/
+    default TNumber scale_value(Object width) throws Exception {
+<span class="nc" id="L122">        Pointer scaled= null;</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if(this instanceof TInt){</span>
+<span class="nc" id="L124">            scaled= functions.tint_scale_value(this.getNumberInner(), (int) width);</span>
+        }
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        else if (this instanceof TFloat){</span>
+<span class="nc" id="L127">            scaled= functions.tfloat_scale_value(this.getNumberInner(), (double) width);</span>
+        }
+        else{
+<span class="nc" id="L130">            throw new Exception(&quot;Operation not supported for this object&quot;);</span>
+        }
+<span class="nc" id="L132">        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());</span>
+    }
+
+    /**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``shift`` and scaled so the value dimension has width ``width``.
+
+        Args:
+            shift: value to shift
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_shift_scale_value, tfloat_shift_scale_value
+*/
+    default TNumber shift_scale_value(Object shift, Object width) throws Exception {
+<span class="nc" id="L147">        Pointer scaled= null;</span>
+<span class="nc bnc" id="L148" title="All 6 branches missed.">        if(this instanceof TInt &amp;&amp; shift!=null &amp;&amp; width!=null){</span>
+<span class="nc" id="L149">            scaled= functions.tint_shift_scale_value(this.getNumberInner(), (int) shift, (int) width);</span>
+        }
+<span class="nc bnc" id="L151" title="All 6 branches missed.">        else if (this instanceof TFloat &amp;&amp; shift!=null &amp;&amp; width!=null){</span>
+<span class="nc" id="L152">            scaled= functions.tfloat_shift_scale_value(this.getNumberInner(), (double) shift, (double) width);</span>
+        }
+        else{
+<span class="nc" id="L155">            throw new Exception(&quot;Operation not supported for this object&quot;);</span>
+        }
+<span class="nc" id="L157">        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());</span>
+    }
+
+
+
+    /* ------------------------- Restrictions ---------------------------------- */
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; restricted to
+     *         the value or time &quot;other&quot;.
+     *
+     *   &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;temporal_at_values&lt;/li&gt;
+     *             &lt;li&gt;tnumber_at_span&lt;/li&gt;
+     *             &lt;li&gt;tnumber_at_spanset&lt;/li&gt;
+     *             &lt;li&gt;tnumber_at_tbox&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_timestamp&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_timestampset&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_period&lt;/li&gt;
+     *             &lt;li&gt;temporal_at_periodset&lt;/li&gt;
+     *        &lt;/ul&gt;
+     *
+     * @param other A time or value object to restrict the values of &quot;this&quot; to.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber at(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (other instanceof IntSet){</span>
+<span class="nc" id="L189">            return (TNumber) Factory.create_temporal(functions.temporal_at_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        } else if (other instanceof FloatSet) {</span>
+<span class="nc" id="L191">            return (TNumber) Factory.create_temporal(functions.temporal_at_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L193" title="All 2 branches missed.">         else if (other instanceof IntSpan){</span>
+<span class="nc" id="L194">            return (TNumber) Factory.create_temporal(functions.tnumber_at_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        } else if (other instanceof FloatSpan) {</span>
+<span class="nc" id="L196">            return (TNumber) Factory.create_temporal(functions.tnumber_at_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        else if (other instanceof IntSpanSet){</span>
+<span class="nc" id="L199">            return (TNumber) Factory.create_temporal(functions.tnumber_at_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        } else if (other instanceof FloatSpanSet) {</span>
+<span class="nc" id="L201">            return (TNumber) Factory.create_temporal(functions.tnumber_at_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        else if (other instanceof TBox){</span>
+<span class="nc" id="L204">            return (TNumber) Factory.create_temporal(functions.tnumber_at_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L207">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; restricted to
+     *         the complement of the value or time &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;temporal_minus_values&lt;/li&gt;
+     *             &lt;li&gt;tnumber_minus_span&lt;/li&gt;
+     *             &lt;li&gt;tnumber_minus_spanset&lt;/li&gt;
+     *             &lt;li&gt;tnumber_minus_tbox&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_timestamp&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_timestampset&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_period&lt;/li&gt;
+     *             &lt;li&gt;temporal_minus_periodset&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A time or value object to restrict the values of &quot;this&quot; to
+     *      *             the complement of.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber minus(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (other instanceof IntSet){</span>
+<span class="nc" id="L235">            return (TNumber) Factory.create_temporal(functions.temporal_minus_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        } else if (other instanceof FloatSet) {</span>
+<span class="nc" id="L237">            return (TNumber) Factory.create_temporal(functions.temporal_minus_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        else if (other instanceof IntSpan){</span>
+<span class="nc" id="L240">            return (TNumber) Factory.create_temporal(functions.tnumber_minus_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        } else if (other instanceof FloatSpan) {</span>
+<span class="nc" id="L242">            return (TNumber) Factory.create_temporal(functions.tnumber_minus_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        else if (other instanceof IntSpanSet){</span>
+<span class="nc" id="L245">            return (TNumber) Factory.create_temporal(functions.tnumber_minus_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        } else if (other instanceof FloatSpanSet) {</span>
+<span class="nc" id="L247">            return (TNumber) Factory.create_temporal(functions.tnumber_minus_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        else if (other instanceof TBox){</span>
+<span class="nc" id="L250">            return (TNumber) Factory.create_temporal(functions.tnumber_minus_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L253">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+
+
+
+
+
+
+    /* ------------------------- Position Operations --------------------------- */
+
+
+    /**
+     * Returns whether the bounding box of &quot;this&quot; is left to the bounding box
+     *         of &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     * @param other A box or a temporal object to compare to &quot;this&quot;.
+     * @return True if left, False otherwise.
+     * @throws SQLException
+     */
+    default boolean is_left(TemporalObject other) throws SQLException {
+<span class="nc" id="L278">        return this.bounding_tbox().is_left(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding box of &quot;this&quot; is over or left to the
+     *         bounding box of &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     * @param other A box or a temporal object to compare to &quot;this&quot;.
+     * @return True if over or left, False otherwise.
+     * @throws SQLException
+     */
+    default boolean is_over_or_left(TemporalObject other) throws SQLException {
+<span class="nc" id="L293">        return this.bounding_tbox().is_over_or_left(other);</span>
+    }
+
+
+    /**
+     * Returns whether the bounding box of &quot;this&quot; is right to the bounding
+     *         box of &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     * @param other A box or a temporal object to compare to &quot;this&quot;.
+     * @return True if right, False otherwise.
+     * @throws SQLException
+     */
+    default boolean is_right(TemporalObject other) throws SQLException {
+<span class="nc" id="L308">        return this.bounding_tbox().is_right(other);</span>
+    }
+
+    /**
+     * Returns whether the bounding box of &quot;this&quot; is over or right to the
+     *         bounding box of &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     * @param other A box or a temporal object to compare to &quot;this&quot;.
+     * @return True if over or right, False otherwise.
+     * @throws SQLException
+     */
+    default boolean is_over_or_right(TemporalObject other) throws SQLException {
+<span class="nc" id="L322">        return this.bounding_tbox().is_over_or_right(other);</span>
+    }
+
+
+
+    /* ------------------------- Mathematical Operations ------------------------- */
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; plus &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *         MEOS FUNCTIONS:
+     *          &lt;ul&gt;
+     *              &lt;li&gt;add_tin_int&lt;/li&gt;
+     *              &lt;li&gt;add_tfloat_float&lt;/li&gt;
+     *              &lt;li&gt;add_tnumber_tnumber&lt;/li&gt;
+     *          &lt;/ul&gt;
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
+     *      *             to &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber add(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L346" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L347">            return (TNumber) Factory.create_temporal(functions.add_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L348" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L349">            return (TNumber) Factory.create_temporal(functions.add_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L351">            return (TNumber) Factory.create_temporal(functions.add_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L354">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; plus &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;add_int_tint&lt;/li&gt;
+     *             &lt;li&gt;add_float_tfloat&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer} or {@link Float} to add to &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber radd(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L374" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L375">            return (TNumber) Factory.create_temporal(functions.add_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L376" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L377">            return (TNumber) Factory.create_temporal(functions.add_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L380">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; minus &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;sub_tint_int&lt;/li&gt;
+     *             &lt;li&gt;sub_tfloat_float&lt;/li&gt;
+     *             &lt;li&gt;sub_tnumber_tnumber&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
+     *      *      *             to &quot;this&quot;.
+     * @return  A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber sub(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L402" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L403">            return (TNumber) Factory.create_temporal(functions.sub_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L404" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L405">            return (TNumber) Factory.create_temporal(functions.sub_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L407">            return (TNumber) Factory.create_temporal(functions.sub_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L410">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; minus &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;sub_int_tint&lt;/li&gt;
+     *             &lt;li&gt;sub_float_tfloat&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer} or {@link Float} to add to &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber rsub(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L430" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L431">            return (TNumber) Factory.create_temporal(functions.sub_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L432" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L433">            return (TNumber) Factory.create_temporal(functions.sub_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L436">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; multiplied by &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;mult_tint_int&lt;/li&gt;
+     *             &lt;li&gt;mult_tfloat_float&lt;/li&gt;
+     *             &lt;li&gt;mult_tnumber_tnumber&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
+     *      *      *             to &quot;this&quot;.
+     * @return  A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber mul(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L458" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L459">            return (TNumber) Factory.create_temporal(functions.mult_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L460" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L461">            return (TNumber) Factory.create_temporal(functions.mult_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L463">            return (TNumber) Factory.create_temporal(functions.mult_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L466">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; multiplied &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;mult_int_tint&lt;/li&gt;
+     *             &lt;li&gt;mult_float_tfloat&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer} or {@link Float} to add to &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber rmul(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L487" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L488">            return (TNumber) Factory.create_temporal(functions.mult_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L489" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L490">            return (TNumber) Factory.create_temporal(functions.mult_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L493">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; divided by &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;div_tint_int&lt;/li&gt;
+     *             &lt;li&gt;div_tfloat_float&lt;/li&gt;
+     *             &lt;li&gt;div_tnumber_tnumber&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
+     *      *      *             to &quot;this&quot;.
+     * @return  A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber div(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L517" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L518">            return (TNumber) Factory.create_temporal(functions.div_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L519" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L520">            return (TNumber) Factory.create_temporal(functions.div_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L522">            return (TNumber) Factory.create_temporal(functions.div_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L525">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+
+
+
+    /**
+     * Returns a new temporal object with the values of &quot;this&quot; divided by &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;div_int_tint&lt;/li&gt;
+     *             &lt;li&gt;div_float_tfloat&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer} or {@link Float} to add to &quot;this&quot;.
+     * @return A new temporal object of the same subtype as &quot;this&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TNumber rdiv(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L548" title="All 4 branches missed.">        if ((this instanceof TInt) &amp;&amp; (other instanceof Integer)){</span>
+<span class="nc" id="L549">            return (TNumber) Factory.create_temporal(functions.div_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L550" title="All 4 branches missed.">        } else if ((this instanceof TFloat) &amp;&amp; (other instanceof Float)) {</span>
+<span class="nc" id="L551">            return (TNumber) Factory.create_temporal(functions.div_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L554">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to add to
+            `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+ */
+    default TNumber _add(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L569">        return this.add(other);</span>
+    }
+
+
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to add to `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            add_int_tint, add_float_tfloat
+*/
+    default TNumber _radd(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L586">        return this.radd(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `self` minus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            subtract from `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_tint_int, sub_tfloat_float, sub_tnumber_tnumber
+*/
+    default TNumber _sub(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L603">        return this.sub(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `other` minus `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to subtract `self` to.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_int_tint, sub_float_tfloat
+*/
+    default TNumber _rsub(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L619">        return this.rsub(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            multiply `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_tint_int, mult_tfloat_float, mult_tnumber_tnumber
+*/
+    default TNumber _mul(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L637">        return this.mul(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied
+        by `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to multiply by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_int_tint, mult_float_tfloat
+*/
+    default  TNumber _rmul(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L654">        return this.rmul(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `self` divided by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to divide
+            `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_tint_int, div_tfloat_float, div_tnumber_tnumber
+*/
+    default TNumber _trueDiv(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L672">        return this.div(other);</span>
+    }
+
+/**
+        Returns a new temporal object with the values of `other` divided by
+        `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to divide by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_int_tint, div_float_tfloat
+*/
+    default TNumber _rTrueDiv(Object other) throws OperationNotSupportedException {
+<span class="nc" id="L689">        return this.rdiv(other);</span>
+    }
+
+
+    /**
+     * Returns the absolute value of &quot;this&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;tnumber_abs&lt;/li&gt;
+     * @return A new {@link TNumber} instance.
+     */
+    default TNumber abs(){
+<span class="fc" id="L703">        return (TNumber) Factory.create_temporal(functions.tnumber_abs(getNumberInner()),getCustomType(),getTemporalType());</span>
+    }
+
+    /**
+     * Returns the value difference between consecutive instants of &quot;this&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;tnumber_delta_value&lt;/li&gt;
+     * @return A new {@link TNumber} instance.
+     */
+    default TNumber delta_value(){
+<span class="fc" id="L716">        return (TNumber) Factory.create_temporal(functions.tnumber_delta_value(getNumberInner()),getCustomType(),getTemporalType());</span>
+    }
+
+
+    /* ------------------------- Distance Operations -------------------------- */
+
+
+    /**
+     * Returns the temporal distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;ul&gt;
+     *             &lt;li&gt;distance_tfloat_float&lt;/li&gt;
+     *             &lt;li&gt;distance_tnumber_tnumber&lt;/li&gt;
+     *         &lt;/ul&gt;
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} to
+     *      *             compare to &quot;this&quot;.
+     * @return A {@link TFloat} with the distance between &quot;this&quot; and &quot;other&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default TFloat distance(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L739" title="All 2 branches missed.">        if ( (other instanceof Integer)){</span>
+<span class="nc" id="L740">            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L741" title="All 2 branches missed.">        } else if ((other instanceof Float)) {</span>
+<span class="nc" id="L742">            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L743" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L744">            return (TFloat) Factory.create_temporal(functions.distance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());</span>
+        }
+        else{
+<span class="nc" id="L747">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns the nearest approach distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             nad_tfloat_float
+     *             nad_tfloat_tfloat
+     *             nad_tnumber_tbox
+     * @param other A {@link Integer}, {@link Float} or {@link TNumber} or {@link TBox}to
+     *      *      *             compare to &quot;this&quot;.
+     * @return A {@link Float} with the nearest approach distance between &quot;this&quot;
+     *      *             and &quot;other&quot;.
+     * @throws OperationNotSupportedException
+     */
+    default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L768" title="All 2 branches missed.">        if ( (other instanceof Integer)){</span>
+<span class="nc" id="L769">            return (float) functions.nad_tfloat_float(getNumberInner(),(float)((Integer) other).intValue());</span>
+<span class="nc bnc" id="L770" title="All 2 branches missed.">        } else if ((other instanceof Float)) {</span>
+<span class="nc" id="L771">            return (float) functions.nad_tfloat_float(getNumberInner(),((Float) other).floatValue());</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">        } else if (other instanceof TNumber) {</span>
+<span class="nc" id="L773">            return (float) functions.nad_tfloat_tfloat(getNumberInner(),((TNumber) other).getNumberInner());</span>
+<span class="nc bnc" id="L774" title="All 2 branches missed.">        } else if (other instanceof TBox) {</span>
+<span class="nc" id="L775">            return (float) functions.nad_tfloat_tfloat(getNumberInner(),((TBox) other).get_inner());</span>
+        }
+        else{
+<span class="nc" id="L778">            throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+        }
+    }
+
+    /* --------------------------------------------- Split Operations ---------------------------------------------- */
+
+/**
+        Splits `self` into fragments with respect to value buckets
+
+        Args:
+            start: Start value of the first value bucket.
+            size: Size of the value buckets.
+
+        Returns:
+            A list of temporal ints.
+
+        MEOS Functions:
+            tint_value_split
+*/
+//    private Pointer createEmptyPointerArray(Runtime runtime) {
+//        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+//        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), *Long.BYTES); // Adjust size as needed
+//        return listPointer;
+//    }
+
+    private Pointer createEmptyPointerArray(Runtime runtime, int size) {
+        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+<span class="nc" id="L805">        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), size*Long.BYTES); // Adjust size as needed</span>
+<span class="nc" id="L806">        return listPointer;</span>
+    }
+
+    default List&lt;TNumber&gt; value_split(int size, int start){
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L811">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L813">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L814">        Pointer listPointer = createEmptyPointerArray(runtime, size);</span>
+<span class="nc" id="L815">        Pointer result= functions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);</span>
+<span class="nc" id="L816">        List&lt;TNumber&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L817">        int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L818" title="All 2 branches missed.">        for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L819">            Pointer res= result.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L820">            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L821">            tempList.add(t);</span>
+        }
+<span class="nc" id="L823">        return tempList;</span>
+    }
+
+/**
+        Splits `self` into fragments with respect to value and tstzspan buckets.
+
+        Args:
+            value_size: Size of the value buckets.
+            duration: Duration of the tstzspan buckets.
+            value_start: Start value of the first value bucket. If None, the
+                start value used by default is 0
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+
+        Returns:
+            A list of temporal integers.
+
+        MEOS Functions:
+*/
+
+    default List&lt;TNumber&gt; value_time_split(Object duration, int value_size, int value_start, Object time_start){
+<span class="nc" id="L844">        OffsetDateTime st= null;</span>
+<span class="nc" id="L845">        Pointer dt= null;</span>
+<span class="nc bnc" id="L846" title="All 2 branches missed.">        if(time_start != null){</span>
+<span class="nc" id="L847">            st= functions.pg_timestamptz_in(&quot;2000-01-03&quot;, -1);</span>
+        }
+        else{
+<span class="nc bnc" id="L850" title="All 2 branches missed.">            if(time_start instanceof LocalDateTime){</span>
+<span class="nc" id="L851">                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);</span>
+            }
+            else{
+<span class="nc" id="L854">                st= functions.pg_timestamptz_in(time_start.toString(), -1);</span>
+            }
+
+<span class="nc bnc" id="L857" title="All 2 branches missed.">            if(duration instanceof Duration){</span>
+<span class="nc" id="L858">                dt= ConversionUtils.timedelta_to_interval((Duration) duration);</span>
+            }
+            else{
+<span class="nc" id="L861">                dt= functions.pg_interval_in(duration.toString(), -1);</span>
+            }
+        }
+        // Create a JNR-FFI runtime instance
+<span class="nc" id="L865">        Runtime runtime = Runtime.getSystemRuntime();</span>
+        // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L867">        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L868">        Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);</span>
+<span class="nc" id="L869">        Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);</span>
+<span class="nc" id="L870">        Pointer p= functions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);</span>
+<span class="nc" id="L871">        List&lt;TNumber&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L872">        int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L873" title="All 2 branches missed.">        for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L874">            Pointer res= p.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L875">            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L876">            tempList.add(t);</span>
+        }
+<span class="nc" id="L878">        return tempList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpanSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.collections.base</a> &gt; <span class="el_source">SpanSet.java</span></div><h1>SpanSet.java</h1><pre class="source lang-java linenums">package types.collections.base;
+
+import com.google.common.primitives.Ints;
+import jnr.ffi.Pointer;
+import functions.functions;
+import types.collections.number.FloatSpan;
+import types.collections.number.FloatSpanSet;
+import types.collections.number.IntSpan;
+import types.collections.number.IntSpanSet;
+import types.collections.time.dateset;
+import types.collections.time.datespan;
+import types.collections.time.datespanset;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Abstract class that represents a set of span of temporal object
+ *
+ * @author ARIJIT SAMAL
+ */
+public abstract class SpanSet&lt;T extends Object&gt; implements Collection, Base {
+<span class="fc" id="L28">    private Pointer _inner = null;</span>
+
+    /** ------------------------- Constructor ----------------------------------- */
+
+<span class="fc" id="L32">    public SpanSet(){}</span>
+
+<span class="fc" id="L34">    public SpanSet(Pointer inner){</span>
+<span class="fc" id="L35">        this._inner = createInner(inner);</span>
+<span class="fc" id="L36">    }</span>
+<span class="fc" id="L37">    public SpanSet(String str){</span>
+<span class="fc" id="L38">        this._inner = createStringInner(str);</span>
+<span class="fc" id="L39">    }</span>
+//    public SpanSet(List&lt;tstzspan&gt; periods){this._inner = createListInner(periods);}
+
+
+    public abstract Pointer get_inner();
+    public abstract Pointer createInner(Pointer inner);
+    public abstract Pointer createStringInner(String str);
+//    public abstract Pointer createListInner(List&lt;tstzspan&gt; periods);
+
+
+    /* ------------------------- Conversions ----------------------------------- */
+
+
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+    /**
+     * Returns the copy of a span
+     *
+     * @return Pointer type
+     */
+
+    public Pointer copy() {
+<span class="nc" id="L62">        return functions.spanset_copy(this._inner);</span>
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation.
+     * @return Pointer type
+     */
+    public &lt;T&gt; T from_wkb(Pointer wkb, long size, Class&lt;T&gt; spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="fc" id="L70">        Pointer spanPointer = functions.spanset_from_wkb(wkb, size);</span>
+<span class="fc" id="L71">        Constructor&lt;T&gt; constructor = spansetType.getConstructor(Pointer.class);</span>
+<span class="fc" id="L72">        return constructor.newInstance(spanPointer);</span>
+    }
+
+    /**
+     * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
+     *
+     * @return T type
+     */
+    public static &lt;T&gt; T from_hexwkb(String hexwkb, Class&lt;T&gt; spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="fc" id="L81">        Pointer spanPointer = functions.spanset_from_hexwkb(hexwkb);</span>
+<span class="fc" id="L82">        Constructor&lt;T&gt; constructor = spansetType.getConstructor(Pointer.class);</span>
+<span class="fc" id="L83">        return constructor.newInstance(spanPointer);</span>
+    }
+
+
+        /**
+         * Returns the WKB representation
+         * @return Pointer type
+         */
+        public Pointer as_wkb() {
+<span class="fc" id="L92">            return functions.spanset_as_wkb(this._inner, (byte) 4);</span>
+        }
+
+    /**
+     * Returns the WKB representation in hex-encoded ASCII.
+     * @return String type
+     */
+    public String as_hexwkb() {
+<span class="fc" id="L100">        String[] result= new String[]{functions.spanset_as_hexwkb(this._inner, (byte) -1)};</span>
+//        System.out.println(result[0]);
+<span class="fc" id="L102">        return result[0];</span>
+    }
+
+    /**
+     * Returns a tstzspan set containing span
+     *
+     * @return String type
+     */
+//    public T to_span(Class&lt;T&gt; spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer spanPointer = functions.spanset_span(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
+//    }
+
+    public &lt;T&gt; T to_span(Class&lt;T&gt; spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="fc" id="L116">        Pointer spanPointer = functions.spanset_span(this._inner);</span>
+<span class="fc" id="L117">        Constructor&lt;T&gt; constructor = spansetType.getConstructor(Pointer.class);</span>
+<span class="fc" id="L118">        return constructor.newInstance(spanPointer);</span>
+    }
+
+    /**
+     * Returns a tstzspan set containing spans
+     *
+     * @return String type
+     */
+//    public T to_spans(Class&lt;T&gt; spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer[] spanPointer = functions.spanset_spans(this._inner);
+//        return spantype.getConstructor(Pointer.class).newInstance((Object) spanPointer);
+//    }
+
+//    public List&lt;T&gt; to_spans(){
+//        Pointer ps = functions.spanset_spans(this._inner);
+//        List&lt;T&gt; spanList = new ArrayList&lt;T&gt;(this.num_spans());
+//        System.out.println(this.num_spans());
+//        long pointerSize= Long.BYTES;
+//        for (long i=0; i&lt;this.num_spans(); i++){
+//            Pointer p= ps.getPointer((long) i*pointerSize);
+////            System.out.println(new IntSpan(p).lower().toString());
+////            System.out.println(new IntSpan(p).upper().toString());
+//            spanList.add(new T(p));
+//        }
+//        return spanList;
+//    }
+
+
+    /**
+     * Returns the number of spans in &quot;this&quot;.
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_num_spans&lt;/li&gt;
+     * @return An {@link Integer}
+     */
+    public int num_spans()
+    {
+<span class="fc" id="L156">        return functions.spanset_num_spans(this._inner);</span>
+    }
+
+    /*
+    Returns the first span in &quot;this&quot;.
+      &lt;p&gt;
+
+              MEOS Functions:
+                  &lt;li&gt;spanset_start_span&lt;/li&gt;
+
+    @return A {@link Span} instance
+    */
+    public T start_span(Class&lt;T&gt; start_span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="nc" id="L169">        Pointer startSpanPointer = functions.spanset_start_span(this._inner);</span>
+<span class="nc" id="L170">        return start_span.getConstructor(Pointer.class).newInstance(startSpanPointer);</span>
+    }
+
+    /**
+     * Returns the last span in &quot;this&quot;.
+     * &lt;p&gt;
+     *     MEOS Functions:
+     *     &lt;li&gt;spanset_end_span&lt;/li&gt;
+     *     @return A {@link Span} instance
+     */
+    public T end_span(Class&lt;T&gt; end_span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="nc" id="L181">        Pointer endSpanPointer= functions.spanset_end_span(this._inner);</span>
+<span class="nc" id="L182">        return end_span.getConstructor(Pointer.class).newInstance(endSpanPointer);</span>
+    }
+
+    /**
+     * Returns the n-th span in &quot;this&quot;.
+     * &lt;p&gt;
+     *     MEOS Functions:
+     *     &lt;li&gt;spanset_span_n&lt;/li&gt;
+     *     @param n number of Span
+     * @return A {@link Span} instance
+     */
+    public T span_n(Class&lt;T&gt;span_n, int n) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+<span class="nc" id="L194">        Pointer spanNPointer= functions.spanset_span_n(this._inner, n+1);</span>
+<span class="nc" id="L195">        return span_n.getConstructor(Pointer.class).newInstance(spanNPointer);</span>
+    }
+
+    /*
+    spanset spans
+     */
+//    public T spans(Class&lt;T&gt;spans) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+//        Pointer[] spansPointer= functions.spanset_spans(this._inner);
+//        return spans.getConstructor(Pointer.class).newInstance(spansPointer);
+//    }
+
+<span class="fc" id="L206">    private static final Map&lt;Class&lt;?&gt;, Long&gt; POINTER_SIZES = new HashMap&lt;&gt;();</span>
+
+    static {
+        // Initialize pointer sizes for each class
+<span class="fc" id="L210">        POINTER_SIZES.put(Integer.class, (long) Integer.BYTES);</span>
+<span class="fc" id="L211">        POINTER_SIZES.put(Long.class, (long) Long.BYTES);</span>
+<span class="fc" id="L212">        POINTER_SIZES.put(Pointer.class, (long) Long.BYTES);</span>
+<span class="fc" id="L213">        POINTER_SIZES.put(Double.class, (long) Double.BYTES);</span>
+<span class="fc" id="L214">        POINTER_SIZES.put(IntSpanSet.class, (long) Long.BYTES);</span>
+<span class="fc" id="L215">        POINTER_SIZES.put(FloatSpanSet.class, (long) Double.BYTES);</span>
+<span class="fc" id="L216">        POINTER_SIZES.put(datespanset.class, (long) Long.BYTES);</span>
+<span class="fc" id="L217">        POINTER_SIZES.put(datespan.class, (long) Long.BYTES);</span>
+<span class="fc" id="L218">    }</span>
+
+    private long getPointerSize(Class&lt;?&gt; spanType) {
+<span class="fc" id="L221">        Long size = POINTER_SIZES.get(spanType);</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (size == null) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;Pointer size not defined for class: &quot; + spanType.getName());</span>
+        }
+<span class="fc" id="L225">        return size;</span>
+    }
+
+    /**
+        Returns the list of tstzspans in ``this``.
+        Returns:
+            A :class:`list[TsTzSpan]` instance
+
+        MEOS Functions:
+            spanset_spans
+    */
+    public &lt;T&gt; List&lt;T&gt; spans(Class&lt;T&gt; spanType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, InvocationTargetException {
+<span class="fc" id="L237">        Pointer ps = functions.spanset_spans(this._inner);</span>
+<span class="fc" id="L238">        int numSpans = this.num_spans();</span>
+<span class="fc" id="L239">        List&lt;T&gt; spanList = new ArrayList&lt;T&gt;(numSpans);</span>
+
+<span class="fc" id="L241">        long pointerSize = getPointerSize(spanType);</span>
+<span class="fc" id="L242">        Constructor&lt;T&gt; constructor = spanType.getConstructor(Pointer.class);</span>
+
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        for (long i = 0; i &lt; numSpans; i++) {</span>
+<span class="fc" id="L245">            Pointer p = ps.getPointer(i * pointerSize);</span>
+<span class="fc" id="L246">            T span = constructor.newInstance(p);</span>
+<span class="fc" id="L247">            spanList.add(span);</span>
+        }
+
+<span class="fc" id="L250">        System.out.println(spanList);</span>
+<span class="fc" id="L251">        return spanList;</span>
+    }
+
+    /**
+     * Return the hash representation of &quot;this&quot;.
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_hash&lt;/li&gt;
+     *
+     * @return A new :class:`int` instance
+     */
+    public long hash(){
+<span class="nc" id="L264">        return functions.spanset_hash(this._inner);</span>
+    }
+
+    /* ------------------------- Transformations ------------------------------- */
+
+
+    /* ------------------------- Topological Operations ------------------------ */
+
+
+    /**
+     * Returns whether &quot;this&quot; is adjacent to &quot;other&quot;. That is, they share a bound but only one of them
+     *         contains it.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;adjacent_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;adjacent_spanset_spanset&lt;/li&gt;
+     *
+     * @param other object to compare with
+     * @return True if adjacent, False otherwise
+     * @throws Exception
+     */
+    public boolean is_adjacent(Base other) throws Exception {
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L289">            return functions.adjacent_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L291">            return functions.adjacent_spanset_spanset(this._inner,((SpanSet&lt;?&gt;) other).get_inner());</span>
+        }
+        else {
+<span class="nc" id="L294">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+    /**
+     * Returns whether &quot;this&quot; is contained in &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *           &lt;ul&gt;
+     *             &lt;li&gt;contained_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;contained_spanset_spanset&lt;/li&gt;
+     *           &lt;/ul&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if contained, False otherwise
+     * @throws Exception
+     */
+    public boolean is_contained_in(Base other) throws Exception {
+<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L315">            return functions.contained_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L317">            return functions.contained_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other).get_inner());</span>
+        }
+        else {
+<span class="nc" id="L320">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; contains &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *              &lt;li&gt;contains_spanset_span&lt;/li&gt;
+     *              &lt;li&gt;contains_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if contains, False otherwise
+     * @throws Exception
+     */
+    public boolean contains(Base other) throws Exception {
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L340">            return functions.contains_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L342">            return functions.contains_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L345">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; overlaps &quot;other&quot;. That is, both share at least an instant.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;overlaps_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;overlaps_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if overlaps, False otherwise
+     * @throws Exception
+     */
+    public boolean overlaps(Base other) throws Exception {
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L365">            return functions.overlaps_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L367">            return functions.overlaps_spanset_spanset(this._inner,((SpanSet&lt;?&gt;) other).get_inner());</span>
+        }
+        else {
+<span class="nc" id="L370">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether the bounding span of &quot;this&quot; is the same as the bounding span of &quot;other&quot;.
+     *
+     *             
+     * @param other A time or temporal object to compare to &quot;this&quot;.
+     * @return True if same, False otherwise.
+     * @throws Exception
+     */
+    public boolean is_same(Base other) throws Exception {
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="fc" id="L385">            return functions.spanset_eq(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">        } else if (other instanceof Span&lt;?&gt;) {</span>
+<span class="fc" id="L387">            return functions.spanset_eq(this._inner,functions.span_to_spanset(((Span&lt;?&gt;) other).get_inner()));</span>
+        }
+        else {
+<span class="nc" id="L390">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /* ------------------------- Position Operations --------------------------- */
+
+
+    /**
+     * Returns whether &quot;this&quot; is strictly to the left of &quot;other&quot;. That is, &quot;this&quot; ends before &quot;other&quot; starts.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *              &lt;li&gt;before_periodset_timestamp&lt;/li&gt;
+     *              &lt;li&gt;left_spanset_span&lt;/li&gt;
+     *              &lt;li&gt;left_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if before, False otherwise
+     * @throws Exception
+     */
+    public boolean is_left(Base other) throws Exception {
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L414">            return functions.left_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L416">            return functions.left_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L419">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is to the left of &quot;other&quot; allowing overlap. That is, &quot;this&quot; ends before &quot;other&quot; ends (or
+     *         at the same time).
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;overleft_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;overleft_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if before, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_left(Base other) throws Exception {
+<span class="fc bfc" id="L439" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L440">            return functions.overleft_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L442">            return functions.overleft_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L445">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is strictly after &quot;other&quot;. That is, &quot;this&quot;
+     *         starts after &quot;other&quot; ends.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;right_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;right_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if after, False otherwise
+     * @throws Exception
+     */
+    public boolean is_right(Base other) throws Exception {
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L466">            return functions.right_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L467" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L468">            return functions.right_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L471">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Returns whether &quot;this&quot; is to the right of &quot;other&quot; allowing overlap. That is, &quot;this&quot; starts after &quot;other&quot; starts
+     *         (or at the same time).
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;overright_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;overright_spanset_spanset&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if overlapping or after, False otherwise
+     * @throws Exception
+     */
+    public boolean is_over_or_right(Base other) throws Exception {
+<span class="fc bfc" id="L491" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L492">            return functions.overright_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner());</span>
+<span class="pc bpc" id="L493" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L494">            return functions.overright_spanset_spanset(this._inner, ((SpanSet&lt;?&gt;) other).get_inner());</span>
+        }
+        else {
+<span class="nc" id="L497">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+
+    /* ------------------------- Distance Operations --------------------------- */
+
+
+    /**
+     * Returns the distance between &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;distance_spanset_span&lt;/li&gt;
+     *             &lt;li&gt;distance_spanset_spanset&lt;/li&gt;
+     *
+     * @param other object to compare with
+     * @throws Exception
+     */
+//    public float distance(Base other) throws Exception {
+//        if (other instanceof Span&lt;?&gt;) {
+//            return (float) functions.distance_floatspanset_floatspan(this._inner, ((Span&lt;?&gt;) other).get_inner());
+//        } else if (other instanceof SpanSet&lt;?&gt;) {
+//            return (float) functions.distance_floatspanset_floatspanset(this._inner,((SpanSet&lt;?&gt;) other)._inner);
+//        }
+//        else {
+//            throw new Exception(&quot;Operation not supported with this type&quot;);
+//        }
+//    }
+
+    private void distance(Base other) throws Exception {
+<span class="nc" id="L530">        throw new Exception(&quot;Operation not supported with&quot;+other+&quot;type&quot;);</span>
+    }
+
+    /* ------------------------- Set Operations -------------------------------- */
+
+    /**
+     * Returns the intersection of &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *              &lt;li&gt;intersection_spanset_spanset&lt;/li&gt;
+     *              &lt;li&gt;intersection_spanset_span&lt;/li&gt;
+     *
+     * @param other object to intersect with
+     * @return A collection instance. The actual class depends on &quot;other&quot;.
+     * @throws Exception
+     */
+    protected Base intersection(Base other) throws Exception {
+<span class="fc bfc" id="L549" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L550">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner()));</span>
+<span class="pc bpc" id="L551" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L552">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_spanset_spanset(this._inner,((SpanSet&lt;?&gt;) other).get_inner()));</span>
+        }
+        else {
+<span class="nc" id="L555">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+
+
+    /**
+     * Returns the temporal difference of ``self`` and ``other``.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *              &lt;li&gt;minus_spanset_span&lt;/li&gt;
+     *              &lt;li&gt;minus_spanset_spanset&lt;/li&gt;
+     *
+     * @throws Exception
+     */
+    protected Base minus(Base other) throws Exception {
+<span class="fc bfc" id="L574" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L575">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner()));</span>
+<span class="pc bpc" id="L576" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L577">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_spanset_spanset(this._inner,((SpanSet&lt;?&gt;) other).get_inner()));</span>
+        }
+        else {
+<span class="nc" id="L580">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    public Base mul(Base other) throws Exception {
+<span class="nc" id="L586">        return intersection(other);</span>
+    }
+
+    public Base sub(Base other) throws Exception {
+<span class="nc" id="L590">        return minus(other);</span>
+    }
+
+    /**
+     * Returns the temporal union of &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *         &lt;li&gt;union_periodset_timestamp&lt;/li&gt;
+     *         &lt;li&gt;union_spanset_spanset&lt;/li&gt;
+     *         &lt;li&gt;union_spanset_span&lt;/li&gt;
+     * @throws Exception
+     */
+    protected Base union(Base other) throws Exception {
+<span class="fc bfc" id="L605" title="All 2 branches covered.">        if (other instanceof Span&lt;?&gt;){</span>
+<span class="fc" id="L606">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(this._inner, ((Span&lt;?&gt;) other).get_inner()));</span>
+<span class="pc bpc" id="L607" title="1 of 2 branches missed.">        } else if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="fc" id="L608">            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_spanset(((SpanSet&lt;?&gt;) other).get_inner(),this._inner));</span>
+        }
+        else {
+<span class="nc" id="L611">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+    public Base add(Base other) throws Exception {
+<span class="nc" id="L616">        return union(other);</span>
+    }
+
+    /* ------------------------- Comparisons ----------------------------------- */
+
+
+    /**
+     * Return whether &quot;this&quot; and &quot;other&quot; are equal.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_eq&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if equal, False otherwise
+     */
+    public boolean eq(Base other){
+<span class="nc bnc" id="L634" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="nc" id="L635">            return functions.spanset_eq(this._inner,((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L638">            return false;</span>
+        }
+    }
+
+
+    /**
+     * Return whether &quot;this&quot; and &quot;other&quot; are not equal.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_neq&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if not equal, False otherwise
+     */
+    public boolean notEquals(Base other){
+<span class="nc bnc" id="L655" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="nc" id="L656">            return functions.spanset_ne(this._inner,((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L659">            return true;</span>
+        }
+    }
+
+
+    /**
+     * Return whether &quot;this&quot; is less than &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_lt&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if less than, False otherwise
+     * @throws Exception
+     */
+    public boolean lessThan(Base other) throws Exception {
+<span class="nc bnc" id="L677" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="nc" id="L678">            return functions.spanset_lt(this._inner,((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L681">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Return whether &quot;this&quot; is less than or equal to &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_le&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if less than or equal, False otherwise
+     * @throws Exception
+     */
+    public boolean lessThanOrEqual(Base other) throws Exception {
+<span class="nc bnc" id="L699" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="nc" id="L700">            return functions.spanset_le(this._inner,((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L703">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+
+    /**
+     * Return whether &quot;this&quot; is greater than &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_gt&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if greater than, False otherwise
+     * @throws Exception
+     */
+    public boolean greaterThan(Base other) throws Exception {
+<span class="nc bnc" id="L721" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;){</span>
+<span class="nc" id="L722">            return functions.spanset_gt(this._inner,((SpanSet&lt;?&gt;) other)._inner);</span>
+        }
+        else {
+<span class="nc" id="L725">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+
+    /**
+     * Return whether &quot;this&quot; is greater than or equal to &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;spanset_ge&lt;/li&gt;
+     *
+     * @param other temporal object to compare with
+     * @return True if greater than or equal, False otherwise
+     * @throws Exception
+     */
+    public boolean greaterThanOrEqual(Base other) throws Exception {
+<span class="nc bnc" id="L742" title="All 2 branches missed.">        if (other instanceof SpanSet&lt;?&gt;) {</span>
+<span class="nc" id="L743">            return functions.spanset_ge(this._inner, ((SpanSet&lt;?&gt;) other)._inner);</span>
+        } else {
+<span class="nc" id="L745">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

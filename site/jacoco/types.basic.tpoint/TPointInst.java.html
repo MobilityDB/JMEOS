@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TPointInst.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.basic.tpoint</a> &gt; <span class="el_source">TPointInst.java</span></div><h1>TPointInst.java</h1><pre class="source lang-java linenums">package types.basic.tpoint;
+
+import jnr.ffi.Pointer;
+import org.locationtech.jts.io.ParseException;
+import types.temporal.TInstant;
+import org.locationtech.jts.geom.Point;
+
+/**
+ * Base abstract class for TGeomPointInt and TGeogPointInt
+ *
+ * @author ARIJIT SAMAL
+ */
+public abstract class TPointInst extends TInstant&lt;Point&gt; implements TPoint{
+
+	public Pointer inner;
+
+	public TPointInst(){
+<span class="nc" id="L18">		super();</span>
+
+<span class="nc" id="L20">	}</span>
+
+	/**
+	 * The Pointer constructor
+	 * @param inner Pointer
+	 */
+	public TPointInst(Pointer inner){
+<span class="fc" id="L27">		super(inner);</span>
+<span class="fc" id="L28">		this.inner = createInner(inner);</span>
+<span class="fc" id="L29">	}</span>
+
+	/**
+	 * The string constructor
+	 *
+	 * @param value - the string with the TIntInst value
+	 */
+	public TPointInst(String value){
+<span class="fc" id="L37">		super(value);</span>
+<span class="fc" id="L38">		this.inner = createStringInner(value);</span>
+<span class="fc" id="L39">	}</span>
+
+	public abstract Pointer createStringInner(String str);
+	public abstract Pointer createInner(Pointer inner);
+
+
+	/**
+	 * Returns the value of the temporal point instant.
+	 *
+	 * &lt;p&gt;
+	 * @param precision The precision of the returned geometry.
+	 * @return A new {@link Point} representing the value of the temporal point instant.
+	 * @throws ParseException
+	 */
+	public Point value(int precision) throws ParseException {
+<span class="nc" id="L54">		return this.start_value(precision);</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

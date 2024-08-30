@@ -1,0 +1,1380 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TPoint.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.basic.tpoint</a> &gt; <span class="el_source">TPoint.java</span></div><h1>TPoint.java</h1><pre class="source lang-java linenums">package types.basic.tpoint;
+
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
+import types.TemporalObject;
+import types.basic.tbool.TBool;
+import types.basic.tfloat.TFloat;
+import types.basic.tfloat.TFloatSeqSet;
+import types.basic.tint.TIntInst;
+import types.basic.tint.TIntSeq;
+import types.basic.tint.TIntSeqSet;
+import types.basic.tnumber.TNumber;
+import types.basic.tpoint.tgeog.TGeogPoint;
+import types.basic.tpoint.tgeom.TGeomPoint;
+import types.boxes.STBox;
+import types.collections.base.Set;
+import types.collections.geo.GeoSet;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.temporal.*;
+import functions.functions;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.geom.Point;
+import utils.ConversionUtils;
+import utils.Pair;
+
+import javax.naming.OperationNotSupportedException;
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.*;
+
+/**
+ * Class that represents the MobilityDB type TPoint used for {@link TPointInst}, {@link TPointSeq} and {@link TPointSeqSet}
+ *
+ * @author ARIJIT SAMAL
+ */
+public interface TPoint extends Serializable {
+	Pointer getPointInner();
+	String getCustomType();
+	TemporalType getTemporalType();
+
+    /* ------------------------- Output ---------------------------------------- */
+
+	/**
+	 * Returns the string representation of the temporal point.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_out&lt;/li&gt;
+	 *
+	 * @return A new {@link String} representing the temporal point.
+	 */
+	default String to_string(){
+<span class="fc" id="L59">		return functions.tpoint_as_text(getPointInner(),15);</span>
+	}
+
+
+	/**
+	 * Returns the temporal point as a WKT string.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_out&lt;/li&gt;
+	 *
+	 * @param decimals The precision of the returned geometry.
+	 * @return A new {@link String} representing the temporal point.
+	 */
+	default String as_wkt(int decimals){
+<span class="nc" id="L75">		return functions.tpoint_as_text(getPointInner(),decimals);</span>
+	}
+
+
+	/**
+	 * Returns the temporal point as an EWKT string.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_as_ewkt&lt;/li&gt;
+	 *
+	 * @param decimals The precision of the returned geometry.
+	 * @return A new {@link String} representing the temporal point.
+	 */
+	default String as_ewkt(int decimals){
+<span class="nc" id="L91">		return functions.tpoint_as_ewkt(getPointInner(),decimals);</span>
+	}
+
+
+	/**
+	 * Returns the trajectory of the temporal point as a GeoJSON string.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;gserialized_as_geojson&lt;/li&gt;
+	 *
+	 * @param option The option to use when serializing the trajectory.
+	 * @param precision The precision of the returned geometry.
+	 * @param srs The spatial reference system of the returned geometry.
+	 * @return A new GeoJSON string representing the trajectory of the temporal point.
+	 */
+	default String as_geojson(int option, int precision, String srs){
+<span class="nc" id="L109">		return functions.geo_as_geojson(functions.tpoint_trajectory(getPointInner()),option,precision,srs);</span>
+	}
+
+
+	/**
+	 * Returns the trajectory of the temporal point as a Shapely geometry.
+	 *
+	 *   &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;gserialized_to_shapely_geometry&lt;/li&gt;
+	 *
+	 * @param precision The precision of the returned geometry.
+	 * @return A new {@link Geometry} representing the
+	 * 	 *             trajectory.
+	 * @throws ParseException
+	 */
+	default Geometry to_shapely_geometry(int precision) throws ParseException {
+<span class="nc" id="L127">		return ConversionUtils.gserialized_to_shapely_geometry(getPointInner(),precision);</span>
+	}
+
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+	/**
+	 * Returns the bounding box of the &quot;this&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_to_stbox&lt;/li&gt;
+	 * @return An {@link STBox} representing the bounding box.
+	 */
+	default STBox bounding_box_point(){
+<span class="fc" id="L142">		return new STBox(functions.tpoint_to_stbox(getPointInner()));</span>
+	}
+
+/**
+        Returns the values of the temporal point.
+
+        Returns:
+            A :class:`list` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            temporal_instants
+*/
+    default List&lt;TPoint&gt; values(int precision){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L156">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L158">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L159">		Pointer resPointer= functions.temporal_instants(this.getPointInner(), intPointer);</span>
+<span class="nc" id="L160">		List&lt;TPoint&gt; pointList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L161">		int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">		for(int i=0; i&lt;count; i++){</span>
+<span class="nc" id="L163">			Pointer res= resPointer.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L164">			TPoint t= (TPoint) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());</span>
+<span class="nc" id="L165">			pointList.add(t);</span>
+		}
+<span class="nc" id="L167">		return pointList;</span>
+	}
+
+	/**
+	 * Returns the start value of the temporal point.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_start_value&lt;/li&gt;
+	 * @param precision The precision of the returned point.
+	 * @return A {@link Point} with the start value.
+	 * @throws ParseException
+	 */
+	default Point start_value(int precision) throws ParseException {
+<span class="fc" id="L181">		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);</span>
+	}
+
+	/**
+	 * Returns the end value of the temporal point.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_end_value&lt;/li&gt;
+	 * @param precision The precision of the returned point.
+	 * @return A {@link Point} with the end value.
+	 * @throws ParseException
+	 */
+	default Point end_value(int precision) throws ParseException {
+<span class="fc" id="L195">		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);</span>
+	}
+
+/**
+        Returns the set of values of `self`.
+        Note that when the interpolation is linear, the set will contain only the waypoints.
+
+        Returns:
+            A :class:`set` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            tpoint_values
+*/
+//     default Set&lt;Point&gt; value_set(int precision) throws ParseException {
+//		 // Create a JNR-FFI runtime instance
+//		 Runtime runtime = Runtime.getSystemRuntime();
+//		 // Allocate memory for an integer (4 bytes) but do not set a value
+//		 Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+//		 Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+//		 List&lt;TPoint&gt; pointList= new ArrayList&lt;&gt;();
+//		 int count= intPointer.getInt(Integer.BYTES);
+//		 StringBuilder sb = null;
+//		 sb.append(&quot;{&quot;);
+//		 for(int i=0;i&lt;count;i++) {
+//			 Point p= ConversionUtils.gserialized_to_shapely_point(resPointer.getPointer((long) i *Long.BYTES), precision);
+//			 sb.append(p);
+//			 if(i&lt;count-1){
+//				 sb.append(&quot;, &quot;);
+//			 }
+//		 }
+//		 sb.append(&quot;}&quot;);
+//		 System.out.println(sb.toString());
+//		 return new Set&lt;Point&gt;(sb.toString()) {
+//			 @Override
+//			 public Pointer get_inner() {
+//				 return resPointer;
+//			 }
+//
+//			 @Override
+//			 public Pointer createInner(Pointer inner) {
+//				 return inner;
+//			 }
+//
+//			 @Override
+//			 public Pointer createStringInner(String str) {
+//				 return functions.tgeom(str);
+//			 }
+//
+//			 @Override
+//			 public Point start_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(this.get_inner()), precision);
+//			 }
+//
+//			 @Override
+//			 public Point end_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(this.get_inner()), precision);
+//			 }
+//		 };
+//	 }
+
+/**
+        Returns the value of the temporal point at the given timestamp.
+
+        Args:
+            timestamp: A :class:`datetime` representing the timestamp.
+            precision: An :class:`int` representing the precision of the coordinates.
+
+        Returns:
+            A :class:`~shapely.geometry.Point` with the value.
+
+        MEOS Functions:
+            tpoint_value_at_timestamp
+*/
+	default Point value_at_timestamp(LocalDateTime ts, int precision) throws ParseException {
+		 // Create a JNR-FFI runtime instance
+<span class="nc" id="L270">		 Runtime runtime = Runtime.getSystemRuntime();</span>
+		 // Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L272">		 Pointer geomPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);</span>
+<span class="nc" id="L273">		 boolean b= functions.tpoint_value_at_timestamptz(this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true, geomPointer);</span>
+<span class="nc" id="L274">		 Pointer geom= geomPointer.getPointer(Long.BYTES);</span>
+<span class="nc" id="L275">		 return ConversionUtils.gserialized_to_shapely_point(geom, precision);</span>
+	}
+
+
+	/**
+	 * Returns the length of the trajectory.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_length&lt;/li&gt;
+	 * @return A {@link Float} with the length of the trajectory.
+	 */
+	default float length(){
+<span class="fc" id="L289">		return (float) functions.tpoint_length(getPointInner());</span>
+	}
+
+
+	/**
+	 * Returns the cumulative length of the trajectory.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_cumulative_length&lt;/li&gt;
+	 * @return A {@link TFloat} with the cumulative length of the trajectory.
+	 */
+	default TFloat cumulative_length(){
+<span class="fc" id="L302">		return (TFloat) Factory.create_temporal(functions.tpoint_cumulative_length(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+	}
+
+
+	/**
+	 * Returns the speed of the temporal point.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_speed&lt;/li&gt;
+	 * @return A {@link TFloat} with the speed of the temporal point.
+	 */
+	default TFloat speed(){
+<span class="nc" id="L315">		return (TFloat) Factory.create_temporal(functions.tpoint_speed(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+	}
+
+
+	/**
+	 * Returns the x coordinate of the temporal point.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_get_x&lt;/li&gt;
+	 * @return A {@link TFloat} with the x coordinate of the temporal point.
+	 */
+	default TFloat x(){
+<span class="fc" id="L328">		return (TFloat) Factory.create_temporal(functions.tpoint_get_x(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns the y coordinate of the temporal point.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_get_y&lt;/li&gt;
+	 * @return A {@link TFloat} with the y coordinate of the temporal point.
+	 */
+	default TFloat y(){
+<span class="fc" id="L342">		return (TFloat) Factory.create_temporal(functions.tpoint_get_y(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns the z coordinate of the temporal point.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_get_z&lt;/li&gt;
+	 * @return A {@link TFloat} with the z coordinate of the temporal point.
+	 */
+	default TFloat z(){
+<span class="fc" id="L356">		return (TFloat) Factory.create_temporal(functions.tpoint_get_z(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns whether the temporal point has a z coordinate.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_start_value&lt;/li&gt;
+	 * @return A {@link Boolean} indicating whether the temporal point has a z coordinate.
+	 */
+	default boolean has_z(){
+<span class="fc" id="L371">		return this.bounding_box_point().has_z();</span>
+	}
+
+	/**
+        Returns a collection of :class:`STBox`es representing the bounding boxes of the segments of the temporal point.
+
+        Returns:
+            A :class:`list` of :class:`STBox`es.
+
+        MEOS Functions:
+            tpoint_stboxes
+     */
+	default List&lt;STBox&gt; stboxes(){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L385">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L387">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L388">		Pointer resPointer= functions.tpoint_stboxes(this.getPointInner(), intPointer);</span>
+<span class="nc" id="L389">		List&lt;STBox&gt; stBoxList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L390">		int length= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">		for(int i=0; i&lt;length; i++){</span>
+<span class="nc" id="L392">			Pointer p= resPointer.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L393">			STBox b= new STBox(p);</span>
+<span class="nc" id="L394">			stBoxList.add(b);</span>
+		}
+<span class="nc" id="L396">		return stBoxList;</span>
+	}
+
+
+	/**
+	 * Returns whether the temporal point is simple. That is, whether it does not self-intersect.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_is_simple&lt;/li&gt;
+	 * @return A {@link Boolean} indicating whether the temporal point is simple.
+	 */
+	default boolean is_simple(){
+<span class="fc" id="L410">		return functions.tpoint_is_simple(getPointInner());</span>
+	}
+
+
+	/**
+	 * Returns the temporal bearing between the temporal point and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;bearing_tpoint_point&lt;/li&gt;
+	 *             &lt;li&gt;bearing_tpoint_tpoint&lt;/li&gt;
+	 *
+	 * @param other An object to check the bearing to.
+	 * @return A new {@link TFloat} indicating the temporal bearing between the temporal point and &quot;other&quot;.
+	 */
+	default TFloat bearing(TPoint other){
+<span class="nc" id="L427">		return (TFloat) Factory.create_temporal(functions.bearing_tpoint_tpoint(getPointInner(),other.getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns the azimuth of the temporal point between the start and end locations.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_direction&lt;/li&gt;
+	 * @return A new {@link TFloatSeqSet} indicating the direction of the temporal point.
+	 */
+	default TFloatSeqSet direction(){
+<span class="nc" id="L442">		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_direction(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+	}
+
+
+	/**
+	 * Returns the temporal azimuth of the temporal point.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_azimuth&lt;/li&gt;
+	 * @return A new {@link TFloatSeqSet} indicating the temporal azimuth of the temporal point.
+	 */
+	default TFloatSeqSet azimuth(){
+<span class="nc" id="L456">		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_azimuth(getPointInner()),&quot;Float&quot;,getTemporalType());</span>
+	}
+
+
+	/**
+	 * Returns the angular_difference of the temporal point.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_angular_difference&lt;/li&gt;
+	 * @return A new {@link TFloatSeqSet} indicating the temporal angular_difference of the temporal point.
+	 */
+	default TFloatSeqSet angular_difference(){
+<span class="fc" id="L470">		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_angular_difference(getPointInner()),&quot;Float&quot;, TemporalType.TEMPORAL_SEQUENCE_SET);</span>
+	}
+
+
+	/**
+	 * Returns the time weighted centroid of the temporal point.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_twcentroid&lt;/li&gt;
+	 * @param precision The precision of the returned geometry.
+	 * @return A new {@link Geometry} indicating the time weighted centroid of the temporal point.
+	 * @throws ParseException
+	 */
+	default Point time_weighted_centroid(int precision) throws ParseException {
+<span class="nc" id="L485">		return (Point) ConversionUtils.gserialized_to_shapely_geometry(functions.tpoint_twcentroid(getPointInner()),precision);</span>
+	}
+
+
+
+    /* ------------------------- Spatial Reference System ---------------------- */
+
+	/**
+	 * Returns the SRID.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_srid&lt;/li&gt;
+	 * @return An {@link Integer} representing the SRID.
+	 */
+	default int srid(){
+<span class="fc" id="L501">		return functions.tpoint_srid(getPointInner());</span>
+	}
+
+
+	/**
+	 * Returns a new TPoint with the given SRID.
+	 * &lt;p&gt;
+	 *     MEOS Functions:
+	 *             &lt;li&gt;tpoint_set_srid&lt;/li&gt;
+	 * @param srid int value
+	 * @return Returns a new TPoint with the given SRID.
+	 */
+	default TPoint set_srid(int srid){
+<span class="nc" id="L514">		return (TPoint) Factory.create_temporal(functions.tpoint_set_srid(getPointInner(),srid),getCustomType(),getTemporalType());</span>
+	}
+
+
+
+    /* ------------------------- Transformations ------------------------------- */
+
+
+	/**
+	 * Round the coordinate values to a number of decimal places.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_round&lt;/li&gt;
+	 * @param max_decimals number of decimals
+	 * @return A new {@link TPoint} object.
+	 */
+	default TPoint round(int max_decimals){
+<span class="fc" id="L533">		return (TPoint) Factory.create_temporal(functions.tpoint_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());</span>
+	}
+
+    /**
+        Split the temporal point into a collection of simple temporal points.
+
+        Returns:
+            A :class:`list` of :class:`TPoint`es.
+
+        MEOS Functions:
+            tpoint_make_simple
+    */
+	default List&lt;TPoint&gt; make_simple(){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L547">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L549">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L550">		Pointer resPointer= functions.tpoint_make_simple(this.getPointInner(), intPointer);</span>
+<span class="nc" id="L551">		int length= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc" id="L552">		List&lt;TPoint&gt; tPointList= new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L553">		TemporalType temporalType= getTemporalType();</span>
+<span class="nc" id="L554">		String customType= getCustomType();</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">		for(int i=0;i&lt;length;i++) {</span>
+<span class="nc" id="L556">			Pointer p = resPointer.getPointer((long) i * Long.BYTES);</span>
+<span class="nc" id="L557">			TPoint t = (TPoint) Factory.create_temporal(p, getCustomType(), getTemporalType());</span>
+<span class="nc" id="L558">			tPointList.add(t);</span>
+		}
+<span class="nc" id="L560">		return tPointList;</span>
+	}
+
+
+	/**
+	 * Expands &quot;this&quot; with &quot;other&quot;.
+	 *         The result is equal to &quot;this&quot; but with the spatial dimensions
+	 *         expanded by &quot;other&quot; in all directions.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_expand_space&lt;/li&gt;
+	 * @param other The object to expand &quot;this&quot; with.
+	 * @return A new {@link STBox} instance.
+	 */
+	default STBox expand(float other){
+<span class="nc" id="L576">		return new STBox(functions.tpoint_expand_space(getPointInner(),other));</span>
+	}
+	/**
+        Returns a new :class:`TPoint` of the same subclass of ``self`` transformed to another SRID
+
+        Args:
+            srid: The desired SRID
+
+        Returns:
+             A new :class:`TPoint` instance
+
+         MEOS Functions:
+            tpoint_transform
+	 */
+<span class="fc" id="L590">    Map&lt;AbstractMap.SimpleEntry&lt;Integer, Integer&gt;, Pointer&gt; projectionCache = new HashMap&lt;&gt;();</span>
+	 default TPoint transform(int srid){
+<span class="nc" id="L592">		 AbstractMap.SimpleEntry&lt;Integer, Integer&gt; srids = new AbstractMap.SimpleEntry&lt;&gt;(this.srid(), srid);</span>
+		 // Check and cache the projection if not already cached
+<span class="nc bnc" id="L594" title="All 2 branches missed.">		 if (!projectionCache.containsKey(srids)) {</span>
+<span class="nc" id="L595">			 projectionCache.put(srids, functions.lwproj_transform(srids.getKey(), srids.getValue()));</span>
+		 }
+		 // Perform the transformation using the cached projection
+<span class="nc" id="L598">		 Pointer result = functions.tpoint_transform_pj(this.getPointInner(), srid, projectionCache.get(srids));</span>
+
+		 // Create and return a new TPoint instance
+<span class="nc" id="L601">		 return (TPoint) Factory.create_temporal(result, getCustomType(), getTemporalType());</span>
+	 }
+
+    /* ------------------------- Restrictions ---------------------------------- */
+
+
+	/**
+	 * Returns a new temporal object with the values of &quot;this&quot; restricted to &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;tpoint_at_value&lt;/li&gt;
+	 *             &lt;li&gt;tpoint_at_stbox&lt;/li&gt;
+	 *             &lt;li&gt;temporal_at_values&lt;/li&gt;
+	 *             &lt;li&gt;temporal_at_timestamp&lt;/li&gt;
+	 *             &lt;li&gt;temporal_at_timestampset&lt;/li&gt;
+	 *             &lt;li&gt;temporal_at_tstzset&lt;/li&gt;
+	 *             &lt;li&gt;temporal_at_tstzsetset&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other An object to restrict the values of &quot;this&quot; to.
+	 * @return A new {@link TPoint} with the values of &quot;this&quot; restricted to &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TPoint at(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L627" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L628">			boolean geodetic = this instanceof TGeomPoint;</span>
+<span class="nc" id="L629">			return (TPoint) Factory.create_temporal(functions.tpoint_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">		} else if (other instanceof GeoSet) {</span>
+<span class="nc" id="L631">			return (TPoint) Factory.create_temporal(functions.temporal_at_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L632" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L633">			return (TPoint) Factory.create_temporal(functions.tpoint_at_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L636">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns a new temporal object with the values of &quot;this&quot; restricted to the complement of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tpoint_minus_value&lt;/li&gt;
+	 *             &lt;li&gt;tpoint_minus_stbox&lt;/li&gt;
+	 *             &lt;li&gt;temporal_minus_values&lt;/li&gt;
+	 *             &lt;li&gt;temporal_minus_timestamp&lt;/li&gt;
+	 *             &lt;li&gt;temporal_minus_timestampset&lt;/li&gt;
+	 *             &lt;li&gt;temporal_minus_tstzset&lt;/li&gt;
+	 *             &lt;li&gt;temporal_minus_tstzsetset&lt;/li&gt;
+	 * @param other An object to restrict the values of &quot;this&quot; to the complement of.
+	 * @return A {@link TPoint} with the values of &quot;this&quot; restricted to the complement of &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TPoint minus(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L659" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L660">			boolean geodetic = this instanceof TGeomPoint;</span>
+<span class="nc" id="L661">			return (TPoint) Factory.create_temporal(functions.tpoint_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">		} else if (other instanceof GeoSet) {</span>
+<span class="nc" id="L663">			return (TPoint) Factory.create_temporal(functions.temporal_minus_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());</span>
+<span class="nc bnc" id="L664" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L665">			return (TPoint) Factory.create_temporal(functions.tpoint_minus_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L668">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+    /* ------------------------- Position Operations --------------------------- */
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is left to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if left, False otherwise.
+	 */
+	default boolean is_left(TemporalObject other){
+<span class="nc" id="L687">		return this.bounding_box_point().is_left(other);</span>
+	}
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or left to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or left, False otherwise.
+	 */
+	default boolean is_over_or_left(TemporalObject other){
+<span class="nc" id="L703">		return this.bounding_box_point().is_over_or_left(other);</span>
+	}
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is right to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if right, False otherwise.
+	 */
+	default boolean is_right(TemporalObject other){
+<span class="nc" id="L718">		return this.bounding_box_point().is_right(other);</span>
+	}
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or right to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or right, False otherwise.
+	 */
+	default boolean is_over_or_right(TemporalObject other){
+<span class="nc" id="L735">		return this.bounding_box_point().is_over_or_right(other);</span>
+	}
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is below to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if below, False otherwise.
+	 */
+	default boolean is_below(TemporalObject other){
+<span class="nc" id="L751">		return this.bounding_box_point().is_below(other);</span>
+	}
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or below to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or below, False otherwise.
+	 */
+	default boolean is_over_or_below(TemporalObject other){
+<span class="nc" id="L766">		return this.bounding_box_point().is_over_or_below(other);</span>
+	}
+
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is above to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if above, False otherwise.
+	 */
+	default boolean is_above(TemporalObject other){
+<span class="nc" id="L784">		return this.bounding_box_point().is_above(other);</span>
+	}
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or above to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or above, False otherwise.
+	 */
+	default boolean is_over_or_above(TemporalObject other){
+<span class="nc" id="L800">		return this.bounding_box_point().is_over_or_above(other);</span>
+	}
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is front to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if front, False otherwise.
+	 */
+	default boolean is_front(TemporalObject other){
+<span class="nc" id="L817">		return this.bounding_box_point().is_front(other);</span>
+	}
+
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or front to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or front, False otherwise.
+	 */
+	default boolean is_over_or_front(TemporalObject other){
+<span class="nc" id="L835">		return this.bounding_box_point().is_over_or_front(other);</span>
+	}
+
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is behind to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if behind, False otherwise.
+	 */
+	default boolean is_behind(TemporalObject other){
+<span class="nc" id="L853">		return this.bounding_box_point().is_behind(other);</span>
+	}
+
+
+
+
+
+	/**
+	 * Returns whether the bounding box of &quot;this&quot; is over or behind to the bounding box of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         See Also:
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
+	 * @param other A box or a temporal object to compare to &quot;this&quot;.
+	 * @return True if over or behind, False otherwise.
+	 */
+	default boolean is_over_or_behind(TemporalObject other){
+<span class="nc" id="L871">		return this.bounding_box_point().is_over_or_behind(other);</span>
+	}
+
+
+
+    /* ------------------------- Ever Spatial Relationships -------------------- */
+
+
+	/**
+	 * Returns whether the temporal point is ever contained by &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;econtains_geo_tpoint&lt;/li&gt;
+	 * @param other An object to check for containing &quot;this&quot;.
+	 * @return  A {@link Boolean} indicating whether the temporal point is ever contained by &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default boolean is_ever_contained_in(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L890" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc bnc" id="L891" title="All 2 branches missed.">			return 1 == functions.econtains_geo_tpoint(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner());</span>
+<span class="nc bnc" id="L892" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc bnc" id="L893" title="All 2 branches missed.">			return 1 == functions.econtains_geo_tpoint(functions.stbox_to_geo(((STBox) other).get_inner()),getPointInner());</span>
+		}
+		else{
+<span class="nc" id="L896">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns whether the temporal point is ever disjoint from &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;edisjoint_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;edisjoint_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check for disjointness with.
+	 * @return  A {@link Boolean} indicating whether the temporal point is ever disjoint from &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default boolean is_ever_disjoint(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L913" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc bnc" id="L914" title="All 2 branches missed.">			return 1 == functions.edisjoint_tpoint_geo(getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));</span>
+<span class="nc bnc" id="L915" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc bnc" id="L916" title="All 2 branches missed.">			return 1 == functions.edisjoint_tpoint_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));</span>
+<span class="nc bnc" id="L917" title="All 2 branches missed.">		} else if (other instanceof TPoint) {</span>
+<span class="nc bnc" id="L918" title="All 2 branches missed.">			return 1 == functions.edisjoint_tpoint_tpoint(getPointInner(), ((TPoint) other).getPointInner());</span>
+		} else{
+<span class="nc" id="L920">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns whether the temporal point is ever within &quot;distance&quot; of &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;edwithin_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;edwithin_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check the distance to.
+	 * @param distance The distance to check in units of the spatial reference system.
+	 * @return A {@link Boolean} indicating whether the temporal point is ever within &quot;distance&quot; of &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default boolean is_ever_within_distance(Object other, float distance) throws OperationNotSupportedException {
+<span class="nc bnc" id="L939" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc bnc" id="L940" title="All 2 branches missed.">			return 1 == functions.edwithin_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance);</span>
+<span class="nc bnc" id="L941" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc bnc" id="L942" title="All 2 branches missed.">			return 1 == functions.edwithin_tpoint_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()), distance);</span>
+<span class="nc bnc" id="L943" title="All 2 branches missed.">		} else if (other instanceof TPoint) {</span>
+<span class="nc bnc" id="L944" title="All 2 branches missed.">			return 1 == functions.edwithin_tpoint_tpoint(getPointInner(), ((TPoint) other).getPointInner(), distance);</span>
+		} else{
+<span class="nc" id="L946">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns whether the temporal point ever intersects &quot;other&quot;.
+	 *
+	 * &lt;P&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;eintersects_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;eintersects_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check for intersection with.
+	 * @return A {@link Boolean} indicating whether the temporal point ever intersects &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default boolean ever_intersects(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L964" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc bnc" id="L965" title="All 2 branches missed.">			return 1 == functions.eintersects_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc bnc" id="L967" title="All 2 branches missed.">			return 1 == functions.eintersects_tpoint_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));</span>
+<span class="nc bnc" id="L968" title="All 2 branches missed.">		} else if (other instanceof TPoint) {</span>
+<span class="nc bnc" id="L969" title="All 2 branches missed.">			return 1 == functions.eintersects_tpoint_tpoint(getPointInner(), ((TPoint) other).getPointInner());</span>
+		} else{
+<span class="nc" id="L971">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns whether the temporal point ever touches &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;etouches_tpoint_geo&lt;/li&gt;
+	 * @param other An object to check for touching with.
+	 * @return A {@link Boolean} indicating whether the temporal point ever touches &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default boolean ever_touches(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L988" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc bnc" id="L989" title="All 2 branches missed.">			return 1 == functions.etouches_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));</span>
+<span class="nc bnc" id="L990" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc bnc" id="L991" title="All 2 branches missed.">			return 1 == functions.etouches_tpoint_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));</span>
+		}  else{
+<span class="nc" id="L993">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+    /* ------------------------- Temporal Spatial Relationships ---------------- */
+
+
+	/**
+	 * Returns a new temporal boolean indicating whether the temporal point is contained by &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tcontains_geo_tpoint&lt;/li&gt;
+	 * @param other An object to check for containing &quot;this&quot;.
+	 * @return A {@link TBool} indicating whether the temporal point is contained by &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TBool is_spatially_contained_in(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1013" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1014">			return (TBool) Factory.create_temporal(functions.tcontains_geo_tpoint(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner(),false,false), &quot;Boolean&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1015" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1016">			return (TBool) Factory.create_temporal(functions.tcontains_geo_tpoint(functions.stbox_to_geo(((STBox) other).get_inner()), getPointInner(), false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+		}  else{
+<span class="nc" id="L1018">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns a new temporal boolean indicating whether the temporal point intersects &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tdisjoint_tpoint_geo&lt;/li&gt;
+	 * @param other An object to check for intersection with.
+	 * @return A {@link TBool} indicating whether the temporal point intersects &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TBool disjoint(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1036">			return (TBool) Factory.create_temporal(functions.tdisjoint_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), &quot;Boolean&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1038">			return (TBool) Factory.create_temporal(functions.tdisjoint_tpoint_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+		}  else{
+<span class="nc" id="L1040">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns a new temporal boolean indicating whether the temporal point is within &quot;distance&quot; of &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tdwithin_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;tdwithin_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check the distance to.
+	 * @param distance The distance to check in units of the spatial reference system.
+	 * @return A {@link TBool} indicating whether the temporal point is within &quot;distance&quot; of &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TBool within_distance(Object other, float distance) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1058" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1059">			return (TBool) Factory.create_temporal(functions.tdwithin_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance, false,false), &quot;Boolean&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1060" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1061">			return (TBool) Factory.create_temporal(functions.tdwithin_tpoint_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), distance,false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+<span class="nc bnc" id="L1062" title="All 2 branches missed.">		} else if(other instanceof TPoint){</span>
+<span class="nc" id="L1063">			return (TBool) Factory.create_temporal(functions.tdwithin_tpoint_tpoint(getPointInner(),((TPoint) other).getPointInner(), distance,false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+		}else{
+<span class="nc" id="L1065">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns a new temporal boolean indicating whether the temporal point intersects &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tintersects_tpoint_geo&lt;/li&gt;
+	 * @param other An object to check for intersection with.
+	 * @return A {@link TBool} indicating whether the temporal point intersects &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TBool intersects(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1082" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1083">			return (TBool) Factory.create_temporal(functions.tintersects_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), &quot;Boolean&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1084" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1085">			return (TBool) Factory.create_temporal(functions.tintersects_tpoint_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+		}  else{
+<span class="nc" id="L1087">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns a new temporal boolean indicating whether the temporal point touches &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;ttouches_tpoint_geo&lt;/li&gt;
+	 * @param other An object to check for touching with.
+	 * @return A {@link TBool} indicating whether the temporal point touches &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TBool touches(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1104" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1105">			return (TBool) Factory.create_temporal(functions.ttouches_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), &quot;Boolean&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1106" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1107">			return (TBool) Factory.create_temporal(functions.ttouches_tpoint_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), &quot;Boolean&quot;, getTemporalType()  );</span>
+		}  else{
+<span class="nc" id="L1109">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+    /* ------------------------- Distance Operations --------------------------- */
+
+
+	/**
+	 * Returns the temporal distance between the temporal point and &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;distance_tpoint_point&lt;/li&gt;
+	 *             &lt;li&gt;distance_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check the distance to.
+	 * @return A new {@link TFloat} indicating the temporal distance between the temporal point and &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TFloat distance(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1128" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1129">			return (TFloat) Factory.create_temporal(functions.distance_tpoint_point(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), &quot;Float&quot;, getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1130" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1131">			return (TFloat) Factory.create_temporal(functions.distance_tpoint_point(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), &quot;Float&quot;, getTemporalType()  );</span>
+<span class="nc bnc" id="L1132" title="All 2 branches missed.">		} else if(other instanceof TPoint){</span>
+<span class="nc" id="L1133">			return (TFloat) Factory.create_temporal(functions.distance_tpoint_tpoint(getPointInner(),((TPoint) other).getPointInner()), &quot;Float&quot;, getTemporalType()  );</span>
+		}else{
+<span class="nc" id="L1135">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns the nearest approach distance between the temporal point and &quot;other&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;nad_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;nad_tpoint_stbox&lt;/li&gt;
+	 *             &lt;li&gt;nad_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check the nearest approach distance to.
+	 * @return A {@link Float} indicating the nearest approach distance between the temporal point and &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1153" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1154">			return (float) functions.nad_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));</span>
+<span class="nc bnc" id="L1155" title="All 2 branches missed.">		} else if (other instanceof STBox) {</span>
+<span class="nc" id="L1156">			return (float) functions.nad_tpoint_stbox(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));</span>
+<span class="nc bnc" id="L1157" title="All 2 branches missed.">		} else if (other instanceof TPoint) {</span>
+<span class="nc" id="L1158">			return (float) functions.nad_tpoint_tpoint(getPointInner(), ((TPoint) other).getPointInner());</span>
+		} else{
+<span class="nc" id="L1160">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Returns the nearest approach instant between the temporal point and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;nai_tpoint_geo&lt;/li&gt;
+	 *             &lt;li&gt;nai_tpoint_tpoint&lt;/li&gt;
+	 * @param other An object to check the nearest approach instant to.
+	 * @return A new temporal instant indicating the nearest approach instant between the temporal point and &quot;other&quot;.
+	 * @throws OperationNotSupportedException
+	 */
+	default TInstant nearest_approach_instant(Object other) throws OperationNotSupportedException {
+<span class="nc bnc" id="L1177" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1178">			return (TInstant) Factory.create_temporal(functions.nai_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), getCustomType(), getTemporalType() ) ;</span>
+<span class="nc bnc" id="L1179" title="All 2 branches missed.">		} else if(other instanceof TPoint){</span>
+<span class="nc" id="L1180">			return (TInstant) Factory.create_temporal(functions.nai_tpoint_tpoint(getPointInner(),((TPoint) other).getPointInner()), getCustomType(), getTemporalType()  );</span>
+		}else{
+<span class="nc" id="L1182">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+	}
+
+	/**
+        Returns the shortest line between the temporal point and `other`.
+
+        Args:
+            other: An object to check the shortest line to.
+
+        Returns:
+            A new :class:`~shapely.geometry.base.BaseGeometry` indicating the shortest line between the temporal point
+            and `other`.
+
+        MEOS Functions:
+            shortestline_tpoint_geo, shortestline_tpoint_tpoint
+    */
+
+	default Geometry shortest_line(Object other) throws OperationNotSupportedException, ParseException {
+<span class="nc" id="L1201">		Pointer res= null;</span>
+<span class="nc bnc" id="L1202" title="All 2 branches missed.">		if (other instanceof Geometry){</span>
+<span class="nc" id="L1203">			boolean b= this instanceof TGeogPoint;</span>
+<span class="nc" id="L1204">            Pointer gs= ConversionUtils.geo_to_gserialized((Geometry) other, b);</span>
+<span class="nc" id="L1205">			res= functions.shortestline_tpoint_geo(this.getPointInner(), gs);</span>
+<span class="nc bnc" id="L1206" title="All 2 branches missed.">		} else if(other instanceof TPoint){</span>
+<span class="nc" id="L1207">			res= functions.shortestline_tpoint_geo(this.getPointInner(), ((TPoint) other).getPointInner());</span>
+		}else{
+<span class="nc" id="L1209">			throw new OperationNotSupportedException(&quot;Operand not supported&quot;);</span>
+		}
+<span class="nc" id="L1211">		return ConversionUtils.gserialized_to_shapely_geometry(res, 10);</span>
+	}
+
+	/* ------------------------- Tiling Operations --------------------------- */
+    /**
+        Split the temporal point into segments following the tiling of the
+        bounding box.
+
+        Args:
+            size: The size of the spatial tiles. If `self` has a spatial
+                dimension and this argument is not provided, the tiling will be
+                only temporal.
+            duration: The duration of the temporal tiles. If `self` has a time
+                dimension and this argument is not provided, the tiling will be
+                only spatial.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            start: The start time of the temporal tiling. If not provided,
+                the start time used by default is Monday, January 3, 2000.
+            remove_empty: If True, remove the tiles that are empty.
+
+        Returns:
+            A list of :class:`TPoint` objects.
+
+        See Also:
+            :meth:`STBox.tile`
+    */
+//	default List&lt;TPoint&gt; tile(float size, Object duration, Geometry origin, Object start, boolean remove_empty){
+//		STBox bbox= STBox.from_tpoint(this);
+//		tiles= bbox
+//	}
+	// implement the tile operation by pulling the latest meos.h and
+	// getting the new tile functions from it like stbox_space_time_tiles
+	// which is first used in STBox and then called here to make tiles
+
+	/* ------------------------- Splitting Operations --------------------------- */
+
+    /**
+        Splits `self` into fragments with respect to space buckets
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal points.
+
+        MEOS Functions:
+            tpoint_value_split
+     */
+	private Pointer createEmptyPointerArray(Runtime runtime, int length) {
+		// Allocate memory for a list of integers
+<span class="nc" id="L1268">		Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), length*Long.BYTES); // Adjust size as needed</span>
+<span class="nc" id="L1269">		return listPointer;</span>
+	}
+
+	default List&lt;Temporal&gt; space_split(Float xsize, Float ysize, Float zsize, Geometry origin, boolean bitmatrix, boolean include_border){
+<span class="nc bnc" id="L1273" title="All 2 branches missed.">		Float ysz = (ysize != null) ? ysize : xsize;</span>
+<span class="nc bnc" id="L1274" title="All 2 branches missed.">		Float zsz = (zsize != null) ? zsize : xsize;</span>
+<span class="nc" id="L1275">		Pointer gs= null;</span>
+<span class="nc" id="L1276">		boolean isTGeogPoint= this instanceof TGeogPoint;</span>
+<span class="nc bnc" id="L1277" title="All 2 branches missed.">		if(origin != null){</span>
+<span class="nc" id="L1278">			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);</span>
+		}
+        else{
+<span class="nc bnc" id="L1281" title="All 2 branches missed.">			if(isTGeogPoint){</span>
+<span class="nc" id="L1282">				gs= functions.pgis_geography_in(&quot;Point (0 0 0)&quot;, -1);</span>
+			}
+			else{
+<span class="nc" id="L1285">				gs= functions.pgis_geometry_in(&quot;Point (0 0 0)&quot;, -1);</span>
+			}
+		}
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L1289">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L1291">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L1292">		int length= runtime.longSize();</span>
+<span class="nc" id="L1293">		Pointer space_buckets = createEmptyPointerArray(runtime, length);</span>
+<span class="nc" id="L1294">		Pointer resPointer= functions.tpoint_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);</span>
+<span class="nc" id="L1295">		int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc" id="L1296">		List&lt;Temporal&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L1297" title="All 2 branches missed.">		for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L1298">			Pointer p= resPointer.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L1299">            tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));</span>
+		}
+<span class="nc" id="L1301">		return tempList;</span>
+	}
+
+   /**
+        Splits `self` into fragments with respect to space and tstzspan buckets.
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            duration: Duration of the tstzspan buckets.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal floats.
+
+        MEOS Functions:
+            tfloat_value_time_split
+    */
+	default List&lt;Temporal&gt; space_time_split(Float xsize, Object duration, Float ysize, Float zsize, Geometry origin, Object time_start, boolean bitmatrix, boolean include_border){
+<span class="nc bnc" id="L1326" title="All 2 branches missed.">		Float ysz = (ysize != null) ? ysize : xsize;</span>
+<span class="nc bnc" id="L1327" title="All 2 branches missed.">		Float zsz = (zsize != null) ? zsize : xsize;</span>
+<span class="nc" id="L1328">		Pointer dt=  null;</span>
+<span class="nc bnc" id="L1329" title="All 2 branches missed.">		if(duration instanceof Duration){</span>
+<span class="nc" id="L1330">			dt= ConversionUtils.timedelta_to_interval((Duration) duration);</span>
+		}
+		else{
+<span class="nc" id="L1333">			dt= functions.pg_interval_in(duration.toString(), -1);</span>
+		}
+
+<span class="nc" id="L1336">		Pointer gs= null;</span>
+<span class="nc" id="L1337">		boolean isTGeogPoint= this instanceof TGeogPoint;</span>
+<span class="nc bnc" id="L1338" title="All 2 branches missed.">		if(origin != null){</span>
+<span class="nc" id="L1339">			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);</span>
+		}
+		else{
+<span class="nc bnc" id="L1342" title="All 2 branches missed.">			if(isTGeogPoint){</span>
+<span class="nc" id="L1343">				gs= functions.pgis_geography_in(&quot;Point (0 0 0)&quot;, -1);</span>
+			}
+			else{
+<span class="nc" id="L1346">				gs= functions.pgis_geometry_in(&quot;Point (0 0 0)&quot;, -1);</span>
+			}
+		}
+
+<span class="nc" id="L1350">		OffsetDateTime st= null;</span>
+<span class="nc bnc" id="L1351" title="All 2 branches missed.">		if(time_start!=null){</span>
+<span class="nc" id="L1352">			st= functions.pg_timestamptz_in(&quot;2000-01-03&quot;, -1);</span>
+		}
+		else{
+<span class="nc bnc" id="L1355" title="All 2 branches missed.">			if(time_start instanceof LocalDateTime){</span>
+<span class="nc" id="L1356">				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);</span>
+			}
+			else{
+<span class="nc" id="L1359">				st= functions.pg_timestamptz_in(time_start.toString(), -1);</span>
+			}
+		}
+
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L1364">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L1366">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L1367">		int length= runtime.longSize();</span>
+<span class="nc" id="L1368">		Pointer space_buckets = createEmptyPointerArray(runtime, length);</span>
+<span class="nc" id="L1369">		Pointer time_buckets = createEmptyPointerArray(runtime, length);</span>
+<span class="nc" id="L1370">		Pointer resPointer= functions.tpoint_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border, space_buckets, time_buckets, intPointer);</span>
+<span class="nc" id="L1371">		int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc" id="L1372">		List&lt;Temporal&gt; tempList= new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L1373" title="All 2 branches missed.">		for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L1374">			Pointer p= resPointer.getPointer((long) i *Long.BYTES);</span>
+<span class="nc" id="L1375">			tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));</span>
+		}
+<span class="nc" id="L1377">		return tempList;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

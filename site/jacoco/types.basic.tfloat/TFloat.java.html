@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TFloat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.basic.tfloat</a> &gt; <span class="el_source">TFloat.java</span></div><h1>TFloat.java</h1><pre class="source lang-java linenums">package types.basic.tfloat;
+
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import types.basic.tbool.TBoolInst;
+import types.basic.tbool.TBoolSeq;
+import types.basic.tbool.TBoolSeqSet;
+import types.basic.tint.TInt;
+import types.basic.tnumber.TNumber;
+import types.collections.number.FloatSet;
+import types.collections.number.FloatSpan;
+import types.collections.number.FloatSpanSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.Time;
+import types.collections.time.tstzspanset;
+import types.temporal.*;
+import functions.functions;
+import utils.ConversionUtils;
+
+import java.time.LocalDateTime;
+
+
+/**
+ * Class that represents the MobilityDB type TFloat used for {@link TFloatInst}, {@link TFloatSeq} and {@link TFloatSeqSet}
+ *
+ * @author ARIJIT SAMAL
+ */
+public interface TFloat extends TNumber {
+	String customType = &quot;Float&quot;;
+	Pointer getNumberInner();
+	String getCustomType();
+	TemporalType getTemporalType();
+
+	
+	/* ------------------------- Constructors ---------------------------------- */
+
+
+	/**
+	 * Returns a new temporal float with the value &quot;value&quot; and the temporal
+	 *         frame of &quot;base&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_from_base_temp&lt;/li&gt;
+	 *
+	 * @param value Value of the temporal float.
+	 * @param base Temporal object to get the temporal frame from.
+	 * @param interp Interpolation of the temporal float.
+	 * @return A new {@link Float} object.
+	 */
+	default TFloat from_base_temporal(float value, Temporal base, TInterpolation interp){
+<span class="fc" id="L54">		return (TFloat) Factory.create_temporal(functions.tfloat_from_base_temp(value,base.getInner()),getCustomType(),getTemporalType());</span>
+	}
+
+	/**
+	 * Returns a new temporal float with the value &quot;value&quot; and the temporal
+	 *         frame of &quot;base&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;tfloatinst_make&lt;/li&gt;
+	 *             &lt;li&gt;tfloatseq_from_base_timestampset&lt;/li&gt;
+	 *             &lt;li&gt;tfloatseq_from_base_time&lt;/li&gt;
+	 *             &lt;li&gt;tfloatseqset_from_base_time&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param value Value of the temporal float.
+	 * @param base Time object to get the temporal frame from.
+	 * @param interpolation Interpolation of the temporal float.
+	 * @return A new temporal float.
+	 */
+	static TFloat from_base_time(float value, Time base, TInterpolation interpolation){
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (base instanceof tstzspanset) {</span>
+<span class="fc" id="L77">			return new TFloatSeq(functions.tfloatseqset_from_base_tstzspanset((double) value, ((tstzspanset) base).get_inner(), interpolation.getValue()));</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		} else if (base instanceof tstzset) {</span>
+<span class="fc" id="L79">			return new TFloatSeq(functions.tfloatseq_from_base_tstzset(value, ((tstzset) base).get_inner()));</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (base instanceof tstzspan) {</span>
+<span class="fc" id="L81">			return new TFloatSeqSet(functions.tfloatseq_from_base_tstzspan(value, ((tstzspan) base).get_inner(), interpolation.getValue()));</span>
+		}
+<span class="nc" id="L83">		throw new UnsupportedOperationException(&quot;Operation not supported with type &quot; + base.getClass());</span>
+	}
+
+/**
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            tfloat_from_mfjson
+*/
+	default TFloat from_mfjson(String mfjson) {
+<span class="nc" id="L99">			Pointer resPointer= functions.tfloat_from_mfjson(mfjson);</span>
+<span class="nc" id="L100">			return (TFloat) Factory.create_temporal(resPointer, getCustomType(), getTemporalType());</span>
+	}
+		
+
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+	/**
+	 * Returns a string representation of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_out&lt;/li&gt;
+	 * @param max_decimals
+	 * @return A string representation of &quot;this&quot;.
+	 */
+	default String to_string(int max_decimals){
+<span class="fc" id="L118">		return functions.tfloat_out(getNumberInner(), max_decimals);</span>
+	}
+
+	/**
+	 * Returns a string representation of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_out&lt;/li&gt;
+	 * @param max_decimals
+	 * @return A string representation of &quot;this&quot;.
+	 */
+	default String as_wkt(int max_decimals){
+<span class="nc" id="L131">		return functions.tfloat_out(getNumberInner(),max_decimals);</span>
+	}
+
+	/* ------------------------- Conversions ---------------------------------- */
+
+
+	/**
+	  Returns a new temporal integer with the values of &quot;this&quot; floored.
+	          This operation can only be performed when the interpolation is stepwise
+	          or discrete.
+	  &lt;p&gt;
+
+	          MEOS Functions:
+	              &lt;li&gt;tfloat_to_tint&lt;/li&gt;
+
+	          Raises:
+	              ValueError: If the interpolation is linear.
+	  @return A new temporal integer.
+	 */
+	default TInt to_tint(){
+<span class="fc" id="L151">		return (TInt) Factory.create_temporal(functions.tfloat_to_tint(getNumberInner()),&quot;Integer&quot;,getTemporalType());</span>
+	}
+
+
+
+
+	/**
+	 * Returns value span of &quot;this&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tnumber_to_span&lt;/li&gt;
+	 *
+	 * @return An {@link FloatSpan} with the value span of &quot;this&quot;.
+	 */
+	default FloatSpan to_floatrange(){
+<span class="fc" id="L168">		return new FloatSpan(functions.tnumber_to_span(getNumberInner()));</span>
+	}
+
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+
+	/**
+	 * Returns the value span of &quot;this&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tnumber_to_span&lt;/li&gt;
+	 * @return An {@link FloatSpan} with the value span of `self`.
+	 */
+	default FloatSpan value_span(){
+<span class="fc" id="L185">		return to_floatrange();</span>
+	}
+
+	/**
+	 * Returns the value spans of `self` taking into account gaps.
+	 *
+	 *         Returns:
+	 *             A :class:`FloatSpanSet` with the value spans of `self`.
+	 *
+	 *         MEOS Functions:
+	 *             tnumber_valuespans
+	 * @return
+	 */
+	default FloatSpanSet value_spans(){
+<span class="nc" id="L199">		return new FloatSpanSet(functions.tnumber_valuespans(getNumberInner()));</span>
+	}
+
+	/**
+	 * Returns the start value of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_start_value&lt;/li&gt;
+	 * @return A {@link Float} with the start value.
+	 */
+	default float start_value(){
+<span class="fc" id="L212">		return (float) functions.tfloat_start_value(getNumberInner());</span>
+	}
+
+	/**
+	 * Returns the end value of &quot;this&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_end_value&lt;/li&gt;
+	 * @return A {@link Float} with the end value.
+	 */
+	default float end_value(){
+<span class="fc" id="L224">		return (float) functions.tfloat_end_value(getNumberInner());</span>
+	}
+/**
+        Returns the set of values of `self`.
+        Note that when the interpolation is linear, the set will contain only
+        the waypoints.
+
+        Returns:
+            A :class:`set` with the values of `self`.
+
+        MEOS Functions:
+            tint_values
+*/
+	default FloatSet value_set(){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L239">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L241">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L242">		Pointer resPointer = functions.tfloat_values(this.getNumberInner(), intPointer);</span>
+<span class="nc" id="L243">		StringBuilder sb = null;</span>
+<span class="nc" id="L244">		sb.append(&quot;{&quot;);</span>
+<span class="nc" id="L245">		int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">		for (int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L247">			double res= resPointer.getDouble((long) i *Double.BYTES);</span>
+<span class="nc" id="L248">			sb.append(res);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">			if(i&lt;count-1){</span>
+<span class="nc" id="L250">				sb.append(&quot;, &quot;);</span>
+			}
+		}
+<span class="nc" id="L253">		sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L254">		System.out.println(sb.toString());</span>
+<span class="nc" id="L255">		return new FloatSet(sb.toString());</span>
+	}
+
+	/**
+	 * Returns the minimum value of the &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_min_value&lt;/li&gt;
+	 * @return A {@link Float} with the minimum value.
+	 */
+	default float min_value(){
+<span class="fc" id="L268">		return (float) functions.tfloat_min_value(getNumberInner());</span>
+	}
+
+	/**
+	 * Returns the maximum value of the &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_max_value&lt;/li&gt;
+	 * @return A {@link Float} with the maximum value.
+	 */
+	default float max_value(){
+<span class="fc" id="L281">		return (float) functions.tfloat_max_value(getNumberInner());</span>
+	}
+
+
+    /* ------------------------- Ever and Always Comparisons ------------------- */
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always equal to &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_equal(float value){
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		return functions.always_eq_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_not_equal(float value){
+<span class="fc bfc" id="L315" title="All 2 branches covered.">		return (functions.always_ne_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_lt&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_less(float value){
+<span class="fc bfc" id="L331" title="All 2 branches covered.">		return functions.always_lt_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean always_less_or_equal(float value){
+<span class="nc bnc" id="L348" title="All 2 branches missed.">		return functions.always_le_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always greater than or equal
+	 *         to &quot;value&quot;.
+	 *
+	 *   &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_lt&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean always_greater_or_equal(float value){
+<span class="nc bnc" id="L364" title="All 2 branches missed.">		return (functions.always_ge_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always greater than &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always greater than &quot;value&quot;,
+	 * 	 *            &quot; `False`&quot; otherwise.
+	 */
+	default boolean always_greater(float value){
+<span class="nc bnc" id="L379" title="All 2 branches missed.">		return (functions.always_gt_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of `self` are ever less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_lt&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_less(float value){
+<span class="nc bnc" id="L394" title="All 2 branches missed.">		return functions.ever_lt_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean ever_less_or_equal(float value){
+<span class="nc bnc" id="L411" title="All 2 branches missed.">		return functions.ever_le_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever equal to &quot;value&quot;, &quot;False&quot;
+	 * 	 *             otherwise.
+	 */
+	default boolean ever_equal(float value){
+<span class="fc bfc" id="L427" title="All 2 branches covered.">		return functions.ever_eq_tfloat_float(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_not_equal(float value){
+<span class="fc bfc" id="L442" title="All 2 branches covered.">		return (functions.ever_ne_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever greater than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_lt&lt;/li&gt;
+	 *
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean ever_greater_or_equal(float value){
+<span class="fc bfc" id="L459" title="All 2 branches covered.">		return (functions.ever_ge_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever greater than &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever greater than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_greater(float value){
+<span class="nc bnc" id="L474" title="All 2 branches missed.">		return  (functions.ever_gt_tfloat_float(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_equal(float value){
+<span class="fc bfc" id="L489" title="All 2 branches covered.">		return ! (this.ever_equal(value));</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_eq&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_not_equal(float value){
+<span class="fc bfc" id="L505" title="All 2 branches covered.">		return !(this.ever_not_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_lt&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_less(float value){
+<span class="nc bnc" id="L520" title="All 2 branches missed.">		return ! (this.ever_less(value));</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_ever_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean never_less_or_equal(float value){
+<span class="nc bnc" id="L537" title="All 2 branches missed.">		return ! (ever_less_or_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never greater than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_lt&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this &quot;are never greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean never_greater_or_equal(float value){
+<span class="fc bfc" id="L553" title="All 2 branches covered.">		return ! (this.ever_greater_or_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never greater than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_always_le&lt;/li&gt;
+	 * @param value {@link Float} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never greater than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_greater(float value){
+<span class="nc bnc" id="L568" title="All 2 branches missed.">		return ! (this.ever_greater(value));</span>
+	}
+
+
+    /* ------------------------- Temporal Comparisons -------------------------- */
+
+
+	/**
+	 * Returns the temporal equality relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;teq_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;teq_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_equal(Number other){
+<span class="nc bnc" id="L588" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L589">			return Factory.create_temporal(functions.teq_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L592">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+	/**
+	 * Returns the temporal not equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tne_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;tne_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_not_equal(Number other){
+<span class="nc bnc" id="L612" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L613">			return Factory.create_temporal(functions.tne_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L616">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+
+	/**
+	 * Returns the temporal less than relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tlt_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;tlt_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_less(Number other){
+<span class="nc bnc" id="L637" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L638">			return Factory.create_temporal(functions.tlt_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L641">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+
+	/**
+	 *  Returns the temporal less or equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tle_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;tle_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_less_or_equal(Number other){
+<span class="nc bnc" id="L662" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L663">			return Factory.create_temporal(functions.tle_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L666">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+	/**
+	 *  Returns the temporal greater or equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tge_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;tge_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_greater_or_equal(Number other){
+<span class="nc bnc" id="L686" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L687">			return Factory.create_temporal(functions.tge_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L690">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+	/**
+	 *  Returns the temporal greater than relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tgt_tfloat_float&lt;/li&gt;
+	 *             &lt;li&gt;tgt_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer}, {@link Float} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_greater(Number other){
+<span class="nc bnc" id="L709" title="All 4 branches missed.">		if ((other instanceof Float) || (other instanceof Integer)){</span>
+<span class="nc" id="L710">			return Factory.create_temporal(functions.tgt_tfloat_float(getNumberInner(),(float) other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L713">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+    /* ------------------------- Restrictions ---------------------------------- */
+
+/**
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: The moment to get the value.
+
+        Returns:
+            A class:`float` with the value of `self` at `timestamp`.
+
+        MEOS Functions:
+            tfloat_value_at_timestamp
+*/
+	default float value_at_timestamp(LocalDateTime ts){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L734">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L736">		Pointer floatPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L737">		boolean res= functions.tfloat_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(ts), true, floatPointer);</span>
+<span class="nc" id="L738">		float value= floatPointer.getFloat(Float.BYTES);</span>
+<span class="nc" id="L739">		return value;</span>
+	}
+/**
+        Returns the derivative of `self`.
+
+        Returns:
+            A new :class:`TFloat` instance.
+
+        MEOS Functions:
+            tfloat_derivative
+*/
+	default TFloat derivative(){
+<span class="nc" id="L751">		return (TFloat) Factory.create_temporal(functions.tfloat_derivative(this.getNumberInner()), getCustomType(), getTemporalType());</span>
+	}
+
+
+
+	/* ------------------------- Transformations ---------------------------------- */
+
+
+	/**
+	 * Returns a copy of &quot;this&quot; converted from radians to degrees.
+	 *
+	 *  &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_degrees&lt;/li&gt;
+	 * @param normalize normalize: If True, the result will be normalized to the range [0, 360).
+	 * @return A {@link TFloat} instance.
+	 */
+	default Temporal to_degrees(boolean normalize){
+<span class="fc" id="L769">		return Factory.create_temporal(functions.tfloat_degrees(getNumberInner(),normalize), getCustomType(),getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns a copy of this converted from degrees to radians.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_radians&lt;/li&gt;
+	 * @return A new {@link TFloat} instance.
+	 */
+	default Temporal to_radians(){
+<span class="nc" id="L783">		return Factory.create_temporal(functions.tfloat_radians(getNumberInner()), getCustomType(),getTemporalType());</span>
+
+	}
+
+
+	/**
+	 * Returns &quot;this&quot; rounded to the given number of decimal digits.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tfloat_round&lt;/li&gt;
+	 * @param max_decimals Maximum number of decimal digits.
+	 * @return A new {@link TFloat} instance.
+	 */
+	default Temporal round(int max_decimals){
+<span class="nc" id="L799">		return Factory.create_temporal(functions.tfloat_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
