@@ -3,6 +3,7 @@ name: Deploy Javadoc to GitHub Pages
 on:
   push:
     branches:
+      - main
       - JMEOS-working
 
 jobs:
