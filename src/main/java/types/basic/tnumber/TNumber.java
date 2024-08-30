@@ -1,6 +1,8 @@
 package types.basic.tnumber;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import types.TemporalObject;
 import types.basic.tfloat.TFloat;
 import types.basic.tfloat.TFloatInst;
@@ -10,18 +12,28 @@ import types.basic.tint.TInt;
 import types.boxes.TBox;
 import functions.functions;
 import types.collections.number.*;
+import types.collections.time.Time;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.tstzspanset;
 import types.temporal.Factory;
+import types.temporal.Temporal;
 import types.temporal.TemporalType;
+import utils.ConversionUtils;
 
 import javax.naming.OperationNotSupportedException;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Base interface that encompasses the Temporal float and Temporal integer interfaces.
  *
- * @author Nidhal Mareghni
- * @since 10/09/2023
+ * @author ARIJIT SAMAL
  */
 public interface TNumber {
     Pointer getNumberInner();
@@ -69,6 +81,82 @@ public interface TNumber {
     default float time_weighted_average(){
         return (float) functions.tnumber_twavg(getNumberInner());
     }
+
+    /* ------------------------- Transformations ---------------------------------- */
+
+/**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``delta``.
+
+        Args:
+            delta: value to shift
+
+        MEOS Functions:
+            tint_shift_value, tfloat_shift_value
+ */
+    default TNumber shift_value(Object delta) throws Exception {
+        Pointer shifted= null;
+        if(this instanceof TInt){
+            shifted= functions.tint_shift_value(this.getNumberInner(), (int) delta);
+        }
+        else if (this instanceof TFloat){
+            shifted= functions.tfloat_shift_value(this.getNumberInner(), (double) delta);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(shifted, getCustomType(), getTemporalType());
+    }
+
+/**
+        Returns a new :class:`TNumber` scaled so the value dimension has
+        width ``width``.
+
+        Args:
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_scale_value, tfloat_scale_value
+*/
+    default TNumber scale_value(Object width) throws Exception {
+        Pointer scaled= null;
+        if(this instanceof TInt){
+            scaled= functions.tint_scale_value(this.getNumberInner(), (int) width);
+        }
+        else if (this instanceof TFloat){
+            scaled= functions.tfloat_scale_value(this.getNumberInner(), (double) width);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());
+    }
+
+    /**
+        Returns a new :class:`TNumber` with the value dimension shifted by
+        ``shift`` and scaled so the value dimension has width ``width``.
+
+        Args:
+            shift: value to shift
+            width: value representing the width of the new temporal number
+
+        MEOS Functions:
+            tint_shift_scale_value, tfloat_shift_scale_value
+*/
+    default TNumber shift_scale_value(Object shift, Object width) throws Exception {
+        Pointer scaled= null;
+        if(this instanceof TInt && shift!=null && width!=null){
+            scaled= functions.tint_shift_scale_value(this.getNumberInner(), (int) shift, (int) width);
+        }
+        else if (this instanceof TFloat && shift!=null && width!=null){
+            scaled= functions.tfloat_shift_scale_value(this.getNumberInner(), (double) shift, (double) width);
+        }
+        else{
+            throw new Exception("Operation not supported for this object");
+        }
+        return (TNumber) Factory.create_temporal(scaled, getCustomType(), getTemporalType());
+    }
+
 
 
     /* ------------------------- Restrictions ---------------------------------- */
@@ -467,6 +555,140 @@ public interface TNumber {
         }
     }
 
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to add to
+            `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+ */
+    default TNumber _add(Object other) throws OperationNotSupportedException {
+        return this.add(other);
+    }
+
+
+/**
+        Returns a new temporal object with the values of `self` plus `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to add to `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            add_int_tint, add_float_tfloat
+*/
+    default TNumber _radd(Object other) throws OperationNotSupportedException {
+        return this.radd(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` minus `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            subtract from `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_tint_int, sub_tfloat_float, sub_tnumber_tnumber
+*/
+    default TNumber _sub(Object other) throws OperationNotSupportedException {
+        return this.sub(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `other` minus `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to subtract `self` to.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            sub_int_tint, sub_float_tfloat
+*/
+    default TNumber _rsub(Object other) throws OperationNotSupportedException {
+        return this.rsub(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to
+            multiply `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_tint_int, mult_tfloat_float, mult_tnumber_tnumber
+*/
+    default TNumber _mul(Object other) throws OperationNotSupportedException {
+        return this.mul(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` multiplied
+        by `other`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to multiply by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            mult_int_tint, mult_float_tfloat
+*/
+    default  TNumber _rmul(Object other) throws OperationNotSupportedException {
+        return this.rmul(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `self` divided by
+        `other`.
+
+        Args:
+            other: A :class:`int`, :class:`float` or :class:`TNumber` to divide
+            `self` by.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_tint_int, div_tfloat_float, div_tnumber_tnumber
+*/
+    default TNumber _trueDiv(Object other) throws OperationNotSupportedException {
+        return this.div(other);
+    }
+
+/**
+        Returns a new temporal object with the values of `other` divided by
+        `self`.
+
+        Args:
+            other: A :class:`int` or :class:`float` to divide by `self`.
+
+        Returns:
+            A new temporal object of the same subtype as `self`.
+
+        MEOS Functions:
+            div_int_tint, div_float_tfloat
+*/
+    default TNumber _rTrueDiv(Object other) throws OperationNotSupportedException {
+        return this.rdiv(other);
+    }
+
 
     /**
      * Returns the absolute value of "this".
@@ -555,5 +777,104 @@ public interface TNumber {
         else{
             throw new OperationNotSupportedException("Operand not supported");
         }
+    }
+
+    /* --------------------------------------------- Split Operations ---------------------------------------------- */
+
+/**
+        Splits `self` into fragments with respect to value buckets
+
+        Args:
+            start: Start value of the first value bucket.
+            size: Size of the value buckets.
+
+        Returns:
+            A list of temporal ints.
+
+        MEOS Functions:
+            tint_value_split
+*/
+//    private Pointer createEmptyPointerArray(Runtime runtime) {
+//        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+//        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), *Long.BYTES); // Adjust size as needed
+//        return listPointer;
+//    }
+
+    private Pointer createEmptyPointerArray(Runtime runtime, int size) {
+        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
+        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), size*Long.BYTES); // Adjust size as needed
+        return listPointer;
+    }
+
+    default List<TNumber> value_split(int size, int start){
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer listPointer = createEmptyPointerArray(runtime, size);
+        Pointer result= functions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
+        List<TNumber> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= result.getPointer((long) i *Long.BYTES);
+            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
+    }
+
+/**
+        Splits `self` into fragments with respect to value and tstzspan buckets.
+
+        Args:
+            value_size: Size of the value buckets.
+            duration: Duration of the tstzspan buckets.
+            value_start: Start value of the first value bucket. If None, the
+                start value used by default is 0
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+
+        Returns:
+            A list of temporal integers.
+
+        MEOS Functions:
+*/
+
+    default List<TNumber> value_time_split(Object duration, int value_size, int value_start, Object time_start){
+        OffsetDateTime st= null;
+        Pointer dt= null;
+        if(time_start != null){
+            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        }
+        else{
+            if(time_start instanceof LocalDateTime){
+                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+            }
+            else{
+                st= functions.pg_timestamptz_in(time_start.toString(), -1);
+            }
+
+            if(duration instanceof Duration){
+                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+            }
+            else{
+                dt= functions.pg_interval_in(duration.toString(), -1);
+            }
+        }
+        // Create a JNR-FFI runtime instance
+        Runtime runtime = Runtime.getSystemRuntime();
+        // Allocate memory for an integer (4 bytes) but do not set a value
+        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);
+        Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
+        Pointer p= functions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);
+        List<TNumber> tempList= new ArrayList<>();
+        int count= intPointer.getInt(Integer.BYTES);
+        for(int i=0;i<count;i++){
+            Pointer res= p.getPointer((long) i *Long.BYTES);
+            TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+            tempList.add(t);
+        }
+        return tempList;
     }
 }

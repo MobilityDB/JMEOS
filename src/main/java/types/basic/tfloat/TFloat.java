@@ -1,11 +1,14 @@
 package types.basic.tfloat;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import types.basic.tbool.TBoolInst;
 import types.basic.tbool.TBoolSeq;
 import types.basic.tbool.TBoolSeqSet;
 import types.basic.tint.TInt;
 import types.basic.tnumber.TNumber;
+import types.collections.number.FloatSet;
 import types.collections.number.FloatSpan;
 import types.collections.number.FloatSpanSet;
 import types.collections.time.tstzset;
@@ -14,6 +17,9 @@ import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
 import functions.functions;
+import utils.ConversionUtils;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -77,6 +83,24 @@ public interface TFloat extends TNumber {
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
 	}
 
+/**
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            tfloat_from_mfjson
+*/
+	default TFloat from_mfjson(String mfjson) {
+			Pointer resPointer= functions.tfloat_from_mfjson(mfjson);
+			return (TFloat) Factory.create_temporal(resPointer, getCustomType(), getTemporalType());
+	}
+		
+
 
     /* ------------------------- Output ---------------------------------------- */
 
@@ -104,9 +128,8 @@ public interface TFloat extends TNumber {
 	 * @return A string representation of "this".
 	 */
 	default String as_wkt(int max_decimals){
-		return functions.tfloat_out(getNumberInner(),15);
+		return functions.tfloat_out(getNumberInner(),max_decimals);
 	}
-
 
 	/* ------------------------- Conversions ---------------------------------- */
 
@@ -199,6 +222,37 @@ public interface TFloat extends TNumber {
 	 */
 	default float end_value(){
 		return (float) functions.tfloat_end_value(getNumberInner());
+	}
+/**
+        Returns the set of values of `self`.
+        Note that when the interpolation is linear, the set will contain only
+        the waypoints.
+
+        Returns:
+            A :class:`set` with the values of `self`.
+
+        MEOS Functions:
+            tint_values
+*/
+	default FloatSet value_set(){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer = functions.tfloat_values(this.getNumberInner(), intPointer);
+		StringBuilder sb = null;
+		sb.append("{");
+		int count= intPointer.getInt(Integer.BYTES);
+		for (int i=0;i<count;i++){
+			double res= resPointer.getDouble((long) i *Double.BYTES);
+			sb.append(res);
+			if(i<count-1){
+				sb.append(", ");
+			}
+		}
+		sb.append("}");
+		System.out.println(sb.toString());
+		return new FloatSet(sb.toString());
 	}
 
 	/**
@@ -662,6 +716,40 @@ public interface TFloat extends TNumber {
 
 
     /* ------------------------- Restrictions ---------------------------------- */
+
+/**
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: The moment to get the value.
+
+        Returns:
+            A class:`float` with the value of `self` at `timestamp`.
+
+        MEOS Functions:
+            tfloat_value_at_timestamp
+*/
+	default float value_at_timestamp(LocalDateTime ts){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer floatPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		boolean res= functions.tfloat_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(ts), true, floatPointer);
+		float value= floatPointer.getFloat(Float.BYTES);
+		return value;
+	}
+/**
+        Returns the derivative of `self`.
+
+        Returns:
+            A new :class:`TFloat` instance.
+
+        MEOS Functions:
+            tfloat_derivative
+*/
+	default TFloat derivative(){
+		return (TFloat) Factory.create_temporal(functions.tfloat_derivative(this.getNumberInner()), getCustomType(), getTemporalType());
+	}
 
 
 
