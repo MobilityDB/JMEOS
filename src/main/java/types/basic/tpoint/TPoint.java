@@ -1,6 +1,9 @@
 package types.basic.tpoint;
 
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
 import types.TemporalObject;
 import types.basic.tbool.TBool;
 import types.basic.tfloat.TFloat;
@@ -8,20 +11,28 @@ import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TIntInst;
 import types.basic.tint.TIntSeq;
 import types.basic.tint.TIntSeqSet;
+import types.basic.tnumber.TNumber;
 import types.basic.tpoint.tgeog.TGeogPoint;
 import types.basic.tpoint.tgeom.TGeomPoint;
 import types.boxes.STBox;
+import types.collections.base.Set;
 import types.collections.geo.GeoSet;
 import types.collections.time.Time;
+import types.collections.time.tstzset;
 import types.temporal.*;
 import functions.functions;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Point;
 import utils.ConversionUtils;
+import utils.Pair;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 /**
  * Class that represents the MobilityDB type TPoint used for {@link TPointInst}, {@link TPointSeq} and {@link TPointSeqSet}
@@ -131,6 +142,31 @@ public interface TPoint extends Serializable {
 		return new STBox(functions.tpoint_to_stbox(getPointInner()));
 	}
 
+/**
+        Returns the values of the temporal point.
+
+        Returns:
+            A :class:`list` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            temporal_instants
+*/
+    default List<TPoint> values(int precision){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.temporal_instants(this.getPointInner(), intPointer);
+		List<TPoint> pointList= new ArrayList<>();
+		int count= intPointer.getInt(Integer.BYTES);
+		for(int i=0; i<count; i++){
+			Pointer res= resPointer.getPointer((long) i *Long.BYTES);
+			TPoint t= (TPoint) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
+			pointList.add(t);
+		}
+		return pointList;
+	}
+
 	/**
 	 * Returns the start value of the temporal point.
 	 *
@@ -145,7 +181,6 @@ public interface TPoint extends Serializable {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);
 	}
 
-
 	/**
 	 * Returns the end value of the temporal point.
 	 *
@@ -158,6 +193,86 @@ public interface TPoint extends Serializable {
 	 */
 	default Point end_value(int precision) throws ParseException {
 		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);
+	}
+
+/**
+        Returns the set of values of `self`.
+        Note that when the interpolation is linear, the set will contain only the waypoints.
+
+        Returns:
+            A :class:`set` of :class:`~shapely.geometry.Point` with the values.
+
+        MEOS Functions:
+            tpoint_values
+*/
+//     default Set<Point> value_set(int precision) throws ParseException {
+//		 // Create a JNR-FFI runtime instance
+//		 Runtime runtime = Runtime.getSystemRuntime();
+//		 // Allocate memory for an integer (4 bytes) but do not set a value
+//		 Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+//		 Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+//		 List<TPoint> pointList= new ArrayList<>();
+//		 int count= intPointer.getInt(Integer.BYTES);
+//		 StringBuilder sb = null;
+//		 sb.append("{");
+//		 for(int i=0;i<count;i++) {
+//			 Point p= ConversionUtils.gserialized_to_shapely_point(resPointer.getPointer((long) i *Long.BYTES), precision);
+//			 sb.append(p);
+//			 if(i<count-1){
+//				 sb.append(", ");
+//			 }
+//		 }
+//		 sb.append("}");
+//		 System.out.println(sb.toString());
+//		 return new Set<Point>(sb.toString()) {
+//			 @Override
+//			 public Pointer get_inner() {
+//				 return resPointer;
+//			 }
+//
+//			 @Override
+//			 public Pointer createInner(Pointer inner) {
+//				 return inner;
+//			 }
+//
+//			 @Override
+//			 public Pointer createStringInner(String str) {
+//				 return functions.tgeom(str);
+//			 }
+//
+//			 @Override
+//			 public Point start_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(this.get_inner()), precision);
+//			 }
+//
+//			 @Override
+//			 public Point end_element() throws ParseException {
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(this.get_inner()), precision);
+//			 }
+//		 };
+//	 }
+
+/**
+        Returns the value of the temporal point at the given timestamp.
+
+        Args:
+            timestamp: A :class:`datetime` representing the timestamp.
+            precision: An :class:`int` representing the precision of the coordinates.
+
+        Returns:
+            A :class:`~shapely.geometry.Point` with the value.
+
+        MEOS Functions:
+            tpoint_value_at_timestamp
+*/
+	default Point value_at_timestamp(LocalDateTime ts, int precision) throws ParseException {
+		 // Create a JNR-FFI runtime instance
+		 Runtime runtime = Runtime.getSystemRuntime();
+		 // Allocate memory for an integer (4 bytes) but do not set a value
+		 Pointer geomPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);
+		 boolean b= functions.tpoint_value_at_timestamptz(this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true, geomPointer);
+		 Pointer geom= geomPointer.getPointer(Long.BYTES);
+		 return ConversionUtils.gserialized_to_shapely_point(geom, precision);
 	}
 
 
@@ -256,6 +371,31 @@ public interface TPoint extends Serializable {
 		return this.bounding_box_point().has_z();
 	}
 
+	/**
+        Returns a collection of :class:`STBox`es representing the bounding boxes of the segments of the temporal point.
+
+        Returns:
+            A :class:`list` of :class:`STBox`es.
+
+        MEOS Functions:
+            tpoint_stboxes
+     */
+	default List<STBox> stboxes(){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.tpoint_stboxes(this.getPointInner(), intPointer);
+		List<STBox> stBoxList= new ArrayList<>();
+		int length= intPointer.getInt(Integer.BYTES);
+		for(int i=0; i<length; i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			STBox b= new STBox(p);
+			stBoxList.add(b);
+		}
+		return stBoxList;
+	}
+
 
 	/**
 	 * Returns whether the temporal point is simple. That is, whether it does not self-intersect.
@@ -283,7 +423,7 @@ public interface TPoint extends Serializable {
 	 * @param other An object to check the bearing to.
 	 * @return A new {@link TFloat} indicating the temporal bearing between the temporal point and "other".
 	 */
-	default TFloat bearing_point(TPoint other){
+	default TFloat bearing(TPoint other){
 		return (TFloat) Factory.create_temporal(functions.bearing_tpoint_tpoint(getPointInner(),other.getPointInner()),"Float",getTemporalType());
 
 	}
@@ -393,6 +533,33 @@ public interface TPoint extends Serializable {
 		return (TPoint) Factory.create_temporal(functions.tpoint_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
 	}
 
+    /**
+        Split the temporal point into a collection of simple temporal points.
+
+        Returns:
+            A :class:`list` of :class:`TPoint`es.
+
+        MEOS Functions:
+            tpoint_make_simple
+    */
+	default List<TPoint> make_simple(){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer resPointer= functions.tpoint_make_simple(this.getPointInner(), intPointer);
+		int length= intPointer.getInt(Integer.BYTES);
+		List<TPoint> tPointList= new ArrayList<>();
+		TemporalType temporalType= getTemporalType();
+		String customType= getCustomType();
+		for(int i=0;i<length;i++) {
+			Pointer p = resPointer.getPointer((long) i * Long.BYTES);
+			TPoint t = (TPoint) Factory.create_temporal(p, getCustomType(), getTemporalType());
+			tPointList.add(t);
+		}
+		return tPointList;
+	}
+
 
 	/**
 	 * Expands "this" with "other".
@@ -408,8 +575,31 @@ public interface TPoint extends Serializable {
 	default STBox expand(float other){
 		return new STBox(functions.tpoint_expand_space(getPointInner(),other));
 	}
+	/**
+        Returns a new :class:`TPoint` of the same subclass of ``self`` transformed to another SRID
 
+        Args:
+            srid: The desired SRID
 
+        Returns:
+             A new :class:`TPoint` instance
+
+         MEOS Functions:
+            tpoint_transform
+	 */
+    Map<AbstractMap.SimpleEntry<Integer, Integer>, Pointer> projectionCache = new HashMap<>();
+	 default TPoint transform(int srid){
+		 AbstractMap.SimpleEntry<Integer, Integer> srids = new AbstractMap.SimpleEntry<>(this.srid(), srid);
+		 // Check and cache the projection if not already cached
+		 if (!projectionCache.containsKey(srids)) {
+			 projectionCache.put(srids, functions.lwproj_transform(srids.getKey(), srids.getValue()));
+		 }
+		 // Perform the transformation using the cached projection
+		 Pointer result = functions.tpoint_transform_pj(this.getPointInner(), srid, projectionCache.get(srids));
+
+		 // Create and return a new TPoint instance
+		 return (TPoint) Factory.create_temporal(result, getCustomType(), getTemporalType());
+	 }
 
     /* ------------------------- Restrictions ---------------------------------- */
 
@@ -489,7 +679,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if left, False otherwise.
 	 */
@@ -505,7 +695,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or left, False otherwise.
 	 */
@@ -520,7 +710,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if right, False otherwise.
 	 */
@@ -537,7 +727,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or right, False otherwise.
 	 */
@@ -553,7 +743,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if below, False otherwise.
 	 */
@@ -568,7 +758,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or below, False otherwise.
 	 */
@@ -586,7 +776,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if above, False otherwise.
 	 */
@@ -602,7 +792,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or above, False otherwise.
 	 */
@@ -619,7 +809,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_before(TemporalObject)}
+	 *             {@link tstzset#is_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if front, False otherwise.
 	 */
@@ -637,7 +827,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_before(TemporalObject)}
+	 *             {@link tstzset#is_over_or_before(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or front, False otherwise.
 	 */
@@ -655,7 +845,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_after(TemporalObject)}
+	 *             {@link tstzset#is_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if behind, False otherwise.
 	 */
@@ -673,7 +863,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         See Also:
-	 *             {@link types.collections.time.tstzset#is_over_or_after(TemporalObject)}
+	 *             {@link tstzset#is_over_or_after(TemporalObject)}
 	 * @param other A box or a temporal object to compare to "this".
 	 * @return True if over or behind, False otherwise.
 	 */
@@ -993,23 +1183,197 @@ public interface TPoint extends Serializable {
 		}
 	}
 
+	/**
+        Returns the shortest line between the temporal point and `other`.
 
+        Args:
+            other: An object to check the shortest line to.
 
-	/*
-	public default Geometry shortest_line(Object other) throws OperationNotSupportedException {
+        Returns:
+            A new :class:`~shapely.geometry.base.BaseGeometry` indicating the shortest line between the temporal point
+            and `other`.
+
+        MEOS Functions:
+            shortestline_tpoint_geo, shortestline_tpoint_tpoint
+    */
+
+	default Geometry shortest_line(Object other) throws OperationNotSupportedException, ParseException {
+		Pointer res= null;
 		if (other instanceof Geometry){
-			return (TInstant) Factory.create_temporal(functions.nai_tpoint_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), getCustomType(), getTemporalType() ) ;
+			boolean b= this instanceof TGeogPoint;
+            Pointer gs= ConversionUtils.geo_to_gserialized((Geometry) other, b);
+			res= functions.shortestline_tpoint_geo(this.getPointInner(), gs);
 		} else if(other instanceof TPoint){
-			return (TInstant) Factory.create_temporal(functions.nai_tpoint_tpoint(getPointInner(),((TPoint) other).getPointInner()), getCustomType(), getTemporalType()  );
+			res= functions.shortestline_tpoint_geo(this.getPointInner(), ((TPoint) other).getPointInner());
 		}else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
+		return ConversionUtils.gserialized_to_shapely_geometry(res, 10);
 	}
 
-	 */
+	/* ------------------------- Tiling Operations --------------------------- */
+    /**
+        Split the temporal point into segments following the tiling of the
+        bounding box.
 
+        Args:
+            size: The size of the spatial tiles. If `self` has a spatial
+                dimension and this argument is not provided, the tiling will be
+                only temporal.
+            duration: The duration of the temporal tiles. If `self` has a time
+                dimension and this argument is not provided, the tiling will be
+                only spatial.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            start: The start time of the temporal tiling. If not provided,
+                the start time used by default is Monday, January 3, 2000.
+            remove_empty: If True, remove the tiles that are empty.
 
+        Returns:
+            A list of :class:`TPoint` objects.
 
+        See Also:
+            :meth:`STBox.tile`
+    */
+//	default List<TPoint> tile(float size, Object duration, Geometry origin, Object start, boolean remove_empty){
+//		STBox bbox= STBox.from_tpoint(this);
+//		tiles= bbox
+//	}
+	// implement the tile operation by pulling the latest meos.h and
+	// getting the new tile functions from it like stbox_space_time_tiles
+	// which is first used in STBox and then called here to make tiles
 
+	/* ------------------------- Splitting Operations --------------------------- */
 
+    /**
+        Splits `self` into fragments with respect to space buckets
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal points.
+
+        MEOS Functions:
+            tpoint_value_split
+     */
+	private Pointer createEmptyPointerArray(Runtime runtime, int length) {
+		// Allocate memory for a list of integers
+		Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), length*Long.BYTES); // Adjust size as needed
+		return listPointer;
+	}
+
+	default List<Temporal> space_split(Float xsize, Float ysize, Float zsize, Geometry origin, boolean bitmatrix, boolean include_border){
+		Float ysz = (ysize != null) ? ysize : xsize;
+		Float zsz = (zsize != null) ? zsize : xsize;
+		Pointer gs= null;
+		boolean isTGeogPoint= this instanceof TGeogPoint;
+		if(origin != null){
+			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);
+		}
+        else{
+			if(isTGeogPoint){
+				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+			}
+			else{
+				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+			}
+		}
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		int length= runtime.longSize();
+		Pointer space_buckets = createEmptyPointerArray(runtime, length);
+		Pointer resPointer= functions.tpoint_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		List<Temporal> tempList= new ArrayList<>();
+		for(int i=0;i<count;i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+            tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
+		}
+		return tempList;
+	}
+
+   /**
+        Splits `self` into fragments with respect to space and tstzspan buckets.
+
+        Args:
+            xsize: Size of the x dimension.
+            ysize: Size of the y dimension.
+            zsize: Size of the z dimension.
+            duration: Duration of the tstzspan buckets.
+            origin: The origin of the spatial tiling. If not provided, the
+                origin will be (0, 0, 0).
+            time_start: Start time of the first tstzspan bucket. If None, the
+                start time used by default is Monday, January 3, 2000.
+            bitmatrix: If True, use a bitmatrix to speed up the process.
+            include_border: If True, include the upper border in the box.
+
+        Returns:
+            A list of temporal floats.
+
+        MEOS Functions:
+            tfloat_value_time_split
+    */
+	default List<Temporal> space_time_split(Float xsize, Object duration, Float ysize, Float zsize, Geometry origin, Object time_start, boolean bitmatrix, boolean include_border){
+		Float ysz = (ysize != null) ? ysize : xsize;
+		Float zsz = (zsize != null) ? zsize : xsize;
+		Pointer dt=  null;
+		if(duration instanceof Duration){
+			dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+		}
+		else{
+			dt= functions.pg_interval_in(duration.toString(), -1);
+		}
+
+		Pointer gs= null;
+		boolean isTGeogPoint= this instanceof TGeogPoint;
+		if(origin != null){
+			gs= ConversionUtils.geo_to_gserialized(origin, isTGeogPoint);
+		}
+		else{
+			if(isTGeogPoint){
+				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+			}
+			else{
+				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+			}
+		}
+
+		OffsetDateTime st= null;
+		if(time_start!=null){
+			st= functions.pg_timestamptz_in("2000-01-03", -1);
+		}
+		else{
+			if(time_start instanceof LocalDateTime){
+				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+			}
+			else{
+				st= functions.pg_timestamptz_in(time_start.toString(), -1);
+			}
+		}
+
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		int length= runtime.longSize();
+		Pointer space_buckets = createEmptyPointerArray(runtime, length);
+		Pointer time_buckets = createEmptyPointerArray(runtime, length);
+		Pointer resPointer= functions.tpoint_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border, space_buckets, time_buckets, intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		List<Temporal> tempList= new ArrayList<>();
+		for(int i=0;i<count;i++){
+			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
+		}
+		return tempList;
+	}
 }

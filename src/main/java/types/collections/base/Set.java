@@ -80,9 +80,6 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * Returns a `TsTzSpan` from its WKB representation.
      * @return Pointer type
      */
-//    public Pointer from_wkb(Pointer wkb, long size) {
-//        return functions.set_from_wkb(wkb, size);
-//    }
 
     public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_from_wkb(wkb, size);
@@ -94,9 +91,6 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.
      * @return T type
      */
-//    private Pointer from_hexwkb(String hexwkb) {
-//        return functions.set_from_hexwkb(hexwkb);
-//    }
 
     public <T> T from_hexwkb(String hexwkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_from_hexwkb(hexwkb);
@@ -118,25 +112,30 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public String as_hexwkb() {
         String[] result= new String[]{functions.set_as_hexwkb(this._inner, (byte) -1)};
-//        System.out.println(result[0]);
+        System.out.println(result[0]);
         return result[0];
     }
 
-//    public T to_span(Class<T> spantype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-//        Pointer spanPointer = functions.set_to_span(this._inner);
-//        return spantype.getConstructor(Pointer.class).newInstance(spanPointer);
-//    }
-
+    /**
+     * Returns a span that encompasses "this".
+     * <p>
+     *     MEOS Functions:
+     *     <li>set_to_span</li>
+     *     @return A new {@link Span} instance
+     */
     public <T> T to_span(Class<T> spanType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_to_span(this._inner);
         Constructor<T> constructor = spanType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
 
-//    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-//        Pointer spanPointer = functions.set_to_spanset(this._inner);
-//        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
-//    }
+     /**
+      * Returns a SpanSet that contains a Span for each element in "this".
+      * <p>
+      *     MEOS Functions:
+      *     <li>set_to_spanset</li>
+      *     @return A new {@link SpanSet} instance
+     */
 
     public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = functions.set_to_spanset(this._inner);
@@ -421,7 +420,6 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *           </ul>
      *
      * @param other object to compare with
-     * @return A {@link Float} instance
      * @throws Exception
      */
 //    public float distance(Base other) throws Exception {
@@ -455,6 +453,20 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
 //    public abstract T distance(Object other) throws Exception;
 
+    /**
+        Returns whether ``this`` is adjacent to ``other``. That is, they share
+        a bound but only one of them contains it.
+
+        Args:
+            other: object to compare with
+
+        Returns:
+            True if adjacent, False otherwise
+
+        MEOS Functions:
+            adjacent_span_span, adjacent_span_spanset
+     */
+
     public boolean is_adjacent(Base other) throws Exception {
         if (other instanceof Span<?>){
             return functions.adjacent_span_span(this._inner, ((Span<?>) other).get_inner());
@@ -469,6 +481,19 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
     /* ------------------------- Set Operations -------------------------------- */
 
+     /**
+        Returns the intersection of ``self`` and ``other``.
+
+        Args:
+            other: object to intersect with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+
+        MEOS Functions:
+            intersection_set_set, intersection_spanset_span,
+            intersection_spanset_spanset
+     */
     private Base intersection(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_set_set(this._inner, ((Set<?>) other)._inner));
@@ -478,10 +503,28 @@ public abstract class Set<T extends Object> implements Collection, Base {
         }
     }
 
+    /**
+        Returns the intersection of ``self`` and ``other``.
+
+        Args:
+            other: object to intersect with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+    */
     public Base mul(Base other) throws Exception {
         return intersection(other);
     }
 
+     /**
+        Returns the difference of ``self`` and ``other``.
+
+        Args:
+            other: object to diff with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+    */
     private Base minus(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_set_set(this._inner, ((Set<?>) other).get_inner()));
@@ -491,18 +534,57 @@ public abstract class Set<T extends Object> implements Collection, Base {
         }
     }
 
+    /**
+        Returns the difference of ``self`` and ``other``.
+
+        Args:
+            other: object to diff with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+     */
     public Base sub(Base other) throws Exception {
         return minus(other);
     }
 
+     /**
+        Returns the difference of ``other`` and ``self``.
+
+        Args:
+            other: object to subtract ``self`` from
+
+        Returns:
+            A :class:`Collection` instance or an element instance. The actual class depends on ``other``.
+
+        See Also:
+            :meth:`minus`
+      */
     public Base subtract_from(Base other) throws Exception {
         throw new Exception("Operation not supported with " + other + " type");
     }
 
+    /**
+        Returns the difference of ``other`` and ``self``.
+
+        Args:
+            other: object to subtract ``self`` from
+
+        Returns:
+            A :class:`Collection` instance or an element instance. The actual class depends on ``other``.
+    */
     public Base rsub(Base other) throws Exception {
         return subtract_from(other);
     }
 
+    /**
+        Returns the union of ``self`` and ``other``.
+
+        Args:
+            other: object to merge with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+    */
     private Base union(Base other) throws Exception {
         if (other instanceof Set<?>){
             return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_set_set(this._inner, ((Set<?>) other)._inner));
@@ -512,6 +594,15 @@ public abstract class Set<T extends Object> implements Collection, Base {
         }
     }
 
+     /**
+        Returns the union of ``self`` and ``other``.
+
+        Args:
+            other: object to merge with
+
+        Returns:
+            A :class:`Collection` instance. The actual class depends on ``other``.
+    */
     public Base add(Base other) throws Exception {
         return union(other);
     }

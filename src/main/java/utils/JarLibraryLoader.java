@@ -103,79 +103,48 @@ public class JarLibraryLoader<T> {
 	 *
 	 * @return The library instance
 	 */
-	public T getLibraryInstance() {
+	public T getLibraryInstance(){
+		String libraryPath;
+		String libName;
+		if (System.getenv("GITHUB_WORKFLOW") != null) {
+			System.out.println("Running on GitHub Workflow");
+			// Use the LD_LIBRARY_PATH to locate the library
+			String ldLibraryPath = System.getenv("LD_LIBRARY_PATH");
+			if (ldLibraryPath != null && !ldLibraryPath.isEmpty()) {
+				libraryPath = ldLibraryPath;
+				System.out.println("GitHub workflow remote environment path: " + libraryPath);
+			} else {
+				throw new RuntimeException("LD_LIBRARY_PATH is not set in GitHub Actions environment");
+			}
+			libName= "meos";
+		}
+		else {
 		if (getOSName().equals("Linux")) {
-            System.out.println("Running on Linux");
-//				copyFileFromJar("/jmeos/lib/libmeos.so", projectPath + "/src/lib/libmeos.so");
-            System.out.println("File copied successfully to: " + projectPath + "/src/lib");
-            return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			System.out.println("Running on Linux");
+			libraryPath = projectPath + "/src";
+			System.out.println("Linux library path: " + libraryPath);
+//			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
+//          System.out.println("File copied successfully to: " + projectPath + "/src/lib");
+//          return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
+			libName= "libmeos.so";
         } else if (getOSName().equals("Running on Windows")) {
 			System.out.println("In Windows");
-			String windowsLibraryPath = "\\src\\lib";
-			System.out.println("Looking for library at: " + projectPath + windowsLibraryPath);
-			return LibraryLoader.create(libraryClass).search(projectPath + "\\src\\lib").load(libraryName);
+			libraryPath = projectPath + "\\src\\lib";
+			System.out.println("Looking for library at: " + projectPath + libraryPath);
+//			return LibraryLoader.create(libraryClass).search(projectPath + "\\src\\lib").load(libraryName);
+			libName= "libmeos.so";
 		} else {
 			throw new UnsupportedOperationException("JMEOS is only supported on Linux and Windows OS");
 		}
+		}
+
+		try {
+			System.out.println("Loading library from: " + libraryPath);
+			return LibraryLoader.create(libraryClass).search(libraryPath).load(libName);
+		}
+		catch (Exception e) {
+			System.err.println("Unexpected error: " + e.getMessage());
+			throw new RuntimeException(e);
+		}
 	}
 }
-
-//public class JarLibraryLoader<T> {
-//
-//	private final Class<T> libraryClass;
-//	private final String libraryPath;
-//
-//	/**
-//	 * Constructor of this class.
-//	 *
-//	 * @param libraryClass Class of the library defined interface
-//	 * @param libraryPath  Path to the shared library file
-//	 */
-//	public JarLibraryLoader(Class<T> libraryClass, String libraryPath) {
-//		this.libraryClass = libraryClass;
-//		this.libraryPath = libraryPath;
-//	}
-//
-//	/**
-//	 * Create a new instance of {@link JarLibraryLoader}
-//	 *
-//	 * @param libraryClass Class of the library defined interface
-//	 * @param libraryPath  Path to the shared library file
-//	 * @param <T>          Library defined interface
-//	 * @return New instance of JarLibraryLoader
-//	 */
-//	public static <T> JarLibraryLoader<T> create(Class<T> libraryClass, String libraryPath) {
-//		return new JarLibraryLoader<>(libraryClass, libraryPath);
-//	}
-//
-//	/**
-//	 * Provide the library instance.
-//	 *
-//	 * @return The library instance
-//	 */
-//	public T getLibraryInstance() {
-//		return LibraryLoader.create(libraryClass).load(libraryPath);
-//	}
-//}
-
-//import functions.functions;
-//import jnr.ffi.LibraryLoader;
-//import jnr.ffi.Runtime;
-//import functions.error_handler_fn;
-//
-//public class jarLibraryLoader {
-//	public static void main(String[] args) {
-//		var lib = LibraryLoader.create(functions.MeosLibrary.class).load("meos");
-//		var runtime = Runtime.getRuntime(lib);
-//		error_handler_fn error_handler= new error_handler_fn() {
-//			@Override
-//			public String handleError(int code1, int code2, String message) {
-//				return "error "+ message;
-//			}
-//		};
-//		lib.meos_initialize("UTC", error_handler);
-////		System.out.println(lib.get(first, second));
-////		var letterUnion = new LibMinimal.LetterUnion(runtime);
-////		lib.fill_letter_union(letterUnion);
-//	}
-//}

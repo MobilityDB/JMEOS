@@ -1,6 +1,9 @@
 package types.basic.tint;
 import functions.functions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
 import types.basic.tfloat.TFloat;
 import types.basic.tnumber.TNumber;
 import types.collections.number.IntSpan;
@@ -10,6 +13,11 @@ import types.collections.time.tstzspan;
 import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
+import utils.ConversionUtils;
+import types.collections.number.IntSet;
+
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 
 
 /**
@@ -63,15 +71,37 @@ public interface TInt extends TNumber {
 	 * @param interpolation Interpolation of the temporal int.
 	 * @return A new temporal float.
 	 */
-	static TInt from_base_time(int value, Time base, TInterpolation interpolation){
+	static TInt from_base_time(int value, Object base, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+		if (base instanceof LocalDateTime){
+			return new TIntInst(functions.tintinst_make(value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) base)));
+		}
 		if (base instanceof tstzspanset) {
-			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
+			return new TIntSeqSet(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
 		} else if (base instanceof tstzset) {
 			return new TIntSeq(functions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));
 		} else if (base instanceof tstzspan) {
-			return new TIntSeqSet(functions.tintseq_from_base_tstzspan(value, ((tstzspan) base).get_inner()));
+			tstzspanset ss= new tstzspanset(((tstzspan) base).to_spanset(tstzspanset.class).get_inner());
+			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ss.get_inner()));
 		}
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
+	}
+
+/*
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            tint_from_mfjson
+*/
+
+	default TInt from_mfjson(String mfjson){
+		Pointer result= functions.tint_from_mfjson(mfjson);
+		return (TInt) Factory.create_temporal(result, getCustomType(), getTemporalType());
 	}
 
 
@@ -195,6 +225,36 @@ public interface TInt extends TNumber {
 		return functions.tint_end_value(getNumberInner());
 	}
 
+/**
+ * Returns the set of values of `self`.
+ * <br>
+ *         Returns:
+ *             A :class:`set` with the values of `self`.
+ * <p>
+ *         MEOS Functions:
+ *             <li>tint_values</li>
+ *  @return A {@link IntSet}.
+ */
+	default IntSet value_set(){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer res= functions.tint_values(this.getNumberInner(), intPointer);
+		int count= intPointer.getInt(Integer.BYTES);
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for(int i=0;i<count;i++){
+			int num = res.getInt((long) i *Integer.BYTES);
+			sb.append(num);
+			if(i<count-1){
+				sb.append(",");
+			}
+		}
+		sb.append("}");
+        return new IntSet(sb.toString());
+	}
+
 	/**
 	 * Returns the minimum value of the "this".
 	 *
@@ -221,6 +281,28 @@ public interface TInt extends TNumber {
 		return functions.tint_max_value(getNumberInner());
 	}
 
+/*
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: The moment to get the value.
+
+        Returns:
+            An :class:`int` with the value of `self` at `timestamp`.
+
+        MEOS Functions:
+            tint_value_at_timestamp
+*/
+
+	default int value_at_timestamp(LocalDateTime timestamp){
+		// Create a JNR-FFI runtime instance
+		Runtime runtime = Runtime.getSystemRuntime();
+		// Allocate memory for an integer (4 bytes) but do not set a value
+		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		boolean x= functions.tint_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true, intPointer);
+		int num= intPointer.getInt(Integer.BYTES);
+		return num;
+	}
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
 
@@ -548,7 +630,7 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_not_equal_number(Integer other){
+	default Temporal temporal_not_equal(Integer other){
 		if ((other != null)){
 			return Factory.create_temporal(functions.tne_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
@@ -573,7 +655,7 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_less_number(Integer other){
+	default Temporal temporal_less(Integer other){
 		if ((other != null)){
 			return Factory.create_temporal(functions.tlt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
@@ -598,7 +680,7 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_less_or_equal_number(Integer other){
+	default Temporal temporal_less_or_equal(Integer other){
 		if ((other != null)){
 			return Factory.create_temporal(functions.tle_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
@@ -622,7 +704,7 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_greater_or_equal_number(Integer other){
+	default Temporal temporal_greater_or_equal(Integer other){
 		if ((other != null)){
 			return Factory.create_temporal(functions.tge_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
@@ -645,7 +727,7 @@ public interface TInt extends TNumber {
 	 * 	 *             compare to `self`.
 	 * @return A {@link Temporal} with the result of the temporal equality relation.
 	 */
-	default Temporal temporal_greater_number(Integer other){
+	default Temporal temporal_greater(Integer other){
 		if ((other instanceof Integer)){
 			return Factory.create_temporal(functions.tgt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
@@ -656,4 +738,5 @@ public interface TInt extends TNumber {
 
 
     /* ------------------------- Restrictions ---------------------------------- */
+
 }

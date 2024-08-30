@@ -18,23 +18,24 @@ import java.util.Objects;
 import functions.functions;
 import utils.ConversionUtils;
 
-/*
-    Class for representing lists of distinct dates.
-
-    ``DateSet`` objects can be created with a single argument of type
-    string as in MobilityDB.
-
-        >>> DateSet(string='{2019-09-08, 2019-09-10, 2019-09-11}')
-
-    Another possibility is to give a tuple or list of composing dates,
-    which can be instances of ``str`` or ``date``. The composing dates
-    must be given in increasing order.
-
-        >>> DateSet(elements=['2019-09-08', '2019-09-10', '2019-09-11'])
-        >>> DateSet(elements=[parse('2019-09-08'), parse('2019-09-10'), parse('2019-09-11')])
-
-    @author ARIJIT SAMAL
-*/
+/**
+ *  Class for representing lists of distinct dates.
+ * <p>
+ *     ``DateSet`` objects can be created with a single argument of type
+ *     string as in MobilityDB.
+ * <p>
+ *         >>> DateSet(string='{2019-09-08, 2019-09-10, 2019-09-11}')
+ * <p>
+ *     Another possibility is to give a tuple or list of composing dates,
+ *     which can be instances of ``str`` or ``date``. The composing dates
+ *     must be given in increasing order.
+ * <p>
+ *         >>> DateSet(elements=['2019-09-08', '2019-09-10', '2019-09-11'])
+ *         <br>
+ *         >>> DateSet(elements=[parse('2019-09-08'), parse('2019-09-10'), parse('2019-09-11')])
+ *
+ *     @author ARIJIT SAMAL
+ */
 
 public class dateset extends Set<LocalDate> implements Time, TimeCollection{
 
@@ -67,7 +68,7 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
         _inner = functions.dateset_in(sb.toString());
     }
 
-    /*
+    /**
             Returns the duration of the time ignoring gaps, i.e. the duration from
             the first timestamp to the last one.
 
@@ -101,7 +102,7 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
         return functions.dateset_out(this.get_inner());
     }
 
-/*
+/**
 Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
 */
 
@@ -111,7 +112,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
-    /*
+    /**
             Returns the first date in ``self``.
             Returns:
                 A :class:`date` instance
@@ -125,7 +126,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return date_adt_to_date(functions.dateset_start_value(this._inner));
     }
 
-/*
+/**
         Returns the last date in ``self``.
         Returns:
             A :class:`date` instance
@@ -139,7 +140,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return date_adt_to_date(functions.dateset_end_value(this._inner));
     }
 
-    /*
+    /**
             Returns the n-th date in ``self``.
             Returns:
                 A :class:`date` instance
@@ -151,7 +152,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return this.elements().get(n);
     }
 
-/*
+/**
         Returns the list of distinct dates in ``self``.
         Returns:
             A :class:`list[date]` instance
@@ -171,7 +172,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return datelist;
     }
 
-/*
+/**
         Returns a new :class:`DateSet` that with the scaled so that the span of
         ``self`` is ``duration``.
 
@@ -194,7 +195,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new dateset(this.shift_scale(0, duration)._inner);
     }
 
-/*
+/**
         Returns a new :class:`DateSpanSet` that is the result of shifting ``self`` by
         ``delta``
 
@@ -216,7 +217,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new dateset(this.shift_scale(shift, 0)._inner);
     }
 
-    /*
+    /**
             Returns a new :class:`DateSet` that is the result of shifting and scaling
             ``self``.
 
@@ -240,7 +241,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return new dateset(functions.dateset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
     }
 
-    /*
+    /**
             Returns whether ``self`` temporally contains ``content``.
 
             Examples:
@@ -276,7 +277,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` temporally overlaps ``other``. That is, both
         share at least an instant
 
@@ -313,7 +314,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is strictly before ``other``. That is,
         ``self`` ends before ``other`` starts.
 
@@ -350,7 +351,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is before ``other`` allowing overlap. That is,
         ``self`` ends before ``other`` ends (or at the same time).
 
@@ -387,7 +388,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         }
     }
 
-/*
+/**
         Returns whether ``self`` is after ``other`` allowing overlap. That is,
         ``self`` starts after ``other`` starts (or at the same time).
 
@@ -425,7 +426,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     }
 
 
-/*
+/**
         Returns whether ``self`` is strictly after ``other``. That is, the
         first timestamp in ``self`` is after ``other``.
 
@@ -486,7 +487,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
 
 
-/*
+/**
         Returns the temporal distance between ``self`` and ``other``.
 
         Args:
@@ -524,7 +525,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
     }
 
-/*
+/**
         Returns the temporal intersection of ``self`` and ``other``.
 
         Args:
@@ -569,7 +570,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-/*
+/**
         Returns the temporal difference of ``self`` and ``other``.
 
         Args:
@@ -613,7 +614,10 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-    // Convert timestamp (number of seconds since epoch) to LocalDate
+    /**
+     * Convert timestamp (number of seconds since epoch) to LocalDate
+     */
+
     public static LocalDate timestampToLocalDate(int timestamp) {
         return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days
     }
@@ -625,7 +629,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return timestampToLocalDate(resultTimestamp);
     }
 
-/*
+/**
         Returns the temporal union of ``self`` and ``other``.
 
         Args:
