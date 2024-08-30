@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TInt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.basic.tint</a> &gt; <span class="el_source">TInt.java</span></div><h1>TInt.java</h1><pre class="source lang-java linenums">package types.basic.tint;
+import functions.functions;
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.annotations.In;
+import types.basic.tfloat.TFloat;
+import types.basic.tnumber.TNumber;
+import types.collections.number.IntSpan;
+import types.collections.number.IntSpanSet;
+import types.collections.time.tstzset;
+import types.collections.time.tstzspan;
+import types.collections.time.Time;
+import types.collections.time.tstzspanset;
+import types.temporal.*;
+import utils.ConversionUtils;
+import types.collections.number.IntSet;
+
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
+
+
+/**
+ * Class that represents the MobilityDB type TInt used for {@link TIntInst}, {@link TIntSeq} and {@link TIntSeqSet}
+ *
+ * @author ARIJIT SAMAL
+ */
+public interface TInt extends TNumber {
+	String customType = &quot;Integer&quot;;
+	Pointer getNumberInner();
+	String getCustomType();
+	TemporalType getTemporalType();
+
+
+
+	/* ------------------------- Constructors ---------------------------------- */
+
+
+	/**
+	 * Returns a new temporal int with the value &quot;value&quot; and the temporal
+	 *         frame of &quot;base&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_from_base_temp&lt;/li&gt;
+	 *
+	 * @param value Value of the temporal float.
+	 * @param base Temporal object to get the temporal frame from.
+	 * @param interp Interpolation of the temporal int.
+	 * @return A new {@link Float} object.
+	 */
+	default TInt from_base_temporal(int value, Temporal base, TInterpolation interp){
+<span class="fc" id="L53">		return (TInt) Factory.create_temporal(functions.tint_from_base_temp(value,base.getInner()),getCustomType(),getTemporalType());</span>
+	}
+
+	/**
+	 * Returns a new temporal int with the value &quot;value&quot; and the temporal
+	 *         frame of &quot;base&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;tintinst_make&lt;/li&gt;
+	 *             &lt;li&gt;tintseq_from_base_tstzspanset&lt;/li&gt;
+	 *             &lt;li&gt;tintseq_from_base_time&lt;/li&gt;
+	 *             &lt;li&gt;tintseqset_from_base_time&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param value Value of the temporal float.
+	 * @param base Time object to get the temporal frame from.
+	 * @param interpolation Interpolation of the temporal int.
+	 * @return A new temporal float.
+	 */
+	static TInt from_base_time(int value, Object base, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		if (base instanceof LocalDateTime){</span>
+<span class="nc" id="L76">			return new TIntInst(functions.tintinst_make(value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) base)));</span>
+		}
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (base instanceof tstzspanset) {</span>
+<span class="fc" id="L79">			return new TIntSeqSet(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		} else if (base instanceof tstzset) {</span>
+<span class="fc" id="L81">			return new TIntSeq(functions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		} else if (base instanceof tstzspan) {</span>
+<span class="fc" id="L83">			tstzspanset ss= new tstzspanset(((tstzspan) base).to_spanset(tstzspanset.class).get_inner());</span>
+<span class="fc" id="L84">			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ss.get_inner()));</span>
+		}
+<span class="nc" id="L86">		throw new UnsupportedOperationException(&quot;Operation not supported with type &quot; + base.getClass());</span>
+	}
+
+/*
+        Returns a temporal object from a MF-JSON string.
+
+        Args:
+            mfjson: The MF-JSON string.
+
+        Returns:
+            A temporal object from a MF-JSON string.
+
+        MEOS Functions:
+            tint_from_mfjson
+*/
+
+	default TInt from_mfjson(String mfjson){
+<span class="nc" id="L103">		Pointer result= functions.tint_from_mfjson(mfjson);</span>
+<span class="nc" id="L104">		return (TInt) Factory.create_temporal(result, getCustomType(), getTemporalType());</span>
+	}
+
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+	/**
+	 * Returns a string representation of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_out&lt;/li&gt;
+	 * @return A string representation of &quot;this&quot;.
+	 */
+	default String to_string(){
+<span class="fc" id="L120">		return functions.tint_out(getNumberInner());</span>
+	}
+
+	/**
+	 * Returns a string representation of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_out&lt;/li&gt;
+	 * @return A string representation of &quot;this&quot;.
+	 */
+	default String as_wkt(){
+<span class="nc" id="L132">		return functions.tint_out(getNumberInner());</span>
+	}
+
+
+	/* ------------------------- Conversions ---------------------------------- */
+
+
+	/**
+	 * Returns a new temporal float with the values of &quot;this&quot; floored.
+	 *         This operation can only be performed when the interpolation is stepwise
+	 *         or discrete.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_to_tfloat&lt;/li&gt;
+	 *
+	 *         Raises:
+	 *             ValueError: If the interpolation is linear.
+	 * @return A new temporal float.
+	 */
+	default TFloat to_tfloat(){
+<span class="fc" id="L153">		return (TFloat) Factory.create_temporal(functions.tint_to_tfloat(getNumberInner()),&quot;Float&quot;,getTemporalType());</span>
+	}
+
+
+
+
+	/**
+	 * Returns value span of &quot;this&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tnumber_to_span&lt;/li&gt;
+	 *
+	 * @return An {@link IntSpan} with the value span of &quot;this&quot;.
+	 */
+	default IntSpan to_intspan(){
+<span class="fc" id="L170">		return new IntSpan(functions.tnumber_to_span(getNumberInner()));</span>
+	}
+
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+
+	/**
+	 * Returns the value span of &quot;this&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tnumber_to_span&lt;/li&gt;
+	 * @return An {@link IntSpan} with the value span of `self`.
+	 */
+	default IntSpan value_span(){
+<span class="fc" id="L187">		return to_intspan();</span>
+	}
+
+	/**
+	 * Returns the value spans of &quot;this&quot; taking into account gaps.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tnumber_valuespans&lt;/li&gt;
+	 * @return A {@link IntSpanSet} with the value spans of &quot;this&quot;.
+	 */
+	default IntSpanSet value_spans(){
+<span class="fc" id="L200">		return new IntSpanSet(functions.tnumber_valuespans(getNumberInner()));</span>
+	}
+
+	/**
+	 * Returns the start value of &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_start_value&lt;/li&gt;
+	 * @return A {@link Integer} with the start value.
+	 */
+	default int start_value(){
+<span class="fc" id="L213">		return functions.tint_start_value(getNumberInner());</span>
+	}
+
+	/**
+	 * Returns the end value of &quot;this&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_end_value&lt;/li&gt;
+	 * @return A {@link Integer} with the end value.
+	 */
+	default int end_value(){
+<span class="fc" id="L225">		return functions.tint_end_value(getNumberInner());</span>
+	}
+
+/**
+ * Returns the set of values of `self`.
+ * &lt;br&gt;
+ *         Returns:
+ *             A :class:`set` with the values of `self`.
+ * &lt;p&gt;
+ *         MEOS Functions:
+ *             &lt;li&gt;tint_values&lt;/li&gt;
+ *  @return A {@link IntSet}.
+ */
+	default IntSet value_set(){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L240">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L242">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L243">		Pointer res= functions.tint_values(this.getNumberInner(), intPointer);</span>
+<span class="nc" id="L244">		int count= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc" id="L245">		StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L246">		sb.append(&quot;{&quot;);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">		for(int i=0;i&lt;count;i++){</span>
+<span class="nc" id="L248">			int num = res.getInt((long) i *Integer.BYTES);</span>
+<span class="nc" id="L249">			sb.append(num);</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">			if(i&lt;count-1){</span>
+<span class="nc" id="L251">				sb.append(&quot;,&quot;);</span>
+			}
+		}
+<span class="nc" id="L254">		sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L255">        return new IntSet(sb.toString());</span>
+	}
+
+	/**
+	 * Returns the minimum value of the &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_min_value&lt;/li&gt;
+	 * @return A {@link Integer} with the minimum value.
+	 */
+	default int min_value(){
+<span class="fc" id="L268">		return functions.tint_min_value(getNumberInner());</span>
+	}
+
+	/**
+	 * Returns the maximum value of the &quot;this&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_max_value&lt;/li&gt;
+	 * @return A {@link Integer} with the maximum value.
+	 */
+	default int max_value(){
+<span class="fc" id="L281">		return functions.tint_max_value(getNumberInner());</span>
+	}
+
+/*
+        Returns the value that `self` takes at a certain moment.
+
+        Args:
+            timestamp: The moment to get the value.
+
+        Returns:
+            An :class:`int` with the value of `self` at `timestamp`.
+
+        MEOS Functions:
+            tint_value_at_timestamp
+*/
+
+	default int value_at_timestamp(LocalDateTime timestamp){
+		// Create a JNR-FFI runtime instance
+<span class="nc" id="L299">		Runtime runtime = Runtime.getSystemRuntime();</span>
+		// Allocate memory for an integer (4 bytes) but do not set a value
+<span class="nc" id="L301">		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);</span>
+<span class="nc" id="L302">		boolean x= functions.tint_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true, intPointer);</span>
+<span class="nc" id="L303">		int num= intPointer.getInt(Integer.BYTES);</span>
+<span class="nc" id="L304">		return num;</span>
+	}
+
+    /* ------------------------- Ever and Always Comparisons ------------------- */
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always equal to &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_equal(int value){
+<span class="fc bfc" id="L322" title="All 2 branches covered.">		return functions.always_eq_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_not_equal(int value){
+<span class="fc bfc" id="L337" title="All 2 branches covered.">		return (functions.ever_ne_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_lt&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean always_less(int value){
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		return functions.always_lt_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean always_less_or_equal(int value){
+<span class="nc bnc" id="L370" title="All 2 branches missed.">		return functions.always_le_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always greater than or equal
+	 *         to &quot;value&quot;.
+	 *
+	 *   &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_lt&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean always_greater_or_equal(int value){
+<span class="nc bnc" id="L386" title="All 2 branches missed.">		return (functions.ever_lt_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are always greater than &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are always greater than &quot;value&quot;,
+	 * 	 *            &quot; `False`&quot; otherwise.
+	 */
+	default boolean always_greater(int value){
+<span class="nc bnc" id="L401" title="All 2 branches missed.">		return (functions.always_gt_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of `self` are ever less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_lt&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_less(int value){
+<span class="nc bnc" id="L416" title="All 2 branches missed.">		return functions.ever_lt_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean ever_less_or_equal(int value){
+<span class="nc bnc" id="L433" title="All 2 branches missed.">		return functions.ever_le_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever equal to &quot;value&quot;, &quot;False&quot;
+	 * 	 *             otherwise.
+	 */
+	default boolean ever_equal(int value){
+<span class="fc bfc" id="L449" title="All 2 branches covered.">		return functions.ever_eq_tint_int(getNumberInner(),value) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_not_equal(int value){
+<span class="fc bfc" id="L464" title="All 2 branches covered.">		return (functions.ever_ne_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever greater than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_lt&lt;/li&gt;
+	 *
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean ever_greater_or_equal(int value){
+<span class="fc bfc" id="L481" title="All 2 branches covered.">		return (functions.ever_ge_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are ever greater than &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are ever greater than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean ever_greater(int value){
+<span class="nc bnc" id="L496" title="All 2 branches missed.">		return (functions.ever_gt_tint_int(getNumberInner(),value)) &gt; 0;</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_equal(int value){
+<span class="nc bnc" id="L511" title="All 2 branches missed.">		return ! (this.ever_equal(value));</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never not equal to &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_eq&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never not equal to &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_not_equal(int value){
+<span class="fc bfc" id="L527" title="All 2 branches covered.">		return ! (this.ever_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never less than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_lt&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never less than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_less(int value){
+<span class="nc bnc" id="L542" title="All 2 branches missed.">		return ! (this.ever_less(value));</span>
+	}
+
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never less than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_ever_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never less than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean never_less_or_equal(int value){
+<span class="nc bnc" id="L559" title="All 2 branches missed.">		return ! (this.ever_less_or_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never greater than or equal to
+	 *         &quot;value&quot;.
+	 *
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_lt&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this &quot;are never greater than or equal to
+	 * 	 *             &quot;value&quot;, &quot;False&quot; otherwise.
+	 */
+	default boolean never_greater_or_equal(int value){
+<span class="fc bfc" id="L575" title="All 2 branches covered.">		return !(this.ever_greater_or_equal(value));</span>
+	}
+
+	/**
+	 * Returns whether the values of &quot;this&quot; are never greater than &quot;value&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tint_always_le&lt;/li&gt;
+	 * @param value {@link Integer} to compare.
+	 * @return &quot;True&quot; if the values of &quot;this&quot; are never greater than &quot;value&quot;,
+	 * 	 *             &quot;False&quot; otherwise.
+	 */
+	default boolean never_greater(int value){
+<span class="nc bnc" id="L590" title="All 2 branches missed.">		return !(this.ever_greater(value));</span>
+	}
+
+
+    /* ------------------------- Temporal Comparisons -------------------------- */
+
+
+	/**
+	 * Returns the temporal equality relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;teq_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;teq_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_equal(Object other){
+<span class="nc bnc" id="L610" title="All 2 branches missed.">		if ((other instanceof Integer)){</span>
+<span class="nc" id="L611">			return Factory.create_temporal(functions.teq_tint_int(getNumberInner(), ((Integer) other)), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L614">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+	/**
+	 * Returns the temporal not equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tne_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;tne_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_not_equal(Integer other){
+<span class="nc bnc" id="L634" title="All 2 branches missed.">		if ((other != null)){</span>
+<span class="nc" id="L635">			return Factory.create_temporal(functions.tne_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L638">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+
+	/**
+	 * Returns the temporal less than relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tlt_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;tlt_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_less(Integer other){
+<span class="nc bnc" id="L659" title="All 2 branches missed.">		if ((other != null)){</span>
+<span class="nc" id="L660">			return Factory.create_temporal(functions.tlt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L663">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+
+	/**
+	 *  Returns the temporal less or equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tle_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;tle_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_less_or_equal(Integer other){
+<span class="nc bnc" id="L684" title="All 2 branches missed.">		if ((other != null)){</span>
+<span class="nc" id="L685">			return Factory.create_temporal(functions.tle_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L688">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+
+	/**
+	 *  Returns the temporal greater or equal relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tge_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;tge_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_greater_or_equal(Integer other){
+<span class="nc bnc" id="L708" title="All 2 branches missed.">		if ((other != null)){</span>
+<span class="nc" id="L709">			return Factory.create_temporal(functions.tge_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L712">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+
+	/**
+	 *  Returns the temporal greater than relation between &quot;this&quot; and &quot;other&quot;.
+	 *
+	 *  &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;tgt_tint_int&lt;/li&gt;
+	 *             &lt;li&gt;tgt_temporal_temporal&lt;/li&gt;
+	 * @param other An {@link Integer} or temporal object to
+	 * 	 *             compare to `self`.
+	 * @return A {@link Temporal} with the result of the temporal equality relation.
+	 */
+	default Temporal temporal_greater(Integer other){
+<span class="nc bnc" id="L731" title="All 2 branches missed.">		if ((other instanceof Integer)){</span>
+<span class="nc" id="L732">			return Factory.create_temporal(functions.tgt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());</span>
+		}
+		else{
+<span class="nc" id="L735">			throw new UnsupportedOperationException(&quot;Parameter not supported&quot;);</span>
+		}
+	}
+
+
+    /* ------------------------- Restrictions ---------------------------------- */
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

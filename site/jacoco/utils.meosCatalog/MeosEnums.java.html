@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MeosEnums.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">utils.meosCatalog</a> &gt; <span class="el_source">MeosEnums.java</span></div><h1>MeosEnums.java</h1><pre class="source lang-java linenums">package utils.meosCatalog;
+
+
+/**
+ * Meos enumeration storing the type and operators through MEOS integer values.
+ *
+ * @author Nidhal Mareghni
+ * @since 18/10/2023
+ */
+<span class="nc" id="L10">public class MeosEnums {</span>
+<span class="nc" id="L11">    public enum meosType {</span>
+<span class="nc" id="L12">        T_UNKNOWN(0),</span>
+<span class="nc" id="L13">        T_BOOL(1),</span>
+<span class="nc" id="L14">        T_DOUBLE2(2),</span>
+<span class="nc" id="L15">        T_DOUBLE3(3),</span>
+<span class="nc" id="L16">        T_DOUBLE4(4),</span>
+<span class="nc" id="L17">        T_FLOAT8(5),</span>
+<span class="nc" id="L18">        T_FLOATSET(6),</span>
+<span class="nc" id="L19">        T_FLOATSPAN(7),</span>
+<span class="nc" id="L20">        T_FLOATSPANSET(8),</span>
+<span class="nc" id="L21">        T_INT4(9),</span>
+<span class="nc" id="L22">        T_INT4RANGE(10),</span>
+<span class="nc" id="L23">        T_INT4MULTIRANGE(11),</span>
+<span class="nc" id="L24">        T_INTSET(12),</span>
+<span class="nc" id="L25">        T_INTSPAN(13),</span>
+<span class="nc" id="L26">        T_INTSPANSET(14),</span>
+<span class="nc" id="L27">        T_INT8(15),</span>
+<span class="nc" id="L28">        T_BIGINTSET(16),</span>
+<span class="nc" id="L29">        T_BIGINTSPAN(17),</span>
+<span class="nc" id="L30">        T_BIGINTSPANSET(18),</span>
+<span class="nc" id="L31">        T_STBOX(19),</span>
+<span class="nc" id="L32">        T_TBOOL(20),</span>
+<span class="nc" id="L33">        T_TBOX(21),</span>
+<span class="nc" id="L34">        T_TDOUBLE2(22),</span>
+<span class="nc" id="L35">        T_TDOUBLE3(23),</span>
+<span class="nc" id="L36">        T_TDOUBLE4(24),</span>
+<span class="nc" id="L37">        T_TEXT(25),</span>
+<span class="nc" id="L38">        T_TEXTSET(26),</span>
+<span class="nc" id="L39">        T_TFLOAT(27),</span>
+<span class="nc" id="L40">        T_TIMESTAMPTZ(28),</span>
+<span class="nc" id="L41">        T_TINT(29),</span>
+<span class="nc" id="L42">        T_TSTZMULTIRANGE(30),</span>
+<span class="nc" id="L43">        T_TSTZRANGE(31),</span>
+<span class="nc" id="L44">        T_TSTZSET(32),</span>
+<span class="nc" id="L45">        T_TSTZSPAN(33),</span>
+<span class="nc" id="L46">        T_TSTZSPANSET(34),</span>
+<span class="nc" id="L47">        T_TTEXT(35),</span>
+<span class="nc" id="L48">        T_GEOMETRY(36),</span>
+<span class="nc" id="L49">        T_GEOMSET(37),</span>
+<span class="nc" id="L50">        T_GEOGRAPHY(38),</span>
+<span class="nc" id="L51">        T_GEOGSET(39),</span>
+<span class="nc" id="L52">        T_TGEOMPOINT(40),</span>
+<span class="nc" id="L53">        T_TGEOGPOINT(41),</span>
+<span class="nc" id="L54">        T_NPOINT(42),</span>
+<span class="nc" id="L55">        T_NPOINTSET(43),</span>
+<span class="nc" id="L56">        T_NSEGMENT(44),</span>
+<span class="nc" id="L57">        T_TNPOINT(45);</span>
+
+        private final int value;
+
+<span class="nc" id="L61">        meosType(int value) {</span>
+<span class="nc" id="L62">            this.value = value;</span>
+<span class="nc" id="L63">        }</span>
+
+        public int getValue() {
+<span class="nc" id="L66">            return value;</span>
+        }
+    }
+
+
+
+
+<span class="nc" id="L73">    public enum meosOper {</span>
+<span class="nc" id="L74">        UNKNOWN_OP(0),</span>
+<span class="nc" id="L75">        EQ_OP(1),</span>
+<span class="nc" id="L76">        NE_OP(2),</span>
+<span class="nc" id="L77">        LT_OP(3),</span>
+<span class="nc" id="L78">        LE_OP(4),</span>
+<span class="nc" id="L79">        GT_OP(5),</span>
+<span class="nc" id="L80">        GE_OP(6),</span>
+<span class="nc" id="L81">        ADJACENT_OP(7),</span>
+<span class="nc" id="L82">        UNION_OP(8),</span>
+<span class="nc" id="L83">        MINUS_OP(9),</span>
+<span class="nc" id="L84">        INTERSECT_OP(10),</span>
+<span class="nc" id="L85">        OVERLAPS_OP(11),</span>
+<span class="nc" id="L86">        CONTAINS_OP(12),</span>
+<span class="nc" id="L87">        CONTAINED_OP(13),</span>
+<span class="nc" id="L88">        SAME_OP(14),</span>
+<span class="nc" id="L89">        LEFT_OP(15),</span>
+<span class="nc" id="L90">        OVERLEFT_OP(16),</span>
+<span class="nc" id="L91">        RIGHT_OP(17),</span>
+<span class="nc" id="L92">        OVERRIGHT_OP(18),</span>
+<span class="nc" id="L93">        BELOW_OP(19),</span>
+<span class="nc" id="L94">        OVERBELOW_OP(20),</span>
+<span class="nc" id="L95">        ABOVE_OP(21),</span>
+<span class="nc" id="L96">        OVERABOVE_OP(22),</span>
+<span class="nc" id="L97">        FRONT_OP(23),</span>
+<span class="nc" id="L98">        OVERFRONT_OP(24),</span>
+<span class="nc" id="L99">        BACK_OP(25),</span>
+<span class="nc" id="L100">        OVERBACK_OP(26),</span>
+<span class="nc" id="L101">        BEFORE_OP(27),</span>
+<span class="nc" id="L102">        OVERBEFORE_OP(28),</span>
+<span class="nc" id="L103">        AFTER_OP(29),</span>
+<span class="nc" id="L104">        OVERAFTER_OP(30),</span>
+<span class="nc" id="L105">        EVEREQ_OP(31),</span>
+<span class="nc" id="L106">        EVERNE_OP(32),</span>
+<span class="nc" id="L107">        EVERLT_OP(33),</span>
+<span class="nc" id="L108">        EVERLE_OP(34),</span>
+<span class="nc" id="L109">        EVERGT_OP(35),</span>
+<span class="nc" id="L110">        EVERGE_OP(36),</span>
+<span class="nc" id="L111">        ALWAYSEQ_OP(37),</span>
+<span class="nc" id="L112">        ALWAYSNE_OP(38),</span>
+<span class="nc" id="L113">        ALWAYSLT_OP(39),</span>
+<span class="nc" id="L114">        ALWAYSLE_OP(40),</span>
+<span class="nc" id="L115">        ALWAYSGT_OP(41),</span>
+<span class="nc" id="L116">        ALWAYSGE_OP(42);</span>
+
+        private final int value;
+
+<span class="nc" id="L120">        meosOper(int value) {</span>
+<span class="nc" id="L121">            this.value = value;</span>
+<span class="nc" id="L122">        }</span>
+
+        public int getValue() {
+<span class="nc" id="L125">            return value;</span>
+        }
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

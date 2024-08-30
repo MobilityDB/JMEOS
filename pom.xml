@@ -72,7 +72,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-<!--                    <forkCount>8</forkCount>-->
+<!--                    <forkCount>4</forkCount>-->
 <!--                    <reuseForks>true</reuseForks>-->
 <!--                    <argLine>-Xmx4096m -XX:MaxMetaspaceSize=512m</argLine>-->
                     <skipTests>true</skipTests>

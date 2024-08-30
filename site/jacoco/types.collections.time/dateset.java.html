@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>dateset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.collections.time</a> &gt; <span class="el_source">dateset.java</span></div><h1>dateset.java</h1><pre class="source lang-java linenums">package types.collections.time;
+
+import jnr.ffi.Pointer;
+import jnr.ffi.annotations.In;
+import org.locationtech.jts.io.ParseException;
+import types.collections.base.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import functions.functions;
+import utils.ConversionUtils;
+
+/**
+ *  Class for representing lists of distinct dates.
+ * &lt;p&gt;
+ *     ``DateSet`` objects can be created with a single argument of type
+ *     string as in MobilityDB.
+ * &lt;p&gt;
+ *         &gt;&gt;&gt; DateSet(string='{2019-09-08, 2019-09-10, 2019-09-11}')
+ * &lt;p&gt;
+ *     Another possibility is to give a tuple or list of composing dates,
+ *     which can be instances of ``str`` or ``date``. The composing dates
+ *     must be given in increasing order.
+ * &lt;p&gt;
+ *         &gt;&gt;&gt; DateSet(elements=['2019-09-08', '2019-09-10', '2019-09-11'])
+ *         &lt;br&gt;
+ *         &gt;&gt;&gt; DateSet(elements=[parse('2019-09-08'), parse('2019-09-10'), parse('2019-09-11')])
+ *
+ *     @author ARIJIT SAMAL
+ */
+
+public class dateset extends Set&lt;LocalDate&gt; implements Time, TimeCollection{
+
+    private final Pointer _inner;
+
+    public dateset(Pointer inner){
+<span class="fc" id="L45">        super(inner);</span>
+<span class="fc" id="L46">        _inner = inner;</span>
+<span class="fc" id="L47">    }</span>
+
+    public dateset(String value){
+<span class="fc" id="L50">        super(value);</span>
+<span class="fc" id="L51">        _inner = functions.dateset_in(value);</span>
+<span class="fc" id="L52">    }</span>
+
+<span class="fc" id="L54">    public dateset(List&lt;LocalDate&gt; dates)  {</span>
+<span class="fc" id="L55">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L56">        sb.append(&quot;{&quot;);</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int i = 0; i &lt; dates.size(); i++) {</span>
+<span class="fc" id="L59">            LocalDate date = dates.get(i);</span>
+<span class="fc" id="L60">            System.out.println(date.toString());</span>
+<span class="fc" id="L61">            sb.append(date.toString());</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (i &lt; dates.size() - 1) {</span>
+<span class="fc" id="L63">                sb.append(&quot;, &quot;);</span>
+            }
+        }
+<span class="fc" id="L66">        sb.append(&quot;}&quot;);</span>
+//        System.out.println(sb);
+<span class="fc" id="L68">        _inner = functions.dateset_in(sb.toString());</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+            Returns the duration of the time ignoring gaps, i.e. the duration from
+            the first timestamp to the last one.
+
+            Returns:
+                A :class:`datetime.timedelta` instance representing the duration of ``self``
+
+            MEOS Functions:
+                tstzspan_duration
+    */
+    public Duration duration() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+<span class="fc" id="L82">        return this.to_spanset(datespanset.class).duration(false);</span>
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner) {
+<span class="fc" id="L87">        return inner;</span>
+    }
+
+    @Override
+    public Pointer createStringInner(String str) {
+<span class="fc" id="L92">        return functions.dateset_in(str);</span>
+    }
+
+    @Override
+    public Pointer get_inner() {
+<span class="fc" id="L97">        return this._inner;</span>
+    }
+
+
+    public String toString(){
+<span class="fc" id="L102">        return functions.dateset_out(this.get_inner());</span>
+    }
+
+/**
+Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
+*/
+
+    public LocalDate date_adt_to_date(int ts){
+<span class="fc" id="L110">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;);</span>
+<span class="fc" id="L111">        String dateStr= functions.pg_date_out(ts);</span>
+<span class="fc" id="L112">        return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);</span>
+    }
+
+    /**
+            Returns the first date in ``self``.
+            Returns:
+                A :class:`date` instance
+
+            MEOS Functions:
+                dateset_start_value
+    */
+
+    @Override
+    public LocalDate start_element() throws ParseException {
+<span class="fc" id="L126">        return date_adt_to_date(functions.dateset_start_value(this._inner));</span>
+    }
+
+/**
+        Returns the last date in ``self``.
+        Returns:
+            A :class:`date` instance
+
+        MEOS Functions:
+            dateset_end_value
+*/
+
+    @Override
+    public LocalDate end_element() throws ParseException {
+<span class="fc" id="L140">        return date_adt_to_date(functions.dateset_end_value(this._inner));</span>
+    }
+
+    /**
+            Returns the n-th date in ``self``.
+            Returns:
+                A :class:`date` instance
+
+            MEOS Functions:
+                dateset_value_n
+    */
+    public LocalDate element_n(int n) throws Exception {
+<span class="fc" id="L152">        return this.elements().get(n);</span>
+    }
+
+/**
+        Returns the list of distinct dates in ``self``.
+        Returns:
+            A :class:`list[date]` instance
+
+        MEOS Functions:
+            dateset_values
+*/
+
+    public List&lt;LocalDate&gt; elements() throws Exception {
+<span class="fc" id="L165">        Pointer dp= functions.dateset_values(this._inner);</span>
+<span class="fc" id="L166">        long size= this.num_elements();</span>
+<span class="fc" id="L167">        List&lt;LocalDate&gt; datelist= new ArrayList&lt;LocalDate&gt;();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for(int i=0; i&lt;size; i++) {</span>
+<span class="fc" id="L169">            int res= dp.getInt((long) i *Integer.BYTES);</span>
+<span class="fc" id="L170">            datelist.add(date_adt_to_date(res));</span>
+        }
+<span class="fc" id="L172">        return datelist;</span>
+    }
+
+/**
+        Returns a new :class:`DateSet` that with the scaled so that the span of
+        ``self`` is ``duration``.
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2000-01-01, 2000-01-10}').scale(timedelta(days=2))
+            &gt;&gt;&gt; 'DateSet({2000-01-01, 2000-01-03})'
+
+        Args:
+            duration: :class:`datetime.timedelta` instance representing the
+            span of the new set
+
+        Returns:
+            A new :class:`DateSet` instance
+
+        MEOS Functions:
+            dateset_shift_scale
+*/
+
+    public dateset scale(Integer duration){
+<span class="fc" id="L195">        return new dateset(this.shift_scale(0, duration)._inner);</span>
+    }
+
+/**
+        Returns a new :class:`DateSpanSet` that is the result of shifting ``self`` by
+        ``delta``
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2000-01-01, 2000-01-10}').shift(timedelta(days=2))
+            &gt;&gt;&gt; 'DateSet({2000-01-03, 2000-01-12})'
+
+        Args:
+            delta: :class:`datetime.timedelta` instance to shift
+
+        Returns:
+            A new :class:`DateSpanSet` instance
+
+        MEOS Functions:
+            dateset_shift_scale
+*/
+
+    public dateset shift(Integer shift){
+<span class="fc" id="L217">        return new dateset(this.shift_scale(shift, 0)._inner);</span>
+    }
+
+    /**
+            Returns a new :class:`DateSet` that is the result of shifting and scaling
+            ``self``.
+
+            Examples:
+                &gt;&gt;&gt; DateSet('{2000-01-01, 2000-01-10}').shift_scale(shift=timedelta(days=2), duration=timedelta(days=4))
+                &gt;&gt;&gt; 'DateSet({2000-01-03, 2000-01-07})'
+
+            Args:
+                shift: :class:`datetime.timedelta` instance to shift
+                duration: :class:`datetime.timedelta` instance representing the
+                span of the new set
+
+            Returns:
+                A new :class:`DateSet` instance
+
+            MEOS Functions:
+                dateset_shift_scale
+    */
+
+    public dateset shift_scale(Integer shift, Integer duration){
+<span class="fc bfc" id="L241" title="All 4 branches covered.">        return new dateset(functions.dateset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));</span>
+    }
+
+    /**
+            Returns whether ``self`` temporally contains ``content``.
+
+            Examples:
+                &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-04}').contains(parse('2012-01-01').date())
+                &gt;&gt;&gt; True
+                &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01}'))
+                &gt;&gt;&gt; True
+                &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').contains(DateSet('{2012-01-01, 2012-01-03}'))
+                &gt;&gt;&gt; False
+
+            Args:
+                content: temporal object to compare with
+
+            Returns:
+                True if contains, False otherwise
+
+            MEOS Functions:
+                contains_set_date, contains_set_set, contains_spanset_spanset
+    */
+    public int dateToTimestamp(LocalDate date){
+<span class="fc" id="L265">       return functions.pg_date_in(date.toString());</span>
+    }
+
+    public boolean contains(Object other) throws Exception {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        if (other instanceof LocalDateTime){</span>
+<span class="nc" id="L270">            return functions.contains_set_date(this._inner, dateToTimestamp(((LocalDateTime) other).toLocalDate()));</span>
+        }
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        else if (other instanceof LocalDate){</span>
+<span class="nc" id="L273">            return functions.contains_set_date(this._inner, dateToTimestamp((LocalDate) other));</span>
+        }
+        else {
+<span class="nc" id="L276">            return super.contains((Base) other);</span>
+        }
+    }
+
+/**
+        Returns whether ``self`` temporally overlaps ``other``. That is, both
+        share at least an instant
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').overlaps(DateSet('{2012-01-02, 2012-01-03}'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').overlaps(DateSpan('[2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').overlaps(DateSpan('(2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; False
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            True if overlaps, False otherwise
+
+        MEOS Functions:
+            overlaps_set_set, overlaps_span_span, overlaps_spanset_spanset
+*/
+
+    public boolean overlaps(Object other) throws Exception {
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (other instanceof LocalDate){</span>
+<span class="nc" id="L304">            return functions.contains_set_date(this._inner, dateToTimestamp(((LocalDate) other)));</span>
+        }
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (other instanceof datespan){</span>
+<span class="nc" id="L307">            return this.to_span(datespan.class).is_adjacent((Base) other);</span>
+        }
+<span class="nc bnc" id="L309" title="All 2 branches missed.">        if (other instanceof datespanset){</span>
+<span class="nc" id="L310">            return this.to_spanset(datespanset.class).is_adjacent((Base) other);</span>
+        }
+        else {
+<span class="nc" id="L313">            return super.overlaps((Base) other);</span>
+        }
+    }
+
+/**
+        Returns whether ``self`` is strictly before ``other``. That is,
+        ``self`` ends before ``other`` starts.
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').is_left(DateSet('{2012-01-03}'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').is_left(DateSpan('(2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').is_left(DateSpan('[2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; False
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            True if before, False otherwise
+
+        MEOS Functions:
+            before_set_date, left_span_span
+*/
+
+    public boolean is_left(Object other) throws Exception {
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        if (other instanceof LocalDate){</span>
+<span class="nc" id="L341">            return functions.before_set_date(this._inner, dateToTimestamp(((LocalDate) other)));</span>
+        }
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        if (other instanceof datespan){</span>
+<span class="nc" id="L344">            return this.to_span(datespan.class).is_left(other);</span>
+        }
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        if (other instanceof datespanset){</span>
+<span class="nc" id="L347">            return this.to_spanset(datespanset.class).is_left(other);</span>
+        }
+        else {
+<span class="nc" id="L350">            return super.is_left((Base) other);</span>
+        }
+    }
+
+/**
+        Returns whether ``self`` is before ``other`` allowing overlap. That is,
+        ``self`` ends before ``other`` ends (or at the same time).
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').is_over_or_left(DateSpan('[2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-01, 2012-01-02}').is_over_or_left(DateSpan('[2012-01-02, 2012-01-03]'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-03, 2012-01-05}').is_over_or_left(DateSpan('[2012-01-01, 2012-01-04]'))
+            &gt;&gt;&gt; False
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            True if before, False otherwise
+
+        MEOS Functions:
+            overbefore_set_date, overleft_span_span, overleft_span_spanset
+*/
+
+    public boolean is_over_or_left(Object other) throws Exception {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        if (other instanceof LocalDate){</span>
+<span class="nc" id="L378">            return functions.overbefore_set_date(this._inner, dateToTimestamp(((LocalDate) other)));</span>
+        }
+<span class="nc bnc" id="L380" title="All 2 branches missed.">        if (other instanceof datespan){</span>
+<span class="nc" id="L381">            return this.to_span(datespan.class).is_over_or_left(other);</span>
+        }
+<span class="nc bnc" id="L383" title="All 2 branches missed.">        if (other instanceof datespanset){</span>
+<span class="nc" id="L384">            return this.to_spanset(datespanset.class).is_over_or_left(other);</span>
+        }
+        else {
+<span class="nc" id="L387">            return super.is_over_or_left((Base) other);</span>
+        }
+    }
+
+/**
+        Returns whether ``self`` is after ``other`` allowing overlap. That is,
+        ``self`` starts after ``other`` starts (or at the same time).
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_over_or_right(DateSpan('[2012-01-01, 2012-01-02)'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_over_or_right(DateSpan('[2012-01-01, 2012-01-02]'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_over_or_right(DateSpan('[2012-01-01, 2012-01-03]'))
+            &gt;&gt;&gt; False
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            True if overlapping or after, False otherwise
+
+        MEOS Functions:
+            overafter_set_date, overright_span_span, overright_span_spanset
+*/
+
+    public boolean is_over_or_right(Object other) throws Exception {
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        if (other instanceof LocalDate){</span>
+<span class="nc" id="L415">            return functions.overafter_set_date(this._inner, dateToTimestamp(((LocalDate) other)));</span>
+        }
+<span class="nc bnc" id="L417" title="All 2 branches missed.">        if (other instanceof datespan){</span>
+<span class="nc" id="L418">            return this.to_span(datespan.class).is_over_or_right(other);</span>
+        }
+<span class="nc bnc" id="L420" title="All 2 branches missed.">        if (other instanceof datespanset){</span>
+<span class="nc" id="L421">            return this.to_spanset(datespanset.class).is_over_or_right(other);</span>
+        }
+        else {
+<span class="nc" id="L424">            return super.is_over_or_right((Base) other);</span>
+        }
+    }
+
+
+/**
+        Returns whether ``self`` is strictly after ``other``. That is, the
+        first timestamp in ``self`` is after ``other``.
+
+        Examples:
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_right(DateSpan('[2012-01-01, 2012-01-02)'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_right(DateSet('{2012-01-01}'))
+            &gt;&gt;&gt; True
+            &gt;&gt;&gt; DateSet('{2012-01-02, 2012-01-03}').is_right(DateSpan('[2012-01-01, 2012-01-02]'))
+            &gt;&gt;&gt; False
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            True if after, False otherwise
+
+        MEOS Functions:
+            after_set_date, right_span_span, right_span_spanset
+*/
+
+    public boolean is_right(Object other) throws Exception {
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        if (other instanceof LocalDate){</span>
+<span class="nc" id="L453">            return functions.after_set_date(this._inner, dateToTimestamp(((LocalDate) other)));</span>
+        }
+<span class="nc bnc" id="L455" title="All 2 branches missed.">        if (other instanceof datespan){</span>
+<span class="nc" id="L456">            return this.to_span(datespan.class).is_over_or_left(other);</span>
+        }
+<span class="nc bnc" id="L458" title="All 2 branches missed.">        if (other instanceof datespanset){</span>
+<span class="nc" id="L459">            return this.to_spanset(datespanset.class).is_over_or_left(other);</span>
+        }
+        else {
+<span class="nc" id="L462">            return super.is_right((Base) other);</span>
+        }
+    }
+
+    @Override
+    public boolean is_before(Object other) throws Exception {
+<span class="fc" id="L468">        return TimeCollection.super.is_before(other);</span>
+    }
+
+    @Override
+    public boolean is_over_or_before(Object other) throws Exception {
+<span class="fc" id="L473">        return TimeCollection.super.is_over_or_before(other);</span>
+    }
+
+    @Override
+    public boolean is_over_or_after(Object other) throws Exception {
+<span class="fc" id="L478">        return TimeCollection.super.is_over_or_after(other);</span>
+    }
+
+    @Override
+    public boolean is_after(Object other) throws Exception {
+<span class="fc" id="L483">        return TimeCollection.super.is_after(other);</span>
+    }
+
+    /*---------------Distance Operations-------------------*/
+
+
+
+/**
+        Returns the temporal distance between ``self`` and ``other``.
+
+        Args:
+            other: temporal object to compare with
+
+        Returns:
+            A :class:`datetime.timedelta` instance
+
+        MEOS Functions:
+            distance_set_date, distance_dateset_dateset,
+            distance_datespanset_datespan, distance_datespanset_datespanset
+*/
+
+    public Duration distance(Object other) throws Exception {
+<span class="fc" id="L505">        Duration answer = null;</span>
+<span class="pc bpc" id="L506" title="1 of 2 branches missed.">        if (other instanceof LocalDate) {</span>
+<span class="nc" id="L507">            answer= Duration.ofSeconds(functions.distance_set_date(this._inner, dateToTimestamp((LocalDate) other)));</span>
+<span class="pc bpc" id="L508" title="1 of 2 branches missed.">        } else if (other instanceof dateset) {</span>
+<span class="fc" id="L509">            answer= Duration.ofSeconds(functions.distance_dateset_dateset(this._inner, ((dateset) other)._inner));</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">        } else if (other instanceof datespan) {</span>
+<span class="nc" id="L511">            answer= this.to_spanset(datespan.class).distance(other);</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">        } else if (other instanceof datespanset) {</span>
+<span class="nc" id="L513">            answer= this.to_spanset(datespanset.class).distance(other);</span>
+        } else {
+<span class="nc" id="L515">            throw new Exception(&quot;Operation not supported with &quot;+ other + &quot; type&quot;);</span>
+        }
+<span class="fc" id="L517">        return answer;</span>
+    }
+
+
+    /*---------------Set Operations-------------------*/
+
+    // Convert timestamp (number of seconds since epoch) to LocalDateTime
+    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
+<span class="fc" id="L525">        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);</span>
+    }
+
+/**
+        Returns the temporal intersection of ``self`` and ``other``.
+
+        Args:
+            other: temporal object to intersect with
+
+        Returns:
+            A :class:`TimeDate` instance. The actual class depends on ``other``.
+
+        MEOS Functions:
+            intersection_set_date, intersection_set_set, intersection_spanset_span,
+            intersection_spanset_spanset
+*/
+
+    public LocalDateTime intersection(Object other) throws Exception {
+<span class="fc" id="L543">        LocalDateTime result = null;</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">        if (other instanceof LocalDate){</span>
+<span class="fc" id="L545">            System.out.println(dateToTimestamp((LocalDate) other));</span>
+<span class="fc" id="L546">            Pointer resultPointer= functions.intersection_set_date(this._inner, dateToTimestamp((LocalDate) other));</span>
+<span class="fc" id="L547">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L548">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L549">        }</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">        else if (other instanceof dateset){</span>
+<span class="fc" id="L551">            Pointer resultPointer= functions.intersection_set_set(this._inner, ((dateset) other)._inner);</span>
+<span class="fc" id="L552">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L553">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L554">        }</span>
+<span class="fc bfc" id="L555" title="All 2 branches covered.">        else if (other instanceof datespan){</span>
+<span class="fc" id="L556">            datespan ds = this.to_span(datespan.class);</span>
+<span class="fc" id="L557">            Pointer resultPointer = functions.intersection_span_span(ds.get_inner(), ((datespan) other).get_inner());</span>
+<span class="fc" id="L558">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L559">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L560">        }</span>
+<span class="pc bpc" id="L561" title="1 of 2 branches missed.">        else if (other instanceof datespanset){</span>
+<span class="fc" id="L562">            datespanset dss = this.to_spanset(datespanset.class);</span>
+<span class="fc" id="L563">            Pointer resultPointer = functions.intersection_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());</span>
+<span class="fc" id="L564">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L565">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L566">        }</span>
+        else{
+<span class="nc" id="L568">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+<span class="fc" id="L570">        return result;</span>
+    }
+
+/**
+        Returns the temporal difference of ``self`` and ``other``.
+
+        Args:
+            other: temporal object to diff with
+
+        Returns:
+            A :class:`TimeDate` instance. The actual class depends on ``other``.
+
+        MEOS Functions:
+            minus_set_date, minus_set_set, minus_spanset_span,
+            minus_spanset_spanset
+*/
+
+    public LocalDateTime minus(Object other) throws Exception{
+<span class="fc" id="L588">        LocalDateTime result = null;</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">        if (other instanceof LocalDate){</span>
+<span class="fc" id="L590">            Pointer resultPointer= functions.minus_set_date(this._inner, dateToTimestamp((LocalDate) other));</span>
+<span class="fc" id="L591">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L592">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L593">        }</span>
+<span class="fc bfc" id="L594" title="All 2 branches covered.">        else if (other instanceof dateset){</span>
+<span class="fc" id="L595">            Pointer resultPointer= functions.minus_set_set(this._inner, ((dateset) other)._inner);</span>
+<span class="fc" id="L596">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L597">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L598">        }</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">        else if (other instanceof datespan){</span>
+<span class="fc" id="L600">            datespan ds = this.to_span(datespan.class);</span>
+<span class="fc" id="L601">            Pointer resultPointer= functions.minus_span_span(ds.get_inner(), ((datespan) other).get_inner());</span>
+<span class="fc" id="L602">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L603">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L604">        }</span>
+<span class="pc bpc" id="L605" title="1 of 2 branches missed.">        else if (other instanceof datespanset){</span>
+<span class="fc" id="L606">            datespanset dss = this.to_spanset(datespanset.class);</span>
+<span class="fc" id="L607">            Pointer resultPointer= functions.minus_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());</span>
+<span class="fc" id="L608">            int resultTimestamp= resultPointer.getInt(Integer.BYTES);</span>
+<span class="fc" id="L609">            result = timestampToLocalDateTime(resultTimestamp);</span>
+<span class="fc" id="L610">        }</span>
+        else{
+<span class="nc" id="L612">            throw new Exception(&quot;Operation not supported with this type&quot;);</span>
+        }
+<span class="fc" id="L614">        return result;</span>
+    }
+
+    /**
+     * Convert timestamp (number of seconds since epoch) to LocalDate
+     */
+
+    public static LocalDate timestampToLocalDate(int timestamp) {
+<span class="nc" id="L622">        return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days</span>
+    }
+
+    public LocalDate subtract_from(Object other) throws Exception {
+<span class="nc" id="L626">        int ts= dateToTimestamp((LocalDate) other);</span>
+<span class="nc" id="L627">        Pointer resultPointer= functions.minus_date_set(ts, this._inner);</span>
+<span class="nc" id="L628">        int resultTimestamp= resultPointer.getInt(0);</span>
+<span class="nc" id="L629">        return timestampToLocalDate(resultTimestamp);</span>
+    }
+
+/**
+        Returns the temporal union of ``self`` and ``other``.
+
+        Args:
+            other: temporal object to merge with
+
+        Returns:
+            A :class:`TimeDate` instance. The actual class depends on ``other``.
+
+        MEOS Functions:
+            union_set_date, union_set_set, union_spanset_span,
+            union_spanset_spanset
+*/
+
+    public dateset union(Object other) throws Exception{
+<span class="fc" id="L647">        dateset result = null;</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">        if (other instanceof LocalDate){</span>
+<span class="fc" id="L649">            Pointer resultPointer= functions.union_set_date(this._inner, dateToTimestamp((LocalDate) other));</span>
+<span class="fc" id="L650">            result = new dateset(resultPointer);</span>
+<span class="fc" id="L651">        }</span>
+<span class="fc bfc" id="L652" title="All 2 branches covered.">        else if (other instanceof dateset){</span>
+<span class="fc" id="L653">            Pointer resultPointer= functions.union_set_set(this._inner, ((dateset) other)._inner);</span>
+<span class="fc" id="L654">            result = new dateset(resultPointer);</span>
+<span class="fc" id="L655">        }</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">        else if (other instanceof datespan){</span>
+<span class="fc" id="L657">            datespan ds = this.to_span(datespan.class);</span>
+<span class="fc" id="L658">            Pointer resultPointer= functions.union_span_span(ds.get_inner(), ((datespan) other).get_inner());</span>
+<span class="fc" id="L659">            result = new dateset(resultPointer);</span>
+<span class="fc" id="L660">        }</span>
+<span class="pc bpc" id="L661" title="1 of 2 branches missed.">        else if (other instanceof datespanset){</span>
+<span class="fc" id="L662">            datespanset dss = this.to_spanset(datespanset.class);</span>
+<span class="fc" id="L663">            Pointer resultPointer= functions.union_spanset_spanset(dss.get_inner(), ((datespanset) other).get_inner());</span>
+<span class="fc" id="L664">            result = new dateset(resultPointer);</span>
+<span class="fc" id="L665">        }</span>
+        else{
+<span class="nc" id="L667">            throw new Exception(&quot;Operation not supported with &quot; + other + &quot; type&quot;);</span>
+        }
+<span class="fc" id="L669">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

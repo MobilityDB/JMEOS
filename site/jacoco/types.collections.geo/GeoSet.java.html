@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeoSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.collections.geo</a> &gt; <span class="el_source">GeoSet.java</span></div><h1>GeoSet.java</h1><pre class="source lang-java linenums">package types.collections.geo;
+import jnr.ffi.Pointer;
+import org.checkerframework.checker.units.qual.C;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import types.collections.base.Set;
+import utils.ConversionUtils;
+import functions.functions;
+
+
+/**
+ * Abstract class representing a set of geo object inheriting from set type.
+ *
+ * @author Nidhal Mareghni
+ * @since 10/09/2023
+ */
+public abstract class GeoSet extends Set&lt;Geometry&gt; {
+    protected Pointer _inner;
+
+    public GeoSet(){
+<span class="nc" id="L21">        super();</span>
+
+<span class="nc" id="L23">    }</span>
+
+    /**
+     * Pointer constructor
+     * @param inner Pointer
+     */
+    public GeoSet(Pointer inner){
+<span class="nc" id="L30">        super(inner);</span>
+<span class="nc" id="L31">        this._inner = createInner(inner);</span>
+<span class="nc" id="L32">    }</span>
+
+    /**
+     * The string constructor
+     *
+     * @param value - the string with the TBoolInst value
+     */
+    public GeoSet(String value){
+<span class="nc" id="L40">        super(value);</span>
+<span class="nc" id="L41">        this._inner = createStringInner(value);</span>
+<span class="nc" id="L42">    }</span>
+
+    /* ------------------------- Constructors ---------------------------------- */
+
+    public abstract Pointer createInner(Pointer inner);
+    public abstract Pointer createStringInner(String str);
+
+    public static GeoSet factory(String type, Pointer inner){
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (type.equals(&quot;Geom&quot;)){</span>
+<span class="nc" id="L51">            return new GeometrySet(inner);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        } else if (type.equals(&quot;Geog&quot;)) {</span>
+<span class="nc" id="L53">            return new GeographySet(inner);</span>
+        }
+<span class="nc" id="L55">        return null;</span>
+    }
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+    /**
+     * Return the string representation of the content of &quot;this&quot;.
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_out&lt;/li&gt;
+     * @return A new {@link String} instance
+     */
+    public String toString(){
+<span class="nc" id="L69">        int max_decimals = 15;</span>
+<span class="nc" id="L70">        return functions.geoset_out(this._inner,max_decimals);</span>
+    }
+
+
+
+    /**
+     * Returns the EWKT representation of &quot;this&quot;.
+     *
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_as_ewkt&lt;/li&gt;
+     * @return A {@link String} instance.
+     */
+    protected String as_ewkt(){
+<span class="nc" id="L84">        int max_decimals = 15;</span>
+<span class="nc" id="L85">        return functions.geoset_as_ewkt(this._inner,max_decimals);</span>
+    }
+
+    /**
+     * Returns the WKT representation of &quot;this&quot;.
+     *
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_as_text&lt;/li&gt;
+     * @return A {@link String} instance.
+     */
+    protected String as_wkt(){
+<span class="nc" id="L97">        int max_decimals = 15;</span>
+<span class="nc" id="L98">        return functions.geoset_as_text(this._inner,max_decimals);</span>
+    }
+
+    /**
+     * Returns the WKT representation of &quot;this&quot;.
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_as_text&lt;/li&gt;
+     *
+     * @return A {@link String} instance.
+     */
+    protected String as_text(){
+<span class="nc" id="L110">        int max_decimals = 15;</span>
+<span class="nc" id="L111">        return functions.geoset_as_text(this._inner,max_decimals);</span>
+    }
+
+    /* ------------------------- Accessors ------------------------------------- */
+
+
+    public abstract Pointer get_inner();
+
+    /**
+     * Returns the first element in &quot;this&quot;.
+     *
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_start_value&lt;/li&gt;
+     * @return A {@link Geometry} instance
+     */
+    @Override
+    public Geometry start_element() throws ParseException {
+<span class="nc" id="L129">        return ConversionUtils.gserialized_to_shapely_geometry(functions.geoset_start_value(this._inner),15);</span>
+    }
+
+
+    /**
+     * Returns the last element in &quot;this&quot;.
+     *
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_end_value&lt;/li&gt;
+     * @return A {@link Geometry} instance
+     */
+    @Override
+    public Geometry end_element() throws ParseException {
+<span class="nc" id="L143">        return ConversionUtils.gserialized_to_shapely_geometry(functions.geoset_end_value(this._inner),15);</span>
+    }
+
+
+    /**
+     * Returns the SRID of &quot;this&quot;.
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;geoset_srid&lt;/li&gt;
+     *
+     * @return An integer
+     */
+    protected int srid(){
+<span class="nc" id="L156">        return functions.geoset_srid(this._inner);</span>
+    }
+
+
+    /* ------------------------- Topological Operations -------------------------------- */
+
+    public boolean contains(GeoSet other) throws Exception {
+<span class="nc" id="L163">        return super.contains(other);</span>
+    }
+
+    /* ------------------------- Set Operations -------------------------------- */
+
+
+    /**
+     * Returns the intersection of &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;intersection_geoset_geo&lt;/li&gt;
+     *             &lt;li&gt;intersection_set_set&lt;/li&gt;
+     * @param geom A {@link GeoSet} or {@link Geometry} instance
+     * @return An object of the same type as &quot;other&quot; or &quot;None&quot; if the intersection is empty.
+     * @throws ParseException
+     */
+    public Geometry intersection_geom(Geometry geom) throws ParseException {
+<span class="nc" id="L181">        return ConversionUtils.gserialized_to_shapely_geometry(</span>
+<span class="nc" id="L182">                functions.intersection_set_geo(this._inner, ConversionUtils.geometry_to_gserialized(geom)),15);</span>
+    }
+
+    /**
+     * Returns the intersection of &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;intersection_geoset_geo&lt;/li&gt;
+     *             &lt;li&gt;intersection_set_set&lt;/li&gt;
+     * @param geo A {@link GeoSet} or {@link Geometry} instance
+     * @param type the type of GeoSet
+     * @return An object of the same type as &quot;other&quot; or &quot;None&quot; if the intersection is empty.
+     * @throws ParseException
+     */
+    public GeoSet intersection_geoset(GeoSet geo, String type){
+<span class="nc" id="L198">        return factory(type,functions.intersection_set_set(this._inner, geo._inner));</span>
+    }
+
+
+    /**
+     * Returns the difference of &quot;this&quot; and &quot;other&quot;.
+     *
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;minus_geoset_geo&lt;/li&gt;
+     *             &lt;li&gt;minus_set_set&lt;/li&gt;
+     *
+
+     * @param geo A {@link GeoSet} or {@link Geometry} instance
+     * @param type the type of GeoSet
+     * @return A {@link GeoSet} instance or &quot;null&quot; if the difference is empty.
+     */
+    public GeoSet minus(Object geo, String type){
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if(geo instanceof Geometry){</span>
+<span class="nc" id="L217">            return factory(type, functions.minus_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        } else if (geo instanceof GeoSet) {</span>
+<span class="nc" id="L219">            return factory(type, functions.minus_set_set(this._inner, ((GeoSet)geo)._inner));</span>
+        }
+<span class="nc" id="L221">        return null;</span>
+    }
+
+/*
+        Returns the difference of ``other`` and ``self``.
+
+        Args:
+            other: A :class:`Geometry` instance
+
+        Returns:
+            A :class:`Geometry` instance.
+
+        MEOS Functions:
+            minus_geo_set
+
+        See Also:
+            :meth:`minus`
+*/
+    public Geometry subtract_from(Object geo, String type) throws ParseException {
+<span class="nc" id="L240">        Pointer result= functions.minus_geo_set(ConversionUtils.geometry_to_gserialized((Geometry) geo), this._inner);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if(result != null) {</span>
+<span class="nc" id="L242">            return ConversionUtils.gserialized_to_shapely_geometry(result, 15);</span>
+        }
+        else {
+<span class="nc" id="L245">            return null;</span>
+        }
+    }
+
+
+    /**
+     * Returns the union of &quot;this&quot; and &quot;other&quot;.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;union_geoset_geo&lt;/li&gt;
+     *             &lt;li&gt;union_set_set&lt;/li&gt;
+     * @param geo A {@link GeoSet} or {@link Geometry} instance
+     * @param type the type of GeoSet
+     * @return A {@link GeoSet} instance.
+     */
+    public GeoSet union(Object geo, String type){
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if(geo instanceof Geometry){</span>
+<span class="nc" id="L263">            return factory(type, functions.union_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        } else if (geo instanceof GeoSet) {</span>
+<span class="nc" id="L265">            return factory(type, functions.union_set_set(this._inner, ((GeoSet)geo)._inner));</span>
+        }
+<span class="nc" id="L267">        return null;</span>
+    }
+
+
+
+
+    /* ------------------------- Transformations ------------------------------------ */
+
+
+    /**
+     * Rounds the coordinate values to a number of decimal places.
+     *
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;tpoint_roundgeoset_round&lt;/li&gt;
+     * @param decimals The number of decimal places to use for the coordinates.
+     * @param type the type of GeoSet
+     * @return A new {@link GeoSet} object of the same subtype of &quot;this&quot;.
+     */
+    public GeoSet round(int decimals, String type){
+<span class="nc" id="L287">        return factory(type, functions.geoset_round(this._inner,decimals));</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>tstzspanset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.collections.time</a> &gt; <span class="el_source">tstzspanset.java</span></div><h1>tstzspanset.java</h1><pre class="source lang-java linenums">package types.collections.time;
+
+import jnr.ffi.Pointer;
+import types.TemporalObject;
+import types.collections.base.Base;
+import types.collections.base.SpanSet;
+
+import types.boxes.*;
+import types.temporal.Temporal;
+import utils.ConversionUtils;
+
+import javax.naming.OperationNotSupportedException;
+import java.time.LocalDateTime;
+import java.util.List;
+import functions.functions;
+
+
+/**
+ * Class for representing lists of disjoint periods.
+ *&lt;p&gt;
+ *     ``tstzspanset`` objects can be created with a single argument of type string
+ *     as in MobilityDB.
+ *&lt;p&gt;
+ *         &gt;&gt;&gt; tstzspanset(string='{[2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01], [2019-09-11 00:00:00+01, 2019-09-12 00:00:00+01]}')
+ *&lt;p&gt;
+ *     Another possibility is to give a list specifying the composing
+ *     periods, which can be instances  of ``str`` or ``tstzspan``. The composing
+ *     periods must be given in increasing order.
+ *&lt;p&gt;
+ *         &gt;&gt;&gt; tstzspanset(period_list=['[2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01]', '[2019-09-11 00:00:00+01, 2019-09-12 00:00:00+01]'])
+ *         &gt;&gt;&gt; tstzspanset(period_list=[tstzspan('[2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01]'), tstzspan('[2019-09-11 00:00:00+01, 2019-09-12 00:00:00+01]')])
+ *
+ * @author ARIJIT SAMAL
+ */
+public class tstzspanset extends SpanSet&lt;LocalDateTime&gt; implements Time, TimeCollection {
+<span class="pc" id="L36">	private final List&lt;tstzspan&gt; periodList = null;</span>
+	private Pointer _inner;
+
+	/* ------------------------- Constructors ---------------------------------- */
+	/**
+	 * The default constructor
+	 */
+<span class="nc" id="L43">	public tstzspanset() {</span>
+<span class="nc" id="L44">	}</span>
+
+
+	/**
+	 * Pointer Constructor
+	 * @param _inner Pointer
+	 */
+	public tstzspanset(Pointer _inner) {
+<span class="fc" id="L52">		super(_inner);</span>
+<span class="fc" id="L53">		this._inner = _inner;</span>
+<span class="fc" id="L54">	}</span>
+	
+	/**
+	 * The string constructor
+	 *
+	 * @param value - a string with a tstzspanset value
+	 */
+	public tstzspanset(String value) {
+<span class="fc" id="L62">		super(value);</span>
+<span class="fc" id="L63">		this._inner = functions.tstzspanset_in(value);</span>
+<span class="fc" id="L64">	}</span>
+	
+	/**
+	 * The array of Periods constructor
+	 *
+	 * @param periods - an array of Periods separated by a comma
+	 */
+<span class="fc" id="L71">	public tstzspanset(List&lt;tstzspan&gt; periods)  {</span>
+//		super((Pointer) periods);
+<span class="fc" id="L73">		StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L74">		sb.append(&quot;{&quot;);</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int i = 0; i &lt; periods.size(); i++) {</span>
+<span class="fc" id="L77">			tstzspan period = periods.get(i);</span>
+<span class="fc" id="L78">			System.out.println(period.toString());</span>
+<span class="fc" id="L79">			sb.append(period.toString());</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (i &lt; periods.size() - 1) {</span>
+<span class="fc" id="L81">				sb.append(&quot;, &quot;);</span>
+			}
+		}
+<span class="fc" id="L84">		sb.append(&quot;}&quot;);</span>
+<span class="fc" id="L85">		System.out.println(sb);</span>
+<span class="fc" id="L86">		this._inner = functions.tstzspanset_in(sb.toString());</span>
+<span class="fc" id="L87">	}</span>
+
+	@Override
+	public Pointer createStringInner(String str){
+<span class="fc" id="L91">		return functions.tstzspanset_in(str);</span>
+	}
+
+	@Override
+	public Pointer createInner(Pointer inner){
+<span class="fc" id="L96">		return _inner;</span>
+	}
+
+	public Pointer createListInner(List&lt;tstzspan&gt; periods){
+<span class="nc" id="L100">		StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L101">		sb.append(&quot;{&quot;);</span>
+
+<span class="nc bnc" id="L103" title="All 2 branches missed.">		for (int i = 0; i &lt; periods.size(); i++) {</span>
+<span class="nc" id="L104">			tstzspan period = periods.get(i);</span>
+<span class="nc" id="L105">			sb.append(period.toString());</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">			if (i &lt; periods.size() - 1) {</span>
+<span class="nc" id="L107">				sb.append(&quot;, &quot;);</span>
+			}
+		}
+<span class="nc" id="L110">		sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L111">		return functions.tstzspanset_in(sb.toString());</span>
+	}
+
+	/**
+	 * Return a copy of &quot;this&quot;.
+	 * &lt;p&gt;
+	 * Meos Functions:
+	 *
+	 * &lt;li&gt;spanset_copy
+	 *
+	 * @return a new tstzspanset instance
+	 */
+	public Pointer copy()  {
+<span class="fc" id="L124">		return functions.spanset_copy(this._inner);</span>
+	}
+
+
+	/**
+	 * Returns a &quot;tstzspanset&quot; from its WKB representation in hex-encoded ASCII.
+	 * &lt;p&gt;
+	 * MEOS Functions:
+	 * &lt;li&gt;spanset_from_hexwkb
+	 *
+	 * @param str WKB representation in hex-encoded ASCII
+	 * @return a new tstzspanset instance
+	 */
+	public Pointer from_hexwkb(String str)  {
+<span class="nc" id="L138">        return functions.spanset_from_hexwkb(str);</span>
+	}
+
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+	/**
+	 * Return the string representation of the content of &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_out
+	 * @return a new String instance
+	 */
+	public String toString(){
+<span class="fc" id="L153">		return functions.tstzspanset_out(this._inner);</span>
+	}
+    /* ------------------------- Conversions ----------------------------------- */
+
+	/**
+	 * Returns a period that encompasses &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_span
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan to_period() {
+<span class="fc" id="L165">		return new tstzspan(functions.spanset_span(this._inner));</span>
+	}
+
+
+	/**
+	 * Returns a period that encompasses &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_span
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan to_span() {
+<span class="nc" id="L177">		return this.to_period();</span>
+	}
+
+	/* ------------------------- Accessors ------------------------------------- */
+
+	/**
+	 * Returns the C inner object
+	 * @return the inner Pointer
+	 */
+	public Pointer get_inner(){
+<span class="fc" id="L187">		return this._inner;</span>
+	}
+
+
+	/**
+	 * Returns the number of timestamps in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_num_timestamps
+	 * @return an Integer instance
+	 */
+	public int num_timestamps(){
+<span class="fc" id="L199">		return functions.tstzspanset_num_timestamps(this._inner);</span>
+	}
+
+	/**
+	 * Returns the first timestamp in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_start_timestamp&lt;/li&gt;
+	 * @return A {@link LocalDateTime} instance
+	 */
+	public LocalDateTime start_timestamp(){
+<span class="fc" id="L211">		return ConversionUtils.timestamptz_to_datetime(functions.tstzspanset_start_timestamptz(this._inner));</span>
+	}
+
+	/**
+	 * Returns the last timestamp in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_end_timestamp&lt;/li&gt;
+	 * @return A {@link LocalDateTime} instance
+	 */
+	public LocalDateTime end_timestamp(){
+<span class="fc" id="L223">		return ConversionUtils.timestamptz_to_datetime(functions.tstzspanset_end_timestamptz(this._inner));</span>
+	}
+
+
+	/**
+	 * Returns the nth timestamp of the tstzspanset
+	 * @param n the nth element
+	 * @return Returns the nth timestamp of the tstzspanset
+	 */
+	public LocalDateTime timestamp_n(int n){
+<span class="nc bnc" id="L233" title="All 4 branches missed.">		if (n &lt; 0 || n &gt; this.num_timestamps()){</span>
+<span class="nc" id="L234">			throw new UnsupportedOperationException(&quot;Parameter not valid&quot;) ;</span>
+		}
+<span class="nc" id="L236">		return null;</span>
+	}
+
+	/**
+	 * Returns the number of periods in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_num_spans
+	 * @return an Integer instance
+	 */
+	public int num_periods(){
+<span class="fc" id="L247">		return functions.spanset_num_spans(this._inner);</span>
+	}
+
+
+	/**
+	 * Returns the first period in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_lower
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan start_period()  {
+<span class="fc" id="L259">		return new tstzspan(functions.spanset_start_span(this._inner));</span>
+	}
+
+
+	/**
+	 * Returns the first period in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_lower
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan start_span()  {
+<span class="fc" id="L271">		return this.start_period();</span>
+	}
+
+	/**
+	 * Returns the last period in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_upper
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan end_period() {
+<span class="fc" id="L282">		return new tstzspan(functions.spanset_end_span(this._inner));</span>
+	}
+
+
+	/**
+	 * Returns the last period in &quot;this&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;periodset_upper
+	 * @return a new tstzspan instance
+	 */
+	public tstzspan end_span() {
+<span class="nc" id="L294">		return this.end_period();</span>
+	}
+
+
+	/**
+	 * Return the hash representation of &quot;this&quot;.
+	 * &lt;p&gt;
+	 * MEOS Functions:
+	 *             &lt;li&gt;spanset_hash
+	 * @return a new Integer instance
+	 */
+	public long hash(){
+<span class="nc" id="L306">		return functions.spanset_hash(this._inner);</span>
+	}
+
+
+    /* ------------------------- Topological Operations ------------------------ */
+
+	/**
+	 * Returns whether &quot;this&quot; is temporally adjacent to &quot;other&quot;.
+	 * That is, they share a bound but only one of them contains it.
+	 * &lt;pre&gt;
+	 * Examples:
+	 * &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').is_adjacent(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 * &gt;&gt;&gt; True
+	 * &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').is_adjacent(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 * &gt;&gt;&gt; False  # Both contain bound
+	 * &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').is_adjacent(tstzspanset('{[(2012-01-02, 2012-01-03]]}'))
+	 * &gt;&gt;&gt; False  # Neither contain bound
+	 * &lt;/pre&gt;
+	 * MEOS Functions:
+	 * &lt;ul&gt;
+	 *     &lt;li&gt;adjacent_spanset_span&lt;/li&gt;
+	 *     &lt;li&gt;adjacent_spanset_spanset&lt;/li&gt;
+	 *     &lt;li&gt;adjacent_periodset_timestamp&lt;/li&gt;
+	 *     &lt;li&gt;adjacent_periodset_timestampset&lt;/li&gt;
+	 * &lt;/ul&gt;
+	 *
+	 * @param other temporal object to compare with
+	 * @return True if adjacent, False otherwise
+	 */
+	public boolean is_adjacent(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L337" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L338">			case tstzspan p -&gt; returnValue = functions.adjacent_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L339">			case tstzspanset ps -&gt; returnValue = functions.adjacent_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L340">			case tstzset ts -&gt; returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));</span>
+<span class="fc" id="L341">			case Temporal t -&gt; returnValue = is_adjacent((TemporalObject)t.period());</span>
+<span class="fc" id="L342">			case Box b -&gt; returnValue = functions.adjacent_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L343">			default -&gt; returnValue = super.is_adjacent((Base) other);</span>
+		}
+<span class="fc" id="L345">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether &quot;this&quot; is temporally contained in &quot;other&quot;.
+	 * &lt;pre&gt;
+	 *     Examples:
+	 *     &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_contained_in(tstzspan('{[2012-01-01, 2012-01-04]}'))
+	 *     &gt;&gt;&gt; True
+	 *     &gt;&gt;&gt; tstzspanset('{(2012-01-01, 2012-01-02)}').is_contained_in(tstzspan('{[2012-01-01, 2012-01-02]}'))
+	 *     &gt;&gt;&gt; True
+	 *     &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').is_contained_in(tstzspan('{(2012-01-01, 2012-01-02)}'))
+	 *     &gt;&gt;&gt; False
+	 * &lt;/pre&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;contained_spanset_span &lt;/li&gt;
+	 *             &lt;li&gt;contained_spanset_spanset &lt;/li&gt;
+	 *             &lt;li&gt;contained_periodset_temporal&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if contained, False otherwise
+	 */
+	public boolean is_contained_in(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L371" title="1 of 5 branches missed.">		switch (other) {</span>
+<span class="fc" id="L372">			case tstzspan p -&gt; returnValue = functions.contained_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L373">			case tstzspanset ps -&gt; returnValue = functions.contained_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="fc" id="L374">			case Temporal t -&gt; returnValue = is_contained_in((TemporalObject)t.period());</span>
+<span class="fc" id="L375">			case Box b -&gt; returnValue = functions.contained_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L376">			default -&gt; returnValue = super.is_contained_in((Base) other);</span>
+		}
+<span class="fc" id="L378">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether ``self`` temporally contains ``content``.
+	 * &lt;pre&gt;
+	 *     Examples:
+	 *     &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-04]}').contains(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *     &gt;&gt;&gt; True
+	 *     &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').contains(tstzspanset('{(2012-01-01, 2012-01-02)}'))
+	 *     &gt;&gt;&gt; True
+	 *     &gt;&gt;&gt; tstzspanset('{(2012-01-01, 2012-01-02)}').contains(tstzspanset('{[2012-01-01, 2012-01-02]}'))
+	 *     &gt;&gt;&gt; False
+	 * &lt;/pre&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;contains_spanset_span &lt;/li&gt;
+	 *         		&lt;li&gt;contains_spanset_spanset &lt;/li&gt;
+	 *         		&lt;li&gt;contains_periodset_timestamp &lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if contains, False otherwise
+	 */
+	public boolean contains(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L405" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L406">			case tstzspan p -&gt; returnValue = functions.contains_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L407">			case tstzspanset ps -&gt; returnValue = functions.contains_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L408">			case tstzset ts -&gt; returnValue = functions.contains_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));</span>
+<span class="fc" id="L409">			case Temporal t -&gt; returnValue = contains((TemporalObject)t.period());</span>
+<span class="fc" id="L410">			case Box b -&gt; returnValue = functions.contains_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L411">			default -&gt; returnValue = super.contains((Base) other);</span>
+		}
+<span class="fc" id="L413">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether &quot;this&quot; temporally overlaps &quot;other&quot;. That is, both share at least an instant
+	 *&lt;pre&gt;
+	 *    Examples:
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').overlaps(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').overlaps(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; False
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').overlaps(tstzspanset('{(2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; False
+	 *&lt;/pre&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;overlaps_spanset_span&lt;/li&gt;
+	 *             &lt;li&gt;overlaps_spanset_spanset&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if overlaps, False otherwise
+	 */
+	public boolean overlaps(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L438" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L439">			case tstzspan p -&gt; returnValue = functions.overlaps_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L440">			case tstzspanset ps -&gt; returnValue = functions.overlaps_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L441">			case tstzset ts -&gt; returnValue = functions.overlaps_spanset_spanset(this._inner, functions.set_to_span(ts.get_inner()));</span>
+<span class="fc" id="L442">			case Temporal t -&gt; returnValue = overlaps((TemporalObject)t.period());</span>
+<span class="fc" id="L443">			case Box b -&gt; returnValue = functions.overlaps_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L444">			default -&gt; returnValue = super.overlaps((Base) other);</span>
+		}
+<span class="fc" id="L446">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether the bounding period of &quot;this&quot; is the same as the bounding period of &quot;other&quot;.
+	 *&lt;p&gt;
+	 *
+	 *         See Also:
+	 * 				{@link tstzspan#is_same(TemporalObject)}
+	 * @param other A time or temporal object to compare to &quot;this&quot;.
+	 * @return True if same, False otherwise.
+	 */
+	public boolean is_same(TemporalObject other) throws Exception {
+<span class="fc" id="L460">		return this.to_period().is_same(other);</span>
+	}
+
+
+    /* ------------------------- Position Operations --------------------------- */
+
+
+	/**
+	 * Returns whether &quot;this&quot; is strictly before &quot;other&quot;. That is, &quot;this&quot; ends before &quot;other&quot; starts.
+	 * &lt;pre&gt;
+	 *    Examples:
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').is_before(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').is_before(tstzspanset('{(2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').is_before(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; False
+	 *&lt;/pre&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         &lt;li&gt;before_periodset_timestamp&lt;/li&gt;
+	 *         &lt;li&gt;left_spanset_span&lt;/li&gt;
+	 *         &lt;li&gt;left_spanset_spanset&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if before, False otherwise
+	 */
+	public boolean is_before(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L490" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L491">			case tstzspan p -&gt; returnValue = functions.left_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L492">			case tstzspanset ps -&gt; returnValue = functions.left_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L493">			case tstzset ts -&gt; returnValue = functions.left_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));</span>
+<span class="fc" id="L494">			case Temporal t -&gt; returnValue = is_before((TemporalObject)t.period());</span>
+<span class="fc" id="L495">			case Box b -&gt; returnValue = functions.left_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L496">			default -&gt; returnValue = super.is_left((Base) other);</span>
+		}
+<span class="fc" id="L498">		return returnValue;</span>
+	}
+
+
+	/**
+	 *  Returns whether &quot;this&quot; is before &quot;other&quot; allowing overlap. That is, &quot;this&quot; ends before &quot;other&quot; ends (or
+	 *         at the same time).
+	 * &lt;pre&gt;
+	 *    Examples:
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02)}').is_over_or_before(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-01, 2012-01-02]}').is_over_or_before(tstzspanset('{[2012-01-02, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-03, 2012-01-05]}').is_over_or_before(tstzspanset('{[2012-01-01, 2012-01-04]}'))
+	 *    &gt;&gt;&gt; False
+	 *&lt;/pre&gt;
+	 *
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;overleft_spanset_span&lt;/li&gt;
+	 *             &lt;li&gt;overleft_spanset_spanset&lt;/li&gt;
+	 *             &lt;li&gt;overbefore_periodset_timestamp&lt;/li&gt;
+	 *             &lt;li&gt;overbefore_periodset_timestampset&lt;/li&gt;
+	 *             &lt;li&gt;overbefore_periodset_temporal&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if before, False otherwise
+	 */
+	public boolean is_over_or_before(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L528" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L529">			case tstzspan p -&gt; returnValue = functions.overleft_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L530">			case tstzspanset ps -&gt; returnValue = functions.overleft_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L531">			case tstzset ts -&gt; returnValue = functions.overleft_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));</span>
+<span class="fc" id="L532">			case Temporal t -&gt; returnValue = is_over_or_before((TemporalObject)t.period());</span>
+<span class="fc" id="L533">			case Box b -&gt; returnValue = functions.overleft_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L534">			default -&gt; returnValue = super.is_over_or_left((Base) other);</span>
+		}
+<span class="fc" id="L536">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether &quot;this&quot; is strictly after &quot;other&quot;.That is, &quot;this&quot; starts after &quot;other&quot; ends.
+	 *&lt;pre&gt;
+	 *    Examples:
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_after(tstzspanset('{[2012-01-01, 2012-01-02)}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{(2012-01-02, 2012-01-03]}').is_after(tstzspanset('{[2012-01-01, 2012-01-02)}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_after(tstzspanset('{[2012-01-01, 2012-01-02]}'))
+	 *    &gt;&gt;&gt; False
+	 *&lt;/pre&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;right_spanset_span &lt;/li&gt;
+	 *             &lt;li&gt;right_spanset_spanset &lt;/li&gt;
+	 *             &lt;li&gt;overbefore_timestamp_periodset &lt;/li&gt;
+	 *          &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if after, False otherwise
+	 */
+	public boolean is_after(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L562" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L563">			case tstzspan p -&gt; returnValue = functions.right_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L564">			case tstzspanset ps -&gt; returnValue = functions.right_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L565">			case tstzset ts -&gt; returnValue = functions.right_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));</span>
+<span class="fc" id="L566">			case Temporal t -&gt; returnValue = is_after((TemporalObject)t.period());</span>
+<span class="fc" id="L567">			case Box b -&gt; returnValue = functions.right_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L568">			default -&gt; returnValue = super.is_right((Base) other);</span>
+		}
+<span class="fc" id="L570">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns whether &quot;this&quot; is after &quot;other&quot; allowing overlap. That is, &quot;this&quot; starts after &quot;other&quot; starts
+	 *         (or at the same time).
+	 *&lt;pre&gt;
+	 *    Examples:
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_over_or_after(tstzspanset('{[2012-01-01, 2012-01-02)}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_over_or_after(tstzspanset('{[2012-01-01, 2012-01-02]}'))
+	 *    &gt;&gt;&gt; True
+	 *    &gt;&gt;&gt; tstzspanset('{[2012-01-02, 2012-01-03]}').is_over_or_after(tstzspanset('{[2012-01-01, 2012-01-03]}'))
+	 *    &gt;&gt;&gt; False
+	 *&lt;/pre&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *             &lt;li&gt;overright_spanset_span&lt;/li&gt;
+	 *             &lt;li&gt;overright_spanset_spanset&lt;/li&gt;
+	 *             &lt;li&gt;overafter_periodset_timestamp&lt;/li&gt;
+	 *             &lt;li&gt;overafter_periodset_timestampset&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to compare with
+	 * @return True if overlapping or after, False otherwise
+	 */
+	public boolean is_over_or_after(TemporalObject other) throws Exception {
+		boolean returnValue;
+<span class="pc bpc" id="L598" title="2 of 6 branches missed.">		switch (other) {</span>
+<span class="fc" id="L599">			case tstzspan p -&gt; returnValue = functions.overright_spanset_span(this._inner, p.get_inner());</span>
+<span class="fc" id="L600">			case tstzspanset ps -&gt; returnValue = functions.overright_spanset_spanset(this._inner, ps.get_inner());</span>
+<span class="nc" id="L601">			case tstzset ts -&gt; returnValue = functions.overright_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));</span>
+<span class="fc" id="L602">			case Temporal t -&gt; returnValue = is_over_or_after((TemporalObject)t.period());</span>
+<span class="fc" id="L603">			case Box b -&gt; returnValue = functions.overright_spanset_span(this._inner, b.to_period().get_inner());</span>
+<span class="nc" id="L604">			default -&gt; returnValue = super.is_over_or_right((Base) other);</span>
+		}
+<span class="fc" id="L606">		return returnValue;</span>
+	}
+
+    /* ------------------------- Distance Operations --------------------------- */
+
+
+    /* ------------------------- Set Operations -------------------------------- */
+
+
+	/**
+	 * Returns the temporal intersection of &quot;this&quot; and &quot;other&quot;.
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;intersection_periodset_timestamp&lt;/li&gt;
+	 *         		&lt;li&gt;intersection_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;intersection_spanset_span&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to intersect with
+	 * @return a Time instance. The actual class depends on &quot;other&quot;
+	 */
+	public Time intersection(Time other) {
+		Time returnValue;
+<span class="pc bpc" id="L629" title="2 of 4 branches missed.">		switch (other) {</span>
+<span class="fc" id="L630">			case tstzspan p -&gt; returnValue = new tstzspan(functions.intersection_spanset_span(this._inner,p.get_inner()));</span>
+<span class="fc" id="L631">			case tstzspanset ps -&gt; returnValue = new tstzspan(functions.intersection_spanset_spanset(this._inner,ps.get_inner()));</span>
+<span class="nc" id="L632">			case tstzset ts -&gt; returnValue = new tstzspan(functions.intersection_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));</span>
+<span class="nc" id="L633">			default -&gt; throw new TypeNotPresentException(other.getClass().toString(), new Throwable(&quot;Operation not supported with this type&quot;));</span>
+		}
+<span class="fc" id="L635">		return returnValue;</span>
+	}
+
+	/**
+	 * Returns the temporal intersection of &quot;this&quot; and &quot;other&quot;.
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;intersection_periodset_timestamp&lt;/li&gt;
+	 *         		&lt;li&gt;intersection_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;intersection_spanset_span&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 * @param other temporal object to intersect with
+	 * @return a Time instance. The actual class depends on &quot;other&quot;
+	 */
+	public Time mul(Time other) {
+<span class="nc" id="L651">		return this.intersection(other);</span>
+	}
+
+
+	/**
+	 * Returns the temporal difference of &quot;this&quot; and &quot;other&quot;.
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;minus_spanset_span&lt;/li&gt;
+	 *         		&lt;li&gt;minus_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;minus_periodset_timestamp&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 *
+	 * @param other temporal object to diff with
+	 * @return a tstzspanset instance
+	 */
+	public tstzspanset minus(Time other) {
+		tstzspanset returnValue;
+<span class="pc bpc" id="L670" title="2 of 4 branches missed.">		switch (other) {</span>
+<span class="fc" id="L671">			case tstzspan p -&gt; returnValue = new tstzspanset(functions.minus_spanset_span(this._inner,p.get_inner()));</span>
+<span class="fc" id="L672">			case tstzspanset ps -&gt; returnValue = new tstzspanset(functions.minus_spanset_spanset(this._inner,ps.get_inner()));</span>
+<span class="nc" id="L673">			case tstzset ts -&gt; returnValue = new tstzspanset(functions.minus_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));</span>
+<span class="nc" id="L674">			default -&gt; throw new TypeNotPresentException(other.getClass().toString(), new Throwable(&quot;Operation not supported with this type&quot;));</span>
+		}
+<span class="fc" id="L676">		return returnValue;</span>
+	}
+
+
+	/**
+	 * Returns the temporal difference of &quot;this&quot; and &quot;other&quot;.
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;minus_spanset_span&lt;/li&gt;
+	 *         		&lt;li&gt;minus_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;minus_periodset_timestamp&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 *
+	 * @param other temporal object to diff with
+	 * @return a tstzspanset instance
+	 */
+	public tstzspanset sub(Time other) {
+<span class="nc" id="L694">		return this.minus(other);</span>
+	}
+
+
+	/**
+	 * Returns the temporal union of &quot;this&quot; and &quot;other&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;union_periodset_timestamp&lt;/li&gt;
+	 *         		&lt;li&gt;union_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;union_spanset_span&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 *
+	 * @param other temporal object to merge with
+	 * @return a tstzspanset instance
+	 */
+	public tstzspanset union(Time other) {
+		tstzspanset returnValue;
+<span class="pc bpc" id="L713" title="2 of 4 branches missed.">		switch (other) {</span>
+<span class="fc" id="L714">			case tstzspan p -&gt; returnValue = new tstzspanset(functions.union_spanset_span(this._inner,p.get_inner()));</span>
+<span class="fc" id="L715">			case tstzspanset ps -&gt; returnValue = new tstzspanset(functions.union_spanset_spanset(this._inner,ps.get_inner()));</span>
+<span class="nc" id="L716">			case tstzset ts -&gt; returnValue = new tstzspanset(functions.union_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));</span>
+<span class="nc" id="L717">			default -&gt; throw new TypeNotPresentException(other.getClass().toString(), new Throwable(&quot;Operation not supported with this type&quot;));</span>
+		}
+<span class="fc" id="L719">		return returnValue;</span>
+	}
+
+
+
+	/**
+	 * Returns the temporal union of &quot;this&quot; and &quot;other&quot;.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *         &lt;ul&gt;
+	 *         		&lt;li&gt;union_periodset_timestamp&lt;/li&gt;
+	 *         		&lt;li&gt;union_spanset_spanset&lt;/li&gt;
+	 *         		&lt;li&gt;union_spanset_span&lt;/li&gt;
+	 *         &lt;/ul&gt;
+	 *
+	 * @param other temporal object to merge with
+	 * @return a tstzspanset instance
+	 */
+	public tstzspanset add(Time other) {
+<span class="nc" id="L738">		return this.union(other);</span>
+	}
+
+
+
+
+    /* ------------------------- Comparisons ----------------------------------- */
+
+
+	/**
+	 *  Return whether &quot;this&quot; and &quot;other&quot; are equal.
+	 *
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_eq &lt;/li&gt;
+	 * @param other temporal object to compare with
+	 * @return True if equal, False otherwise
+	 */
+	public boolean eq(Time other) {
+		boolean result;
+<span class="nc bnc" id="L758" title="All 4 branches missed.">		result = other instanceof tstzspanset &amp;&amp; functions.spanset_eq(this._inner, ((tstzspanset) other).get_inner());</span>
+<span class="nc" id="L759">		return result;</span>
+	}
+
+	/**
+	 * Return whether &quot;this&quot; and &quot;other&quot; are not equal.
+	 *
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_ne &lt;/li&gt;
+	 *
+	 * @param other temporal object to compare with
+	 * @return True if not equal, False otherwise
+	 */
+	public boolean notEquals(Time other) {
+		boolean result;
+<span class="pc bpc" id="L774" title="2 of 4 branches missed.">		result = !(other instanceof tstzspanset) || functions.spanset_ne(this._inner, ((tstzspanset) other).get_inner());</span>
+<span class="fc" id="L775">		return result;</span>
+	}
+
+
+	/**
+	 * Return whether &quot;this&quot; is less than &quot;other&quot;.
+	 *
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_lt&lt;/li&gt;
+	 *
+	 * @param other temporal object to compare with
+	 * @return True if less than, False otherwise
+	 */
+	public boolean lessThan(Time other) throws OperationNotSupportedException {
+<span class="pc bpc" id="L790" title="1 of 2 branches missed.">		if (other instanceof tstzspanset){</span>
+<span class="fc" id="L791">			return functions.spanset_lt(this._inner,((tstzspanset) other).get_inner());</span>
+		}
+		else{
+<span class="nc" id="L794">			throw new OperationNotSupportedException(&quot;Operation not supported with this type.&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Return whether &quot;this&quot; is less than or equal to &quot;other.
+	 *&lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_le&lt;/li&gt;
+	 * @param other temporal object to compare with
+	 * @return True if less than or equal, False otherwise
+	 */
+	public boolean lessThanOrEqual(Time other) throws OperationNotSupportedException {
+<span class="pc bpc" id="L808" title="1 of 2 branches missed.">		if (other instanceof tstzspanset){</span>
+<span class="fc" id="L809">			return functions.spanset_le(this._inner,((tstzspanset) other).get_inner());</span>
+		}
+		else{
+<span class="nc" id="L812">			throw new OperationNotSupportedException(&quot;Operation not supported with this type.&quot;);</span>
+		}
+	}
+
+
+	/**
+	 * Return whether &quot;this&quot; is greater than &quot;other&quot;.
+	 *&lt;p&gt;
+	 *
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_gt&lt;/li&gt;
+	 * @param other temporal object to compare with
+	 * @return True if greater than, False otherwise
+	 */
+	public boolean greaterThan(Time other) throws OperationNotSupportedException {
+<span class="pc bpc" id="L827" title="1 of 2 branches missed.">		if (other instanceof tstzspanset){</span>
+<span class="fc" id="L828">			return functions.spanset_gt(this._inner,((tstzspanset) other).get_inner());</span>
+		}
+		else{
+<span class="nc" id="L831">			throw new OperationNotSupportedException(&quot;Operation not supported with this type.&quot;);</span>
+		}
+	}
+
+	/**
+	 * Return whether ``self`` is greater than or equal to ``other``.
+	 * &lt;p&gt;
+	 *         MEOS Functions:
+	 *             &lt;li&gt;spanset_ge&lt;/li&gt;
+	 *
+	 * @param other temporal object to compare with
+	 * @return True if greater than or equal, False otherwise
+	 */
+	public boolean greaterThanOrEqual(Time other) throws OperationNotSupportedException {
+<span class="pc bpc" id="L845" title="1 of 2 branches missed.">		if (other instanceof tstzspanset){</span>
+<span class="fc" id="L846">			return functions.spanset_ge(this._inner,((tstzspanset) other).get_inner());</span>
+		}
+		else{
+<span class="nc" id="L849">			throw new OperationNotSupportedException(&quot;Operation not supported with this type.&quot;);</span>
+		}
+	}
+
+
+}
+	
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

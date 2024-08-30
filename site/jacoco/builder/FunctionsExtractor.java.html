@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FunctionsExtractor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">builder</a> &gt; <span class="el_source">FunctionsExtractor.java</span></div><h1>FunctionsExtractor.java</h1><pre class="source lang-java linenums">package builder;
+
+import utils.BuilderUtils;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Class used to extract the functions from the MEOS library.
+ * Run with directly with java through the main class
+ *
+ * @author Killian Monnier
+ * @since 27/06/2023
+ */
+public class FunctionsExtractor {
+	private static final String FUNCTION_PATTERN = &quot;(extern\\s+(static\\s+|inline\\s+|const\\s+)?|static\\s+|inline\\s+|const\\s+)?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);&quot;;
+//	private static final String FUNCTION_PATTERN = &quot;extern (static |inline |const )?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);&quot;; // RegEx model for recognizing a function in the meos.h file
+	private static final String TYPES_PATTERN = &quot;typedef\\s(?!struct|enum)\\w+\\s\\w+;&quot;; // Type recognition RegEx pattern in meos.h file
+<span class="nc" id="L30">	private Path inputFilePath = null;</span>
+<span class="nc" id="L31">	private Path outputFunctionsFilePath = null;</span>
+<span class="nc" id="L32">	private Path outputTypesFilePath = null;</span>
+<span class="nc" id="L33">	String currentDir = System.getProperty(&quot;user.dir&quot;);</span>
+	
+	/**
+	 * Constructor of {@link FunctionsExtractor}.
+	 *
+	 * @throws URISyntaxException thrown when resources not found
+	 */
+<span class="nc" id="L40">	public FunctionsExtractor() throws URISyntaxException {</span>
+    
+<span class="nc" id="L42">		String reqDir= &quot;/builder/resources/meos.h&quot;; </span>
+<span class="nc" id="L43">		this.inputFilePath = Paths.get(currentDir, reqDir);</span>
+		//this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource(&quot;/meos.h&quot;)).toURI());
+<span class="nc" id="L45">		this.outputFunctionsFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource(&quot;&quot;)) + &quot;meos_functions.h&quot;));</span>
+<span class="nc" id="L46">		this.outputTypesFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource(&quot;&quot;)) + &quot;meos_types.h&quot;));</span>
+<span class="nc" id="L47">	}</span>
+	
+	/**
+	 * Launch process of extraction.
+	 *
+	 * @param args arguments
+	 * @throws URISyntaxException thrown when resources not found
+	 */
+	public static void main(String[] args) throws URISyntaxException {
+<span class="nc" id="L56">		var extractor = new FunctionsExtractor();</span>
+		
+<span class="nc" id="L58">		var functions = BuilderUtils.extractPatternFromFile(extractor.inputFilePath.toString(), FUNCTION_PATTERN);</span>
+<span class="nc" id="L59">		BuilderUtils.writeFileFromArray(functions, extractor.outputFunctionsFilePath.toString());</span>
+<span class="nc" id="L60">		System.out.println(&quot;Feature extraction completed. The functions have been written to the file &quot; + extractor.outputFunctionsFilePath);</span>
+		
+<span class="nc" id="L62">		var types = extractor.getTypesFromFile();</span>
+<span class="nc" id="L63">		BuilderUtils.writeFileFromArray(types, extractor.outputTypesFilePath.toString());</span>
+<span class="nc" id="L64">		System.out.println(&quot;Extraction of types completed. The types have been written to the file &quot; + extractor.outputTypesFilePath);</span>
+<span class="nc" id="L65">	}</span>
+	
+	/**
+	 * Retrieves structure names from file.
+	 *
+	 * @param filePath file path
+	 * @return list of structure names
+	 */
+	public static ArrayList&lt;String&gt; getStructureNames(String filePath) {
+<span class="nc" id="L74">		List&lt;String&gt; structureNames = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L75">		try (var reader = new BufferedReader(new FileReader(filePath))) {</span>
+<span class="nc" id="L76">			var content = new StringBuilder();</span>
+			String line;
+<span class="nc bnc" id="L78" title="All 2 branches missed.">			while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L79">				content.append(line).append(&quot;\n&quot;);</span>
+			}
+			
+<span class="nc" id="L82">			String regex = &quot;typedef\\s+struct(\\s\\w+)?\\s*\\{[\\s\\S]*?}\\s*(\\w+)&quot;;</span>
+<span class="nc" id="L83">			Pattern pattern = Pattern.compile(regex);</span>
+<span class="nc" id="L84">			Matcher matcher = pattern.matcher(content.toString());</span>
+			
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			while (matcher.find()) {</span>
+<span class="nc" id="L87">				String structureName = matcher.group(2);</span>
+<span class="nc" id="L88">				structureNames.add(structureName);</span>
+<span class="nc" id="L89">			}</span>
+<span class="nc" id="L90">		} catch (IOException e) {</span>
+<span class="nc" id="L91">			e.printStackTrace();</span>
+<span class="nc" id="L92">		}</span>
+<span class="nc" id="L93">		return new ArrayList&lt;&gt;(structureNames);</span>
+	}
+	
+	/**
+	 * Get types from a file.
+	 *
+	 * @return the list of lines
+	 */
+	private List&lt;String&gt; getTypesFromFile() {
+<span class="nc" id="L102">		var rawTypes = BuilderUtils.extractPatternFromFile(this.inputFilePath.toString(), TYPES_PATTERN);</span>
+<span class="nc" id="L103">		var structureNames = getStructureNames(this.inputFilePath.toString());</span>
+<span class="nc" id="L104">		List&lt;String&gt; filteredTypes = new ArrayList&lt;&gt;();</span>
+		
+		/* Add typedefs if they are not structure type */
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		for (var rawType : rawTypes) {</span>
+<span class="nc" id="L108">			var words = rawType.trim().split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">			if (words.length &gt;= 2) {</span>
+<span class="nc" id="L110">				String typeName = words[1];</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">				if (!structureNames.contains(typeName)) {</span>
+<span class="nc" id="L112">					filteredTypes.add(rawType);</span>
+				}
+			}
+<span class="nc" id="L115">		}</span>
+<span class="nc" id="L116">		return filteredTypes;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

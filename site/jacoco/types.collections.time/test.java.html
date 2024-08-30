@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>test.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jmeos</a> &gt; <a href="index.source.html" class="el_package">types.collections.time</a> &gt; <span class="el_source">test.java</span></div><h1>test.java</h1><pre class="source lang-java linenums">package types.collections.time;
+
+import jnr.ffi.Pointer;
+import org.locationtech.jts.io.ParseException;
+import types.TemporalObject;
+import types.boxes.Box;
+import types.collections.base.Base;
+import types.collections.base.Set;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import functions.functions;
+import java.util.List;
+import java.util.Objects;
+
+//import types.boxes.*;
+
+//import types.temporal.Temporal;
+import types.collections.base.Span;
+import types.collections.base.SpanSet;
+import types.temporal.Temporal;
+import utils.ConversionUtils;
+
+
+/**
+ * Class for representing lists of distinct timestamp values.
+ *	&lt;pre&gt;
+ *     ``tstzset`` objects can be created with a single argument of type string
+ *     as in MobilityDB.
+ *
+ *         &gt;&gt;&gt; tstzset(string='{2019-09-08 00:00:00+01, 2019-09-10 00:00:00+01, 2019-09-11 00:00:00+01}')
+ *
+ *     Another possibility is to give a tuple or list of composing timestamps,
+ *     which can be instances of ``str`` or ``datetime``. The composing timestamps
+ *     must be given in increasing order.
+ *
+ *         &gt;&gt;&gt; tstzset(timestamp_list=['2019-09-08 00:00:00+01', '2019-09-10 00:00:00+01', '2019-09-11 00:00:00+01'])
+ *         &gt;&gt;&gt; tstzset(timestamp_list=[parse('2019-09-08 00:00:00+01'), parse('2019-09-10 00:00:00+01'), parse('2019-09-11 00:00:00+01')])
+ * &lt;/pre&gt;
+ * @author Arijit Samal
+ */
+public class test extends Set&lt;LocalDate&gt; implements Time, TimeCollection {
+    private Pointer _inner;
+
+
+    /* ------------------------- Constructors ---------------------------------- */
+
+
+    /**
+     * The default constructor
+     */
+<span class="nc" id="L56">    public test() {</span>
+<span class="nc" id="L57">    }</span>
+
+    /**
+     * Pointer constructor
+     * @param _inner Pointer
+     */
+    public test(Pointer _inner)  {
+<span class="nc" id="L64">        super(_inner);</span>
+<span class="nc" id="L65">        this._inner = _inner;</span>
+        //String str = functions.timestampset_out(this._inner);
+<span class="nc" id="L67">    }</span>
+
+
+    /**
+     * The string constructor
+     *
+     * @param value - a string with a tstzset value
+     */
+    public test(String value) {
+<span class="nc" id="L76">        super(value);</span>
+<span class="nc" id="L77">        this._inner = functions.dateset_in(value);</span>
+<span class="nc" id="L78">    }</span>
+
+
+    @Override
+    public Pointer createStringInner(String str){
+<span class="nc" id="L83">        return functions.dateset_in(str);</span>
+    }
+
+    @Override
+    public Pointer createInner(Pointer inner){
+<span class="nc" id="L88">        return inner;</span>
+    }
+
+
+    /**
+     * Return a copy of &quot;this&quot;.
+     *&lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_copy&lt;/li&gt;
+     * @return a new tstzset instance
+     */
+//	public tstzset copy() {
+//		return new tstzset(functions.tstz(this._inner));
+//	}
+
+
+    /**
+     * Returns a &quot;tstzset&quot; from its WKB representation in hex-encoded ASCII.
+     *  &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_from_hexwkb&lt;/li&gt;
+     * @param hexwkb WKB representation in hex-encoded ASCII
+     * @return a new tstzset instance
+     */
+//	public static tstzset from_hexwkb(String hexwkb) {
+//		Pointer result = functions.tstzset_(hexwkb);
+//		return new tstzset(result);
+//	}
+
+    public static test from_hexwkb(String hexwkb) {
+<span class="nc" id="L118">        Pointer result = functions.set_from_hexwkb(hexwkb);</span>
+<span class="nc" id="L119">        return new test(result);</span>
+    }
+
+    /* ------------------------- Output ---------------------------------------- */
+
+
+    /**
+     * Return the string representation of the content of &quot;this&quot;.
+     *&lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_out&lt;/li&gt;
+     * @return a new String instance
+     */
+    public String toString(){
+<span class="nc" id="L133">        return functions.dateset_out(this._inner);</span>
+    }
+
+
+    /* ------------------------- Conversions ----------------------------------- */
+
+
+    /**
+     * Returns a tstzspanset that contains a tstzspan for each Timestamp in &quot;this&quot;.
+     *&lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_to_spanset&lt;/li&gt;
+     * @return a new tstzspanset instance
+     */
+//    public tstzspanset to_periodset() {
+//        return new tstzspanset(functions.set_to_spanset(this.get_inner()));
+//    }
+//
+//    /**
+//     * Returns a period that encompasses &quot;this&quot;.
+//     *&lt;p&gt;
+//     *         MEOS Functions:
+//     *             &lt;li&gt;set_span&lt;/li&gt;
+//     * @return a new tstzspan instance
+//     */
+//    public tstzspan to_span() {
+//        return new tstzspan(functions.set_to_span(this._inner));
+//    }
+//
+//    public tstzspanset to_spanset() {
+//        return new tstzspanset(functions.set_to_spanset(this._inner));
+//    }
+
+    /**
+     * Returns a period that encompasses &quot;this&quot;.
+     *&lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_span&lt;/li&gt;
+     * @return a new tstzspan instance
+     */
+//    public tstzspan to_period() {
+//        return this.to_span();
+//    }
+//
+//    public Duration duration(){
+//        return ConversionUtils.interval_to_timedelta(functions.tstzspan_duration(functions.set_to_span(this._inner)));
+//    }
+
+
+
+
+
+    /** ------------------------- Accessors ------------------------------------- */
+
+
+    public Pointer get_inner(){
+<span class="nc" id="L189">        return this._inner;</span>
+    }
+
+
+    /**
+     * Returns the number of timestamps in &quot;this&quot;.
+     * &lt;p&gt;
+     *         MEOS Functions:
+     *             &lt;li&gt;set_num_values&lt;/li&gt;
+     * @return a new Integer instance
+     */
+    public int num_timestamps(){
+<span class="nc" id="L201">        return functions.set_num_values(this._inner);</span>
+    }
+
+    /**
+     * Returns the first timestamp in &quot;this&quot;.
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;timestampset_start_timestamp&lt;/li&gt;
+     *
+     * @return a {@link LocalDateTime instance}
+     */
+
+    public LocalDate date_adt_to_date(int ts){
+<span class="nc" id="L215">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L216">        String dateStr = functions.pg_date_out(ts);</span>
+<span class="nc" id="L217">        return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);</span>
+    }
+
+    public LocalDate start_element() throws ParseException {
+<span class="nc" id="L221">        return date_adt_to_date(functions.dateset_start_value(this._inner));</span>
+    }
+
+    @Override
+    public LocalDate end_element() throws ParseException {
+<span class="nc" id="L226">        return date_adt_to_date(functions.dateset_end_value(this._inner));</span>
+    }
+
+    /**
+     * Returns the last timestamp in &quot;this&quot;.
+     *  &lt;p&gt;
+     *
+     *         MEOS Functions:
+     *             &lt;li&gt;timestampset_end_timestamp&lt;/li&gt;
+     *
+     * @return a {@link LocalDateTime instance}
+     */
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
