@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - JMEOS-working
+      - pr-fix
   pull_request:
     branches:
       - main
