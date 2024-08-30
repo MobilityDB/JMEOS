@@ -170,27 +170,24 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
         return start_span.getConstructor(Pointer.class).newInstance(startSpanPointer);
     }
 
-    /*
-      Returns the last span in "this".
-      <p>
-
-              MEOS Functions:
-                  <li>spanset_end_span</li>
-
-      @return A {@link Span} instance
+    /**
+     * Returns the last span in "this".
+     * <p>
+     *     MEOS Functions:
+     *     <li>spanset_end_span</li>
+     *     @return A {@link Span} instance
      */
     public T end_span(Class<T> end_span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer endSpanPointer= functions.spanset_end_span(this._inner);
         return end_span.getConstructor(Pointer.class).newInstance(endSpanPointer);
     }
 
-    /*
-      Returns the n-th span in "this".
-       <p>
-              MEOS Functions:
-                  <li>spanset_span_n</li>
-
-      @param n number of Span
+    /**
+     * Returns the n-th span in "this".
+     * <p>
+     *     MEOS Functions:
+     *     <li>spanset_span_n</li>
+     *     @param n number of Span
      * @return A {@link Span} instance
      */
     public T span_n(Class<T>span_n, int n) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -228,6 +225,14 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
         return size;
     }
 
+    /**
+        Returns the list of tstzspans in ``this``.
+        Returns:
+            A :class:`list[TsTzSpan]` instance
+
+        MEOS Functions:
+            spanset_spans
+    */
     public <T> List<T> spans(Class<T> spanType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, InvocationTargetException {
         Pointer ps = functions.spanset_spans(this._inner);
         int numSpans = this.num_spans();
@@ -508,7 +513,6 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
      *             <li>distance_spanset_spanset</li>
      *
      * @param other object to compare with
-     * @return A {@link Float} instance
      * @throws Exception
      */
 //    public float distance(Base other) throws Exception {
