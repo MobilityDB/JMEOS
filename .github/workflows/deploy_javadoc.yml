@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - JMEOS-working
+      - pr-fix
 
 jobs:
   build:
