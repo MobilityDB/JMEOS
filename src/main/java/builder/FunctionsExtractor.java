@@ -30,14 +30,13 @@ public class FunctionsExtractor {
 	private Path inputFilePath = null;
 	private Path outputFunctionsFilePath = null;
 	private Path outputTypesFilePath = null;
+	String currentDir = System.getProperty("user.dir");
 	
 	/**
 	 * Constructor of {@link FunctionsExtractor}.
 	 *
 	 * @throws URISyntaxException thrown when resources not found
 	 */
-
-	String currentDir = System.getProperty("user.dir");
 	public FunctionsExtractor() throws URISyntaxException {
     
 		String reqDir= "/builder/resources/meos.h"; 
