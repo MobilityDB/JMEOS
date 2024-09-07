@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - main
-      - JMEOS-working
-      - pr-fix
-
+      
 jobs:
   build:
     runs-on: ubuntu-latest
