@@ -2,13 +2,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - main
-      - JMEOS-working
-      - pr-fix
+    branches-ignore: gh-pages
   pull_request:
-    branches:
-      - main
+    branches-ignore: gh-pages
 
 jobs:
   build:
