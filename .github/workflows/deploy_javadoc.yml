@@ -3,8 +3,8 @@ name: Deploy Javadoc to GitHub Pages
 on:
   push:
     branches:
-      - JMEOS-working
-
+      - main
+      
 jobs:
   build:
     runs-on: ubuntu-latest

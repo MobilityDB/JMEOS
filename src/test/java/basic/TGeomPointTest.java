@@ -696,8 +696,6 @@ public class TGeomPointTest {
             assertEquals(interpolation, ti.interpolation());
             assertEquals(ti.to_string(),expected);
         }
-//        TPointInst i = new TPointInst("Point(1 1)@2019-09-01");
-        System.out.println(i.to_string());
     }
 
 
