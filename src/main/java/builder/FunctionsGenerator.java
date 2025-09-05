@@ -1,15 +1,22 @@
 package builder;
 
-import utils.BuilderUtils;
-import utils.Pair;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import utils.BuilderUtils;
+import utils.Pair;
 
 /**
  * Class used to generate the functions from the MEOS library.
@@ -159,6 +166,7 @@ public class FunctionsGenerator {
 		types.put("Pointer\\[\\]", "Pointer"); // Keep this line, otherwise operand error in JNR-FFI
 		types.put("bool", "boolean");
 		types.put("float", "float");
+		types.put("float8", "double");
 		types.put("double", "double");
 		types.put("void", "void");
 		types.put("int", "int");
@@ -184,6 +192,20 @@ public class FunctionsGenerator {
 		types.put("size_t", "long");
 		types.put("interpType", "int"); // enum in C
 		//types.put("\\char **","Pointer");
+
+		// Nouveaux types pour 1.3
+		types.put("DateADT", "int");
+		types.put("TimeADT", "long");
+		types.put("Timestamp", "long");
+		types.put("TimestampTz", "long");
+		types.put("TimeOffset", "long");
+		types.put("fsec_t", "int");
+		types.put("Datum", "long");
+		types.put("uintptr_t", "long");
+
+		types.put("OffsetDateTime", "OffsetDateTime");
+		types.put("LocalDateTime", "LocalDateTime");
+
 		
 		return types;
 	}
@@ -506,7 +528,8 @@ public class FunctionsGenerator {
 	 */
 	private StringBuilder generateFunctions(String filePath, boolean performTypesConversion) {
 		var builder = new StringBuilder();
-		
+		Set<String> seen = new HashSet<>();
+
 		BuilderUtils.readFileLines(filePath, line -> {
 			line = performTypeConversion(line);
 			
@@ -523,11 +546,15 @@ public class FunctionsGenerator {
 			/* Perform equivalent type conversion */
 			line = BuilderUtils.replaceTypes(equivalentTypes, line);
 			unsupportedEquivalentTypes.addAll(getUnsupportedTypes(line, equivalentTypes).stream().filter(type -> !unsupportedEquivalentTypes.contains(type)).toList());
-			
-			builder.append(BuilderUtils.formattingLine(line, "", "\n"));
+
+			String fnName = BuilderUtils.extractFunctionName(line);
+			int arity = BuilderUtils.extractParamTypesAndNames(line).size();
+			String key = fnName + "#" + arity;
+
+			if (seen.add(key)){
+				builder.append(line).append("\n"); 
+			}
 		});
 		return builder;
 	}
-	
-	
 }

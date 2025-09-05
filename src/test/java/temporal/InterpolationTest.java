@@ -24,7 +24,8 @@ public class InterpolationTest {
     error_handler_fn errorHandler = new error_handler();
 
     Stream<Arguments> TInterp() throws SQLException {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("discrete", TInterpolation.DISCRETE),
                 Arguments.of("linear", TInterpolation.LINEAR),
@@ -37,7 +38,8 @@ public class InterpolationTest {
     @ParameterizedTest(name = "Test TInterpolation class.")
     @MethodSource("TInterp")
     public void testFromString(String base, TInterpolation expected) {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         assertEquals(TInterpolation.fromString(base),expected);
     }
 }

@@ -30,7 +30,7 @@ class datesetTest {
     private final dateset dset2;
 
     datesetTest() throws SQLException {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
         dset = new dateset("{2019-09-25, 2019-09-26, 2019-09-27}");
         dset2 = new dateset("{2019-09-08, 2019-09-10}");
     }

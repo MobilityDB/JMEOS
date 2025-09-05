@@ -32,7 +32,8 @@ public class FloatSetTest {
 //            }
 //        };
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(5.0f, false ),
                 Arguments.of(new FloatSet("{5, 10}"), false )
@@ -41,7 +42,8 @@ public class FloatSetTest {
 
     static Stream<Arguments> FloatSet_distances() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(5.0f, 2.0f ),
                 Arguments.of(new FloatSet("{5, 10}"), 2.0f )

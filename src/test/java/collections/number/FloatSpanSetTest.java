@@ -20,7 +20,8 @@ public class FloatSpanSetTest {
 
     static Stream<Arguments> IntSpan_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("(7, 10)", 8, 10, true, false),
                 Arguments.of("[7, 10]", 7, 11, true, false)
@@ -29,7 +30,8 @@ public class FloatSpanSetTest {
 
     static Stream<Arguments> IntSpan_mulsources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("7", "10", 7, 10),
                 Arguments.of(7, 10, 7, 10),
@@ -39,7 +41,8 @@ public class FloatSpanSetTest {
 
     static Stream<Arguments> Bound_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(true,true),
                 Arguments.of(true,false),

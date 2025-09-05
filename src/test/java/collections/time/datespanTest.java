@@ -28,7 +28,8 @@ class datespanTest {
     private final datespan dspan2;
 
     datespanTest() throws SQLException {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+functions.meos_initialize_error_handler(errorHandler);
         dspan = new datespan("[2019-09-25, 2019-09-27]");
         dspan2 = new datespan("[2019-09-08, 2019-09-10)");
     }
