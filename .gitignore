@@ -21,6 +21,9 @@ src/main/java/functions/builder/tmp/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/JMEOS.iml
+.idea/inspectionProfiles/Project_Default.xml
+
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -45,14 +48,14 @@ src/main/java/functions/builder/tmp/
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
-# *.iml
-# *.ipr
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
 
 # CMake
 cmake-build-*/
@@ -150,3 +153,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Ignore pid error log files ###
+*.log
