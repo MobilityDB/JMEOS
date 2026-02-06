@@ -45,5 +45,26 @@ public enum TInterpolation {
                 throw new IllegalArgumentException("Value " + source + " doesn't represent any valid interpolation");
         }
     }
+
+    /**
+     * Returns the string representation of this interpolation type in the format expected by MEOS.
+     * MEOS expects: "None", "Discrete", "Step", "Linear" (note: "Step" not "Stepwise")
+     * @return the interpolation name in MEOS format
+     */
+    @Override
+    public String toString() {
+        switch (this) {
+            case NONE:
+                return "None";
+            case DISCRETE:
+                return "Discrete";
+            case STEPWISE:
+                return "Step";
+            case LINEAR:
+                return "Linear";
+            default:
+                throw new IllegalStateException("Unknown interpolation type: " + this.name());
+        }
+    }
 }
 

@@ -87,4 +87,8 @@ public class TBoolSeq extends TSequence<Boolean> implements TBool {
 		return inner;
 	}
 
+	@Override
+	public String toString() {
+		return this.asString();
+	}
 }

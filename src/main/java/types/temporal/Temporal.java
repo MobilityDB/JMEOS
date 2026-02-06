@@ -707,7 +707,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal to_sequence(TInterpolation interpolation){
         System.out.println(interpolation.toString());
-        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE);
+        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE);
     }
 
     /**

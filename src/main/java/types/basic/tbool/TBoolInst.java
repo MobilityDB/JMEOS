@@ -98,7 +98,8 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 		return inner;
 	}
 
-
-
-
+	@Override
+	public String toString() {
+		return this.asString();
+	}
 }

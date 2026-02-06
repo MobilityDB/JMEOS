@@ -1907,7 +1907,7 @@ public class functions {
 
 		Pointer temporal_to_tinstant(Pointer temp);
 
-		Pointer temporal_to_tsequence(Pointer temp, String interp_str);
+		Pointer temporal_to_tsequence(Pointer temp, int interp);
 
 		Pointer temporal_to_tsequenceset(Pointer temp, String interp_str);
 
@@ -8033,8 +8033,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer temporal_to_tsequence(Pointer temp, String interp_str) {
-		return MeosLibrary.meos.temporal_to_tsequence(temp, interp_str);
+	public static Pointer temporal_to_tsequence(Pointer temp, int interp) {
+		return MeosLibrary.meos.temporal_to_tsequence(temp, interp);
 	}
 	
 	@SuppressWarnings("unused")

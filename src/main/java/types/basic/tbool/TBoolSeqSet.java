@@ -65,4 +65,8 @@ public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 		return inner;
 	}
 
+	@Override
+	public String toString() {
+		return this.asString();
+	}
 }

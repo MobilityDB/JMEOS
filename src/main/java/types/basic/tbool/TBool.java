@@ -531,5 +531,15 @@ default boolean value_at_timestamp(LocalDateTime ts){
     default TBool invert(){
        return this.temporal_not();
     }
+
+    /**
+     * Returns the value-timestamp pair of the calling TBool
+     *
+     * MEOS Function:
+     *      tbool_out
+     */
+    default String asString() {
+        return functions.tbool_out(getBoolInner());
+    }
 	
 }
