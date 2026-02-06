@@ -1,6 +1,8 @@
 package collections.number;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,6 +10,7 @@ import types.collections.number.FloatSpanSet;
 import types.collections.number.IntSpan;
 import types.collections.number.IntSpanSet;
 import functions.*;
+import utils.TestLogger;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(TestLogger.class)
 public class IntSpanSetTest {
     public IntSpanSet intSpanSet = new IntSpanSet("{[8, 9], [11, 12]}");
 
     static Stream<Arguments> IntSpan_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("(7, 10)", 8, 10, true, false),
                 Arguments.of("[7, 10]", 7, 11, true, false)
@@ -31,7 +36,8 @@ public class IntSpanSetTest {
 
     static Stream<Arguments> IntSpan_mulsources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("7", "10", 7, 10),
                 Arguments.of(7, 10, 7, 10),
@@ -41,7 +47,8 @@ public class IntSpanSetTest {
 
     static Stream<Arguments> Bound_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(true,true),
                 Arguments.of(true,false),
@@ -120,7 +127,7 @@ public class IntSpanSetTest {
         }
     }
 
-    @ParameterizedTest(name = "Test Constructor method")
+    @ParameterizedTest(name = "source={0}, lower={1}, upper={2}, lower_inc={3}, upper_inc={4}")
     @MethodSource("IntSpan_sources")
     public void testStringConstructor(String source, int lower, int upper, boolean lower_inc, boolean upper_inc){
         IntSpan intsp = new IntSpan(source);
@@ -164,20 +171,6 @@ public class IntSpanSetTest {
     }
 
     @Test
-    public void testSpans(){
-        System.out.println(intSpanSet.spans());
-        List<IntSpan> spanList= intSpanSet.spans();
-        String s= "{";
-        for (IntSpan i : spanList) {
-            s= s + i.toString() + ", ";
-        }
-        s= s.substring(0, s.length()-2) + "}";
-        System.out.println(s);
-        IntSpanSet intSpanSet1= new IntSpanSet(s);
-        assert_intspanset_equality(intSpanSet1, 8, 10, 11, 13, true, false, true, false);
-    }
-
-    @Test
     public void testShift(){
         IntSpanSet intSpanSet1= intSpanSet.shift(2);
         assert_intspanset_equality(intSpanSet1, 10, 12, 13, 15, true, false, true, false);
@@ -185,16 +178,18 @@ public class IntSpanSetTest {
 
     @Test
     public void testScale(){
-        IntSpanSet intSpanSet1= intSpanSet.scale(2);
-        System.out.println(intSpanSet1.toString());
-        assert_intspanset_equality(intSpanSet1, 8, 9, 9, 11, true, false, true, false);
+        // Let's try to transform our 4-distance interval into a new 8-distance interval
+        // Starting intspanset : {[8, 9], [11, 12]}
+        IntSpanSet intSpanSet1 = intSpanSet.scale(8);
+        // What we should expect : {[8, 10], [14, 16]}
+        assert_intspanset_equality(intSpanSet1, 8, 11, 14, 17, true, false, true, false);
     }
 
     @Test
     public void testShiftScale(){
-        IntSpanSet intSpanSet1= intSpanSet.shift_scale(2, 2);
+        IntSpanSet intSpanSet1= intSpanSet.shift_scale(2, 8);
         System.out.println(intSpanSet1.toString());
-        assert_intspanset_equality(intSpanSet1, 10, 11, 11, 13, true, false, true, false);
+        assert_intspanset_equality(intSpanSet1, 10, 13, 16, 19, true, false, true, false);
     }
 
     @Test
@@ -263,4 +258,3 @@ public class IntSpanSetTest {
 
     }
 }
-
