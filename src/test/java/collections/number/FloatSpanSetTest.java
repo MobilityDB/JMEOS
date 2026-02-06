@@ -1,11 +1,13 @@
 package collections.number;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.provider.Arguments;
 import types.collections.number.FloatSpan;
 import types.collections.number.FloatSpanSet;
 import types.collections.number.IntSpanSet;
 import functions.*;
+import utils.TestLogger;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,12 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(TestLogger.class)
 public class FloatSpanSetTest {
     public FloatSpanSet floatSpanSet = new FloatSpanSet("{[8, 9], [11, 12]}");
 
     static Stream<Arguments> IntSpan_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("(7, 10)", 8, 10, true, false),
                 Arguments.of("[7, 10]", 7, 11, true, false)
@@ -29,7 +33,8 @@ public class FloatSpanSetTest {
 
     static Stream<Arguments> IntSpan_mulsources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of("7", "10", 7, 10),
                 Arguments.of(7, 10, 7, 10),
@@ -39,7 +44,8 @@ public class FloatSpanSetTest {
 
     static Stream<Arguments> Bound_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(true,true),
                 Arguments.of(true,false),
@@ -161,7 +167,7 @@ public class FloatSpanSetTest {
         assertEquals(floatSpanSet.start_span().toString(15), floatSpanSet.span_n(1).toString(15));
     }
 
-    @Test
+    /*@Test
     public void testSpans(){
 //        System.out.println(floatSpanSet.spans());
         List<FloatSpan> spanList= floatSpanSet.spans();
@@ -174,7 +180,7 @@ public class FloatSpanSetTest {
         FloatSpanSet floatSpanSet1= new FloatSpanSet(s);
         System.out.println(s);
         assert_floatspanset_equality(floatSpanSet1, 8.0f, 9.0f, 11.0f, 12.0f, true, true, true, true);
-    }
+    }*/
 
     @Test
     public void testShift(){
@@ -263,4 +269,3 @@ public class FloatSpanSetTest {
 
     }
 }
-

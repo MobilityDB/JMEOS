@@ -170,6 +170,25 @@ public class IntSpanSetTest {
         assertEquals(intSpanSet.start_span().toString(), intSpanSet.span_n(1).toString());
     }
 
+    /*@Test
+    public void testSpans(){
+        System.out.println("Début du test");
+        //System.out.println(intSpanSet.spans());
+        System.out.println("avnt la définition de spanList de testSpans()");
+        List<IntSpan> spanList= intSpanSet.spans();
+        System.out.println("définition de spsanlist dans testSpans() finie");
+        String s= "{";
+        System.out.println("Avant la boucle");
+        for (IntSpan i : spanList) {
+            s= s + i.toString() + ", ";
+        }
+        System.out.println("Après la boucle");
+        s= s.substring(0, s.length()-2) + "}";
+        System.out.println(s);
+        IntSpanSet intSpanSet1= new IntSpanSet(s);
+        assert_intspanset_equality(intSpanSet1, 8, 10, 11, 13, true, false, true, false);
+    }*/
+
     @Test
     public void testShift(){
         IntSpanSet intSpanSet1= intSpanSet.shift(2);

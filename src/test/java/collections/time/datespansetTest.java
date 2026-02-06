@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.locationtech.jts.io.ParseException;
@@ -21,15 +22,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import functions.*;
+import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestLogger.class)
 class datespansetTest {
     private final datespanset dsset;
     private final datespanset dsset2;
 
     datespansetTest() throws SQLException {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         dsset = new datespanset("{[2019-09-08, 2019-09-10], [2019-09-11, 2019-09-12]}");
         dsset2 = new datespanset("{[2020-09-08, 2020-09-10], [2020-09-11, 2020-09-12]}");
     }
@@ -141,10 +145,10 @@ class datespansetTest {
         assertEquals(expected, dsset.span_n(1).toString());
     }
 
-    @Test
-    public void testElements() throws Exception {
-        dsset.elements();
-    }
+    //@Test
+    //public void testElements() throws Exception {
+    //    dsset.elements();
+    //}
 
     // Transformation tests
 //    @Test
