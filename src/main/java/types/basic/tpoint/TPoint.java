@@ -1279,10 +1279,10 @@ public interface TPoint extends Serializable {
 		}
         else{
 			if(isTGeogPoint){
-				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+				gs= functions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+				gs= functions.geom_in("Point (0 0 0)", -1);
 			}
 		}
 		// Create a JNR-FFI runtime instance
@@ -1340,10 +1340,10 @@ public interface TPoint extends Serializable {
 		}
 		else{
 			if(isTGeogPoint){
-				gs= functions.pgis_geography_in("Point (0 0 0)", -1);
+				gs= functions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+				gs= functions.geom_in("Point (0 0 0)", -1);
 			}
 		}
 

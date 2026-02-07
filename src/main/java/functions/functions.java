@@ -21,7 +21,7 @@ public class functions {
 
 		MeosLibrary meos = MeosLibrary.INSTANCE;
 
-		int geo_get_srid(Pointer g);
+		int geo_srid(Pointer g);
 
 		void meos_error(int errlevel, int errcode, String format, Pointer args);
 
@@ -143,9 +143,9 @@ public class functions {
 
 		Pointer geometry_from_text(String wkt, int srid);
 
-		Pointer pgis_geography_in(String str, int typmod);
+		Pointer geog_in(String str, int typmod);
 
-		Pointer pgis_geometry_in(String str, int typmod);
+		Pointer geom_in(String str, int typmod);
 
 		Pointer bigintset_in(String str);
 
@@ -2997,7 +2997,7 @@ public class functions {
 
 	@SuppressWarnings("unused")
 	public static int geo_get_srid(Pointer g) {
-		return MeosLibrary.meos.geo_get_srid(g);
+		return MeosLibrary.meos.geo_srid(g);
 	}
 	
 	@SuppressWarnings("unused")
@@ -3315,15 +3315,13 @@ public class functions {
 	public static Pointer geometry_from_text(String wkt, int srid) {
 		return MeosLibrary.meos.geometry_from_text(wkt, srid);
 	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer pgis_geography_in(String str, int typmod) {
-		return MeosLibrary.meos.pgis_geography_in(str, typmod);
+
+	public static Pointer geog_in(String str, int typmod) {
+		return MeosLibrary.meos.geog_in(str, typmod);
 	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer pgis_geometry_in(String str, int typmod) {
-		return MeosLibrary.meos.pgis_geometry_in(str, typmod);
+
+	public static Pointer geom_in(String str, int typmod) {
+		return MeosLibrary.meos.geom_in(str, typmod);
 	}
 	
 	@SuppressWarnings("unused")
