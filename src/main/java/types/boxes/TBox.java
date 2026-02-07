@@ -410,10 +410,10 @@ public class TBox implements Box {
 			result= functions.tbox_expand_time(this._inner, ConversionUtils.timedelta_to_interval((Duration) obj));
 		}
 		else if(obj instanceof Integer){
-			result = functions.tbox_expand_int(this._inner,(int)obj);
+			result = functions.tintbox_expand(this._inner,(int)obj);
 		}
 		else if(obj instanceof Float){
-			result = functions.tbox_expand_float(this._inner,(float)obj);
+			result = functions.tfloatbox_expand(this._inner,(float)obj);
 		}
 		return new TBox(result);
 	}

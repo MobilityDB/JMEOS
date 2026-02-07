@@ -1,6 +1,7 @@
 package boxes;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import functions.functions;
@@ -15,10 +16,12 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.ParseException;
+import utils.TestLogger;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestLogger.class)
 public class STBoxTest {
 	private STBox stbx;
 	private STBox stbz;

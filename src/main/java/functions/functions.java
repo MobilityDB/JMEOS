@@ -1545,9 +1545,9 @@ public class functions {
 
 		Pointer tbox_expand_time(Pointer box, Pointer interv);
 
-		Pointer tbox_expand_float(Pointer box, double d);
+		Pointer tfloatbox_expand(Pointer box, double d);
 
-		Pointer tbox_expand_int(Pointer box, int i);
+		Pointer tintbox_expand(Pointer box, int i);
 
 		Pointer tbox_round(Pointer box, int maxdd);
 
@@ -7080,13 +7080,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbox_expand_float(Pointer box, double d) {
-		return MeosLibrary.meos.tbox_expand_float(box, d);
+	public static Pointer tfloatbox_expand(Pointer box, double d) {
+		return MeosLibrary.meos.tfloatbox_expand(box, d);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tbox_expand_int(Pointer box, int i) {
-		return MeosLibrary.meos.tbox_expand_int(box, i);
+	public static Pointer tintbox_expand(Pointer box, int i) {
+		return MeosLibrary.meos.tintbox_expand(box, i);
 	}
 	
 	@SuppressWarnings("unused")
