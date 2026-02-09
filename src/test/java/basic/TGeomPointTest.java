@@ -1086,28 +1086,6 @@ public class TGeomPointTest {
         assertEquals(tmp.to_string(),TGeom.to_string());
     }
 
-    /*
-
-Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"),
-TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01]}")),
-
-Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01,
-Point(2 2)@2019-09-02}"), TInterpolation.LINEAR,
-new TGeomPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
-
-
-Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01,
-Point(2 2)@2019-09-02]"), TInterpolation.LINEAR,
-new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
-
-
-Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01,
-Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR,
-new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
-
-
-    */
-
 
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, TGeom={3}")
     @MethodSource("set_interp")
