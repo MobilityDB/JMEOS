@@ -588,8 +588,15 @@ public class TGeomPointTest {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
-                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01]}")),
-                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+                // When converting a single instant or discrete sequence to SequenceSet,
+                // the result uses Stepwise interpolation (can't have LINEAR with single-point sequences).
+                // MEOS explicitly displays "Interp=Step;" prefix in the string representation.
+                // TL;DR
+                //      Converting single instants/discrete sequences to SequenceSet results in Stepwise interpolation.
+                //      MEOS now explicitly shows "Interp=Step;" prefix in string output for non-linear interpolations.
+                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01]}")),
+                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeomPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+                // Linear interpolation cases don't display the prefix
                 Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
                 Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
         );
@@ -1078,6 +1085,28 @@ public class TGeomPointTest {
         assertTrue(tmp instanceof TGeomPointSeqSet);
         assertEquals(tmp.to_string(),TGeom.to_string());
     }
+
+    /*
+
+Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"),
+TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01]}")),
+
+Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01,
+Point(2 2)@2019-09-02}"), TInterpolation.LINEAR,
+new TGeomPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+
+
+Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01,
+Point(2 2)@2019-09-02]"), TInterpolation.LINEAR,
+new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
+
+
+Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01,
+Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR,
+new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
+
+
+    */
 
 
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, TGeom={3}")

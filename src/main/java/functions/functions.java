@@ -1871,9 +1871,9 @@ public class functions {
 
 		Pointer tnumber_valuespans(Pointer temp);
 
-		Pointer tpoint_end_value(Pointer temp);
+		Pointer temporal_end_value(Pointer temp);
 
-		Pointer tpoint_start_value(Pointer temp);
+		Pointer temporal_start_value(Pointer temp);
 
 		boolean tpoint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
 
@@ -1935,7 +1935,7 @@ public class functions {
 
 		Pointer tint_shift_value(Pointer temp, int shift);
 
-		Pointer tpoint_round(Pointer temp, int maxdd);
+		Pointer temporal_round(Pointer temp, int maxdd);
 
 		Pointer tpoint_transform(Pointer temp, int srid);
 
@@ -7928,13 +7928,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_end_value(Pointer temp) {
-		return MeosLibrary.meos.tpoint_end_value(temp);
+	public static Pointer temporal_end_value(Pointer temp) {
+		return MeosLibrary.meos.temporal_end_value(temp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_start_value(Pointer temp) {
-		return MeosLibrary.meos.tpoint_start_value(temp);
+	public static Pointer temporal_start_value(Pointer temp) {
+		return MeosLibrary.meos.temporal_start_value(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -8100,8 +8100,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_round(Pointer temp, int maxdd) {
-		return MeosLibrary.meos.tpoint_round(temp, maxdd);
+	public static Pointer temporal_round(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.temporal_round(temp, maxdd);
 	}
 	
 	@SuppressWarnings("unused")

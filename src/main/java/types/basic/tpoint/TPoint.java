@@ -178,7 +178,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point start_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.temporal_start_value(getPointInner()),precision);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point end_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.temporal_end_value(getPointInner()),precision);
 	}
 
 /**
@@ -530,7 +530,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TPoint} object.
 	 */
 	default TPoint round(int max_decimals){
-		return (TPoint) Factory.create_temporal(functions.tpoint_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
+		return (TPoint) Factory.create_temporal(functions.temporal_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
 	}
 
     /**

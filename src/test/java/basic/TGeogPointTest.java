@@ -594,8 +594,15 @@ public class TGeogPointTest {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
-                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01]}")),
-                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+                // When converting a single instant or discrete sequence to SequenceSet,
+                // the result uses Stepwise interpolation (can't have LINEAR with single-point sequences).
+                // MEOS explicitly displays "Interp=Step;" prefix in the string representation.
+                // TL;DR
+                //      Converting single instants/discrete sequences to SequenceSet results in Stepwise interpolation.
+                //      MEOS now explicitly shows "Interp=Step;" prefix in string output for non-linear interpolations.
+                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01]}")),
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeogPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
+                // Linear interpolation cases don't display the prefix
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
                 Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
         );
