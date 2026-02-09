@@ -1465,7 +1465,7 @@ public class functions {
 
 		Pointer tnumber_to_tbox(Pointer temp);
 
-		Pointer tpoint_to_stbox(Pointer temp);
+		Pointer tspatial_to_stbox(Pointer temp);
 
 		boolean stbox_hast(Pointer box);
 
@@ -1699,7 +1699,7 @@ public class functions {
 
 		String tpoint_out(Pointer temp, int maxdd);
 
-		String tpoint_as_text(Pointer temp, int maxdd);
+		String tspatial_as_text(Pointer temp, int maxdd);
 
 		String tpoint_as_ewkt(Pointer temp, int maxdd);
 
@@ -2799,7 +2799,7 @@ public class functions {
 
 		Pointer tpoint_speed(Pointer temp);
 
-		int tpoint_srid(Pointer temp);
+		int tspatial_srid(Pointer temp);
 
 		Pointer tpoint_stboxes(Pointer temp, Pointer count);
 
@@ -6766,10 +6766,9 @@ public class functions {
 	public static Pointer tnumber_to_tbox(Pointer temp) {
 		return MeosLibrary.meos.tnumber_to_tbox(temp);
 	}
-	
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_to_stbox(Pointer temp) {
-		return MeosLibrary.meos.tpoint_to_stbox(temp);
+
+	public static Pointer tspatial_to_stbox(Pointer temp) {
+		return MeosLibrary.meos.tspatial_to_stbox(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7463,8 +7462,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String tpoint_as_text(Pointer temp, int maxdd) {
-		return MeosLibrary.meos.tpoint_as_text(temp, maxdd);
+	public static String tspatial_as_text(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.tspatial_as_text(temp, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10274,8 +10273,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static int tpoint_srid(Pointer temp) {
-		return MeosLibrary.meos.tpoint_srid(temp);
+	public static int tspatial_srid(Pointer temp) {
+		return MeosLibrary.meos.tspatial_srid(temp);
 	}
 	
 	@SuppressWarnings("unused")

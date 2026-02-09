@@ -75,7 +75,7 @@ public class STBox implements Box {
 		if(allow_space_only && other instanceof Geometry){
 			other_box = new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
 		} else if (other instanceof TPoint) {
-			other_box = new STBox(functions.tpoint_to_stbox(((TPoint)other).getPointInner()));
+			other_box = new STBox(functions.tspatial_to_stbox(((TPoint)other).getPointInner()));
 		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
@@ -339,7 +339,7 @@ public class STBox implements Box {
 	 * @return A new {@link STBox} instance.
 	 */
     public static STBox from_tpoint(TPoint temporal){
-        return new STBox(functions.tpoint_to_stbox(temporal.getPointInner()));
+        return new STBox(functions.tspatial_to_stbox(temporal.getPointInner()));
     }
 
 

@@ -56,7 +56,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link String} representing the temporal point.
 	 */
 	default String to_string(){
-		return functions.tpoint_as_text(getPointInner(),15);
+		return functions.tspatial_as_text(getPointInner(),15);
 	}
 
 
@@ -72,7 +72,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link String} representing the temporal point.
 	 */
 	default String as_wkt(int decimals){
-		return functions.tpoint_as_text(getPointInner(),decimals);
+		return functions.tspatial_as_text(getPointInner(),decimals);
 	}
 
 
@@ -139,7 +139,7 @@ public interface TPoint extends Serializable {
 	 * @return An {@link STBox} representing the bounding box.
 	 */
 	default STBox bounding_box_point(){
-		return new STBox(functions.tpoint_to_stbox(getPointInner()));
+		return new STBox(functions.tspatial_to_stbox(getPointInner()));
 	}
 
 /**
@@ -498,7 +498,7 @@ public interface TPoint extends Serializable {
 	 * @return An {@link Integer} representing the SRID.
 	 */
 	default int srid(){
-		return functions.tpoint_srid(getPointInner());
+		return functions.tspatial_srid(getPointInner());
 	}
 
 
