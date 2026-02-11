@@ -1094,7 +1094,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_tpoint(TPoint other) {
-		return (float) functions.nad_tpoint_stbox(this._inner, other.getPointInner());
+		return (float) functions.nad_tgeo_stbox(this._inner, other.getPointInner());
 	}
 
 
@@ -1213,7 +1213,8 @@ public class STBox implements Box {
 	@Override
 	public tstzspan to_period(){
 		error_handler_fn errorHandler = new error_handler();
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize_timezone("UTC");
+		functions.meos_initialize_error_handler(errorHandler);
 		return new tstzspan(functions.stbox_to_tstzspan(this._inner));
 	}
 

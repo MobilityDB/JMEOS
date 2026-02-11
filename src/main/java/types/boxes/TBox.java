@@ -354,7 +354,8 @@ public class TBox implements Box {
 	 */
 	public tstzspan to_period(){
 		error_handler_fn errorHandler = new error_handler();
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize_timezone("UTC");
+		functions.meos_initialize_error_handler(errorHandler);
 		return new tstzspan(functions.tbox_to_tstzspan(this._inner));
 	}
 

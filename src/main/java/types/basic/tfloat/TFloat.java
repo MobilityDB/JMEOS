@@ -748,7 +748,7 @@ public interface TFloat extends TNumber {
             tfloat_derivative
 */
 	default TFloat derivative(){
-		return (TFloat) Factory.create_temporal(functions.tfloat_derivative(this.getNumberInner()), getCustomType(), getTemporalType());
+		return (TFloat) Factory.create_temporal(functions.temporal_derivative(this.getNumberInner()), getCustomType(), getTemporalType());
 	}
 
 
@@ -796,6 +796,6 @@ public interface TFloat extends TNumber {
 	 * @return A new {@link TFloat} instance.
 	 */
 	default Temporal round(int max_decimals){
-		return Factory.create_temporal(functions.tfloat_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());
+		return Factory.create_temporal(functions.temporal_round(getNumberInner(),max_decimals), getCustomType(),getTemporalType());
 	}
 }

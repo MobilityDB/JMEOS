@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,34 +17,46 @@ import java.util.regex.Pattern;
 
 /**
  * Class used to extract the functions from the MEOS library.
+ * UPDATED VERSION to handle multiple .h files (meos.h + meos_geo.h)
+ *
  * Run with directly with java through the main class
  *
- * @author Killian Monnier
+ * @author Killian Monnier (original)
+ * @author Updated for MEOS 1.3+ (multi-file support)
  * @since 27/06/2023
  */
 public class FunctionsExtractor {
 	private static final String FUNCTION_PATTERN = "(extern\\s+(static\\s+|inline\\s+|const\\s+)?|static\\s+|inline\\s+|const\\s+)?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);";
-//	private static final String FUNCTION_PATTERN = "extern (static |inline |const )?[a-zA-Z0-9_*]+\\s*\\**\\s+[a-zA-Z0-9_*]+\\s*\\([^)]*\\);"; // RegEx model for recognizing a function in the meos.h file
-	private static final String TYPES_PATTERN = "typedef\\s(?!struct|enum)\\w+\\s\\w+;"; // Type recognition RegEx pattern in meos.h file
-	private Path inputFilePath = null;
+	private static final String TYPES_PATTERN = "typedef\\s(?!struct|enum)\\w+\\s\\w+;";
+
+	// Chemins des fichiers d'entrée
+	private Path inputMeosPath = null;
+	private Path inputMeosGeoPath = null;
+
+	// Chemins des fichiers de sortie
 	private Path outputFunctionsFilePath = null;
 	private Path outputTypesFilePath = null;
+
 	String currentDir = System.getProperty("user.dir");
-	
+
 	/**
 	 * Constructor of {@link FunctionsExtractor}.
 	 *
 	 * @throws URISyntaxException thrown when resources not found
 	 */
 	public FunctionsExtractor() throws URISyntaxException {
-    
-		String reqDir= "/builder/resources/meos.h"; 
-		this.inputFilePath = Paths.get(currentDir, reqDir);
-		//this.inputFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/meos.h")).toURI());
+		// Chemins des fichiers d'entrée (à jour)
+		String reqDirMeos = "src/main/java/builder/resources/meos.h";
+		String reqDirMeosGeo = "src/main/java/builder/resources/meos_geo.h";
+
+		this.inputMeosPath = Paths.get(currentDir, reqDirMeos);
+		this.inputMeosGeoPath = Paths.get(currentDir, reqDirMeosGeo);
+
+		// Chemins des fichiers de sortie
 		this.outputFunctionsFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_functions.h"));
 		this.outputTypesFilePath = Paths.get(new URI(Objects.requireNonNull(this.getClass().getResource("")) + "meos_types.h"));
 	}
-	
+
 	/**
 	 * Launch process of extraction.
 	 *
@@ -54,16 +65,50 @@ public class FunctionsExtractor {
 	 */
 	public static void main(String[] args) throws URISyntaxException {
 		var extractor = new FunctionsExtractor();
-		
-		var functions = BuilderUtils.extractPatternFromFile(extractor.inputFilePath.toString(), FUNCTION_PATTERN);
-		BuilderUtils.writeFileFromArray(functions, extractor.outputFunctionsFilePath.toString());
-		System.out.println("Feature extraction completed. The functions have been written to the file " + extractor.outputFunctionsFilePath);
-		
-		var types = extractor.getTypesFromFile();
+
+		System.out.println("=== MEOS Functions Extractor v2.0 ===");
+		System.out.println("Extracting from multiple header files...\n");
+
+		// Extraction des fonctions depuis meos.h
+		System.out.println("1. Extracting functions from meos.h...");
+		var functionsFromMeos = BuilderUtils.extractPatternFromFile(
+				extractor.inputMeosPath.toString(),
+				FUNCTION_PATTERN
+		);
+		System.out.println("   → Found " + functionsFromMeos.size() + " functions in meos.h");
+
+		// Extraction des fonctions depuis meos_geo.h
+		System.out.println("2. Extracting functions from meos_geo.h...");
+		var functionsFromMeosGeo = BuilderUtils.extractPatternFromFile(
+				extractor.inputMeosGeoPath.toString(),
+				FUNCTION_PATTERN
+		);
+		System.out.println("   → Found " + functionsFromMeosGeo.size() + " functions in meos_geo.h");
+
+		// Combinaison des deux listes (sans doublons)
+		List<String> allFunctions = new ArrayList<>(functionsFromMeos);
+		for (String func : functionsFromMeosGeo) {
+			if (!allFunctions.contains(func)) {
+				allFunctions.add(func);
+			}
+		}
+		System.out.println("3. Combined total: " + allFunctions.size() + " unique functions\n");
+
+		// Écriture du fichier de sortie
+		BuilderUtils.writeFileFromArray(allFunctions, extractor.outputFunctionsFilePath.toString());
+		System.out.println("✓ Functions written to: " + extractor.outputFunctionsFilePath);
+
+		// Extraction des types depuis meos.h
+		System.out.println("\n4. Extracting types from meos.h...");
+		var types = extractor.getTypesFromFile(extractor.inputMeosPath.toString());
+		System.out.println("   → Found " + types.size() + " types");
+
 		BuilderUtils.writeFileFromArray(types, extractor.outputTypesFilePath.toString());
-		System.out.println("Extraction of types completed. The types have been written to the file " + extractor.outputTypesFilePath);
+		System.out.println("✓ Types written to: " + extractor.outputTypesFilePath);
+
+		System.out.println("\n=== Extraction completed successfully! ===");
 	}
-	
+
 	/**
 	 * Retrieves structure names from file.
 	 *
@@ -78,11 +123,11 @@ public class FunctionsExtractor {
 			while ((line = reader.readLine()) != null) {
 				content.append(line).append("\n");
 			}
-			
+
 			String regex = "typedef\\s+struct(\\s\\w+)?\\s*\\{[\\s\\S]*?}\\s*(\\w+)";
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(content.toString());
-			
+
 			while (matcher.find()) {
 				String structureName = matcher.group(2);
 				structureNames.add(structureName);
@@ -92,17 +137,18 @@ public class FunctionsExtractor {
 		}
 		return new ArrayList<>(structureNames);
 	}
-	
+
 	/**
 	 * Get types from a file.
 	 *
-	 * @return the list of lines
+	 * @param filePath path to the header file
+	 * @return the list of types
 	 */
-	private List<String> getTypesFromFile() {
-		var rawTypes = BuilderUtils.extractPatternFromFile(this.inputFilePath.toString(), TYPES_PATTERN);
-		var structureNames = getStructureNames(this.inputFilePath.toString());
+	private List<String> getTypesFromFile(String filePath) {
+		var rawTypes = BuilderUtils.extractPatternFromFile(filePath, TYPES_PATTERN);
+		var structureNames = getStructureNames(filePath);
 		List<String> filteredTypes = new ArrayList<>();
-		
+
 		/* Add typedefs if they are not structure type */
 		for (var rawType : rawTypes) {
 			var words = rawType.trim().split("\\s+");

@@ -719,7 +719,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return a new {@link TSequenceSet}
      */
     public Temporal to_sequenceset(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.toString()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
+        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
 
     }
 
@@ -756,7 +756,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
             temporal_append_tinstant
 */
 
-    public Temporal append_instant(TInstant instant, float max_dist, Duration max_time){
+    public Temporal append_instant(TInstant instant, int interp, float max_dist, Duration max_time){
         Pointer interv= null;
         if (max_time==null){
             interv=null;
@@ -764,7 +764,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         else{
             interv= ConversionUtils.timedelta_to_interval(max_time);
         }
-        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), (double) max_dist, interv, false);
+        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), interp, (double) max_dist, interv, false);
         return Factory.create_temporal(resultPointer, this.getCustomType(), this.getTemporalType());
     }
 

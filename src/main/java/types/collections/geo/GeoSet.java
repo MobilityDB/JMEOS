@@ -67,7 +67,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public String toString(){
         int max_decimals = 15;
-        return functions.geoset_out(this._inner,max_decimals);
+        return functions.tspatial_out(this._inner,max_decimals);
     }
 
 
@@ -82,7 +82,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_ewkt(){
         int max_decimals = 15;
-        return functions.geoset_as_ewkt(this._inner,max_decimals);
+        return functions.tspatial_as_ewkt(this._inner,max_decimals);
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_wkt(){
         int max_decimals = 15;
-        return functions.geoset_as_text(this._inner,max_decimals);
+        return functions.tspatial_as_text(this._inner,max_decimals);
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_text(){
         int max_decimals = 15;
-        return functions.geoset_as_text(this._inner,max_decimals);
+        return functions.tspatial_as_text(this._inner,max_decimals);
     }
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -153,7 +153,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @return An integer
      */
     protected int srid(){
-        return functions.geoset_srid(this._inner);
+        return functions.tspatial_srid(this._inner);
     }
 
 
@@ -284,7 +284,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @return A new {@link GeoSet} object of the same subtype of "this".
      */
     public GeoSet round(int decimals, String type){
-        return factory(type, functions.geoset_round(this._inner,decimals));
+        return factory(type, functions.temporal_round(this._inner,decimals));
     }
 
 

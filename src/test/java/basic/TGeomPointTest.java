@@ -125,7 +125,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> test_time() {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new tstzspanset("{[2019-09-01, 2019-09-01]}") ),
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeomPointSeq", new tstzspanset("{[2019-09-01, 2019-09-01], [2019-09-02, 2019-09-02]}") ),
@@ -136,7 +137,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> period() {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new tstzspan("[2019-09-01, 2019-09-01]") ),
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeomPointSeq", new tstzspan("[2019-09-01, 2019-09-02]") ),
@@ -146,7 +148,8 @@ public class TGeomPointTest {
     }
 
     private static Stream<Arguments> num_instant() {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", 1 ),
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeomPointSeq", 2 ),
@@ -588,15 +591,8 @@ public class TGeomPointTest {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
-                // When converting a single instant or discrete sequence to SequenceSet,
-                // the result uses Stepwise interpolation (can't have LINEAR with single-point sequences).
-                // MEOS explicitly displays "Interp=Step;" prefix in the string representation.
-                // TL;DR
-                //      Converting single instants/discrete sequences to SequenceSet results in Stepwise interpolation.
-                //      MEOS now explicitly shows "Interp=Step;" prefix in string output for non-linear interpolations.
-                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01]}")),
-                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeomPointSeqSet("Interp=Step;{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
-                // Linear interpolation cases don't display the prefix
+                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01]}")),
+                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
                 Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}")),
                 Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]}"))
         );

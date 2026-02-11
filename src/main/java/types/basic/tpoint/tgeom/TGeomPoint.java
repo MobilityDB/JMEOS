@@ -103,7 +103,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return A new {@link TGeogPoint} object.
 	 */
 	default TGeogPoint to_geographic(){
-		return (TGeogPoint) Factory.create_temporal(functions.tgeompoint_to_tgeogpoint(getPointInner()),getCustomType(),getTemporalType());
+		return (TGeogPoint) Factory.create_temporal(functions.tgeometry_to_tgeography(getPointInner()),getCustomType(),getTemporalType());
 
 	}
 
@@ -121,7 +121,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is always equal to "value", False otherwise.
 	 */
 	default boolean always_equal(Geometry value){
-		return functions.always_eq_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
+		return functions.always_eq_tgeo_geo(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 
 	}
 
@@ -136,7 +136,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is always different to "value", False otherwise.
 	 */
 	default boolean always_not_equal(Geometry value){
-		return (functions.always_ne_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0);
+		return (functions.always_ne_tgeo_geo((getPointInner()),ConversionUtils.geometry_to_gserialized(value)) > 0);
 	}
 
 
@@ -151,7 +151,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is ever equal to "value", False otherwise.
 	 */
 	default boolean ever_equal(Geometry value){
-		return  functions.ever_eq_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
+		return  functions.ever_eq_tgeo_geo(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 	}
 
 
@@ -166,7 +166,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return True if "this" is ever different to "value", False otherwise.
 	 */
 	default boolean ever_not_equal(Geometry value){
-		return functions.ever_ne_tpoint_point(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
+		return functions.ever_ne_tgeo_geo(getPointInner(),ConversionUtils.geometry_to_gserialized(value)) > 0;
 
 	}
 
@@ -216,7 +216,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return A {@link TBool} with the result of the temporal equality relation.
 	 */
 	default TBool temporal_equal(Point other){
-		return (TBool) Factory.create_temporal(functions.teq_tpoint_point(getPointInner(), ConversionUtils.geometry_to_gserialized(other)),getCustomType(),getTemporalType());
+		return (TBool) Factory.create_temporal(functions.teq_tgeo_geo(getPointInner(), ConversionUtils.geometry_to_gserialized(other)),getCustomType(),getTemporalType());
 	}
 
 
@@ -234,7 +234,7 @@ public interface TGeomPoint extends TPoint {
 	 * @return A {@link TBool} with the result of the temporal inequality relation.
 	 */
 	default TBool temporal_not_equal(Point other){
-		return (TBool) Factory.create_temporal(functions.tne_tpoint_point(getPointInner(), ConversionUtils.geometry_to_gserialized(other)),getCustomType(),getTemporalType());
+		return (TBool) Factory.create_temporal(functions.tne_tgeo_geo(getPointInner(), ConversionUtils.geometry_to_gserialized(other)),getCustomType(),getTemporalType());
 	}
 
 	default GeometrySet value_set(int precision) throws ParseException {
@@ -242,7 +242,7 @@ public interface TGeomPoint extends TPoint {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+		Pointer resPointer= functions.tgeo_values(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
 		int count= intPointer.getInt(Integer.BYTES);
 		StringBuilder sb = null;

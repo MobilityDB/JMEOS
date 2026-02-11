@@ -737,11 +737,11 @@ public interface TNumber {
      */
     default TFloat distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
-            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((other instanceof Float)) {
-            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TFloat) Factory.create_temporal(functions.distance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");

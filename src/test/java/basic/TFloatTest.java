@@ -330,7 +330,7 @@ public class TFloatTest {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
-                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.NONE, new TFloatSeqSet("{[1.5@2019-09-01]}")),
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01]}")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}")),
                 Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}"), "TFloatSeqSet", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}"))
         );
@@ -819,21 +819,12 @@ functions.meos_initialize_error_handler(errorHandler);
     @ParameterizedTest(name ="source={0}, type={1}, interp={2}, expected={3}")
     @MethodSource("tosequenceset")
     void testTosequenceset(Temporal source, String type, TInterpolation interp, TFloatSeqSet expected) {
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(errorHandler);
         TFloatSeqSet tmp = (TFloatSeqSet) source.to_sequenceset(interp);
         assertTrue(tmp instanceof TFloatSeqSet);
         assertEquals(interp, tmp.interpolation());
-        /*
-        the first parameterized test (the TFloatInst) won't work since
-            there's no interpolation for an instant of float
-
-        the following error will occur :
-            basic.TFloatTest.testTosequenceset(Temporal, String, TInterpolation, TFloatSeqSet)[1] -- Time elapsed: 0.519 s <<< FAILURE!
-            org.opentest4j.AssertionFailedError: expected: <Interp=Step;{[1.5@2019-09-01 00:00:00+00]}> but was: <{[1.5@2019-09-01 00:00:00+00]}>
-
-        "Interp=Step" will be missing
-        */
-        // assertEquals(tmp.to_string(15),expected.to_string(15));
+        assertEquals(tmp.to_string(15),expected.to_string(15));
     }
 
 
