@@ -192,7 +192,7 @@ public class AIS_Assemble {
 
         // Open the output file
         try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter("src/main/java/examples/data/ais_trips_new.csv"))) {
+                new FileWriter("src/main/java/examples/data/ais_trips_new_assemble.csv"))) {
 
             // Write the header line
             writer.write("mmsi,trip,sog\n");
