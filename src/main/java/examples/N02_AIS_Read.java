@@ -3,8 +3,6 @@ package examples;
 import functions.error_handler;
 import functions.error_handler_fn;
 import jnr.ffi.Pointer;
-import types.basic.tfloat.TFloatInst;
-import types.basic.tpoint.tgeog.TGeogPointInst;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -24,7 +22,7 @@ import static functions.functions.*;
  * This simple program does not cope with erroneous inputs, such as missing
  * fields or invalid timestamp values.
  */
-public class AIS_Read {
+public class N02_AIS_Read {
 
     static class AISRecord {
         OffsetDateTime T;

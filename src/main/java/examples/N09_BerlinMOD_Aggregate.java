@@ -24,7 +24,7 @@ import static functions.functions.*;
  * - Grouping by hour (using tprecision)
  * - Counting how many trips overlap each hour
  */
-public class BerlinMOD_Aggregate {
+public class N09_BerlinMOD_Aggregate {
 
     static class TripRecord {
         int tripId;

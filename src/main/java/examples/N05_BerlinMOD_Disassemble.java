@@ -17,7 +17,7 @@ import static functions.functions.*;
  *
  * This version works directly with MEOS C pointers to avoid Java wrapper issues.
  */
-public class BerlinMOD_Disassemble {
+public class N05_BerlinMOD_Disassemble {
 
     static class TripRecord {
         int tripId;

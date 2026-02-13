@@ -31,7 +31,7 @@ import static functions.functions.*;
  *
  * SETUP: Same as AIS_Store.java - use mobilitydb/mobilitydb Docker image
  */
-public class AIS_Stream_DB {
+public class N04_AIS_Stream_DB {
 
     /* Number of instants to send in batch to the database */
     static final int NO_INSTS_BATCH = 1000;

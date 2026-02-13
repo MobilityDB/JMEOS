@@ -20,7 +20,7 @@ import static functions.functions.*;
  *
  * Both algorithms reduce the number of points while preserving trajectory shape.
  */
-public class BerlinMOD_Simplify {
+public class N08_BerlinMOD_Simplify {
 
     /* Epsilon distance used for simplification (meters) */
     static final double DELTA_DISTANCE = 2.0;

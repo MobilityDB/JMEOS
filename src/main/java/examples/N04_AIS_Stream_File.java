@@ -22,7 +22,7 @@ import static functions.functions.*;
  * This program is similar to AIS_Stream_DB but writes to a file instead of a database.
  * The accumulated temporal values are appended to the output file regularly.
  */
-public class AIS_Stream_File {
+public class N04_AIS_Stream_File {
 
     /* Number of instants to send in batch to the file */
     static final int NO_INSTS_BATCH = 1000;

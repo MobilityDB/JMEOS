@@ -24,7 +24,7 @@ import static functions.functions.*;
  * - Duration: Total time spent in the tile
  * - Distance: Total distance traveled in the tile (spatial only)
  */
-public class BerlinMOD_Tile {
+public class N07_BerlinMOD_Tile {
 
     /* Maximum number of bins in each dimension */
     static final int MAX_NO_BINS = 10;

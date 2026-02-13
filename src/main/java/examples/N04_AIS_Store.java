@@ -2,7 +2,6 @@ package examples;
 
 import functions.error_handler;
 import functions.error_handler_fn;
-import jnr.ffi.Pointer;
 
 import java.io.*;
 import java.sql.*;
@@ -36,7 +35,7 @@ import static functions.functions.*;
  *          docker exec -it container_name /bin/bash
  *          mvn exec:java -Dexec.mainClass="examples.AIS_Store"
  */
-public class AIS_Store {
+public class N04_AIS_Store {
 
     /* Number of instants in a batch for printing a marker */
     static final int NO_INSTS_BATCH = 10000;

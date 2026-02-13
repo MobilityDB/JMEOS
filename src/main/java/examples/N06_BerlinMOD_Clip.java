@@ -5,7 +5,6 @@ import functions.error_handler_fn;
 import jnr.ffi.Pointer;
 
 import java.io.*;
-import java.util.*;
 
 import static functions.functions.*;
 
@@ -21,7 +20,7 @@ import static functions.functions.*;
  *
  * Output: Distance matrix showing kilometers traveled per vehicle per commune
  */
-public class BerlinMOD_Clip {
+public class N06_BerlinMOD_Clip {
 
     /* Number of vehicles and communes */
     static final int NO_VEHICLES = 5;

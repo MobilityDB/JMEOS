@@ -29,7 +29,7 @@ import static functions.functions.*;
  * https://epsg.io/3857
  * and the timestamps are given in the Europe/Brussels time zone.
  */
-public class BerlinMOD_Assemble {
+public class N03_BerlinMOD_Assemble {
 
     /* Maximum number of instants in an input trip */
     static final int MAX_NO_INSTS = 64000;

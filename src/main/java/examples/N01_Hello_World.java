@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import static functions.functions.*;
 
-public class Hello_World {
+public class N01_Hello_World {
 
 
     public static void main(String[] args) throws SQLException {

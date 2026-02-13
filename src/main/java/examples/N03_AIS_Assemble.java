@@ -5,8 +5,6 @@ import functions.error_handler_fn;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
-import types.basic.tfloat.TFloatInst;
-import types.basic.tpoint.tgeog.TGeogPointInst;
 import types.temporal.TInterpolation;
 
 import java.io.*;
@@ -28,7 +26,7 @@ import static functions.functions.*;
  * observations for the same ship with equal timestamp values and supposes that
  * the observations are in increasing timestamp value.
  */
-public class AIS_Assemble {
+public class N03_AIS_Assemble {
     /* Number of instants in a batch for printing a marker */
     static final int NO_INSTS_BATCH = 10000;
     /* Maximum number of trips */

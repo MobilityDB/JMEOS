@@ -61,7 +61,7 @@ interpolations:
 - **Sequence Set**: Multiple sequences
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.Hello_World"
+mvn exec:java -Dexec.mainClass="examples.N01_Hello_World"
 ```
 
 **Output**: WKT and MF-JSON representations of temporal types
@@ -80,7 +80,7 @@ Same as Hello_World but uses **geodetic coordinates** (latitude
 longitude on Earth's surface) instead of planar coordinates.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.Hello_World_Geodetic"
+mvn exec:java -Dexec.mainClass="examples.N01_Hello_World_Geodetic"
 ```
 
 **Difference from Hello_World**:
@@ -104,7 +104,7 @@ T,MMSI,Latitude,Longitude,SOG
 ```
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.AIS_Read"
+mvn exec:java -Dexec.mainClass="examples.N02_AIS_Read"
 ```
 
 **Output**: Sample records converted to temporal points
@@ -131,7 +131,7 @@ Assembles individual observations into complete ship trajectories.
 `ais_trips_new_assemble.csv`
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.AIS_Assemble"
+mvn exec:java -Dexec.mainClass="examples.N03_AIS_Assemble"
 ```
 
 **Process**:
@@ -163,7 +163,7 @@ Similar to AIS_Assemble but for synthetic vehicle data in Brussels.
 **Output**: `berlinmod_trips_new_assemble.csv`
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Assemble"
+mvn exec:java -Dexec.mainClass="examples.N03_BerlinMOD_Assemble"
 ```
 
 **Differences from AIS**:
@@ -194,7 +194,7 @@ docker run --name postgres-mobilitydb \
 ```
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.AIS_Store"
+mvn exec:java -Dexec.mainClass="examples.N04_AIS_Store"
 ```
 
 **Note**: as explained in the source file and in the "Troubleshooting"
@@ -222,7 +222,7 @@ Processes large AIS datasets by streaming to database instead of holding
 everything in memory.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.AIS_Stream_DB"
+mvn exec:java -Dexec.mainClass="examples.N04_AIS_Stream_DB"
 ```
 
 **Strategy**:
@@ -244,7 +244,7 @@ mvn exec:java -Dexec.mainClass="examples.AIS_Stream_DB"
 Same concept as AIS_Stream_DB but writes to CSV file instead.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.AIS_Stream_File"
+mvn exec:java -Dexec.mainClass="examples.N04_AIS_Stream_File"
 ```
 
 **Output**: `ais_trips_new_stream.csv`
@@ -266,7 +266,7 @@ observations.
 observations)
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Disassemble"
+mvn exec:java -Dexec.mainClass="examples.N05_BerlinMOD_Disassemble"
 ```
 
 **Process**:
@@ -299,7 +299,7 @@ Analyzes how much distance vehicles travel in each Brussels commune
 - `berlinmod_trips.csv` - 154 vehicle trips
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Clip"
+mvn exec:java -Dexec.mainClass="examples.N06_BerlinMOD_Clip"
 ```
 
 **Process**:
@@ -333,7 +333,7 @@ Veh | Distance |  1    2    3  ... | Inside | Outside
 Divides space and time into regular grids (tiles) and aggregates trips.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Tile"
+mvn exec:java -Dexec.mainClass="examples.N07_BerlinMOD_Tile"
 ```
 
 **Two types of tiles**:
@@ -380,7 +380,7 @@ Speed
 Reduces trajectory complexity while preserving shape.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Simplify"
+mvn exec:java -Dexec.mainClass="examples.N08_BerlinMOD_Simplify"
 ```
 
 **Two algorithms**:
@@ -420,7 +420,7 @@ statistics
 Calculates how many vehicles are active simultaneously at each hour.
 
 ```bash
-mvn exec:java -Dexec.mainClass="examples.BerlinMOD_Aggregate"
+mvn exec:java -Dexec.mainClass="examples.N09_BerlinMOD_Aggregate"
 ```
 
 **Process**:
@@ -549,7 +549,7 @@ double dist = tpoint_distance(trip1, trip2);
 mvn exec:java -Dexec.mainClass="AIS_Read"
 
 # ✅ Correct (include package)
-mvn exec:java -Dexec.mainClass="examples.AIS_Read"
+mvn exec:java -Dexec.mainClass="examples.N02_AIS_Read"
 ```
 
 
