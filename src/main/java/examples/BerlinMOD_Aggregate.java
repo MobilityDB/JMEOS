@@ -44,6 +44,7 @@ public class BerlinMOD_Aggregate {
         long startTime = System.currentTimeMillis();
 
         int noRecords = 0;
+        
 
         try {
             BufferedReader reader = new BufferedReader(
