@@ -1,7 +1,6 @@
 package collections.time;
 
 import functions.functions;
-import jnr.ffi.Pointer;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,26 +9,28 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.locationtech.jts.io.ParseException;
 import types.collections.time.dateset;
 import types.collections.time.datespan;
 import types.collections.time.datespanset;
-import types.collections.time.test;
 //import types.collections.time.DateSet;
 import java.util.Arrays;
 import java.util.List;
 
 import functions.*;
+import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class datesetTest {
+@ExtendWith(TestLogger.class)
+class DateSetTest {
     private final dateset dset;
     private final dateset dset2;
 
-    datesetTest() throws SQLException {
+    DateSetTest() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         dset = new dateset("{2019-09-25, 2019-09-26, 2019-09-27}");
@@ -156,7 +157,7 @@ class datesetTest {
 
 
     // Position Functions Tests
-    @ParameterizedTest
+    @ParameterizedTest(name="otherDateSetStr={0}, expected={1}")
     @CsvSource({
             "'2020-01-01, 2020-01-31', false"
     })
@@ -165,7 +166,7 @@ class datesetTest {
         assertEquals(expected, dset.is_contained_in(otherDateSet));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-25, true",
             "'2020-01-01, 2020-01-31', false"
@@ -186,7 +187,7 @@ class datesetTest {
         assertFalse(dset.overlaps(otherDateSet));  // Assuming overlaps returns boolean
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-25, false",
             "'2020-01-01, 2020-01-31', true"
@@ -200,7 +201,7 @@ class datesetTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-25, false",
             "'2020-01-01, 2020-01-31', true"
@@ -214,7 +215,7 @@ class datesetTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-24, true",
             "'2020-01-01, 2020-01-31', false"
@@ -228,7 +229,7 @@ class datesetTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-24, true",
             "'2020-01-01, 2020-01-31', false"

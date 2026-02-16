@@ -35,7 +35,7 @@ public class InterpolationTest {
         );
     }
 
-    @ParameterizedTest(name = "Test TInterpolation class.")
+    @ParameterizedTest(name = "base={0}, expected={1}")
     @MethodSource("TInterp")
     public void testFromString(String base, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");

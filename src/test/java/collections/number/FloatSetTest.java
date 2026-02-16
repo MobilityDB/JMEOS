@@ -115,7 +115,7 @@ public class FloatSetTest {
     }
 
 
-    @ParameterizedTest(name = "Test contains method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_sources")
     public void testContains(Object arg,boolean result) throws Exception {
         assertEquals(this.floatset.contains(arg),result);
@@ -126,34 +126,34 @@ public class FloatSetTest {
         assertFalse(this.floatset.overlaps(other));
     }
 
-    @ParameterizedTest(name = "Test Is left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_sources")
     public void testIsLeft(Object arg,boolean result) throws Exception {
         assertTrue(this.floatset.is_left(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Is Over Or left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_sources")
     public void testIsOverOrLeft(Object arg,boolean result) throws Exception {
         assertTrue(this.floatset.is_over_or_left(arg));
     }
 
-    @ParameterizedTest(name = "Test Is Right method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_sources")
     public void testIsRight(Object arg,boolean result) throws Exception {
         assertFalse(this.floatset.is_right(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Is Over Or left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_sources")
     public void testIsOverOrRight(Object arg,boolean result) throws Exception {
         assertFalse(this.floatset.is_over_or_right(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Distance method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("FloatSet_distances")
     public void testDistance(Object arg, float result) throws Exception {
         assertEquals(this.floatset.distance(arg),result);

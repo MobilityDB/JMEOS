@@ -10,18 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import functions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import types.collections.time.*;
 import types.collections.time.tstzset;
+import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class tstzsetTest {
+@ExtendWith(TestLogger.class)
+class TsTzSetTest {
     private tstzset tset = new tstzset("{2019-09-01 00:00:00+0, 2019-09-02 00:00:00+0, 2019-09-03 00:00:00+0}");
 
-    tstzsetTest() throws SQLException {
+    TsTzSetTest() throws SQLException {
     }
 
     static error_handler_fn errorHandler = new error_handler();
@@ -216,7 +219,7 @@ class tstzsetTest {
     }
 
 
-    @ParameterizedTest(name="Test intersection method")
+    @ParameterizedTest(name="other={0}, expected={1}")
     @MethodSource("times")
     public void testIntersection(Time other, boolean expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -224,7 +227,7 @@ class tstzsetTest {
         this.tset.intersection(other);
     }
 
-    @ParameterizedTest(name="Test union method")
+    @ParameterizedTest(name="other={0}, expected={1}")
     @MethodSource("times")
     public void testUnion(Time other, boolean expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -233,7 +236,7 @@ class tstzsetTest {
     }
 
 
-    @ParameterizedTest(name="Test minus method")
+    @ParameterizedTest(name="other={0}, expected={1}")
     @MethodSource("times")
     public void testMinus(Time other, boolean expected) throws Exception {
         functions.meos_initialize_timezone("UTC");

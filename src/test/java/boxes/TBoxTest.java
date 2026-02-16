@@ -138,7 +138,7 @@ class TBoxTest {
     /* ---------------------------------------------------------------------------------------- */
 
 
-    @ParameterizedTest(name = "Test from as constructor.")
+    @ParameterizedTest(name = "box={0}, type={1}, expected={2}")
     @MethodSource("TBox_sources")
     public void testStringConstructor(TBox box, String type, String expected) throws ParseException, SQLException {
         functions.meos_initialize_timezone("UTC");
@@ -148,7 +148,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test from value number constructor.")
+    @ParameterizedTest(name = "val={0}, box={1}, type={2}")
     @MethodSource("TBox_number")
     public void testFromValueNConstructor(Number val, String box, String type) throws ParseException, SQLException {
         functions.meos_initialize_timezone("UTC");
@@ -159,7 +159,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test from span constructor.")
+    @ParameterizedTest(name = "sp={0}, type={1}, expected={2}")
     @MethodSource("TBox_span")
     public void testFromSpanConstructor(Span sp, String type, String expected) throws ParseException, SQLException {
         functions.meos_initialize_timezone("UTC");
@@ -170,7 +170,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test from time constructor.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_time")
     public void testFromTimeConstructor(Time t, String type, String expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -182,7 +182,7 @@ class TBoxTest {
 
 
 
-    @ParameterizedTest(name = "Test from time constructor.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_time")
     public void testCopyConstructor(Time t, String type, String expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -193,7 +193,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test copy constructor.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_basic")
     public void testCopyConstructor(TBox t, String type, String expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -204,7 +204,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test copy constructor.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_basic")
     public void testStrConstructor(TBox t, String type, String expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -213,7 +213,7 @@ class TBoxTest {
         assertEquals(t.toString(), expected);
     }
 
-    @ParameterizedTest(name = "Test floatspan method.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_tofloatspan")
     public void testStrConstructor(TBox t, String type, Span expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -226,7 +226,7 @@ class TBoxTest {
 
 
 
-    @ParameterizedTest(name = "Test expand float method.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_expandfloat")
     public void testExpandFloat(TBox t, String type, TBox expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -238,7 +238,7 @@ class TBoxTest {
     }
 
 
-    @ParameterizedTest(name = "Test round float method.")
+    @ParameterizedTest(name = "t={0}, type={1}, expected={2}")
     @MethodSource("TBox_round")
     public void testRound(TBox t, String type, TBox expected) throws Exception {
         functions.meos_initialize_timezone("UTC");

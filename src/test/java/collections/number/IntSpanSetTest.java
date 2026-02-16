@@ -172,17 +172,17 @@ public class IntSpanSetTest {
 
     /*@Test
     public void testSpans(){
-        System.out.println("Début du test");
+        System.out.println("Test starting");
         //System.out.println(intSpanSet.spans());
-        System.out.println("avnt la définition de spanList de testSpans()");
+        System.out.println("Before declaring spanList in testSpans()");
         List<IntSpan> spanList= intSpanSet.spans();
-        System.out.println("définition de spsanlist dans testSpans() finie");
+        System.out.println("After declaring spanList in dans testSpans()");
         String s= "{";
-        System.out.println("Avant la boucle");
+        System.out.println("Before the for loop");
         for (IntSpan i : spanList) {
             s= s + i.toString() + ", ";
         }
-        System.out.println("Après la boucle");
+        System.out.println("After the for loop");
         s= s.substring(0, s.length()-2) + "}";
         System.out.println(s);
         IntSpanSet intSpanSet1= new IntSpanSet(s);

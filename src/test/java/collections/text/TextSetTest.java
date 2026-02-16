@@ -1,14 +1,17 @@
 package collections.text;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import types.collections.text.TextSet;
 import static org.junit.jupiter.api.Assertions.*;
 import functions.functions;
+import utils.TestLogger;
 
 import java.util.List;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
+@ExtendWith(TestLogger.class)
 public class TextSetTest {
     public TextSet tset = new TextSet("{A, BB, ccc}");
     public TextSet other = new TextSet("{2020-01-02 00:00:00+0, 2020-03-31 00:00:00+0}");

@@ -1,5 +1,6 @@
 package basic;
 import functions.functions;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -24,10 +25,12 @@ import types.collections.number.IntSpanSet;
 import types.collections.time.*;
 import types.temporal.TInterpolation;
 import types.temporal.Temporal;
+import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(TestLogger.class)
 public class TIntTest {
 
     static error_handler_fn errorHandler = new error_handler();
@@ -446,7 +449,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name="Test from base time constructor")
+    @ParameterizedTest(name="source={0}, type={1}, interpolation={2}")
     @MethodSource("frombasetime")
     void testFromBaseTimeConstructor(Time source, String type, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         functions.meos_initialize_timezone("UTC");
@@ -468,7 +471,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test from base temporal constructor")
+    @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}")
     @MethodSource("frombasetemporal")
     void testFromBaseTemporalConstructor(Temporal source, String type, TInterpolation interpolation) {
         //functions.meos_initialize_timezone("UTC");
@@ -496,7 +499,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test from string constructor")
+    @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testStringConstructor(String source, String type, TInterpolation interpolation, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -524,7 +527,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test from copy constructor")
+    @ParameterizedTest(name ="source={0}, type={1}")
     @MethodSource("fromcopy")
     void testCopyConstructor(Temporal source, String type) {
         functions.meos_initialize_timezone("UTC");
@@ -545,7 +548,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test  string ")
+    @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testString(String source, String type, TInterpolation interpolation, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -565,7 +568,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test to tfloat ")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("totfloat")
     void testToTfloat(TInt source, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -586,7 +589,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test bounding box ")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("bounding")
     void testBoundingBox(Temporal source, String type, Box expected) {
         functions.meos_initialize_timezone("UTC");
@@ -595,7 +598,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test interpolation ")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("interp")
     void testInterpolation(Temporal source, String type, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");
@@ -604,7 +607,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test value span ")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("value_span")
     void testValueSpan(TInt source, String type, IntSpan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -613,7 +616,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test values span ")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("value_spans")
     void testValuesSpan(TInt source, String type, IntSpanSet expected) {
         functions.meos_initialize_timezone("UTC");
@@ -622,7 +625,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test start value")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_value")
     void testStart_value(TInt source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -631,7 +634,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test end value")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("end_value")
     void testEnd_value(TInt source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -640,7 +643,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test min value")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("min_value")
     void testMin_value(TInt source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -649,7 +652,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test max value")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("max_value")
     void testMax_value(TInt source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -658,7 +661,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test time method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("time")
     void testTime(Temporal source, String type, tstzspanset expected) {
         functions.meos_initialize_timezone("UTC");
@@ -668,7 +671,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test period method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testtstzspan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -677,7 +680,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test period method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testTimespan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -686,7 +689,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test num instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("num_instant")
     void testNumInstant(Temporal source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -695,7 +698,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test start instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testStartInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -704,7 +707,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test end instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("end_instant")
     void testEndInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -714,7 +717,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test min instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testMinInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -723,7 +726,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test max instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("max_instant")
     void testMaxInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -733,7 +736,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test instant n method")
+    @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("instant_n")
     void testInstant_n(Temporal source, int n, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -742,7 +745,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test num timestamps method")
+    @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("num_timestamps")
     void testNumTimestamps(Temporal source, int n, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -751,7 +754,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test start timestamps method")
+    @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("start_timestamps")
     void testStartTimestamps(Temporal source, int n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
@@ -760,7 +763,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test end timestamps method")
+    @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("end_timestamps")
     void testEndTimestamps(Temporal source, int n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
@@ -769,7 +772,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test hash method")
+    @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("hash")
     void testHash(Temporal source, long n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
@@ -778,7 +781,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test to instant method")
+    @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("toinstant")
     void testToinstant(Temporal source, String type, TIntInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -791,7 +794,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test to sequence method")
+    @ParameterizedTest(name ="source={0}, type={1}, interp={2}, expected={3}")
     @MethodSource("tosequence")
     void testTosequence(Temporal source, String type, TInterpolation interp, TIntSeq expected) {
         functions.meos_initialize_timezone("UTC");
@@ -804,7 +807,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test to sequenceset method")
+    @ParameterizedTest(name ="source={0}, type={1}, interp={2}, expected={3}")
     @MethodSource("tosequenceset")
     void testTosequenceset(Temporal source, String type, TInterpolation interp, TIntSeqSet expected) {
         functions.meos_initialize_timezone("UTC");
@@ -818,7 +821,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test insert method")
+    @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("insert")
     void testInsert(Temporal source, String type, TIntSeq tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -838,7 +841,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test update method")
+    @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("update")
     void testUpdate(Temporal source, String type, TIntInst tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -855,7 +858,7 @@ public class TIntTest {
         }
     }
 
-    @ParameterizedTest(name ="Test append sequence method")
+    @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("append_sequence")
     void testAppendSequence(Temporal source, String type, TIntSeq tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -869,7 +872,7 @@ public class TIntTest {
         }
     }
 
-    @ParameterizedTest(name ="Test abs method")
+    @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("abs")
     void testAbs(Temporal source, String type, TIntInst tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -887,7 +890,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test delta value method")
+    @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("delta_value")
     void testDeltaValue(Temporal source, String type, TIntInst tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
@@ -906,7 +909,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test always equal method")
+    @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("always_equal")
     void testAlwaysEqual(Temporal source, String type, int arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");
@@ -921,7 +924,7 @@ public class TIntTest {
 
 
 
-    @ParameterizedTest(name ="Test ever equal method")
+    @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("ever_equal")
     void testEverEqual(Temporal source, String type, int arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");
@@ -932,7 +935,7 @@ public class TIntTest {
     }
 
 
-    @ParameterizedTest(name ="Test ever greater method")
+    @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("ever_greater")
     void testEverGreater(Temporal source, String type, int arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");

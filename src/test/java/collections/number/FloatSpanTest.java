@@ -1,12 +1,14 @@
 package collections.number;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import types.collections.number.FloatSpan;
 import types.collections.number.FloatSpanSet;
 import functions.*;
+import utils.TestLogger;
 
 import java.sql.SQLException;
 import java.util.stream.Stream;
@@ -15,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(TestLogger.class)
 public class FloatSpanTest {
     public FloatSpan floatSpan = new FloatSpan("(2.5, 5.21]");
 
@@ -67,7 +70,7 @@ public class FloatSpanTest {
         }
     }
 
-    @ParameterizedTest(name = "Test Constructor method")
+    @ParameterizedTest(name = "source={0}, lower={1}, upper={2}, lower_inc={3}, upper_inc={4}")
     @MethodSource("IntSpan_sources")
     public void testStringConstructor(String source, Float lower, Float upper, boolean lower_inc, boolean upper_inc){
         FloatSpan floatsp = new FloatSpan(source);
@@ -110,7 +113,7 @@ public class FloatSpanTest {
         assert_floatSpan_equality(floatSpan1,null,null,true,false);
     }
 
-    @ParameterizedTest(name = "Test Constructor Bound method")
+    @ParameterizedTest(name = "lower={0}, upper={1}")
     @MethodSource("Bound_sources")
     public void testConstructorBoundInclusivity(boolean lower, boolean upper){
         FloatSpan floatSpan1 = new FloatSpan("2.5","5.21",lower,upper);

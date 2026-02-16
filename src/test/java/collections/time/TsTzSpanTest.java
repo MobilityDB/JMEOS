@@ -1,8 +1,8 @@
 package collections.time;
 
 import functions.functions;
-import jnr.ffi.Pointer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,10 +11,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-import types.collections.base.Span;
 import types.collections.time.tstzspan;
 import types.collections.time.tstzspanset;
-import types.collections.time.tstzset;
 
 import types.TemporalObject;
 import types.basic.tfloat.TFloatInst;
@@ -22,24 +20,24 @@ import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
 import types.boxes.STBox;
 import types.boxes.TBox;
-import types.collections.time.tstzspan;
-import types.collections.time.tstzspanset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import types.collections.time.Time;
 import functions.*;
+import utils.TestLogger;
+
 import javax.naming.OperationNotSupportedException;
 
-
-class tstzspanTest {
+@ExtendWith(TestLogger.class)
+class TsTzSpanTest {
 	private tstzspan tstzspan = new tstzspan("(2019-09-08 00:00:00+00, 2019-09-10 00:00:00+00)");
 	private tstzspan tstzspan2 = new tstzspan("[2019-09-08 02:03:00+0, 2019-09-10 02:03:00+0]");
 	private tstzspan p = new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)");
 
 	static error_handler_fn errorHandler= new error_handler();
 
-	tstzspanTest() throws SQLException {
+	TsTzSpanTest() throws SQLException {
 	}
 
 
@@ -275,7 +273,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name = "Test Constructor method")
+	@ParameterizedTest(name = "source={0}, lower={1}, upper={2}, lower_inc={3}, upper_inc={4}")
 	@MethodSource("tstzspan_constructor")
 	public void testtstzspanConstructor(String source, LocalDateTime lower, LocalDateTime upper, boolean lower_inc, boolean upper_inc) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -284,7 +282,7 @@ class tstzspanTest {
 		assert_tstzspan_equality(p,lower,upper,lower_inc,upper_inc);
 	}
 
-	@ParameterizedTest(name = "Test Constructor method")
+	@ParameterizedTest(name = "lower={0}, upper={1}, lowerv={2}, upperv={3}")
 	@MethodSource("tstzspan_constructor2")
 	public void testtstzspanConstructor2(String lower, String upper, LocalDateTime lowerv, LocalDateTime upperv) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -294,7 +292,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name = "Test Constructor method")
+	@ParameterizedTest(name = "lower={0}, upper={1}, lowerv={2}, upperv={3}")
 	@MethodSource("tstzspan_constructor3")
 	public void testtstzspanConstructor3(LocalDateTime lower, LocalDateTime upper, LocalDateTime lowerv, LocalDateTime upperv) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -304,7 +302,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name = "Test Constructor method")
+	@ParameterizedTest(name = "lower={0}, upper={1}, lowerv={2}, upperv={3}")
 	@MethodSource("tstzspan_constructor4")
 	public void testtstzspanConstructor4(String lower, LocalDateTime upper, LocalDateTime lowerv, LocalDateTime upperv) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -322,7 +320,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test Bound Inclusivity")
+	@ParameterizedTest(name="lower={0}, upper={1}")
 	@MethodSource("tstzspan_constructor5")
 	public void testtstzspanIncluBounds(boolean lower,boolean upper) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -433,12 +431,12 @@ class tstzspanTest {
 //	@Test
 //	public void testHash() throws SQLException {
 //		functions.meos_initialize_timezone("UTC");
-//        functions.meos_initialize_error_handler(errorHandler);
+//      functions.meos_initialize_error_handler(errorHandler);
 //		assertEquals(this.tstzspan.hash(), 1164402929);
 //	}
 
 
-	@ParameterizedTest(name="Test Adjacency method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_adjacent")
 	public void testAdjacency(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -448,7 +446,7 @@ class tstzspanTest {
 		assertEquals(this.p.is_adjacent(other), expected);
 	}
 
-	@ParameterizedTest(name="Test is contained in method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_iscontained")
 	public void testIsContainedIn(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -458,7 +456,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test contains method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_contains")
     public void testContains(TemporalObject other, boolean expected) throws Exception {
         functions.meos_initialize_timezone("UTC");
@@ -468,7 +466,7 @@ class tstzspanTest {
     }
 
 
-	@ParameterizedTest(name="Test overlaps method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overlaps")
 	public void testOverlaps(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -477,7 +475,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test is same method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_same")
 	public void testIsSame(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -487,7 +485,7 @@ class tstzspanTest {
 
 
 
-	@ParameterizedTest(name="Test is before method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_before")
 	public void testIsBefore(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -497,7 +495,7 @@ class tstzspanTest {
 
 
 
-	@ParameterizedTest(name="Test is after method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_after")
 	public void testIsAfter(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -506,7 +504,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test is over or before method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overbefore")
 	public void testIsOverOrBefore(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -516,7 +514,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test is over or after method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overafter")
 	public void testIsOverOrAfter(TemporalObject other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -529,7 +527,7 @@ class tstzspanTest {
 
 
 
-	@ParameterizedTest(name="Test distance method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_distance")
 	public void testDistance(TemporalObject other, double expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -543,7 +541,7 @@ class tstzspanTest {
 
 
 
-	@ParameterizedTest(name="Test intersection method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testIntersection(Time other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -551,7 +549,7 @@ class tstzspanTest {
 		this.p.intersection(other);
 	}
 
-	@ParameterizedTest(name="Test minus method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testMinus(Time other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -559,7 +557,7 @@ class tstzspanTest {
 		this.p.minus(other);
 	}
 
-	@ParameterizedTest(name="Test union method")
+	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testUnion(Time other, boolean expected) throws Exception {
 		functions.meos_initialize_timezone("UTC");
@@ -569,7 +567,7 @@ class tstzspanTest {
 
 
 
-	@ParameterizedTest(name="Test equal method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testEqual(Time t) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -578,7 +576,7 @@ class tstzspanTest {
 	}
 
 
-	@ParameterizedTest(name="Test ne method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testNotEqual(Time t) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -586,7 +584,7 @@ class tstzspanTest {
 		assertTrue(this.tstzspan.notEquals(t));
 	}
 
-	@ParameterizedTest(name="Test lt method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testLessThan(Time t) throws SQLException, OperationNotSupportedException {
 		functions.meos_initialize_timezone("UTC");
@@ -594,7 +592,7 @@ class tstzspanTest {
 		assertTrue(this.tstzspan.lessThan(t));
 	}
 
-	@ParameterizedTest(name="Test le method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testLessThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
 		functions.meos_initialize_timezone("UTC");
@@ -602,7 +600,7 @@ class tstzspanTest {
 		assertTrue(this.tstzspan.lessThanOrEqual(t));
 	}
 
-	@ParameterizedTest(name="Test gt method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testGreaterThan(Time t) throws SQLException, OperationNotSupportedException {
 		functions.meos_initialize_timezone("UTC");
@@ -610,7 +608,7 @@ class tstzspanTest {
 		assertTrue(this.tstzspan.greaterThan(t));
 	}
 
-	@ParameterizedTest(name="Test ge method")
+	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testGreaterThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
 		functions.meos_initialize_timezone("UTC");

@@ -108,7 +108,7 @@ public class STBoxTest {
 
 
 
-	@ParameterizedTest(name = "Test from as constructor.")
+	@ParameterizedTest(name = "box={0}, str={1}")
 	@MethodSource("STBox_sources")
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
@@ -118,7 +118,7 @@ public class STBoxTest {
 	}
 
 
-	@ParameterizedTest(name = "Test copy constructor.")
+	@ParameterizedTest(name = "box={0}, str={1}")
 	@MethodSource("STBox_sources")
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");

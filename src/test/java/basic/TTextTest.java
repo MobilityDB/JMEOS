@@ -1,6 +1,7 @@
 package basic;
 
 import functions.functions;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,6 +17,8 @@ import types.temporal.TInterpolation;
 import types.temporal.TSequence;
 import types.temporal.Temporal;
 import functions.*;
+import utils.TestLogger;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -23,6 +26,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(TestLogger.class)
 public class TTextTest {
 
     static error_handler_fn errorHandler = new error_handler();
@@ -338,7 +342,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test from string constructor.")
+    @ParameterizedTest(name = "value={0}, type={1}, interp={2}, repr={3}")
     @MethodSource("TText_string_constructor")
     public void testFromStringConstructor(String value, String type, TInterpolation interp, String repr) {
         functions.meos_initialize_timezone("UTC");
@@ -362,7 +366,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test from time constructor.")
+    @ParameterizedTest(name = "base={0}, type={1}, interp={2}")
     @MethodSource("TText_base_time_constructor")
     public void testFromBaseTimeConstructor(Time base, String type, TInterpolation interp) {
         functions.meos_initialize_timezone("UTC");
@@ -385,7 +389,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test copy constructor.")
+    @ParameterizedTest(name = "base={0}, type={1}, interp={2}")
     @MethodSource("TText_copy_constructor")
     public void testCopyConstructor(Temporal base, String type, TInterpolation interp) {
         functions.meos_initialize_timezone("UTC");
@@ -404,7 +408,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test string.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_string")
     public void testString(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -422,7 +426,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test bounding box method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_bounding")
     public void testBoundingBox(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -432,7 +436,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test interpolation method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_interp")
     public void testInterpolation(Temporal base, String type, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");
@@ -441,7 +445,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test start values method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_start")
     public void testStartValues(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -450,7 +454,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test end values method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_end")
     public void testEndValues(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
@@ -459,7 +463,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test time method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_time")
     public void testTime(Temporal base, String type, tstzspanset expected) {
         functions.meos_initialize_timezone("UTC");
@@ -468,7 +472,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test period method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_bounding")
     public void testtstzspan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -477,7 +481,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test span method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_bounding")
     public void testSpan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
@@ -485,7 +489,7 @@ public class TTextTest {
         assertEquals(base.timespan().toString(),expected.toString());
     }
 
-    @ParameterizedTest(name = "Test numinst method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_numinst")
     public void testNumInst(Temporal base, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -494,7 +498,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test startinst method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_startinst")
     public void testStartInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -503,7 +507,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test endinst method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_endinst")
     public void testEndInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -512,7 +516,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test mininst method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_mininst")
     public void testMinInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -521,7 +525,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test maxinst method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_maxinst")
     public void testMaxInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -530,7 +534,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test instn method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_instn")
     public void testInstN(Temporal base, String type, int n, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
@@ -539,7 +543,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test num timestamp method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_numtmstp")
     public void testNumtmstmp(Temporal base, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
@@ -548,7 +552,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test start timestamp method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_starttmstp")
     public void testStarttmstmp(Temporal base, String type, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
@@ -557,7 +561,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test end timestamp method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_endtmstp")
     public void testEndtmstmp(Temporal base, String type, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
@@ -566,7 +570,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test Hash method.")
+    @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TText_hash")
     public void testHash(Temporal base, String type, long expected) {
         functions.meos_initialize_timezone("UTC");
@@ -575,7 +579,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test to instant method.")
+    @ParameterizedTest(name = "base={0}, type={1}")
     @MethodSource("TText_toinstant")
     public void testToInstant(Temporal base, TTextInst type) {
         functions.meos_initialize_timezone("UTC");
@@ -586,7 +590,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test to sequence method.")
+    @ParameterizedTest(name = "base={0}, interp={1}, type={2}")
     @MethodSource("TText_tosequence")
     public void testToSequence(Temporal base, TInterpolation interp, TTextSeq type) {
         functions.meos_initialize_timezone("UTC");
@@ -598,7 +602,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test to sequence method.")
+    @ParameterizedTest(name = "base={0}, interp={1}, type={2}")
     @MethodSource("TText_tosequenceset")
     public void testToSequenceSet(Temporal base, TInterpolation interp, TTextSeqSet type) {
         functions.meos_initialize_timezone("UTC");
@@ -610,7 +614,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test insert method.")
+    @ParameterizedTest(name = "base={0}, base2={1}, tseq={2}, type={3}")
     @MethodSource("TText_insert")
     public void testInsert(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");
@@ -625,7 +629,7 @@ public class TTextTest {
     }
 
 
-    @ParameterizedTest(name = "Test update method.")
+    @ParameterizedTest(name = "base={0}, base2={1}, tseq={2}, type={3}")
     @MethodSource("TText_update")
     public void testUpdate(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");
@@ -641,7 +645,7 @@ public class TTextTest {
 
 
 
-    @ParameterizedTest(name = "Test append sequence method.")
+    @ParameterizedTest(name = "base={0}, base2={1}, tseq={2}, type={3}")
     @MethodSource("TText_appendseq")
     public void testAppendSeq(Temporal base, TSequence base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");

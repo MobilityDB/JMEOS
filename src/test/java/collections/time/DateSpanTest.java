@@ -1,33 +1,33 @@
 package collections.time;
 
 import functions.functions;
-import jnr.ffi.Pointer;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.locationtech.jts.io.ParseException;
 import types.collections.base.Span;
 import types.collections.time.*;
 //import types.collections.time.DateSet;
-import java.util.Arrays;
 import java.util.List;
 
 import functions.*;
+import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class datespanTest {
+@ExtendWith(TestLogger.class)
+class DateSpanTest {
     private final datespan dspan;
     private final datespan dspan2;
 
-    datespanTest() throws SQLException {
+    DateSpanTest() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
         dspan = new datespan("[2019-09-25, 2019-09-27]");
@@ -114,7 +114,7 @@ class datespanTest {
 
 
     // Position Functions Tests
-    @ParameterizedTest
+    @ParameterizedTest(name="otherDateSetStr={0}, expected={1}")
     @CsvSource({
             "'[2020-01-01, 2020-01-31)', false"
     })
@@ -124,7 +124,7 @@ class datespanTest {
         assertEquals(expected, dspan.is_contained_in(otherDateSpan));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-26, true",
             "'[2020-01-01, 2020-01-31]', false"
@@ -158,7 +158,7 @@ class datespanTest {
         assertTrue(dspan.overlaps(otherDateSpan));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "'[2018-01-01, 2018-01-31]', false",
             "'[2020-01-01, 2020-01-31]', true"
@@ -172,7 +172,7 @@ class datespanTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "'[2018-01-01, 2018-01-31]', false",
             "'[2020-01-01, 2020-01-31]', true"
@@ -186,7 +186,7 @@ class datespanTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "'[2018-01-01, 2018-01-31]', true",
             "'[2020-01-01, 2020-01-31]', false"
@@ -200,7 +200,7 @@ class datespanTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "'[2018-01-01, 2018-01-31]', true",
             "'[2020-01-01, 2020-01-31]', false"

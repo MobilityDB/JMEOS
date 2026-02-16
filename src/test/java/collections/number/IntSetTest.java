@@ -1,6 +1,7 @@
 package collections.number;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,7 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import functions.*;
 
 import types.collections.number.IntSet;
+import utils.TestLogger;
 
+@ExtendWith(TestLogger.class)
 public class IntSetTest {
 
     public IntSet intset = new IntSet("{1, 2, 3}");
@@ -102,7 +105,7 @@ public class IntSetTest {
     }
 
 
-    @ParameterizedTest(name = "Test contains method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_sources")
     public void testContains(Object arg,boolean result) throws Exception {
         assertEquals(this.intset.contains(arg),result);
@@ -113,34 +116,34 @@ public class IntSetTest {
         assertFalse(this.intset.overlaps(other));
     }
 
-    @ParameterizedTest(name = "Test Is left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_sources")
     public void testIsLeft(Object arg,boolean result) throws Exception {
         assertTrue(this.intset.is_left(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Is Over Or left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_sources")
     public void testIsOverOrLeft(Object arg,boolean result) throws Exception {
         assertTrue(this.intset.is_over_or_left(arg));
     }
 
-    @ParameterizedTest(name = "Test Is Right method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_sources")
     public void testIsRight(Object arg,boolean result) throws Exception {
         assertFalse(this.intset.is_right(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Is Over Or left method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_sources")
     public void testIsOverOrRight(Object arg,boolean result) throws Exception {
         assertFalse(this.intset.is_over_or_right(arg));
     }
 
 
-    @ParameterizedTest(name = "Test Distance method")
+    @ParameterizedTest(name = "arg={0}, result={1}")
     @MethodSource("IntSet_distances")
     public void testDistance(Object arg, float result) throws Exception {
         assertEquals(this.intset.distance(arg),result);
