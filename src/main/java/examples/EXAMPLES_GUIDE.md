@@ -49,7 +49,7 @@ mvn test -Dtest=TestFile#testName
 ## Programs Overview
 
 
-#### 1. `Hello_World` - Introduction to Temporal Types
+#### 1. `N01_Hello_World` - Introduction to Temporal Types
 **Concepts**: Temporal instant, sequence, sequence set, interpolation
 
 Creates and displays temporal geometric points with different
@@ -73,7 +73,7 @@ mvn exec:java -Dexec.mainClass="examples.N01_Hello_World"
 
 ---
 
-#### 2. `Hello_World_Geodetic` - Geographic Coordinates
+#### 2. `N01_Hello_World_Geodetic` - Geographic Coordinates
 **Concepts**: Geographic vs geometric coordinates, EPSG:4326
 
 Same as Hello_World but uses **geodetic coordinates** (latitude
@@ -91,7 +91,7 @@ mvn exec:java -Dexec.mainClass="examples.N01_Hello_World_Geodetic"
 ---
 
 
-#### 3. `AIS_Read` - Parse CSV Data
+#### 3. `N02_AIS_Read` - Parse CSV Data
 **Concepts**: Reading CSV, creating temporal instants, coordinate systems
 
 Reads AIS (Automatic Identification System) ship tracking data from CSV
@@ -121,7 +121,7 @@ MMSI: 228041600, Location: SRID=4326;Point(-3.56 39.85
 
 ---
 
-#### 4. `AIS_Assemble` - Build Trajectories
+#### 4. `N03_AIS_Assemble` - Build Trajectories
 **Concepts**: Aggregating instants, constructing sequences, distance
 calculation
 
@@ -154,7 +154,7 @@ MMSI: 228041600, Number of input instants: 10523
 
 ---
 
-#### 5. `BerlinMOD_Assemble` - Vehicle Trip Assembly
+#### 5. `N03_BerlinMOD_Assemble` - Vehicle Trip Assembly
 **Concepts**: Synthetic trajectory data, HexWKB encoding
 
 Similar to AIS_Assemble but for synthetic vehicle data in Brussels.
@@ -179,7 +179,7 @@ mvn exec:java -Dexec.mainClass="examples.N03_BerlinMOD_Assemble"
 ---
 
 
-#### 6. `AIS_Store` - Write to MobilityDB
+#### 6. `N04_AIS_Store` - Write to MobilityDB
 **Concepts**: Database connectivity, SQL insertion, MobilityDB types
 
 Reads AIS data and stores it directly in PostgreSQL/MobilityDB.
@@ -215,8 +215,8 @@ you are using Linux
 
 ---
 
-#### 7. `AIS_Stream_DB` - Streaming to Database
-**Concepts**: Memory-efficient streaming, incremental updates
+#### 7. `N04_AIS_Stream_DB` - Streaming to Database
+**Concepts**: Expandable sequences, memory-efficient streaming, incremental updates
 
 Processes large AIS datasets by streaming to database instead of holding
 everything in memory.
@@ -225,21 +225,36 @@ everything in memory.
 mvn exec:java -Dexec.mainClass="examples.N04_AIS_Stream_DB"
 ```
 
-**Strategy**:
-1. Accumulate 1000 instants per ship in memory
-2. Build sequence and INSERT/UPDATE in database
-3. Keep last 2 instants for continuity
-4. Clear memory and continue
+**Architecture**: Expandable Sequences (FAITHFUL to C)
+```
+Record → Append to expandable sequence → When full (1000 instants) 
+       → Send to database → Restart with last 2 instants → Continue
+```
 
-**Key Function**:
+
+**Process**:
+1. Create expandable sequence with first instant
+2. Append subsequent instants using `temporal_append_tinstant()`
+3. When count reaches 1000: INSERT/UPDATE to database
+4. Restart sequence keeping last 2 instants for continuity
+5. Continue until end of file
+
+**Key Functions**:
+- `temporal_append_tinstant()` - Append instant to expandable sequence
+- `restartSequence()` - Simulate MEOS C's internal function `tsequence_restart()`
+- `getSequenceCount()` - Get instant count (simulates `seq->count`)
 - `update()` - MobilityDB function to merge temporal values
 
-**Advantage**: Can process datasets larger than available RAM
+
+**Continuity Between Batches**:
+- Keeps last 2 instants when restarting
+- Creates seamless trajectory when merged in database
+- MobilityDB `update()` function connects sequences
 
 ---
 
-#### 8. `AIS_Stream_File` - Streaming to File
-**Concepts**: File streaming, memory management
+#### 8. `N04_AIS_Stream_File` - Streaming to File
+**Concepts**: Expandable sequences, file streaming, memory management
 
 Same concept as AIS_Stream_DB but writes to CSV file instead.
 
@@ -249,12 +264,27 @@ mvn exec:java -Dexec.mainClass="examples.N04_AIS_Stream_File"
 
 **Output**: `ais_trips_new_stream.csv`
 
-**Use case**: When database is unavailable or file export is needed
+**Architecture**: Same as AIS_Stream_DB
+```
+Record → Append to expandable sequence → When full (1000 instants)
+       → Write to file → Restart with last 2 instants → Continue
+```
+
+**Key Functions**:
+- `temporal_append_tinstant()` - Build sequence incrementally
+- `restartSequence()` - Keep last 2 instants for continuity
+- `tspatial_out()` - Convert sequence to WKT string
+
+**Output Format**:
+```csv
+228041600, SRID=4326;LINESTRING(...) @ [2009-06-01 00:01:11+00, ...)
+230907000, SRID=4326;LINESTRING(...) @ [2009-06-01 00:02:45+00, ...)
+```
 
 ---
 
 
-#### 9. `BerlinMOD_Disassemble` - Extract Observations
+#### 9. `N05_BerlinMOD_Disassemble` - Extract Observations
 **Concepts**: Temporal decomposition, sorting, coordinate reference
 systems
 
@@ -286,7 +316,7 @@ mvn exec:java -Dexec.mainClass="examples.N05_BerlinMOD_Disassemble"
 
 ---
 
-#### 10. `BerlinMOD_Clip` - Spatial Analysis
+#### 10. `N06_BerlinMOD_Clip` - Spatial Analysis
 **Concepts**: Spatial clipping, geometric operations, administrative
 boundaries
 
@@ -327,7 +357,7 @@ Veh | Distance |  1    2    3  ... | Inside | Outside
 
 ---
 
-#### 11. `BerlinMOD_Tile` - Grid-Based Aggregation
+#### 11. `N07_BerlinMOD_Tile` - Grid-Based Aggregation
 **Concepts**: Spatial tiling, temporal binning, 2D grids
 
 Divides space and time into regular grids (tiles) and aggregates trips.
@@ -374,7 +404,7 @@ Speed
 
 ---
 
-#### 12. `BerlinMOD_Simplify` - Trajectory Simplification
+#### 12. `N08_BerlinMOD_Simplify` - Trajectory Simplification
 **Concepts**: Douglas-Peucker, data compression, tolerance
 
 Reduces trajectory complexity while preserving shape.
@@ -413,7 +443,7 @@ Vehicle: 1, Date: 2020-06-01, Seq: 1
 
 ---
 
-#### 13. `BerlinMOD_Aggregate` - Temporal Count
+#### 13. `N09_BerlinMOD_Aggregate` - Temporal Count
 **Concepts**: Temporal aggregation, overlap analysis, time-based
 statistics
 
@@ -459,6 +489,132 @@ STBOX X((473212,6578740),(499152,6607165)), T([2020-06-01, 2020-06-11])
 
 ---
 
+
+#### 14. `N10_AIS_Assemble_Full` - Batch Processing
+**Concepts**: Large-scale trajectory assembly, data validation
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N10_AIS_Assemble_Full"
+```
+
+**Process**:
+1. Read CSV line by line (European date format DD/MM/YYYY)
+2. Validate coordinates (Denmark: 40-84°N, -16 to 33°E)
+3. Filter duplicates (same timestamp = skip)
+4. Accumulate instants in ArrayList per ship
+5. Build complete sequences at end
+6. Calculate distance & time-weighted average SOG
+
+**Data Validation**:
+```java
+LAT: 40.18° to 84.17°
+LON: -16.1° to 32.88°
+SOG: 0.0 to 1022.0 (0-102.2 knots)
+Duplicate timestamps: Filtered
+```
+
+**Output Example**:
+```
+|   MMSI    |   #Rec  | #TrInst |  #SInst |     Distance    |     Speed     |
+| 219000001 |   1243  |   1187  |   1198  |   134567.234567 |      8.234567 |
+```
+
+**Key Functions**:
+- `geogpoint_make2d()` - Create geographic points
+- `tsequence_make()` - Build sequences
+- `tpoint_length()` - Calculate distance
+- `tnumber_twavg()` - Time-weighted average
+
+**Use cases**:
+- Historical trajectory analysis
+- Fleet statistics & reporting
+- Traffic pattern analysis
+
+---
+
+#### 15. `N11_AIS_Expand_Full` - Incremental Building
+**Concepts**: Expandable sequences, memory optimization
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N11_AIS_Expand_Full"
+```
+
+**Architecture**: INCREMENTAL BUILDING
+```
+Record → Create/Append to sequence → Sequence ALWAYS ready
+If the sequence needs more space → MEOS auto-expands it with memory optimization 
+```
+
+**Key Difference from N10**:
+```
+N10: [Inst1] [Inst2] ... [InstN] → tsequence_make() at END
+N11: [I1]→[I1-I2]→[I1-I2-I3] → temporal_append_tinstant() CONTINUOUSLY
+```
+
+**Process**:
+1. Read CSV (same validation as N10)
+2. For FIRST instant: Create initial sequence
+3. For subsequent: Append with `temporal_append_tinstant()`
+4. MEOS auto-expands capacity (doubles: 64→128→256...)
+5. Sequence always available for queries
+
+**Core Function**:
+```java
+Pointer newSeq = temporal_append_tinstant(
+    sequence, instant, 0.0, null, true);
+```
+
+
+**Use cases**:
+- Real-time GPS tracking
+- Streaming data ingestion
+- Memory-constrained environments
+- 24/7 continuous monitoring
+
+---
+
+#### 16. `N12_AIS_Transform_Full` - Coordinates Transformation
+**Concepts**: Coordinate system transformation
+
+Transform AIS coordinates from **geographic** (lat/lon) to **projected** (meters).
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N12_AIS_Transform_Full"
+```
+
+**Transformation**:
+- FROM: EPSG:4326 (WGS84 - latitude/longitude in degrees)
+- TO:   EPSG:25832 (ETRS89 / UTM Zone 32N - meters for Denmark)
+
+**Why Transform?**
+
+Geographic (EPSG:4326):
+```
+Copenhagen: 55.6761°N, 12.5683°E
+Distance: Complex geodesic formulas
+```
+
+Projected (EPSG:25832):
+```
+Copenhagen: X=691,875m, Y=6,176,943m  
+Distance: √((Δx)² + (Δy)²) ← Simple!
+```
+
+**Key Functions**:
+```java
+Pointer geog = geogpoint_make2d(4326, lon, lat);
+Pointer utm = geo_transform(geog, 25832);
+String ewkt = geo_as_ewkt(utm, 6);
+```
+
+**Use cases**:
+- Accurate distance calculations (meters!)
+- Grid-based spatial analysis
+- GIS system integration
+- ETL pipelines
+
+---
+
 ## Data Files
 
 All data files are in `src/main/java/examples/data/`:
@@ -466,6 +622,12 @@ All data files are in `src/main/java/examples/data/`:
 ### AIS Dataset (Ship Tracking)
 - `ais_instants.csv` - 50K+ ship observations (5 ships, ~24 hours)
 - Format: `T,MMSI,Latitude,Longitude,SOG`
+- Coordinate system: EPSG:4326 (WGS84 lat/lon)
+
+### Full-Scale AIS Dataset (Danish Maritime Authority)
+- Download from: http://aisdata.ais.dk/
+- Format: `Timestamp,Type,MMSI,Latitude,Longitude,NavStatus,ROT,SOG,...`
+- Date format: **DD/MM/YYYY HH:MM:SS** (European)
 - Coordinate system: EPSG:4326 (WGS84 lat/lon)
 
 ### BerlinMOD Dataset (Vehicle Tracking)
@@ -500,6 +662,44 @@ Pointer inst = tpointinst_make(gs, timestamp);
 Pointer seq = tsequence_make(instantsArray, count, 
     lowerInc, upperInc, interpolation, normalize);
 ```
+
+### Expandable Sequences (Streaming)
+```java
+// Create initial sequence with first instant
+Pointer seq = tsequence_make(instArray, 1, 
+    true, true, TInterpolation.LINEAR.getValue(), true);
+
+// Append subsequent instants (auto-expands!)
+Pointer newSeq = temporal_append_tinstant(
+    seq,        // Current sequence
+    instant,    // New instant to add
+    0.0,        // maxdist (0 = no spatial gap limit)
+    null,       // maxt (null = no time gap limit)
+    true        // expand (auto-expand capacity)
+);
+
+// Update pointer
+seq = newSeq;
+
+// Get instant count
+int count = temporal_num_instants(seq);
+
+// Extract instant by index (1-indexed!)
+Pointer inst = temporal_instant_n(seq, index);
+```
+
+**When to use**:
+- Streaming scenarios (N04_AIS_Stream_DB, N04_AIS_Stream_File)
+- Unknown final size
+- Memory-efficient incremental building needed
+
+**Comparison**:
+
+| Approach | When to Use |
+|----------|-------------|
+| `tsequence_make()` | All instants available upfront |
+| `temporal_append_tinstant()` | Streaming/incremental build |
+
 
 ### Parsing
 ```java
@@ -539,6 +739,21 @@ Pointer outside = tpoint_minus_geom(trip, geometry, zspan);
 
 // Distance between trajectories
 double dist = tpoint_distance(trip1, trip2);
+```
+
+### Coordinate Transformation
+```java
+// Transform to different CRS
+Pointer geog = geogpoint_make2d(4326, lon, lat);
+Pointer transformed = point_transform(geog, 25832);
+
+// Get coordinates as EWKT (Extended Well-Known Text)
+String ewkt = geo_as_ewkt(transformed, 6);  // 6 decimal places
+// → "SRID=25832;POINT(691875.234567 6176943.876543)"
+
+// Get coordinates as WKB (Well-Known Binary - hex)
+String wkb = geo_out(transformed);
+// → "0101000020E8640000..." (binary format)
 ```
 
 ## Troubleshooting
