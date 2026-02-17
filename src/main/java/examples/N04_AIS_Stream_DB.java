@@ -16,20 +16,25 @@ import static functions.functions.*;
 
 /**
  * A simple program that reads AIS data from a CSV file, accumulates the
- * observations in main memory and sends the temporal values to a MobilityDB
- * database when they reach a given number of instants in order to free
- * the memory and ingest the newest observations.
+ * observations using MEOS expandable sequences, and sends the temporal values
+ * to a MobilityDB database when they reach a given number of instants.
  *
- * This program illustrates streaming of temporal data to MobilityDB by:
- * 1. Accumulating instants in memory (up to NO_INSTS_BATCH per ship)
- * 2. Building a temporal sequence from accumulated instants
- * 3. Sending to database and keeping last instants for continuity
+ * This program illustrates streaming of temporal data to MobilityDB using
+ * the MEOS expandable sequences API:
+ * 1. Create expandable sequence with first instant
+ * 2. Append subsequent instants using temporal_append_tinstant()
+ * 3. When batch size reached: send to database and restart sequence
  *
- * Note: Unlike the C version which uses MEOS expandable sequences API,
- * this Java version uses a simpler list-based accumulation since the
- * expandable API is not exposed in the Java bindings.
+ * Key difference from AIS_Assemble:
+ * - AIS_Assemble: Accumulate ALL data → Build once at end
+ * - AIS_Stream_DB: Build incrementally → Send batches → Free memory
  *
- * SETUP: Same as AIS_Store.java - use mobilitydb/mobilitydb Docker image
+ * This version is FAITHFUL to the C implementation using expandable sequences,
+ * unlike earlier versions that used ArrayList accumulation.
+ *
+ * SETUP: Use mobilitydb/mobilitydb Docker image
+ * docker run --name postgres-mobilitydb -e POSTGRES_PASSWORD=postgres \
+ *   -p 5432:5432 -d mobilitydb/mobilitydb
  */
 public class N04_AIS_Stream_DB {
 
@@ -49,11 +54,12 @@ public class N04_AIS_Stream_DB {
     }
 
     static class TripRecord {
-        long MMSI;                      /* Identifier of the trip */
-        List<Pointer> instants;         /* Accumulated instants */
+        long MMSI;              /* Identifier of the trip */
+        Pointer trip;           /* Expandable sequence of observations */
 
-        TripRecord() {
-            instants = new ArrayList<>();
+        TripRecord(long mmsi) {
+            this.MMSI = mmsi;
+            this.trip = null;
         }
     }
 
@@ -64,6 +70,44 @@ public class N04_AIS_Stream_DB {
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         }
+    }
+
+    /**
+     * Get the number of instants in a temporal sequence.
+     * Simulates accessing seq->count in C.
+     */
+    private static int getSequenceCount(Pointer seq) {
+        return temporal_num_instants(seq);
+    }
+
+    /**
+     * Restart sequence by keeping only the last NO_INSTS_KEEP instants.
+     * Simulates tsequence_restart() from C.
+     */
+    private static Pointer restartSequence(Pointer seq, int keepCount) {
+        int totalCount = getSequenceCount(seq);
+
+        if (totalCount <= keepCount) {
+            return seq;  // Nothing to restart
+        }
+
+        // Extract last keepCount instants
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer[] keptInsts = new Pointer[keepCount];
+
+        for (int i = 0; i < keepCount; i++) {
+            int idx = totalCount - keepCount + i + 1;  // 1-indexed!
+            keptInsts[i] = temporal_instant_n(seq, idx);
+        }
+
+        // Create new sequence with kept instants
+        Pointer instArray = Memory.allocate(runtime, keepCount * Long.BYTES);
+        for (int i = 0; i < keepCount; i++) {
+            instArray.putPointer(i * Long.BYTES, keptInsts[i]);
+        }
+
+        return tsequence_make(instArray, keepCount,
+                true, true, TInterpolation.LINEAR.getValue(), true);
     }
 
     public static void main(String[] args) {
@@ -85,8 +129,10 @@ public class N04_AIS_Stream_DB {
         int noWrites = 0;
 
         // Map to store trips by MMSI
-        Map<Long, TripRecord> trips = new HashMap<>();
+        Map<Long, TripRecord> trips = new LinkedHashMap<>();
         int noShips = 0;
+
+        Runtime runtime = Runtime.getSystemRuntime();
 
         try {
             /***************************************************************************
@@ -116,7 +162,7 @@ public class N04_AIS_Stream_DB {
                     new FileReader("src/main/java/examples/data/ais_instants.csv"));
 
             /***************************************************************************
-             * Section 3: Read input file and stream to database
+             * Section 3: Read input file and stream to database using expandable sequences
              ***************************************************************************/
 
             System.out.printf("Accumulating %d instants before sending them to the database%n",
@@ -162,26 +208,15 @@ public class N04_AIS_Stream_DB {
                             meos_finalize();
                             return;
                         }
-                        trip = new TripRecord();
-                        trip.MMSI = rec.MMSI;
+                        trip = new TripRecord(rec.MMSI);
                         trips.put(rec.MMSI, trip);
                         noShips++;
                     }
 
                     // Send to database when batch size is reached
-                    if (trip.instants.size() >= NO_INSTS_BATCH) {
-                        // Build sequence from accumulated instants
-                        Runtime runtime = Runtime.getSystemRuntime();
-                        Pointer array = Memory.allocate(runtime, trip.instants.size() * Long.BYTES);
-                        for (int i = 0; i < trip.instants.size(); i++) {
-                            array.putPointer(i * Long.BYTES, trip.instants.get(i));
-                        }
-
-                        Pointer seqPtr = tsequence_make(array, trip.instants.size(),
-                                true, true, TInterpolation.LINEAR.getValue(), true);
-
+                    if (trip.trip != null && getSequenceCount(trip.trip) == NO_INSTS_BATCH) {
                         // Construct and execute query
-                        String tempOut = tspatial_out(seqPtr, 15);
+                        String tempOut = tspatial_out(trip.trip, 15);
                         String query = String.format(
                                 "INSERT INTO public.AISTrips(MMSI, trip) " +
                                         "VALUES (%d, '%s') ON CONFLICT (MMSI) DO " +
@@ -193,19 +228,32 @@ public class N04_AIS_Stream_DB {
                         System.out.print("*");
                         System.out.flush();
 
-                        // Keep only the last instants for continuity
-                        List<Pointer> kept = new ArrayList<>();
-                        int startIdx = Math.max(0, trip.instants.size() - NO_INSTS_KEEP);
-                        for (int i = startIdx; i < trip.instants.size(); i++) {
-                            kept.add(trip.instants.get(i));
-                        }
-                        trip.instants = kept;
+                        // Restart the sequence by only keeping the last instants
+                        trip.trip = restartSequence(trip.trip, NO_INSTS_KEEP);
                     }
 
-                    // Add the new observation to the list
+                    // Append the new observation to the expandable sequence
                     Pointer gs = geogpoint_make2d(4326, rec.Longitude, rec.Latitude);
-                    Pointer instPtr = tpointinst_make(gs, rec.T);
-                    trip.instants.add(instPtr);
+                    Pointer inst = tpointinst_make(gs, rec.T);
+
+                    if (trip.trip == null) {
+                        // Create initial expandable sequence with first instant
+                        Pointer instArray = Memory.allocate(runtime, Long.BYTES);
+                        instArray.putPointer(0, inst);
+                        trip.trip = tsequence_make(instArray, 1,
+                                true, true, TInterpolation.LINEAR.getValue(), true);
+                    } else {
+                        // Append instant to existing sequence (expandable!)
+                        Pointer newSeq = temporal_append_tinstant(trip.trip, inst, TInterpolation.LINEAR.getValue(),
+                                0.0, null, true);
+
+                        if (newSeq == null) {
+                            System.err.printf("\nError appending instant for MMSI %d\n", trip.MMSI);
+                            continue;
+                        }
+
+                        trip.trip = newSeq;
+                    }
 
                 } catch (NumberFormatException e) {
                     System.out.println("Record with invalid values ignored");
@@ -254,7 +302,7 @@ public class N04_AIS_Stream_DB {
         // Calculate elapsed time
         long endTime = System.currentTimeMillis();
         double timeTaken = (endTime - startTime) / 1000.0;
-        System.out.printf("The program took %f seconds to execute%n", timeTaken);
+        System.out.printf("The program took %.3f seconds to execute%n", timeTaken);
 
         // Finalize MEOS
         meos_finalize();
