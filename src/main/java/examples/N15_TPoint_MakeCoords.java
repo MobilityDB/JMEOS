@@ -115,7 +115,7 @@ public class N15_TPoint_MakeCoords {
                 false,                              // Not geodetic (projected)
                 true,                               // Lower bound inclusive
                 true,                               // Upper bound inclusive
-                TInterpolation.LINEAR.getValue(),   // Interpolation: 1 = Linear
+                TInterpolation.LINEAR.getValue(),   // Interpolation: 3 = Linear
                 true                                // Normalize
         );
 
@@ -196,7 +196,7 @@ public class N15_TPoint_MakeCoords {
                 false,                              // Not geodetic (projected)
                 true,                               // Lower bound inclusive
                 true,                               // Upper bound inclusive
-                TInterpolation.LINEAR.getValue(),   // Interpolation: 1 = Linear
+                TInterpolation.LINEAR.getValue(),   // Interpolation: 3 = Linear
                 true                                // Normalize
         );
 
@@ -276,7 +276,7 @@ public class N15_TPoint_MakeCoords {
                 true,                               // Geodetic (geographic)
                 true,                               // Lower bound inclusive
                 true,                               // Upper bound inclusive
-                TInterpolation.LINEAR.getValue(),   // Interpolation: 1 = Linear
+                TInterpolation.LINEAR.getValue(),   // Interpolation: 3 = Linear
                 true                                // Normalize
         );
 
