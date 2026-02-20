@@ -157,3 +157,12 @@ build/
 
 ### Ignore pid error log files ###
 *.log
+
+### Ignore Fat Jar generated with mvn package ####
+jar/JMEOS-fat.jar
+
+### ignore maven-shade-plugin generated dependendcy-reduced-pom.xml ###
+dependency-reduced-pom.xml
+
+### Jupyter Checkpoints ###
+**/.ipynb_checkpoints/
