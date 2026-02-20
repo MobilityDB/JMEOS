@@ -539,7 +539,7 @@ Duplicate timestamps: Filtered
 mvn exec:java -Dexec.mainClass="examples.N11_AIS_Expand_Full"
 ```
 
-**Architecture**: INCREMENTAL BUILDING
+**Architecture**: Incremental Building
 ```
 Record → Create/Append to sequence → Sequence ALWAYS ready
 If the sequence needs more space → MEOS auto-expands it with memory optimization 
@@ -615,6 +615,231 @@ String ewkt = geo_as_ewkt(utm, 6);
 
 ---
 
+#### 17. `N13_Aggregation_Demo` - SQL Aggregate Functions
+**Concepts**: Aggregate transfn/finalfn pattern, union operations
+
+Demonstrates the PostgreSQL aggregate function pattern (transition function + final function) for combining multiple temporal/spatial objects.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N13_Aggregation_Demo"
+```
+
+**Three Aggregation Examples**:
+
+**1. IntSpan Union** (Simple aggregation)
+```
+Input: [1,5], [3,8], [10,15], [12,20]
+Process: Merge overlapping spans
+Output: {[1,8], [10,20]}
+```
+
+**2. FloatSpanSet Grouped** (GROUP BY aggregation)
+```
+Input: 100 spansets, grouped by k % 10
+Process: 10 accumulators (one per group)
+Output: 10 FloatSpanSets
+```
+
+**3. TextSet Grouped** (Set aggregation)
+```
+Input: TextSets grouped by k % 10
+Process: Union sets in each group
+Output: 10 TextSets 
+```
+
+**Pattern Explained**:
+```java
+// PHASE 1: Accumulation (transfn)
+Pointer state = null;
+for (each row) {
+    Pointer value = parse(row);
+    state = transfn(state, value);  // Accumulate
+}
+
+// PHASE 2: Finalization (finalfn)
+Pointer result = finalfn(state);  // Produce result
+```
+
+**Key Functions**:
+- `span_union_transfn()` / `spanset_union_finalfn()`
+- `spanset_union_transfn()` / `spanset_union_finalfn()`
+- `set_union_transfn()` / `set_union_finalfn()`
+
+**Use cases**:
+- Merging availability time slots
+- Combining room occupancy periods
+- Aggregating sensor data ranges
+
+---
+
+#### 18. `N14_RTree_Index` - Spatial Indexing
+**Concepts**: RTree spatial index, bounding box searches, performance optimization
+
+Demonstrates RTree spatial indexing for fast spatial/temporal queries.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N14_RTree_Index"
+```
+
+**The Problem**: Finding boxes in a region
+```
+Brute force: Check ALL 5,000,000 boxes → 400 ms
+RTree index: Check 200,000 boxes in the specified region/bounding box → 180 ms
+```
+
+**Program Flow**:
+1. **Build Index** - One-time cost
+2. **Search with RTree** - Fast
+3. **Search Brute Force** - Slow
+4. **Validate** - Both find same 142 boxes
+
+**Note**: RTree is not a silver bullet   
+For small datasets, Brute Force can outperform the R-Tree because:
+1. Initialization Cost
+   - Building the index and managing native memory pointers adds a fixed overhead. 
+     - For small datasets, this setup time can outpace the actual search gains, making Brute Force faster.
+2. Search Threshold
+   - The R-Tree only becomes profitable when the time saved by "pruning" the search space exceeds the time spent traversing the tree structure.
+
+Rule of thumb: Use R-Trees for large-scale spatial datasets (like the 5M boxes in the program) or when making frequent, repeated queries on the same data.
+
+**Key Functions**:
+```java
+Pointer rtree = rtree_create_stbox();
+rtree_insert(rtree, box, id);
+Pointer ids = rtree_search(rtree, query, countPtr);
+```
+
+**Use cases**:
+- Maritime traffic queries
+- Event detection in regions
+
+---
+
+#### 19. `N15_TPoint_MakeCoords` - Coordinate Arrays Construction
+**Concepts**: Alternative construction, coordinate arrays
+
+Demonstrates building temporal point sequences from coordinate arrays instead of individual instants.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N15_TPoint_MakeCoords"
+```
+
+Pass arrays directly to create your sequence of TPoints without
+having to manually instantiate each one of them manually and then assembling them into your final sequence
+```java
+double[] x = {2.349, 2.350, 2.351};
+double[] y = {48.853, 48.854, 48.855};
+double[] z = {10.5, 12.3, 11.8};
+
+// Efficient: One single call for the entire sequence
+Pointer seq = tpointseq_make_coords(xPtr, yPtr, zPtr, timesPtr, ...);
+```
+
+**Use cases**:
+- GPS logger data (CSV format)
+- Data conversion (GPS/CSV → MEOS)
+
+---
+
+#### 20. `N16_Clustering_KMeans` - K-means Clustering
+**Concepts**: K-means algorithm, centroid-based clustering
+
+Groups geographic points into K clusters based on proximity.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N16_Clustering_KMeans"
+```
+
+**Input**: `popplaces.csv` (30 cities)
+**Output**: Same + cluster column (0-9)
+
+**Algorithm** (K=10):
+1. Choose 10 initial centers
+2. Assign each city to nearest center
+3. Recalculate centers
+4. Repeat until stable
+
+**Key Functions**:
+```java
+Pointer geo_cluster_kmeans(geometries, count, k)
+```
+
+**Use cases**:
+- Delivery zones
+- Service areas
+
+---
+
+#### 21. `N17_Clustering_Topological` - Topological Clustering
+**Concepts**: Clustering by spatial relationships, automatic K
+
+Groups geometries based on spatial relationships (touching/proximity).
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N17_Clustering_Topological"
+```
+
+**Input**: `regions.csv`
+**Output**: `regions_new.csv` with clusters
+
+**Two Methods**:
+1. **ClusterIntersecting** - Groups that touch/overlap
+2. **ClusterWithin(1000m)** - Groups within distance
+
+**Key Difference**: Number of clusters emerges from data (not fixed K)
+
+**Key Functions**:
+```java
+geo_cluster_intersecting(geometries, count, numClustersPtr);
+geo_cluster_within(geometries, count, distance, numClustersPtr);
+```
+
+**Use cases**:
+- Road networks (connected components)
+- Land parcels (adjacency)
+- Building blocks
+
+---
+
+#### 22. `N18_Clustering_DBSCAN` - Density-Based Clustering
+**Concepts**: DBSCAN algorithm, density clustering, outlier detection
+
+Finds clusters based on density and identifies isolated points as noise.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N18_Clustering_DBSCAN"
+```
+
+**Input**: `US.txt` (geonames schools)
+**Output**: `geonames_new.csv` with clusters
+
+**Parameters**:
+- eps: 2000 meters (neighbor distance)
+- minpoints: 5 (minimum density required for a point to be considered as a "CORE" one)
+
+**Point Types**:
+- **CORE**: ≥5 neighbors → Forms cluster
+- **BORDER**: Near core → In cluster
+- **NOISE**: Isolated → Outlier
+
+**Key Functions**:
+```java
+geo_cluster_dbscan(geometries, count, eps, minpoints, clusters)
+```
+
+**Advantages**:
+- Automatic cluster count
+- Arbitrary shapes
+- Identifies outliers
+
+**Use cases**:
+- Urban planning (underserved areas)
+- Hot spot detection
+- Service gap analysis
+
+---
+
 ## Data Files
 
 All data files are in `src/main/java/examples/data/`:
@@ -635,8 +860,29 @@ All data files are in `src/main/java/examples/data/`:
 - `berlinmod_trips.csv` - 154 trips in HexWKB format
 - `brussels_communes.csv` - 19 Brussels municipalities
 - `brussels_region.csv` - Brussels boundary
+- `regions.csv` - BerlinMOD regions (for topological clustering)
 - Coordinate system: EPSG:3857 (Web Mercator meters)
 
+### Clustering Datasets
+- `popplaces.csv` - 30 populated places worldwide (for K-means)
+    - Format: `name,pop_max,geom`
+    - Natural Earth data: https://www.naturalearthdata.com/
+    - Coordinate system: EPSG:4326 (WGS84)
+
+### Geonames Dataset (US Schools)
+- `US.txt` - Full geonames dump for USA (for DBSCAN)
+    - Download from: https://download.geonames.org/export/dump/US.zip
+    - Format: TSV with 19+ fields
+    - Used fields: `geonameid,name,admin1,lat,lon,fcode`
+    - Filter: `fcode='SCH'` (schools only)
+    - Size: ~2.5M records (~500MB uncompressed)
+
+### Aggregation Test Data
+- `intspans.csv` - 10 integer spans
+- `floatspansets.csv` - 100 float span sets
+- `textsets.csv` - 100 text sets
+
+---
 
 ## Common Functions
 
