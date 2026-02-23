@@ -166,3 +166,6 @@ dependency-reduced-pom.xml
 
 ### Jupyter Checkpoints ###
 **/.ipynb_checkpoints/
+
+### .mov files ###
+*.mov
