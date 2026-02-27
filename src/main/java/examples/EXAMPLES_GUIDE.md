@@ -18,7 +18,7 @@ git clone https://github.com/MobilityDB/JMEOS.git
 
 # Build the Docker Image for JMEOS
 git clone https://github.com/nmareghn/Docker-JMEOS.git
-cd .\Docker-JMEOS\.devcontainer\
+cd .\JMEOS\
 docker build -t mbjmeos:lasted .
 
 # Run the JMEOS Docker Container (replace the path)
@@ -839,6 +839,85 @@ geo_cluster_dbscan(geometries, count, eps, minpoints, clusters)
 - Service gap analysis
 
 ---
+
+#### 23. `N19_ParisTrajectoryStaticMaps` — Animated Map Video (Static Trajectory)
+**Concepts**: Data Visualization, OpenStreetMap tile download, video/.mov file
+
+Generates an animated `.mov` video showing a predefined trajectory (Paris ring road)
+overlaid on an OpenStreetMap background. The map is fixed; only the moving point and its
+trail are redrawn frame by frame.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N19_ParisTrajectoryStaticMaps"
+```
+
+**Output**: `paris_trajectory.mov`
+
+**Structure**
+1. Define a list of `Coordinate(lat, lon)` points
+2. Compute the bounding box of the trajectory → choose optimal zoom level and map centre
+3. Download and assemble OSM tiles into a single base-map image
+4. For each frame: copy the base map, draw the fading trail + current red dot + overlay
+5. Encode all frames into a `.mov` file at 7 FPS using JCodec
+
+**Trail rendering**: the last 15 positions are drawn as blue dots with increasing size and
+opacity (older = smaller and more transparent), then connected by a blue line.
+
+**OSM tile URL format**: `https://tile.openstreetmap.org/{zoom}/{x}/{y}.png`
+A `User-Agent` header is mandatory, otherwise OSM returns a 403.
+
+**Use cases**:
+- Visualising GPS/trajectory dataset
+- Route animation for presentations
+- Debugging trajectory geometry
+
+---
+
+#### 24. `N20_AISTrajectoryWithTimestamp` — Animated Map Video from MobilityDB
+**Concepts**: MobilityDB query & data visualisation, MEOS temporal decomposition, .mov file
+
+Extends N19 with an important addition: trajectory data is pulled live from a
+**MobilityDB** database instead of being hardcoded
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N20_AISTrajectoryWithTimestamp"
+```
+
+**Output**: `ais_trajectory.mov`
+
+**Prerequisites**: A running MobilityDB instance with the `AISTrips` table populated
+(see N04_AIS_Store). On Windows/macOS with Docker Desktop, the JDBC URL is:
+```
+jdbc:postgresql://host.docker.internal:5432/postgres?user=postgres&password=postgres
+```
+On Linux, replace `host.docker.internal` with the container's IP or use a Docker network
+(see the Troubleshooting section in this guide or the comments in the N04_AIS_Store program).
+
+**Structure**
+1. Connect to MobilityDB and fetch one ship's trip: `SELECT trip::text FROM AISTrips WHERE MMSI = ?`
+2. Parse with `tgeogpoint_in(wkt)` → MEOS `Temporal*` pointer
+3. Decompose into instants with `temporal_instants(ptr, countPtr)`
+4. For each instant: extract timestamp via `temporal_start_timestamptz` and coordinates via `temporal_start_value`
+5. Compute optimal view (same adaptive zoom as N19)
+6. Render video frame by frame (same trail + red dot as N19)
+7. Display real timestamp in the bottom-right overlay
+
+**Key MEOS functions used**:
+```java
+Pointer tempPtr = tgeogpoint_in(wkt);                          // parse trip WKT
+Pointer instants = temporal_instants(tempPtr, countPtr);       // decompose to instants
+OffsetDateTime t = temporal_start_timestamptz(instantPtr);     // extract timestamp
+Pointer geo     = temporal_start_value(instantPtr);            // extract geometry
+Point  point    = ConversionUtils.gserialized_to_shapely_point(geo, 15);
+```
+
+**Use cases**:
+- Visualising real ship trajectories stored in MobilityDB
+- Temporal animations for AIS data analysis
+- Debugging temporal data stored in the database
+
+---
+
 
 ## Data Files
 
