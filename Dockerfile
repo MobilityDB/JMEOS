@@ -34,7 +34,7 @@ COPY --from=maven:3.9.6-eclipse-temurin-11 /usr/share/maven/ref/settings-docker.
 RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
 
 # ADD PROJECT MobilityDB-JMEOS
-RUN git clone https://github.com/nmareghn/MobilityDB-JMEOS  /usr/local/jmeos
+RUN git clone --branch fix-tests-using-docker https://github.com/MobilityDB/JMEOS /usr/local/jmeos
 RUN rm /usr/local/jmeos/src/main/resources/lib/libmeos.so
 RUN cp /usr/local/lib/libmeos.so /usr/local/jmeos/src/main/resources/lib/libmeos.so
 RUN rm /usr/local/jmeos/jar/*
