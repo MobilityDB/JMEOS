@@ -35,7 +35,7 @@ public abstract class TPointInst extends TInstant<Point> implements TPoint{
 	 */
 	public TPointInst(String value){
 		super(value);
-		this.inner = createStringInner(value);
+		this.inner = super.get_inner();
 	}
 
 	public abstract Pointer createStringInner(String str);
