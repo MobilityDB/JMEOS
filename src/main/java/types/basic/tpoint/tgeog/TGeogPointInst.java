@@ -36,7 +36,7 @@ public class TGeogPointInst extends TPointInst implements TGeogPoint {
 	 */
 	public TGeogPointInst(String value){
 		super(value);
-		this.inner = functions.tgeogpoint_in(value);
+		this.inner = super.inner;
 	}
 
 	@Override
