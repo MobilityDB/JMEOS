@@ -61,9 +61,9 @@ You just need to refresh Maven with the ***"Reload all Maven Projects"*** button
   
 ## C. Running
 
-On Windows, your project using JMEOS may not run well using the IDE. Therefore, using Docker will simplify the process.
+On Windows, your project using JMEOS may not run well using an IDE. Therefore, using Docker will simplify the process.
 
-Here's an example for a Dockerfile for a basic fresh project with no other dependencies:
+Here's an example of a Dockerfile for a basic fresh project with no other dependencies:
 
 ```cmd
 FROM debian:bookworm-slim
