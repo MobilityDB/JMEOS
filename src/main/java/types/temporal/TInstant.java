@@ -28,11 +28,7 @@ public abstract class TInstant<V extends Serializable> extends Temporal<V> {
 
 	public TInstant(String str){
 		super(str);
-		this._inner = super.getInner();
-	}
-
-	public Pointer get_inner() {
-		return _inner;
+		this._inner = createStringInner(str);
 	}
 
 	public abstract Pointer createStringInner(String str);
