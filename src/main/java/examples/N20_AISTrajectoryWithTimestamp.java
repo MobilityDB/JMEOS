@@ -130,7 +130,7 @@ public class N20_AISTrajectoryWithTimestamp {
                 OffsetDateTime timestamp = temporal_start_timestamptz(instantPtr);
 
                 // Extract geographic value
-                Pointer geoPtr = temporal_start_value(instantPtr);
+                Pointer geoPtr = tgeo_start_value(instantPtr);
 
                 // Convert GSERIALIZED to JTS Point
                 Point point = ConversionUtils.gserialized_to_shapely_point(geoPtr, 15);

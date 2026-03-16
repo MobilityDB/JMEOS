@@ -184,7 +184,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point start_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.temporal_start_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(getPointInner()),precision);
 	}
 
 	/**
@@ -198,7 +198,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point end_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.temporal_end_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(getPointInner()),precision);
 	}
 
 /**
@@ -248,12 +248,12 @@ public interface TPoint extends Serializable {
 //
 //			 @Override
 //			 public Point start_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(this.get_inner()), precision);
 //			 }
 //
 //			 @Override
 //			 public Point end_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(this.get_inner()), precision);
 //			 }
 //		 };
 //	 }
