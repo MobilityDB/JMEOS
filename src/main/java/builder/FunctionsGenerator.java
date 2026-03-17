@@ -419,7 +419,7 @@ public class FunctionsGenerator {
 
 			}
 		}
-		return functionCallingProcess;
+		return injectCheckError(functionCallingProcess);
 	}
 
 	/**
@@ -443,6 +443,7 @@ public class FunctionsGenerator {
 				import utils.JarLibraryLoader;
 				import utils.meosCatalog.MeosEnums.meosType;
 				import utils.meosCatalog.MeosEnums.meosOper;
+				import functions.MeosErrorHandler;
 								
 				import java.time.*;
 				""";
@@ -558,5 +559,35 @@ public class FunctionsGenerator {
 			}
 		});
 		return builder;
+	}
+
+	/**
+	 * Injects MeosErrorHandler.checkError() after the native MEOS call
+	 *
+	 * Three cases:
+	 * - return combined with native call  → split: var _result = call; checkError(); return _result;
+	 * - return after intermediate lines   → insert checkError() just before return
+	 * - void (no return)                  → append checkError() at end
+	 */
+	private static List<String> injectCheckError(List<String> lines) {
+		for (int i = 0; i < lines.size(); i++) {
+			String trimmed = lines.get(i).trim();
+			if (trimmed.startsWith("return MeosLibrary.meos.")) {
+				// Case: return is fused with the native call → split
+				String callPart = trimmed.substring("return ".length()); // "MeosLibrary.meos.func(...);"
+				lines.set(i, "var _result = " + callPart);
+				lines.add(i + 1, "MeosErrorHandler.checkError();");
+				lines.add(i + 2, "return _result;");
+				return lines;
+			}
+			if (trimmed.startsWith("return ")) {
+				// Case: return after intermediate lines (conversion types, result/out pointer)
+				lines.add(i, "MeosErrorHandler.checkError();");
+				return lines;
+			}
+		}
+		// Case: void - no return found
+		lines.add("MeosErrorHandler.checkError();");
+		return lines;
 	}
 }
