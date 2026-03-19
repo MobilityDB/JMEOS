@@ -49,7 +49,7 @@ public class N01_ErrorHandlingDemo {
         int total  = 0;
 
         System.out.println(BOLD + "\n╔══════════════════════════════════════════════╗");
-        System.out.println(      "║      JMEOS – Error Handling Demo             ║");
+        System.out.println(      "║      JMEOS - Error Handling Demo             ║");
         System.out.println(      "╚══════════════════════════════════════════════╝" + RESET);
 
         //passed += test1_TextInputError()               ? 1 : 0; total++;
@@ -145,7 +145,7 @@ public class N01_ErrorHandlingDemo {
         try {
             TFloatInst sog = new TFloatInst("12.5@2024-06-01 08:00:00+00");
             Pointer result = functions.div_tfloat_float(sog.getInner(), 0.0);
-            System.out.println(RED + "  ✗ No exception raised – pointer: " + result + RESET);
+            System.out.println(RED + "  ✗ No exception raised - pointer: " + result + RESET);
             return false;
         } catch (MeosDivisionByZeroError e) {
             printCaught(e);
@@ -183,7 +183,7 @@ public class N01_ErrorHandlingDemo {
                 "{\"type\":\"MovingPoint\",\"coordinates\":[[1.0,2.0"; // cut off
         try {
             Pointer traj = functions.tgeompoint_from_mfjson(truncatedMfJson);
-            System.out.println(RED + "  ✗ No exception raised – pointer: " + traj + RESET);
+            System.out.println(RED + "  ✗ No exception raised - pointer: " + traj + RESET);
             return false;
         } catch (MeosMfJsonInputError e) {
             printCaught(e);
@@ -206,7 +206,7 @@ public class N01_ErrorHandlingDemo {
         String corruptHexWkb = "DEADBEEFCAFE0123456789ABCDEF";
         try {
             Pointer temp = functions.temporal_from_hexwkb(corruptHexWkb);
-            System.out.println(RED + "  ✗ No exception raised – pointer: " + temp + RESET);
+            System.out.println(RED + "  ✗ No exception raised - pointer: " + temp + RESET);
             return false;
         } catch (MeosWkbInputError e) {
             printCaught(e);
@@ -231,7 +231,7 @@ public class N01_ErrorHandlingDemo {
         try {
             // Missing ')' before '@': MEOS cannot form a valid geometry object.
             TGeomPointInst inst = new TGeomPointInst("POINT(181.0 91.0@not-a-date");
-            System.out.println(RED + "  ✗ No exception raised – got: " + inst + RESET);
+            System.out.println(RED + "  ✗ No exception raised - got: " + inst + RESET);
             return false;
         } catch (MeosInternalTypeError e) {
             printCaught(e);
@@ -279,7 +279,7 @@ public class N01_ErrorHandlingDemo {
      */
     private static boolean test8_ValidCase() {
         printHeader(8, "Valid case",
-                "Well-formed AIS TGeomPointInst – no exception expected");
+                "Well-formed AIS TGeomPointInst - no exception expected");
         try {
             TGeomPointInst inst = new TGeomPointInst(
                     "SRID=4326;POINT(4.3517 50.8503)@2024-06-01 08:00:00+00");
