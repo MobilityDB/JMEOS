@@ -90,8 +90,19 @@ mvn exec:java -Dexec.mainClass="examples.N01_Hello_World_Geodetic"
 
 ---
 
+#### 3. `N01_ErrorHandlingDemo` - Managing MEOS Exceptions
+**Concepts**: exceptions thrown by MEOS
 
-#### 3. `N02_AIS_Read` - Parse CSV Data
+An introduction to MEOS exception types.
+This demo demonstrates scenarios where MEOS throws exceptions and how to handle them correctly using JMEOS.
+
+```bash
+mvn exec:java -Dexec.mainClass="examples.N01_ErrorHandlingDemo"
+```
+
+---
+
+#### 4. `N02_AIS_Read` - Parse CSV Data
 **Concepts**: Reading CSV, creating temporal instants, coordinate systems
 
 Reads AIS (Automatic Identification System) ship tracking data from CSV
@@ -121,7 +132,7 @@ MMSI: 228041600, Location: SRID=4326;Point(-3.56 39.85
 
 ---
 
-#### 4. `N03_AIS_Assemble` - Build Trajectories
+#### 5. `N03_AIS_Assemble` - Build Trajectories
 **Concepts**: Aggregating instants, constructing sequences, distance
 calculation
 
@@ -154,7 +165,7 @@ MMSI: 228041600, Number of input instants: 10523
 
 ---
 
-#### 5. `N03_BerlinMOD_Assemble` - Vehicle Trip Assembly
+#### 6. `N03_BerlinMOD_Assemble` - Vehicle Trip Assembly
 **Concepts**: Synthetic trajectory data, HexWKB encoding
 
 Similar to AIS_Assemble but for synthetic vehicle data in Brussels.
@@ -179,7 +190,7 @@ mvn exec:java -Dexec.mainClass="examples.N03_BerlinMOD_Assemble"
 ---
 
 
-#### 6. `N04_AIS_Store` - Write to MobilityDB
+#### 7. `N04_AIS_Store` - Write to MobilityDB
 **Concepts**: Database connectivity, SQL insertion, MobilityDB types
 
 Reads AIS data and stores it directly in PostgreSQL/MobilityDB.
@@ -215,7 +226,7 @@ you are using Linux
 
 ---
 
-#### 7. `N04_AIS_Stream_DB` - Streaming to Database
+#### 8. `N04_AIS_Stream_DB` - Streaming to Database
 **Concepts**: Expandable sequences, memory-efficient streaming, incremental updates
 
 Processes large AIS datasets by streaming to database instead of holding
@@ -253,7 +264,7 @@ Record → Append to expandable sequence → When full (1000 instants)
 
 ---
 
-#### 8. `N04_AIS_Stream_File` - Streaming to File
+#### 9. `N04_AIS_Stream_File` - Streaming to File
 **Concepts**: Expandable sequences, file streaming, memory management
 
 Same concept as AIS_Stream_DB but writes to CSV file instead.
@@ -284,7 +295,7 @@ Record → Append to expandable sequence → When full (1000 instants)
 ---
 
 
-#### 9. `N05_BerlinMOD_Disassemble` - Extract Observations
+#### 10. `N05_BerlinMOD_Disassemble` - Extract Observations
 **Concepts**: Temporal decomposition, sorting, coordinate reference
 systems
 
@@ -316,7 +327,7 @@ mvn exec:java -Dexec.mainClass="examples.N05_BerlinMOD_Disassemble"
 
 ---
 
-#### 10. `N06_BerlinMOD_Clip` - Spatial Analysis
+#### 11. `N06_BerlinMOD_Clip` - Spatial Analysis
 **Concepts**: Spatial clipping, geometric operations, administrative
 boundaries
 
@@ -357,7 +368,7 @@ Veh | Distance |  1    2    3  ... | Inside | Outside
 
 ---
 
-#### 11. `N07_BerlinMOD_Tile` - Grid-Based Aggregation
+#### 12. `N07_BerlinMOD_Tile` - Grid-Based Aggregation
 **Concepts**: Spatial tiling, temporal binning, 2D grids
 
 Divides space and time into regular grids (tiles) and aggregates trips.
@@ -404,7 +415,7 @@ Speed
 
 ---
 
-#### 12. `N08_BerlinMOD_Simplify` - Trajectory Simplification
+#### 13. `N08_BerlinMOD_Simplify` - Trajectory Simplification
 **Concepts**: Douglas-Peucker, data compression, tolerance
 
 Reduces trajectory complexity while preserving shape.
@@ -443,7 +454,7 @@ Vehicle: 1, Date: 2020-06-01, Seq: 1
 
 ---
 
-#### 13. `N09_BerlinMOD_Aggregate` - Temporal Count
+#### 14. `N09_BerlinMOD_Aggregate` - Temporal Count
 **Concepts**: Temporal aggregation, overlap analysis, time-based
 statistics
 
@@ -490,7 +501,7 @@ STBOX X((473212,6578740),(499152,6607165)), T([2020-06-01, 2020-06-11])
 ---
 
 
-#### 14. `N10_AIS_Assemble_Full` - Batch Processing
+#### 15. `N10_AIS_Assemble_Full` - Batch Processing
 **Concepts**: Large-scale trajectory assembly, data validation
 
 ```bash
@@ -532,7 +543,7 @@ Duplicate timestamps: Filtered
 
 ---
 
-#### 15. `N11_AIS_Expand_Full` - Incremental Building
+#### 16. `N11_AIS_Expand_Full` - Incremental Building
 **Concepts**: Expandable sequences, memory optimization
 
 ```bash
@@ -573,7 +584,7 @@ Pointer newSeq = temporal_append_tinstant(
 
 ---
 
-#### 16. `N12_AIS_Transform_Full` - Coordinates Transformation
+#### 17. `N12_AIS_Transform_Full` - Coordinates Transformation
 **Concepts**: Coordinate system transformation
 
 Transform AIS coordinates from **geographic** (lat/lon) to **projected** (meters).
@@ -615,7 +626,7 @@ String ewkt = geo_as_ewkt(utm, 6);
 
 ---
 
-#### 17. `N13_Aggregation_Demo` - SQL Aggregate Functions
+#### 18. `N13_Aggregation_Demo` - SQL Aggregate Functions
 **Concepts**: Aggregate transfn/finalfn pattern, union operations
 
 Demonstrates the PostgreSQL aggregate function pattern (transition function + final function) for combining multiple temporal/spatial objects.
@@ -672,7 +683,7 @@ Pointer result = finalfn(state);  // Produce result
 
 ---
 
-#### 18. `N14_RTree_Index` - Spatial Indexing
+#### 19. `N14_RTree_Index` - Spatial Indexing
 **Concepts**: RTree spatial index, bounding box searches, performance optimization
 
 Demonstrates RTree spatial indexing for fast spatial/temporal queries.
@@ -716,7 +727,7 @@ Pointer ids = rtree_search(rtree, query, countPtr);
 
 ---
 
-#### 19. `N15_TPoint_MakeCoords` - Coordinate Arrays Construction
+#### 20. `N15_TPoint_MakeCoords` - Coordinate Arrays Construction
 **Concepts**: Alternative construction, coordinate arrays
 
 Demonstrates building temporal point sequences from coordinate arrays instead of individual instants.
@@ -742,7 +753,7 @@ Pointer seq = tpointseq_make_coords(xPtr, yPtr, zPtr, timesPtr, ...);
 
 ---
 
-#### 20. `N16_Clustering_KMeans` - K-means Clustering
+#### 21. `N16_Clustering_KMeans` - K-means Clustering
 **Concepts**: K-means algorithm, centroid-based clustering
 
 Groups geographic points into K clusters based on proximity.
@@ -771,7 +782,7 @@ Pointer geo_cluster_kmeans(geometries, count, k)
 
 ---
 
-#### 21. `N17_Clustering_Topological` - Topological Clustering
+#### 22. `N17_Clustering_Topological` - Topological Clustering
 **Concepts**: Clustering by spatial relationships, automatic K
 
 Groups geometries based on spatial relationships (touching/proximity).
@@ -802,7 +813,7 @@ geo_cluster_within(geometries, count, distance, numClustersPtr);
 
 ---
 
-#### 22. `N18_Clustering_DBSCAN` - Density-Based Clustering
+#### 23. `N18_Clustering_DBSCAN` - Density-Based Clustering
 **Concepts**: DBSCAN algorithm, density clustering, outlier detection
 
 Finds clusters based on density and identifies isolated points as noise.
@@ -840,7 +851,7 @@ geo_cluster_dbscan(geometries, count, eps, minpoints, clusters)
 
 ---
 
-#### 23. `N19_ParisTrajectoryStaticMaps` — Animated Map Video (Static Trajectory)
+#### 24. `N19_ParisTrajectoryStaticMaps` — Animated Map Video (Static Trajectory)
 **Concepts**: Data Visualization, OpenStreetMap tile download, video/.mov file
 
 Generates an animated `.mov` video showing a predefined trajectory (Paris ring road)
@@ -873,7 +884,7 @@ A `User-Agent` header is mandatory, otherwise OSM returns a 403.
 
 ---
 
-#### 24. `N20_AISTrajectoryWithTimestamp` — Animated Map Video from MobilityDB
+#### 25. `N20_AISTrajectoryWithTimestamp` — Animated Map Video from MobilityDB
 **Concepts**: MobilityDB query & data visualisation, MEOS temporal decomposition, .mov file
 
 Extends N19 with an important addition: trajectory data is pulled live from a
