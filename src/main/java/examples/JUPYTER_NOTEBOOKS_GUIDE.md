@@ -61,7 +61,7 @@ The native MEOS library must be compiled for Linux. This only needs to be done o
 apt-get install -y git cmake gcc g++ libgeos-dev libproj-dev libjson-c-dev libssl-dev
 
 cd /tmp
-git clone https://github.com/MobilityDB/MobilityDB.git
+git clone --depth 1 https://github.com/MobilityDB/MobilityDB.git
 cd MobilityDB
 mkdir build && cd build
 cmake .. -DMEOS=ON -DCMAKE_BUILD_TYPE=Release
