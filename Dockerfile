@@ -15,8 +15,9 @@ RUN apt-get update \
   && apt-get install -y java-21-amazon-corretto-jdk 
 
 # BUILD MobilityDB
-RUN git clone https://github.com/MobilityDB/MobilityDB.git -b master /usr/local/src/MobilityDB
-RUN mkdir -p /usr/local/src/MobilityDB/build 
+RUN git clone --depth 1 https://github.com/MobilityDB/MobilityDB.git -b master /usr/local/src/MobilityDB
+#RUN git clone --depth 1 https://github.com/estebanzimanyi/MobilityDB.git -b tpoint_fix /usr/local/src/MobilityDB
+RUN mkdir -p /usr/local/src/MobilityDB/build
 RUN cd /usr/local/src/MobilityDB/build && \
     cmake -DMEOS=ON .. && \
     make -j$(nproc) && \
