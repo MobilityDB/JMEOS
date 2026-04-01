@@ -193,6 +193,7 @@ public class FunctionsGenerator {
 		types.put("uintptr_t", "long");
 		types.put("size_t", "long");
 		types.put("interpType", "int"); // enum in C
+		types.put("RTreeSearchOp", "int"); // enum in C
 		//types.put("\\char **","Pointer");
 
 		// Nouveaux types pour 1.3
