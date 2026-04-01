@@ -3,6 +3,7 @@ package examples;
 import jnr.ffi.Pointer;
 import jnr.ffi.Memory;
 import jnr.ffi.Runtime;
+import types.enums.RTreeSearchOp;
 
 import java.util.Random;
 
@@ -96,7 +97,7 @@ public class N14_RTree_Index {
 
         // Search using RTree index
         // rtree_search will write the number of results into countPtr
-        Pointer idsPtr = rtree_search(rtree, queryBox, countPtr);
+        Pointer idsPtr = rtree_search(rtree, RTreeSearchOp.RTREE_OVERLAPS.getValue(), queryBox, countPtr);
 
         // Read the count value written by rtree_search
         int count = countPtr.getInt(0);
