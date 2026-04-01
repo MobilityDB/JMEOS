@@ -37,9 +37,13 @@ public class functions {
 
 		void rtree_free(Pointer rtree);
 
-		void rtree_insert(Pointer rtree, Pointer box, long id);
+		void rtree_insert(Pointer rtree, Pointer box, int id);
 
-		Pointer rtree_search(Pointer rtree,Pointer query, Pointer count);
+		void rtree_insert_temporal(Pointer rtree, Pointer temp, int id);
+
+		Pointer rtree_search(Pointer rtree, int op, Pointer query, Pointer count);
+
+		Pointer rtree_search_temporal(Pointer rtree, int op, Pointer temp, Pointer count);
 
 		void meos_error(int errlevel, int errcode, String format, Pointer args);
 
@@ -97,7 +101,7 @@ public class functions {
 
 		double float_log10(double d);
 
-		String float_out(double d, int maxdd);
+		String float8_out(double d, int maxdd);
 
 		double float_round(double d, int maxdd);
 
@@ -3441,14 +3445,27 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void rtree_insert(Pointer rtree, Pointer box, long id) {
+	public static void rtree_insert(Pointer rtree, Pointer box, int id) {
 		MeosLibrary.meos.rtree_insert(rtree, box, id);
 		MeosErrorHandler.checkError();
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer rtree_search(Pointer rtree,Pointer query, Pointer count) {
-		var _result = MeosLibrary.meos.rtree_search(rtree, query, count);
+	public static void rtree_insert_temporal(Pointer rtree, Pointer temp, int id) {
+		MeosLibrary.meos.rtree_insert_temporal(rtree, temp, id);
+		MeosErrorHandler.checkError();
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer rtree_search(Pointer rtree, int op, Pointer query, Pointer count) {
+		var _result = MeosLibrary.meos.rtree_search(rtree, op, query, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer rtree_search_temporal(Pointer rtree, int op, Pointer temp, Pointer count) {
+		var _result = MeosLibrary.meos.rtree_search_temporal(rtree, op, temp, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -3644,8 +3661,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static String float_out(double d, int maxdd) {
-		var _result = MeosLibrary.meos.float_out(d, maxdd);
+	public static String float8_out(double d, int maxdd) {
+		var _result = MeosLibrary.meos.float8_out(d, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
