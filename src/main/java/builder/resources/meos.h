@@ -260,6 +260,16 @@ typedef struct SkipList SkipList;
 /*****************************************************************************/
 
 /**
+ * @brief Enumeration that defines the search operations for an RTree.
+ */
+typedef enum
+{
+  RTREE_OVERLAPS,      /**< Find stored boxes that overlap the query */
+  RTREE_CONTAINS,      /**< Find stored boxes that contain the query */
+  RTREE_CONTAINED_BY   /**< Find stored boxes contained by the query */
+} RTreeSearchOp;
+
+/**
  * Structure for the in-memory Rtree index
  */
 typedef struct RTree RTree;
@@ -274,8 +284,10 @@ extern RTree *rtree_create_tstzspan();
 extern RTree *rtree_create_tbox();
 extern RTree *rtree_create_stbox();
 extern void rtree_free(RTree *rtree);
-extern void rtree_insert(RTree *rtree, void *box, int64 id);
-extern int *rtree_search(const RTree *rtree,const void *query, int *count);
+extern void rtree_insert(RTree *rtree, void *box, int id);
+extern void rtree_insert_temporal(RTree *rtree, const Temporal *temp, int id);
+extern int *rtree_search(const RTree *rtree, RTreeSearchOp op, const void *query, int *count);
+extern int *rtree_search_temporal(const RTree *rtree, RTreeSearchOp op, const Temporal *temp, int *count);
 
 /*****************************************************************************
  * Error codes
@@ -357,7 +369,7 @@ extern TimestampTz date_to_timestamptz(DateADT d);
 extern double float_exp(double d);
 extern double float_ln(double d);
 extern double float_log10(double d);
-extern char *float_out(double d, int maxdd);
+extern char *float8_out(double d, int maxdd);
 extern double float_round(double d, int maxdd);
 extern int int32_cmp(int32 l, int32 r);
 extern int int64_cmp(int64 l, int64 r);
