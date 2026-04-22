@@ -2497,9 +2497,9 @@ public class functions {
 
 		Pointer ttext_tmin_transfn(Pointer state, Pointer temp);
 
-		Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronized_param);
+		Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize);
 
-		Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronized_param);
+		Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize);
 
 		Pointer temporal_simplify_min_dist(Pointer temp, double dist);
 
@@ -12260,15 +12260,15 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronized_param) {
-		var _result = MeosLibrary.meos.temporal_simplify_dp(temp, eps_dist, synchronized_param);
+	public static Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize) {
+		var _result = MeosLibrary.meos.temporal_simplify_dp(temp, eps_dist, synchronize);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronized_param) {
-		var _result = MeosLibrary.meos.temporal_simplify_max_dist(temp, eps_dist, synchronized_param);
+	public static Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize) {
+		var _result = MeosLibrary.meos.temporal_simplify_max_dist(temp, eps_dist, synchronize);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
