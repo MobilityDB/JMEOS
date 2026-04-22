@@ -19,88 +19,38 @@ import java.util.*;
  *   - an inner MeosLibrary interface with one declaration per MEOS function
  *   - a public static wrapper method per function that delegates to the interface
  *     and calls MeosErrorHandler.checkError()
- *
- * FIXES vs original generator:
- *   [A/B/C] Added PostgreSQL temporal typedefs (DateADT, TimestampTz, Timestamp)
- *           to mapCTypeToJava so they resolve to int/long instead of Pointer.
- *   [A/B/C] Added mapCTypeToJavaWrapper so static wrappers expose the
- *           user-friendly Java types (OffsetDateTime, LocalDateTime) instead of
- *           raw long/int, matching the convention in old_functions.txt.
- *   [A/B/C] ParamDef now stores the original C type so the wrapper generator
- *           can decide when to insert epoch-conversion code.
- *   [D]     size_t parameters are forced to long (was: int) to match old_functions.txt.
- *           The JSON sometimes emits int32_t for size_t-like params; the explicit
- *           override by parameter name + interface type ensures consistency.
- *   [E]     size_out parameters are now hidden from the public static wrapper
- *           signature and allocated internally (Memory.allocateDirect) instead.
- *           Previously the generator was forwarding size_out to the caller,
- *           breaking the encapsulation that old_functions.txt had established.
- *   [F]     boolean+result → Pointer pattern restored.
- *           Interface methods that return boolean and write their value into a
- *           Pointer result param are now wrapped so the static method returns
- *           Pointer (or null on failure) and hides the result allocation.
- *           Pattern emitted:
- *             boolean out;
- *             Runtime runtime = Runtime.getSystemRuntime();
- *             Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
- *             out = meos.fn(..., result);
- *             Pointer new_result = result.getPointer(0);
- *             MeosErrorHandler.checkError();
- *             return out ? new_result : null;
- *
- * Dependencies (add to pom.xml if not already present):
- *   <dependency>
- *       <groupId>com.fasterxml.jackson.core</groupId>
- *       <artifactId>jackson-databind</artifactId>
- *       <version>2.17.0</version>
- *   </dependency>
  */
 public class NewFunctionsGenerator {
 
-    // -------------------------------------------------------------------------
     // Enum names extracted from the JSON "enums" section.
     // These are mapped to int in Java (JNR-FFI represents C enums as int).
-    // -------------------------------------------------------------------------
     private final Set<String> enumNames = new HashSet<>();
 
-    // -------------------------------------------------------------------------
-    // [FIX A/B/C] C types that map to a PostgreSQL temporal primitive.
-    // These are PostgreSQL-specific typedefs that do NOT appear in the standard
-    // primitive list, so the original generator's switch fell through to default
-    // and returned "Pointer" for all of them.
-    //
     // DateADT      → typedef int32_t  → Java int
     // Timestamp    → typedef int64_t  → Java long  (no timezone)
     // TimestampTz  → typedef int64_t  → Java long  (with timezone)
-    // -------------------------------------------------------------------------
     private static final Set<String> DATE_C_TYPES = Set.of("DateADT");
     private static final Set<String> TIMESTAMP_C_TYPES = Set.of("Timestamp", "TimestampTz");
 
-    // -------------------------------------------------------------------------
-    // [FIX D] Parameter names that represent a WKB/memory byte-count.
     // The JSON sometimes encodes them as int32_t rather than size_t, producing
     // "int" in the interface.  old_functions.txt used "long" consistently for these,
     // so we force long when the interface type resolved to int for these names.
-    // -------------------------------------------------------------------------
     private static final Set<String> SIZE_PARAM_NAMES = Set.of("size", "wkb_size");
 
-    // -------------------------------------------------------------------------
-    // [FIX E] Output-only size parameters that must NOT appear in the public
+    // Output-only size parameters that must not appear in the public
     // static wrapper signature.
     //
     // In the MEOS C API, functions like set_as_wkb() accept a "size_t *size_out"
     // pointer that is written by the callee to report the number of bytes it
-    // produced.  The caller (our wrapper) does not need to expose this detail —
+    // produced.  The caller (our wrapper) does not need to expose this detail:
     // it allocates the pointer internally (Memory.allocateDirect) and discards
     // the value, exactly as old_functions.txt does.
     //
     // Without this fix the generator was forwarding size_out directly into the
-    // wrapper signature, which is the behaviour we want to suppress.
-    // -------------------------------------------------------------------------
+    // wrapper signature.
     private static final Set<String> OUTPUT_SIZE_PARAMS = Set.of("size_out");
 
-    // -------------------------------------------------------------------------
-    // [FIX F] Output-only result parameters for boolean-returning interface
+    // Output-only result parameters for boolean-returning interface
     // methods.
     //
     // Many MEOS functions follow the C idiom:
@@ -122,7 +72,6 @@ public class NewFunctionsGenerator {
     //   1. The interface method returns boolean
     //   2. There is a parameter whose name is in OUTPUT_RESULT_PARAMS
     //   3. That parameter's Java type is Pointer
-    // -------------------------------------------------------------------------
     private static final Set<String> OUTPUT_RESULT_PARAMS = Set.of("result");
 
     // -------------------------------------------------------------------------
@@ -204,7 +153,12 @@ public class NewFunctionsGenerator {
 
         // Return type: prefer the "c" field over "canonical"
         JsonNode retNode = fn.get("returnType");
-        String retCType = retNode != null ? retNode.get("c").asText() : "null"; // FIXME
+
+        if (retNode == null) {
+            throw new IllegalStateException("Json node of the return type of function \"" + name + "\" is null");
+        }
+
+        String retCType = retNode.get("c").asText();
 
         if (retCType.equals("null")) {
             throw new IllegalStateException("Null return type:" + retNode.asText());
@@ -213,7 +167,7 @@ public class NewFunctionsGenerator {
         String retJava  = mapCTypeToJava(retCType);
 
         // Parameters
-        // [FIX A/B/C] ParamDef now carries the original C type so that
+        // ParamDef carries the original C type so that
         // generateStaticMethod can decide whether a conversion is needed.
         List<ParamDef> params = new ArrayList<>();
         JsonNode paramsNode = fn.get("params");
@@ -224,7 +178,7 @@ public class NewFunctionsGenerator {
                     String pCType = p.get("cType").asText();
                     String pJava  = mapCTypeToJava(pCType);
 
-                    // [FIX D] Override int → long for known byte-count parameters.
+                    // Override int → long for known byte-count parameters.
                     // The JSON may emit int32_t for these; old_functions.txt used long.
                     if (SIZE_PARAM_NAMES.contains(pName) && pJava.equals("int")) {
                         pJava = "long";
@@ -246,7 +200,7 @@ public class NewFunctionsGenerator {
      * Maps a C type to the JNR-FFI Java type used in the inner MeosLibrary
      * interface (the low-level native binding layer).
      *
-     * [FIX A/B/C] Added cases for PostgreSQL temporal typedefs that previously
+     * Added cases for PostgreSQL temporal typedefs that previously
      * fell through to the default branch and became Pointer:
      *   DateADT     → int
      *   Timestamp   → long
@@ -298,7 +252,7 @@ public class NewFunctionsGenerator {
                  "uint64", "uint64_t"               -> "long";
             case "size_t", "uintptr_t"              -> "long";
 
-            // [FIX A/B/C] PostgreSQL temporal typedefs — previously all hit
+            // PostgreSQL temporal typedefs previously all hit
             // the default branch and became Pointer.
             // DateADT is int32 under the hood; Timestamp/TimestampTz are int64.
             case "DateADT"                          -> "int";
@@ -313,30 +267,26 @@ public class NewFunctionsGenerator {
     }
 
     // -------------------------------------------------------------------------
-    // [FIX A/B/C] C → Java type mapping (public static wrapper level)
+    // C → Java type mapping (public static wrapper level)
     // -------------------------------------------------------------------------
 
     /**
      * Maps a C type to the user-friendly Java type exposed by the public static
      * wrapper methods.  This is distinct from the interface-level mapping:
      *
-     *   TimestampTz → OffsetDateTime   (was: Pointer, should be: OffsetDateTime)
-     *   Timestamp   → LocalDateTime    (was: Pointer, should be: LocalDateTime)
-     *   DateADT     → int              (same as interface; int is fine for dates)
+     *   TimestampTz → OffsetDateTime
+     *   Timestamp   → LocalDateTime
+     *   DateADT     → int
      *
      * All other types delegate to mapCTypeToJava(), keeping a single source of
      * truth for primitive mappings.
-     *
-     * This method did not exist in the original generator.  Without it, the
-     * static wrappers used the same type as the interface (Pointer), giving up
-     * the calendar-type ergonomics that old_functions.txt provided.
      */
     private String mapCTypeToJavaWrapper(String cType) {
         String cleaned = cType.replace("const ", "").trim();
         return switch (cleaned) {
             case "TimestampTz" -> "OffsetDateTime";
             case "Timestamp"   -> "LocalDateTime";
-            // DateADT stays int — no additional wrapper type needed
+            // DateADT stays int: no additional wrapper type needed
             default            -> mapCTypeToJava(cType);
         };
     }
@@ -348,7 +298,6 @@ public class NewFunctionsGenerator {
     private boolean isTemporalCType(String cType) {
         String cleaned = cType.replace("const ", "").trim();
         return TIMESTAMP_C_TYPES.contains(cleaned);
-        // DateADT does NOT need conversion: it is already an int in both layers.
     }
 
     // -------------------------------------------------------------------------
@@ -427,7 +376,7 @@ public class NewFunctionsGenerator {
         sb.append("\t\tMeosLibrary meos = MeosLibrary.INSTANCE;\n\n");
 
         for (FunctionDef fn : functions) {
-            // [FIX A/B/C] Interface uses mapCTypeToJava (int/long), NOT wrapper types.
+            // Interface uses mapCTypeToJava (int/long), NOT wrapper types.
             sb.append("\t\t")
                     .append(fn.returnType).append(" ")
                     .append(fn.name).append("(")
@@ -449,7 +398,7 @@ public class NewFunctionsGenerator {
      *   4. Converts the return value back to the user-friendly type if needed
      *   5. Checks for MEOS errors
      *
-     * [FIX A/B/C] The original generator used the same type for both the
+     * The original generator used the same type for both the
      * interface and the wrapper, so no conversion was possible.  We now use
      * mapCTypeToJavaWrapper() for the wrapper signature, and we emit explicit
      * epoch-conversion lines mirroring the pattern in old_functions.txt:
@@ -464,7 +413,7 @@ public class NewFunctionsGenerator {
         StringBuilder sb = new StringBuilder();
 
         // ---------------------------------------------------------------
-        // [FIX F] Detect the boolean+result → Pointer pattern.
+        // Detect the boolean+result → Pointer pattern.
         //
         // Condition: the interface returns boolean AND the param list
         // contains a Pointer param whose name is in OUTPUT_RESULT_PARAMS.
@@ -482,8 +431,8 @@ public class NewFunctionsGenerator {
                         && p.javaType().equals("Pointer"));
 
         // --- Separate visible params from internal hidden params ---
-        // [FIX E] size_out  — allocated internally, discarded after call
-        // [FIX F] result    — allocated internally, dereferenced and returned
+        // size_out  allocated internally, discarded after call
+        // result    allocated internally, dereferenced and returned
         List<WrapperParam> wparams           = new ArrayList<>();
         List<String>       internalSizeParams = new ArrayList<>();
         boolean            hasInternalResult  = false;
@@ -499,7 +448,7 @@ public class NewFunctionsGenerator {
                 continue; // hide from signature; allocated below
             }
             String wrapperType = mapCTypeToJavaWrapper(p.cType);
-            // [FIX D] Preserve the long override for size params
+            // Preserve the long override for size params
             if (SIZE_PARAM_NAMES.contains(p.name) && wrapperType.equals("int")) {
                 wrapperType = "long";
             }
@@ -508,7 +457,7 @@ public class NewFunctionsGenerator {
         }
 
         // --- Determine wrapper return type ---
-        // [FIX F] Override boolean → Pointer when the result pattern is active.
+        // Override boolean → Pointer when the result pattern is active.
         String wrapperReturnType = isBoolResultPattern
                 ? "Pointer"
                 : mapCTypeToJavaWrapper(fn.retCType);
@@ -525,7 +474,7 @@ public class NewFunctionsGenerator {
         boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult;
 
         if (isBoolResultPattern) {
-            // [FIX F] Emit the "boolean out" sentinel variable first,
+            // Emit the "boolean out" sentinel variable first,
             // mirroring the exact pattern in old_functions.txt.
             sb.append("\t\tboolean out;\n");
         }
@@ -534,19 +483,19 @@ public class NewFunctionsGenerator {
             sb.append("\t\tRuntime runtime = Runtime.getSystemRuntime();\n");
         }
 
-        // [FIX F] Allocate the hidden result pointer.
+        // Allocate the hidden result pointer.
         if (hasInternalResult) {
             sb.append("\t\tPointer result = Memory.allocateDirect(runtime, Long.BYTES);\n");
         }
 
-        // [FIX E] Allocate hidden size_out pointer(s).
+        // Allocate hidden size_out pointer(s).
         for (String paramName : internalSizeParams) {
             sb.append("\t\tPointer ").append(paramName)
                     .append(" = Memory.allocateDirect(runtime, Long.BYTES);\n");
         }
 
         // --- Conversion variables (OffsetDateTime/LocalDateTime → long) ---
-        // [FIX A/B/C] Emit epoch-second conversion for each temporal param.
+        // Emit epoch-second conversion for each temporal param.
         for (WrapperParam wp : wparams) {
             if (wp.needsConversion) {
                 if (wp.wrapperType.equals("OffsetDateTime")) {
@@ -576,7 +525,7 @@ public class NewFunctionsGenerator {
 
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {
-            // [FIX F] boolean+result pattern — mirrors old_functions.txt exactly:
+            // boolean+result pattern:
             //   out = meos.fn(..., result);
             //   Pointer new_result = result.getPointer(0);
             //   MeosErrorHandler.checkError();
@@ -592,7 +541,7 @@ public class NewFunctionsGenerator {
             sb.append("\t\tvar _result = ").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
 
-            // [FIX A/B/C] Convert long result back to OffsetDateTime/LocalDateTime.
+            // Convert long result back to OffsetDateTime/LocalDateTime.
             if (wrapperReturnType.equals("OffsetDateTime")) {
                 sb.append("\t\treturn java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);\n");
             } else if (wrapperReturnType.equals("LocalDateTime")) {
@@ -615,7 +564,7 @@ public class NewFunctionsGenerator {
         if (params.isEmpty()) return "";
         StringJoiner sj = new StringJoiner(", ");
         for (ParamDef p : params) {
-            // [FIX D] Restore long for size params even at interface level
+            // Restore long for size params even at interface level
             String type = SIZE_PARAM_NAMES.contains(p.name) && p.javaType.equals("int")
                     ? "long" : p.javaType;
             sj.add(type + " " + p.name);
@@ -639,11 +588,11 @@ public class NewFunctionsGenerator {
     // Data classes
     // -------------------------------------------------------------------------
 
-    // [FIX A/B/C] Added retCType field so generateStaticMethod can decide the
+    // retCType field so generateStaticMethod can decide the
     // wrapper return type independently of the interface return type.
     private record FunctionDef(String name, String returnType, String retCType, List<ParamDef> params) {}
 
-    // [FIX A/B/C] Added cType field so each param's original C type is
+    // Added cType field so each param's original C type is
     // available when generating conversion code in the static wrapper.
     private record ParamDef(String name, String javaType, String cType) {}
 
