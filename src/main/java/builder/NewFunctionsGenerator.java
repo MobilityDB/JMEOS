@@ -204,7 +204,12 @@ public class NewFunctionsGenerator {
 
         // Return type: prefer the "c" field over "canonical"
         JsonNode retNode = fn.get("returnType");
-        String retCType = retNode != null ? retNode.get("c").asText() : "void";
+        String retCType = retNode != null ? retNode.get("c").asText() : "null"; // FIXME
+
+        if (retCType.equals("null")) {
+            throw new IllegalStateException("Null return type:" + retNode.asText());
+        }
+
         String retJava  = mapCTypeToJava(retCType);
 
         // Parameters
@@ -214,17 +219,19 @@ public class NewFunctionsGenerator {
         JsonNode paramsNode = fn.get("params");
         if (paramsNode != null && paramsNode.isArray()) {
             for (JsonNode p : paramsNode) {
-                String pName  = sanitizeParamName(p.get("name").asText());
-                String pCType = p.get("cType").asText();
-                String pJava  = mapCTypeToJava(pCType);
+                if (p != null && p.isObject()) {
+                    String pName  = sanitizeParamName(p.get("name").asText());
+                    String pCType = p.get("cType").asText();
+                    String pJava  = mapCTypeToJava(pCType);
 
-                // [FIX D] Override int → long for known byte-count parameters.
-                // The JSON may emit int32_t for these; old_functions.txt used long.
-                if (SIZE_PARAM_NAMES.contains(pName) && pJava.equals("int")) {
-                    pJava = "long";
+                    // [FIX D] Override int → long for known byte-count parameters.
+                    // The JSON may emit int32_t for these; old_functions.txt used long.
+                    if (SIZE_PARAM_NAMES.contains(pName) && pJava.equals("int")) {
+                        pJava = "long";
+                    }
+
+                    params.add(new ParamDef(pName, pJava, pCType));
                 }
-
-                params.add(new ParamDef(pName, pJava, pCType));
             }
         }
 
@@ -359,11 +366,11 @@ public class NewFunctionsGenerator {
     );
 
     private String sanitizeParamName(String name) {
-        if (JAVA_KEYWORDS.contains(name)) {
-            return name + "_param";
-        }
         if (name.equals("synchronized")) {
             return "synchronize";
+        }
+        if (JAVA_KEYWORDS.contains(name)) {
+            return name + "_param";
         }
         return name;
     }
