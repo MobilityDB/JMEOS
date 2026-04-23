@@ -4575,9 +4575,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.bigintset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -4647,11 +4646,10 @@ public class functions {
 	public static Pointer dateset_value_n(Pointer s, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.dateset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -4686,11 +4684,10 @@ public class functions {
 	public static Pointer datespanset_date_n(Pointer ss, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.datespanset_date_n(ss, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -4746,11 +4743,10 @@ public class functions {
 	public static Pointer floatset_value_n(Pointer s, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.floatset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -4820,11 +4816,10 @@ public class functions {
 	public static Pointer intset_value_n(Pointer s, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.intset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -5047,9 +5042,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tstzset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -5128,9 +5122,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tstzspanset_timestamptz_n(ss, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -8525,20 +8518,18 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_tmax_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.tbox_tmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -8547,108 +8538,98 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_tmin_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.tbox_tmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_xmax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tbox_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_xmax_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.tbox_xmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_xmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tbox_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_xmin_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.tbox_xmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tboxfloat_xmax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tboxfloat_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tboxfloat_xmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tboxfloat_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tboxint_xmax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.tboxint_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tboxint_xmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.tboxint_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -9217,11 +9198,10 @@ public class functions {
 	public static Pointer tbool_value_n(Pointer temp, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.tbool_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -9412,9 +9392,8 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.temporal_timestamptz_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -9471,11 +9450,10 @@ public class functions {
 	public static Pointer tfloat_value_n(Pointer temp, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tfloat_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -9525,11 +9503,10 @@ public class functions {
 	public static Pointer tint_value_n(Pointer temp, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = MeosLibrary.meos.tint_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -12718,11 +12695,10 @@ public class functions {
 	public static Pointer geom_azimuth(Pointer gs1, Pointer gs2) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.geom_azimuth(gs1, gs2, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -13453,20 +13429,18 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_tmax_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.stbox_tmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -13475,20 +13449,18 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_tmin_inc(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		out = MeosLibrary.meos.stbox_tmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -13502,66 +13474,60 @@ public class functions {
 	public static Pointer stbox_xmax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_xmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_ymax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_ymax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_ymin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_ymin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_zmax(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_zmax(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer stbox_zmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.stbox_zmin(box, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14099,11 +14065,10 @@ public class functions {
 	public static Pointer bearing_point_point(Pointer gs1, Pointer gs2) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.bearing_point_point(gs1, gs2, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14206,11 +14171,10 @@ public class functions {
 	public static Pointer tpoint_direction(Pointer temp) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
-		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		out = MeosLibrary.meos.tpoint_direction(temp, result);
-		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return out ? new_result : null;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
