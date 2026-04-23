@@ -56,15 +56,24 @@ public class NewFunctionsGenerator {
     // Many MEOS functions follow the C idiom:
     //   bool stbox_xmax(STBox *box, double *result)
     // where the boolean signals success/failure and the actual value is written
-    // into *result.  old_functions.txt wraps these so the caller sees a clean:
+    // into *result.  The wrapper allocates the result buffer internally, calls
+    // the native method, and returns a Pointer the caller can read.
+    //
+    // The exact generated code depends on the C type of *result:
+    //
+    // Scalar result (double*, TimestampTz*, int*, bool*, …):
     //   public static Pointer stbox_xmax(Pointer box)
-    // The wrapper allocates the result pointer internally, calls the native
-    // method, dereferences the pointer, and returns either the Pointer or null:
     //   boolean out;
     //   Runtime runtime = Runtime.getSystemRuntime();
-    //   Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+    //   Pointer result = Memory.allocateDirect(runtime, Double.BYTES);  ← correct size
     //   out = MeosLibrary.meos.stbox_xmax(box, result);
-    //   Pointer new_result = result.getPointer(0);
+    //   MeosErrorHandler.checkError();
+    //   return out ? result : null;     ← return the buffer; caller does .getDouble(0)
+    //
+    // Pointer result (Span*, STBox*, …):
+    //   Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+    //   out = MeosLibrary.meos.fn(box, result);
+    //   Pointer new_result = result.getPointer(0);  ← dereference to get the Span*
     //   MeosErrorHandler.checkError();
     //   return out ? new_result : null;
     //
@@ -300,6 +309,84 @@ public class NewFunctionsGenerator {
         return TIMESTAMP_C_TYPES.contains(cleaned);
     }
 
+    // bool+result strategy: driven by the pointed-to C type
+    //
+    // The original version always generated:
+    //   Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+    //   Pointer new_result = result.getPointer(0);   <-- ERROR for scalar types
+    //   return out ? new_result : null;
+    //
+    // This is correct for pointer results (Span*, STBox*, …) but crashes
+    // at runtime for scalar results (double*, TimestampTz*, int*, bool*, …)
+    // because result.getPointer(0) interprets the scalar's bit-pattern as a
+    // native memory address which is unmapped.
+    //
+    // Fix: inspect the C type of the result param, strip the trailing *, and:
+    //   - allocate the correct size (Double.BYTES for double*, Long.BYTES for
+    //     TimestampTz*, Integer.BYTES for int*, etc.)
+    //   - for SCALAR types: return the buffer (result) directly so callers can
+    //     do result.getDouble(0), result.getLong(0), etc. matching the existing
+    //     call sites (e.g. functions.stbox_xmin(inner).getDouble(0))
+    //   - for POINTER types: dereference with result.getPointer(0) to
+    //     obtain the actual Span*, STBox*, etc.
+    //
+    // In both cases the wrapper return type stays Pointer for backward compatibility.
+
+    /**
+     * Describes how to generate the allocation and return for a hidden bool+result
+     * parameter, driven by the pointed-to C type.
+     *
+     * @param allocExpr JNR-FFI allocation size  (e.g. {@code "Double.BYTES"})
+     * @param isPointer {@code true}  → struct-pointer result: dereference with
+     *                                  {@code result.getPointer(0)} and return that Pointer;
+     *                  {@code false} → scalar result: return the buffer ({@code result})
+     *                                  directly so the caller can read the value with
+     *                                  {@code .getDouble(0)}, {@code .getLong(0)}, etc.
+     */
+    private record ResultStrategy(
+            String  allocExpr,
+            boolean isPointer
+    ) {}
+
+    /**
+     * Derives the {@link ResultStrategy} from the C type of the output parameter
+     * (e.g. {@code "double *"}, {@code "Span *"}, {@code "TimestampTz *"}).
+     *
+     * The base type (after stripping {@code const} and {@code *}) determines the
+     * allocation size and whether the buffer should be dereferenced.
+     * Unknown / struct-pointer types fall through to the default branch.
+     */
+    private ResultStrategy resolveResultStrategy(String resultCType) {
+        String base = resultCType.replace("const ", "").trim();
+        if (base.endsWith("*")) {
+            base = base.substring(0, base.length() - 1).trim();
+        }
+
+        return switch (base) {
+            // Scalar types: allocate the correct size, return the buffer directly.
+            // Callers read the value themselves: .getDouble(0), .getLong(0), etc.
+            case "double", "float8"
+                    -> new ResultStrategy("Double.BYTES",   false);
+            case "float"
+                    -> new ResultStrategy("Float.BYTES",    false);
+            case "int", "int32", "int32_t", "uint32", "uint32_t"
+                    -> new ResultStrategy("Integer.BYTES",  false);
+            case "short", "int16", "int16_t", "uint16", "uint16_t"
+                    -> new ResultStrategy("Short.BYTES",    false);
+            case "long", "int64", "int64_t", "uint64", "uint64_t", "size_t", "uintptr_t"
+                    -> new ResultStrategy("Long.BYTES",     false);
+            case "bool"
+                    -> new ResultStrategy("Byte.BYTES",     false);
+            case "DateADT"
+                    -> new ResultStrategy("Integer.BYTES",  false);
+            case "Timestamp", "TimestampTz"
+                    -> new ResultStrategy("Long.BYTES",     false);
+            // Struct pointers (Span*, STBox*, GSERIALIZED*, …): the buffer holds a
+            // native address → dereference with getPointer(0) to get the actual pointer.
+            default -> new ResultStrategy("Long.BYTES",     true);
+        };
+    }
+
     // -------------------------------------------------------------------------
     // Java-keyword-safe parameter names
     // -------------------------------------------------------------------------
@@ -412,23 +499,38 @@ public class NewFunctionsGenerator {
     private String generateStaticMethod(FunctionDef fn) {
         StringBuilder sb = new StringBuilder();
 
-        // ---------------------------------------------------------------
-        // Detect the boolean+result → Pointer pattern.
+        // Detect the boolean+result pattern.
         //
         // Condition: the interface returns boolean AND the param list
         // contains a Pointer param whose name is in OUTPUT_RESULT_PARAMS.
         //
         // When true, the wrapper:
-        //   - returns Pointer instead of boolean
         //   - hides the "result" param from its signature
         //   - allocates result internally via Memory.allocateDirect
-        //   - dereferences result.getPointer(0) after the call
-        //   - returns  out ? new_result : null
-        // ---------------------------------------------------------------
+        //   - reads the value with the accessor matching the C type (FIX G)
+        //   - returns the typed value, or a typed default on failure
+        //
+        // The return type and generated code depend on the C type of *result:
+        //   double* → public static double fn(...)  return result.getDouble(0)
+        //   bool*   → public static boolean fn(...) return result.getByte(0) != 0
+        //   Span*   → public static Pointer fn(...) return result.getPointer(0)
         boolean isBoolResultPattern = fn.returnType.equals("boolean")
                 && fn.params.stream().anyMatch(p ->
-                        OUTPUT_RESULT_PARAMS.contains(p.name)
+                OUTPUT_RESULT_PARAMS.contains(p.name)
                         && p.javaType().equals("Pointer"));
+
+        // Resolve the ResultStrategy from the C type of the result param.
+        // Determines allocation size, read expression, and wrapper return type.
+        // Previously hardcoded to Pointer/Long.BYTES/getPointer(0), which caused
+        // a SIGSEGV at runtime for scalar result types (double*, int*, bool*…).
+        ResultStrategy resultStrategy = isBoolResultPattern
+                ? fn.params.stream()
+                .filter(p -> OUTPUT_RESULT_PARAMS.contains(p.name)
+                        && p.javaType().equals("Pointer"))
+                .findFirst()
+                .map(p -> resolveResultStrategy(p.cType))
+                .orElse(new ResultStrategy("Long.BYTES", true))
+                : null;
 
         // --- Separate visible params from internal hidden params ---
         // size_out  allocated internally, discarded after call
@@ -457,7 +559,9 @@ public class NewFunctionsGenerator {
         }
 
         // --- Determine wrapper return type ---
-        // Override boolean → Pointer when the result pattern is active.
+        // The wrapper always returns Pointer for the bool+result pattern:
+        // callers receive the buffer and read the typed value themselves
+        // (.getDouble(0), .getLong(0), etc.), matching existing call sites.
         String wrapperReturnType = isBoolResultPattern
                 ? "Pointer"
                 : mapCTypeToJavaWrapper(fn.retCType);
@@ -484,8 +588,11 @@ public class NewFunctionsGenerator {
         }
 
         // Allocate the hidden result pointer.
+        // Use strategy.allocExpr() instead of hardcoded Long.BYTES:
+        //   double* → Double.BYTES, int* → Integer.BYTES, Span* → Long.BYTES, etc.
         if (hasInternalResult) {
-            sb.append("\t\tPointer result = Memory.allocateDirect(runtime, Long.BYTES);\n");
+            sb.append("\t\tPointer result = Memory.allocateDirect(runtime, ")
+                    .append(resultStrategy.allocExpr()).append(");\n");
         }
 
         // Allocate hidden size_out pointer(s).
@@ -514,7 +621,7 @@ public class NewFunctionsGenerator {
         for (ParamDef p : fn.params) {
             if (OUTPUT_SIZE_PARAMS.contains(p.name)
                     || (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
-                        && p.javaType().equals("Pointer"))) {
+                    && p.javaType().equals("Pointer"))) {
                 args.add(p.name); // pass locally-allocated pointer
             } else {
                 boolean converted = isTemporalCType(p.cType());
@@ -525,15 +632,24 @@ public class NewFunctionsGenerator {
 
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {
-            // boolean+result pattern:
-            //   out = meos.fn(..., result);
-            //   Pointer new_result = result.getPointer(0);
-            //   MeosErrorHandler.checkError();
-            //   return out ? new_result : null;
             sb.append("\t\tout = ").append(call).append("\n");
-            sb.append("\t\tPointer new_result = result.getPointer(0);\n");
-            sb.append("\t\tMeosErrorHandler.checkError();\n");
-            sb.append("\t\treturn out ? new_result : null;\n");
+
+            if (resultStrategy.isPointer()) {
+                // pointer result (Span*, STBox*, …):
+                // the buffer holds a native address --> dereference to get the actual pointer.
+                sb.append("\t\tPointer new_result = result.getPointer(0);\n");
+                sb.append("\t\tMeosErrorHandler.checkError();\n");
+                sb.append("\t\treturn out ? new_result : null;\n");
+            } else {
+                // Scalar result (double*, TimestampTz*, int*, bool*, …):
+                // the buffer holds the value itself and NOT a pointer address.
+                // Return the buffer (result) directly so callers can read the typed
+                // value: result.getDouble(0), result.getLong(0), etc.
+                // Previously: result.getPointer(0) → interpreted scalar bits as an
+                // address causing SIGSEGV.
+                sb.append("\t\tMeosErrorHandler.checkError();\n");
+                sb.append("\t\treturn out ? result : null;\n");
+            }
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
