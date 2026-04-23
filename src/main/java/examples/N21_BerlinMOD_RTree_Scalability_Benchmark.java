@@ -57,7 +57,10 @@ public class N21_BerlinMOD_RTree_Scalability_Benchmark {
     private static final String VEHICLES_FILE  = "src/main/java/examples/data/berlinmod_instants.csv";
 
     /** Scales to benchmark: number of indexed regions for each run. */
-    private static final int[] SCALES = {19, 50, 100, 500, 1000, 2000, 10_000};
+    private static final int[] SCALES = {19, 50, 75, 100, 500, 1000, 2000, 10_000};
+
+    /** Number of times each scale is benchmarked. Results are averaged. */
+    private static final int BENCHMARK_RUNS = 3;
 
     /** Y-shift per tiling row in metres. */
     private static final double OFFSET_M = 50_000.0;
@@ -418,31 +421,61 @@ public class N21_BerlinMOD_RTree_Scalability_Benchmark {
 
             printExplanation(communes.size(), positions.size());
 
-            // Run benchmarks and print results
             String sep = "+--------+------------------+------------------+------------------+------------------+----------+----------+";
-            System.out.println("\n" + sep);
+
+            // ── Per-run tables ───────────────────────────────────────────────
+            // accumulated[scaleIdx][colIdx] accumulates the sum of each timing
+            // across all runs, so we can compute averages at the end.
+            // colIdx: 0=BruteSTBox, 1=BruteExact, 2=RTreeSTBox, 3=RTreeExact
+            long[][] accumulated = new long[SCALES.length][4];
+
+            for (int run = 1; run <= BENCHMARK_RUNS; run++) {
+                System.out.printf("%n── Run %d / %d ──────────────────────────────────────────────%n",
+                        run, BENCHMARK_RUNS);
+                System.out.println(sep);
+                System.out.println("|   N    | BruteSTBox  (ms) | BruteExact  (ms) | RTreeSTBox  (ms) | RTreeExact  (ms) | STBox×   | Exact×   |");
+                System.out.println(sep);
+
+                for (int i = 0; i < SCALES.length; i++) {
+                    int N = SCALES[i];
+                    System.out.printf("  Running N = %,d regions...%n", N);
+                    long[] ms = runBenchmark(N, communes, positions);
+
+                    accumulated[i][0] += ms[0];
+                    accumulated[i][1] += ms[1];
+                    accumulated[i][2] += ms[2];
+                    accumulated[i][3] += ms[3];
+
+                    double speedupStbox = (double) ms[0] / Math.max(ms[2], 1);
+                    double speedupExact = (double) ms[1] / Math.max(ms[3], 1);
+
+                    System.out.printf("| %6d | %16d | %16d | %16d | %16d | %7.1fx | %7.1fx |%n",
+                            N, ms[0], ms[1], ms[2], ms[3], speedupStbox, speedupExact);
+                }
+                System.out.println(sep);
+            }
+
+            // ── Average table ────────────────────────────────────────────────
+            System.out.printf("%n══ Average over %d runs %s%n", BENCHMARK_RUNS, "═".repeat(45));
+            System.out.println(sep);
             System.out.println("|   N    | BruteSTBox  (ms) | BruteExact  (ms) | RTreeSTBox  (ms) | RTreeExact  (ms) | STBox×   | Exact×   |");
             System.out.println(sep);
 
-            for (int N : SCALES) {
-                System.out.printf("  Running N = %,d regions...%n", N);
-                long[] ms = runBenchmark(N, communes, positions);
+            for (int i = 0; i < SCALES.length; i++) {
+                long avgBruteStbox = accumulated[i][0] / BENCHMARK_RUNS;
+                long avgBruteExact = accumulated[i][1] / BENCHMARK_RUNS;
+                long avgRtreeStbox = accumulated[i][2] / BENCHMARK_RUNS;
+                long avgRtreeExact = accumulated[i][3] / BENCHMARK_RUNS;
 
-                long msBruteStbox  = ms[0];
-                long msBruteExact  = ms[1];
-                long msRtreeStbox  = ms[2];
-                long msRtreeExact  = ms[3];
-
-                // Speedup: > 1.0 means RTree is faster, < 1.0 means brute force is faster
-                double speedupStbox = (double) msBruteStbox / Math.max(msRtreeStbox, 1);
-                double speedupExact = (double) msBruteExact / Math.max(msRtreeExact, 1);
+                double speedupStbox = (double) avgBruteStbox / Math.max(avgRtreeStbox, 1);
+                double speedupExact = (double) avgBruteExact / Math.max(avgRtreeExact, 1);
 
                 System.out.printf("| %6d | %16d | %16d | %16d | %16d | %7.1fx | %7.1fx |%n",
-                        N, msBruteStbox, msBruteExact, msRtreeStbox, msRtreeExact,
+                        SCALES[i], avgBruteStbox, avgBruteExact, avgRtreeStbox, avgRtreeExact,
                         speedupStbox, speedupExact);
             }
-
             System.out.println(sep);
+
             printFooter(positions.size());
 
         } catch (Exception e) {
@@ -494,6 +527,8 @@ public class N21_BerlinMOD_RTree_Scalability_Benchmark {
         System.out.println("  Brute = O(pos × N).   RTree ≈ O(pos × log N).");
         System.out.println("  STBox×  = BruteSTBox / RTreeSTBox");
         System.out.println("  Exact×  = BruteExact / RTreeExact");
+        System.out.printf("  Average computed over %d run(s) — adjust BENCHMARK_RUNS to change.%n",
+                BENCHMARK_RUNS);
         System.out.println();
         System.out.println("  Interpretation:");
         System.out.println("  • A speedup < 1.0 at small N is normal — the RTree has a fixed");
