@@ -46,11 +46,6 @@ public enum TInterpolation {
         }
     }
 
-    /**
-     * Returns the string representation of this interpolation type in the format expected by MEOS.
-     * MEOS expects: "None", "Discrete", "Step", "Linear" (note: "Step" not "Stepwise")
-     * @return the interpolation name in MEOS format
-     */
     @Override
     public String toString() {
         switch (this) {

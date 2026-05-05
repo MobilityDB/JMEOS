@@ -408,8 +408,6 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return Returns the number of timestamps in "this".
      */
     public int num_timestamps(){
-//        System.out.println("ici");
-//        System.out.println(this.toString());
         return functions.temporal_num_timestamps(this.inner);
     }
 
