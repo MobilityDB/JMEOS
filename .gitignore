@@ -58,3 +58,6 @@ dependency-reduced-pom.xml
 
 ### .mov files ###
 *.mov
+
+# CMake
+cmake-build-*/
