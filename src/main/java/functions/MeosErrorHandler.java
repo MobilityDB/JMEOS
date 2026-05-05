@@ -71,16 +71,12 @@ public class MeosErrorHandler implements error_handler_fn {
         lastCode    = errorCode;
         lastLevel   = errorLevel;
         lastMessage = errorMessage;
-
-        //System.out.println("Called apply: level=" + errorLevel + " & code=" + errorCode + " & lastMessage=" + lastMessage);
     }
 
     private static void reportMeosException(int level, int code, String message) {
         MeosException exception = EXCEPTION_MAP
                 .getOrDefault(code, MeosException::new)
                 .apply(message, code);
-
-        //System.out.println("Called reportMeosException with parameters: level=" + level + " & code=" + code + " & message=" + message);
 
         if (level == NOTICE) {
             logger.info("MEOS NOTICE: {}", exception.toString());
@@ -96,29 +92,14 @@ public class MeosErrorHandler implements error_handler_fn {
     }
 
     public static void checkError() {
-        //System.out.println("Called checkError: starting");
         if (lastCode != 0) {
-            //System.out.println("Called checkError: inside if: at the start: parameters:"
-            //        + " & lastCode=" + lastCode
-            //        + " & lastLevel=" + lastLevel
-            //        + " & lastMessage=" + lastMessage
-            //);
             int    code    = lastCode;
             int    level   = lastLevel;
             String message = lastMessage;
             lastCode = 0;
             lastLevel = 0;
             lastMessage = null;
-            //System.out.println("Called checkError: inside if: at the end: parameters:"
-            //    + "level=" + level
-            //        + " & code=" + code
-            //        + " & message=" + message
-            //        + " & lastCode=" + lastCode
-            //        + " & lastLevel=" + lastLevel
-            //        + " & lastMessage=" + lastMessage
-            //);
             reportMeosException(level, code, message);
         }
-        //System.out.println("Called checkError: ending");
     }
 }
