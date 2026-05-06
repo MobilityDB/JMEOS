@@ -1,9 +1,10 @@
 package functions;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tpoint.tgeom.TGeomPointInst;
+import types.temporal.TInterpolation;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("MeosArgumentError branch")
 @ExtendWith(TestLogger.class)
 class MeosArgumentErrorBranchTest {
+
+    private static final error_handler_fn HANDLER = new MeosErrorHandler();
+
+    @BeforeAll
+    static void initMeos() {
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(HANDLER);
+    }
+
+    @BeforeEach
+    void resetHandlerState() {
+        try { MeosErrorHandler.checkError(); } catch (MeosException ignored) {}
+    }
+
 
     // =========================================================================
     // MeosArgumentError
@@ -117,6 +132,29 @@ class MeosArgumentErrorBranchTest {
         @DisplayName("can be caught as RuntimeException")
         void canBeCaughtAsRuntimeException() {
             assertThrows(RuntimeException.class, () -> { throw new MeosArgumentError("x", 1); });
+        }
+
+        // MeosArgumentError is the abstract parent of the argument branch.
+        // MeosInvalidArgValueError (code 12) IS-A MeosArgumentError.
+        // The inverted-span trigger below propagates up and is catchable as MeosArgumentError.
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("intspan_make(300, 100) catchable as MeosArgumentError")
+            void invertedSpan_catchableAsMeosArgumentError() {
+                assertThrows(MeosArgumentError.class,
+                        () -> functions.intspan_make(300, 100, true, true));
+            }
+
+            @Test
+            @DisplayName("intspan_make(300, 100) catchable as MeosException")
+            void invertedSpan_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.intspan_make(300, 100, true, true));
+            }
         }
     }
 
@@ -213,6 +251,25 @@ class MeosArgumentErrorBranchTest {
         @DisplayName("can be caught as RuntimeException")
         void canBeCaughtAsRuntime() {
             assertThrows(RuntimeException.class, () -> { throw new MeosInvalidArgError("x", 10); });
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("creating a sequence from no instants and 0 counts: MeosInvalidArgError")
+            void sequenceFromNull_throwsMeosInvalidArgError() {
+                assertThrows(MeosInvalidArgError.class,
+                        () -> functions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
+            }
+
+            @Test
+            @DisplayName("creating a sequence from no instants and 0 counts: MeosException")
+            void sequenceFromNull_throwsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
+            }
         }
     }
 
@@ -313,6 +370,25 @@ class MeosArgumentErrorBranchTest {
         void canBeCaughtAsRuntime() {
             assertThrows(RuntimeException.class, () -> { throw new MeosInvalidArgError("x", 10); });
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("TGeomPointInst(LINESTRING): MeosInvalidArgTypeError")
+            void wrongGeometryType_throwsMeosInvalidArgTypeError() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("LINESTRING(0 0, 1 1)@2024-01-01 00:00:00+00"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst(LINESTRING): MeosException")
+            void wrongGeometryType_throwsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("LINESTRING(0 0, 1 1)@2024-01-01 00:00:00+00"));
+            }
+        }
     }
 
     // =========================================================================
@@ -408,6 +484,32 @@ class MeosArgumentErrorBranchTest {
         @DisplayName("can be caught as RuntimeException")
         void canBeCaughtAsRuntime() {
             assertThrows(RuntimeException.class, () -> { throw new MeosInvalidArgError("x", 10); });
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("intspan_make(300, 100): MeosInvalidArgValueError (inverted bounds)")
+            void invertedSpan_throwsMeosInvalidArgValueError() {
+                assertThrows(MeosInvalidArgValueError.class,
+                        () -> functions.intspan_make(300, 100, true, true));
+            }
+
+            @Test
+            @DisplayName("intspan_make(300, 100) catchable as MeosArgumentError")
+            void invertedSpan_catchableAsMeosArgumentError() {
+                assertThrows(MeosArgumentError.class,
+                        () -> functions.intspan_make(300, 100, true, true));
+            }
+
+            @Test
+            @DisplayName("intspan_make(300, 100) catchable as MeosException")
+            void invertedSpan_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.intspan_make(300, 100, true, true));
+            }
         }
     }
 }
