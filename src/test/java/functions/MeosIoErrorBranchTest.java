@@ -168,10 +168,6 @@ class MeosIoErrorBranchTest {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosIoError("x", 12)));
         }
 
-        // MeosIoError is the abstract parent of the I/O branch.
-        // MeosTextInputError (code 22) IS-A MeosIoError: the invalid-WKT trigger
-        // below propagates up and is catchable as MeosIoError.
-
         @Nested
         @DisplayName("Native MEOS trigger")
         class NativeTrigger {

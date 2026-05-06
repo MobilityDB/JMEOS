@@ -1012,14 +1012,6 @@ class MeosInternalErrorBranchTest {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosDirectoryError("x", 12)));
         }
 
-        // ── Native MEOS trigger ───────────────────────────────────────────────
-        // meos_initialize_timezone() with an invalid path calls exit(1) internally
-        // instead of routing through meos_error() — this kills the Surefire JVM fork.
-        // No safe native trigger is available for MeosDirectoryError (code 7).
-        // The substitute below uses TGeomPointInst("POINT(181.0 91.0@not-a-date")
-        // which reliably produces MeosInternalTypeError (code 2) — a sibling.
-        // NOTE: update this block when a safe trigger for code 7 is confirmed.
-
         @Nested
         @DisplayName("Native MEOS trigger")
         class NativeTrigger {
@@ -1027,8 +1019,6 @@ class MeosInternalErrorBranchTest {
             @Test
             @DisplayName("broken geometry → MeosInternalError (safe substitute for code 7)")
             void safeSubstitute_catchableAsMeosInternalError() {
-                // NOTE: produces MeosInternalTypeError (code 2), not MeosDirectoryError (code 7).
-                // meos_initialize_timezone with an invalid path calls exit(1) → JVM crash.
                 assertThrows(MeosInternalError.class,
                         () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
             }
@@ -1161,14 +1151,6 @@ class MeosInternalErrorBranchTest {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosFileError("x", 12)));
         }
 
-        // ── Native MEOS trigger ───────────────────────────────────────────────
-        // meos_initialize_timezone() with an invalid path calls exit(1) internally
-        // instead of routing through meos_error() — this kills the Surefire JVM fork.
-        // No safe native trigger is available for MeosFileError (code 8).
-        // The substitute below uses TGeomPointInst("POINT(181.0 91.0@not-a-date")
-        // which reliably produces MeosInternalTypeError (code 2) — a sibling.
-        // NOTE: update this block when a safe trigger for code 8 is confirmed.
-
         @Nested
         @DisplayName("Native MEOS trigger")
         class NativeTrigger {
@@ -1176,8 +1158,6 @@ class MeosInternalErrorBranchTest {
             @Test
             @DisplayName("broken geometry → MeosInternalError (safe substitute for code 8)")
             void safeSubstitute_catchableAsMeosInternalError() {
-                // NOTE: produces MeosInternalTypeError (code 2), not MeosFileError (code 8).
-                // meos_initialize_timezone with an invalid path calls exit(1) → JVM crash.
                 assertThrows(MeosInternalError.class,
                         () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
             }
