@@ -1,8 +1,8 @@
 package functions;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import types.basic.tpoint.tgeom.TGeomPointInst;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("MeosException - base class")
 @ExtendWith(TestLogger.class)
 class MeosExceptionTest {
+
+    private static final error_handler_fn HANDLER = new MeosErrorHandler();
+
+    @BeforeAll
+    static void initMeos() {
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(HANDLER);
+    }
+
+    @BeforeEach
+    void resetHandlerState() {
+        try { MeosErrorHandler.checkError(); } catch (MeosException ignored) {}
+    }
 
     // Construction
 
@@ -134,5 +147,43 @@ class MeosExceptionTest {
         assertThrows(RuntimeException.class, () -> {
             throw new MeosException("thrown", 10);
         });
+    }
+
+    @Nested
+    @DisplayName("Native MEOS trigger")
+    class NativeTrigger {
+
+        @Test
+        @DisplayName("well-formed TGeomPointInst does not throw")
+        void validInput_doesNotThrow() {
+            assertDoesNotThrow(() -> {
+                TGeomPointInst inst = new TGeomPointInst(
+                        "SRID=4326;POINT(4.3517 50.8503)@2024-06-01 08:00:00+00");
+                assertNotNull(inst);
+            });
+        }
+
+        @Test
+        @DisplayName("TGeomPointInst('not-a-wkt') is catchable as MeosException")
+        void invalidWkt_catchableAtBaseLevel() {
+            assertThrows(MeosException.class,
+                    () -> new TGeomPointInst("not-a-wkt"));
+        }
+
+        @Test
+        @DisplayName("MeosException thrown by MEOS carries a non-null message")
+        void meosException_hasNonNullMessage() {
+            MeosException ex = assertThrows(MeosException.class,
+                    () -> new TGeomPointInst("not-a-wkt"));
+            assertNotNull(ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("MeosException thrown by MEOS carries a non-zero code")
+        void meosException_hasNonZeroCode() {
+            MeosException ex = assertThrows(MeosException.class,
+                    () -> new TGeomPointInst("not-a-wkt"));
+            assertNotEquals(0, ex.getCode());
+        }
     }
 }
