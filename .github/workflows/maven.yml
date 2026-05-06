@@ -44,6 +44,9 @@ jobs:
 
       - name: Print current working directory
         run: pwd
+        
+      - name: Update apt cache
+        run: sudo apt-get update
 
       # Install GEOS library
       - name: Install GEOS
