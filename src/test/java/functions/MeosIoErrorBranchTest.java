@@ -1,9 +1,8 @@
 package functions;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import types.basic.tpoint.tgeom.TGeomPointInst;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +34,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("MeosIoError branch")
 @ExtendWith(TestLogger.class)
 class MeosIoErrorBranchTest {
+
+    private static final error_handler_fn HANDLER = new MeosErrorHandler();
+
+    @BeforeAll
+    static void initMeos() {
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(HANDLER);
+    }
+
+    @BeforeEach
+    void resetHandlerState() {
+        try { MeosErrorHandler.checkError(); } catch (MeosException ignored) {}
+    }
+
 
     // =========================================================================
     // MeosIoError
@@ -153,6 +166,29 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (child inheritor class)")
         void notInstanceofChild_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosIoError("x", 12)));
+        }
+
+        // MeosIoError is the abstract parent of the I/O branch.
+        // MeosTextInputError (code 22) IS-A MeosIoError: the invalid-WKT trigger
+        // below propagates up and is catchable as MeosIoError.
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("TGeomPointInst('not-a-wkt') catchable as MeosIoError (parent)")
+            void invalidWkt_catchableAsMeosIoError() {
+                assertThrows(MeosIoError.class,
+                        () -> new TGeomPointInst("not-a-wkt"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst('not-a-wkt') catchable as MeosException")
+            void invalidWkt_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("not-a-wkt"));
+            }
         }
     }
 
@@ -280,6 +316,35 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosMfJsonInputError("x", 12)));
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            private static final String TRUNCATED =
+                    "{\"type\":\"MovingPoint\",\"coordinates\":[[1.0,2.0";
+
+            @Test
+            @DisplayName("tgeompoint_from_mfjson(truncated) → MeosMfJsonInputError (code 20)")
+            void truncatedMfJson_throwsMeosMfJsonInputError() {
+                assertThrows(MeosMfJsonInputError.class,
+                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+            }
+
+            @Test
+            @DisplayName("tgeompoint_from_mfjson(truncated) catchable as MeosIoError")
+            void truncatedMfJson_catchableAsMeosIoError() {
+                assertThrows(MeosIoError.class,
+                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+            }
+
+            @Test
+            @DisplayName("tgeompoint_from_mfjson(truncated) catchable as MeosException")
+            void truncatedMfJson_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+            }
+        }
     }
 
     // =========================================================================
@@ -405,6 +470,29 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (sibling class)")
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosMfJsonOutputError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosMfJsonOutputError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosIoError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosException() {
+                // TODO
+            }
         }
     }
 
@@ -532,6 +620,32 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosTextInputError("x", 12)));
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("TGeomPointInst('not-a-wkt'): MeosTextInputError (code 22)")
+            void invalidWkt_throwsMeosTextInputError() {
+                assertThrows(MeosTextInputError.class,
+                        () -> new TGeomPointInst("not-a-wkt"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst('not-a-wkt') catchable as MeosIoError")
+            void invalidWkt_catchableAsMeosIoError() {
+                assertThrows(MeosIoError.class,
+                        () -> new TGeomPointInst("not-a-wkt"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst('not-a-wkt') catchable as MeosException")
+            void invalidWkt_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("not-a-wkt"));
+            }
+        }
     }
 
     // =========================================================================
@@ -657,6 +771,29 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (sibling class)")
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosTextOutputError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosTextOutputError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosIoError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosException() {
+                // TODO
+            }
         }
     }
 
@@ -784,6 +921,34 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosWkbInputError("x", 12)));
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            private static final String CORRUPT = "DEADBEEFCAFE0123456789ABCDEF";
+
+            @Test
+            @DisplayName("temporal_from_hexwkb(corrupt): MeosWkbInputError")
+            void corruptWkb_throwsMeosWkbInputError() {
+                assertThrows(MeosWkbInputError.class,
+                        () -> functions.temporal_from_hexwkb(CORRUPT));
+            }
+
+            @Test
+            @DisplayName("temporal_from_hexwkb(corrupt) catchable as MeosIoError")
+            void corruptWkb_catchableAsMeosIoError() {
+                assertThrows(MeosIoError.class,
+                        () -> functions.temporal_from_hexwkb(CORRUPT));
+            }
+
+            @Test
+            @DisplayName("temporal_from_hexwkb(corrupt) catchable as MeosException")
+            void corruptWkb_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.temporal_from_hexwkb(CORRUPT));
+            }
+        }
     }
 
     // =========================================================================
@@ -909,6 +1074,29 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbInputError (sibling class)")
         void notInstanceofSibling_MeosWkbInputError() {
             assertFalse(MeosWkbInputError.class.isInstance(new MeosWkbOutputError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosWkbOutputError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosIoError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosException() {
+                // TODO
+            }
         }
     }
 
@@ -1036,6 +1224,34 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosGeoJsonInputError("x", 12)));
         }
+
+        /*@Nested FIXME
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            private static final String INVALID_GEOJSON = "{\"type\":\"Point\",\"coord"; // truncated
+
+            @Test
+            @DisplayName("tgeompoint_from_geojson(truncated) → MeosGeoJsonInputError (code 26)")
+            void invalidGeoJson_throwsMeosGeoJsonInputError() {
+                assertThrows(MeosGeoJsonInputError.class,
+                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+            }
+
+            @Test
+            @DisplayName("tgeompoint_from_geojson(truncated) catchable as MeosIoError")
+            void invalidGeoJson_catchableAsMeosIoError() {
+                assertThrows(MeosIoError.class,
+                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+            }
+
+            @Test
+            @DisplayName("tgeompoint_from_geojson(truncated) catchable as MeosException")
+            void invalidGeoJson_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+            }
+        }*/
     }
 
     // =========================================================================
@@ -1161,6 +1377,29 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (sibling class)")
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosGeoJsonOutputError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosGeoJsonOutputError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosIoError() {
+                // TODO
+            }
+
+            @Test
+            @DisplayName("")
+            void a_throwsMeosException() {
+                // TODO
+            }
         }
     }
 }

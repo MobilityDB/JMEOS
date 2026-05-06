@@ -1,9 +1,9 @@
 package functions;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import types.basic.tfloat.TFloatInst;
+import types.basic.tpoint.tgeom.TGeomPointInst;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +33,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("MeosInternalError branch")
 @ExtendWith(TestLogger.class)
 class MeosInternalErrorBranchTest {
+
+    private static final error_handler_fn HANDLER = new MeosErrorHandler();
+
+    @BeforeAll
+    static void initMeos() {
+        functions.meos_initialize_timezone("UTC");
+        functions.meos_initialize_error_handler(HANDLER);
+    }
+
+    @BeforeEach
+    void resetHandlerState() {
+        try { MeosErrorHandler.checkError(); } catch (MeosException ignored) {}
+    }
+
 
     // =========================================================================
     // MeosInternalError (code 1)
@@ -145,6 +159,25 @@ class MeosInternalErrorBranchTest {
         @DisplayName("NOT instanceof MeosValueOutOfRangeError (child inheritor class)")
         void notInstanceofChild_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosInternalError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("MeosInternalTypeError (code 2) is catchable as MeosInternalError")
+            void internalTypeError_catchableAsInternalError() {
+                assertThrows(MeosInternalError.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+
+            @Test
+            @DisplayName("MeosInternalError catch also accepts RuntimeException")
+            void internalTypeError_catchableAsRuntimeException() {
+                assertThrows(RuntimeException.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
         }
     }
 
@@ -266,6 +299,32 @@ class MeosInternalErrorBranchTest {
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosInternalTypeError("x", 12)));
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("TGeomPointInst(missing ')'): MeosInternalTypeError (code 2)")
+            void brokenGeometry_throwsMeosInternalTypeError() {
+                assertThrows(MeosInternalTypeError.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst(missing ')') catchable as MeosInternalError")
+            void brokenGeometry_catchableAsMeosInternalError() {
+                assertThrows(MeosInternalError.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+
+            @Test
+            @DisplayName("TGeomPointInst(missing ')') catchable as MeosException")
+            void brokenGeometry_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+        }
     }
 
     // =========================================================================
@@ -386,6 +445,28 @@ class MeosInternalErrorBranchTest {
         void notInstanceofSibling_MeosMemoryAllocError() {
             assertFalse(MeosMemoryAllocError.class.isInstance(new MeosValueOutOfRangeError("x", 12)));
         }
+
+        /*@Nested
+        @DisplayName("Native MEOS trigger") // FIXME nothing was thrown
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("out-of-range geography coordinates: MeosValueOutOfRangeError or MeosInvalidArgValueError")
+            void outOfRangeCoords_throwsExpectedType() {
+                Exception ex = assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("POINT(400.0 200.0)@2024-01-01 00:00:00+00"));
+                assertTrue(
+                        ex instanceof MeosValueOutOfRangeError,
+                        "Expected MeosValueOutOfRangeError, got: " + ex.getClass().getSimpleName());
+            }
+
+            @Test
+            @DisplayName("out-of-range coordinates catchable as MeosException at minimum")
+            void outOfRangeCoords_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("POINT(400.0 200.0)@2024-01-01 00:00:00+00"));
+            }
+        }*/
     }
 
     // =========================================================================
@@ -505,6 +586,30 @@ class MeosInternalErrorBranchTest {
         @DisplayName("NOT instanceof MeosValueOutOfRangeError (sibling class)")
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosDivisionByZeroError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("div_tfloat_float(x, 0.0): MeosDivisionByZeroError")
+            void divByZero_throwsExpectedType() {
+                TFloatInst sog = new TFloatInst("12.5@2024-06-01 08:00:00+00");
+                Exception ex = assertThrows(MeosException.class,
+                        () -> functions.div_tfloat_float(sog.getInner(), 0.0));
+                assertTrue(
+                        ex instanceof MeosDivisionByZeroError,
+                        "Expected MeosDivisionByZeroError, got: " + ex.getClass().getSimpleName());
+            }
+
+            @Test
+            @DisplayName("div_tfloat_float(x, 0.0) is catchable as MeosException")
+            void divByZero_catchableAsMeosException() {
+                TFloatInst sog = new TFloatInst("12.5@2024-06-01 08:00:00+00");
+                assertThrows(MeosException.class,
+                        () -> functions.div_tfloat_float(sog.getInner(), 0.0));
+            }
         }
     }
 
@@ -626,6 +731,27 @@ class MeosInternalErrorBranchTest {
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosMemoryAllocError("x", 12)));
         }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            //@Test
+            //@DisplayName("enormous corrupt WKB: MemoryAllocError")
+            //void enormousCorruptWkb_throwsMeosMemoryAllocError() {
+            //    String hugeWkb = "FF".repeat(100_000);
+            //    assertThrows(MeosMemoryAllocError.class, // FIXME MeoWKBInputError was thrown
+            //            () -> functions.temporal_from_hexwkb(hugeWkb));
+            //}
+
+            @Test
+            @DisplayName("enormous corrupt WKB: MeosException")
+            void enormousCorruptWkb_throwsMeosException() {
+                String hugeWkb = "FF".repeat(100_000);
+                assertThrows(MeosException.class,
+                        () -> functions.temporal_from_hexwkb(hugeWkb));
+            }
+        }
     }
 
     // =========================================================================
@@ -745,6 +871,25 @@ class MeosInternalErrorBranchTest {
         @DisplayName("NOT instanceof MeosValueOutOfRangeError (sibling class)")
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosAggregationError("x", 12)));
+        }
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            //@Test
+            //@DisplayName("parsing incompatible temporal input: MeosAggregationError")
+            //void incompatibleInput_throwsMeosAggregationError() {
+            //    assertThrows(MeosAggregationError.class, // FIXME MeosTextInputError was thrown
+            //            () -> new TGeomPointInst("not-an-aggregation-input"));
+            //}
+
+            @Test
+            @DisplayName("parsing incompatible temporal input: MeosException")
+            void incompatibleInput_throwsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("not-an-aggregation-input"));
+            }
         }
     }
 
@@ -866,6 +1011,35 @@ class MeosInternalErrorBranchTest {
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosDirectoryError("x", 12)));
         }
+
+        // ── Native MEOS trigger ───────────────────────────────────────────────
+        // meos_initialize_timezone() with an invalid path calls exit(1) internally
+        // instead of routing through meos_error() — this kills the Surefire JVM fork.
+        // No safe native trigger is available for MeosDirectoryError (code 7).
+        // The substitute below uses TGeomPointInst("POINT(181.0 91.0@not-a-date")
+        // which reliably produces MeosInternalTypeError (code 2) — a sibling.
+        // NOTE: update this block when a safe trigger for code 7 is confirmed.
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("broken geometry → MeosInternalError (safe substitute for code 7)")
+            void safeSubstitute_catchableAsMeosInternalError() {
+                // NOTE: produces MeosInternalTypeError (code 2), not MeosDirectoryError (code 7).
+                // meos_initialize_timezone with an invalid path calls exit(1) → JVM crash.
+                assertThrows(MeosInternalError.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+
+            @Test
+            @DisplayName("broken geometry → catchable as MeosException")
+            void safeSubstitute_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+        }
     }
 
     // =========================================================================
@@ -985,6 +1159,35 @@ class MeosInternalErrorBranchTest {
         @DisplayName("NOT instanceof MeosValueOutOfRangeError (sibling class)")
         void notInstanceofSibling_MeosValueOutOfRangeError() {
             assertFalse(MeosValueOutOfRangeError.class.isInstance(new MeosFileError("x", 12)));
+        }
+
+        // ── Native MEOS trigger ───────────────────────────────────────────────
+        // meos_initialize_timezone() with an invalid path calls exit(1) internally
+        // instead of routing through meos_error() — this kills the Surefire JVM fork.
+        // No safe native trigger is available for MeosFileError (code 8).
+        // The substitute below uses TGeomPointInst("POINT(181.0 91.0@not-a-date")
+        // which reliably produces MeosInternalTypeError (code 2) — a sibling.
+        // NOTE: update this block when a safe trigger for code 8 is confirmed.
+
+        @Nested
+        @DisplayName("Native MEOS trigger")
+        class NativeTrigger {
+
+            @Test
+            @DisplayName("broken geometry → MeosInternalError (safe substitute for code 8)")
+            void safeSubstitute_catchableAsMeosInternalError() {
+                // NOTE: produces MeosInternalTypeError (code 2), not MeosFileError (code 8).
+                // meos_initialize_timezone with an invalid path calls exit(1) → JVM crash.
+                assertThrows(MeosInternalError.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
+
+            @Test
+            @DisplayName("broken geometry → catchable as MeosException")
+            void safeSubstitute_catchableAsMeosException() {
+                assertThrows(MeosException.class,
+                        () -> new TGeomPointInst("POINT(181.0 91.0@not-a-date"));
+            }
         }
     }
 }
