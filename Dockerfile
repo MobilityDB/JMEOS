@@ -36,19 +36,19 @@ RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
 
 # ADD PROJECT MobilityDB-JMEOS
 RUN git clone --branch fix-tests-using-docker https://github.com/MobilityDB/JMEOS /usr/local/jmeos
-RUN rm /usr/local/jmeos/src/main/resources/lib/libmeos.so
-RUN cp /usr/local/lib/libmeos.so /usr/local/jmeos/src/main/resources/lib/libmeos.so
-RUN rm /usr/local/jmeos/jar/*
+
+# Copy libmeos.so to src/ (used by JarLibraryLoader on Linux)
+RUN cp /usr/local/lib/libmeos.so /usr/local/jmeos/src/libmeos.so
+
+# Clear pre-built jars
+RUN rm -f /usr/local/jmeos/jar/*
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # CLEAN_UP
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*lists/* 
-RUN apt-get remove --purge --autoremove -y curl gnupg 
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*lists/*
+RUN apt-get remove --purge --autoremove -y curl gnupg
 
 # END_POINT
 WORKDIR /usr/local/jmeos
 CMD ["/bin/bash"]
-
-
-
