@@ -17,12 +17,11 @@ Java applications and MobilityDB, allowing for the seamless integration of advan
 - [Code Generation](#Code-Generation)
 - [Compilation](#Compilation)
 - [Unit Tests](#Unit-Tests)
-- [Deployment](#Deployment)
 - [Javadoc](#Javadoc)
 - [Code Analysis](#Code-Analysis)
 - [Docker Image](#Docker-Image)
 - [Use Case Examples](#Use-Case-Examples)
-- [Future Work](#Future-Work)
+- [Benchmark](#Benchmark)
 
 ## Requirements
 The project is based on MEOS and developed in Java
@@ -256,7 +255,7 @@ Use case examples have been moved to the [JMEOS-Examples](https://github.com/Mob
 
 Examples include programs using BerlinMOD and AIS (Danish Maritime Institute) data, as well as Jupyter notebooks. Please refer to the [EXAMPLES_GUIDE.md](https://github.com/MobilityDB/JMEOS-examples/blob/main/EXAMPLES_GUIDE.md) and [JUPYTER_NOTEBOOKS_GUIDE.md](https://github.com/MobilityDB/JMEOS-examples/blob/main/JUPYTER_NOTEBOOKS_GUIDE.md) in that repository for full instructions.
 
-### Benchmark
+## Benchmark
 
 A small benchmark was performed on the `read_ais` program comparing runtime performance with PyMEOS (Python) and MEOS, over 5 iterations at 3 scales (200k, 500k and 1M lines) on AIS data from [Danish AIS data](https://dma.dk/safety-at-sea/navigational-information/ais-data).
 
@@ -265,21 +264,3 @@ A small benchmark was performed on the `read_ais` program comparing runtime perf
 
 <br/><br/>
 ![Throughput](thesis/assets/Throughput.jpg "Throughput")
-
-## Future Work
--  **Error Handling Improvements**
-    - Address limitations in JNR-FFI documentation and debuggability.
-    - Enhance error handling in JMEOS for better debugging, especially with C library interfacing.
-    - Aim for more informative feedback at the Java-native C code boundary, enhancing JMEOS robustness and user-friendliness.
--  **Test Coverage Improvements**
-    - Increase test coverage in future JMEOS iterations for improved reliability.
-    - While 100% coverage was not achievable within the thesis timeline, it remains a recommended goal.
--  **Implementation of Remaining Methods**
-    - Complete the implementation of remaining JMEOS methods to achieve full library potential.
-    - Ensures JMEOS fully encapsulates MEOS C library functionality, broadening use case applicability.
--  **Addition of New Examples/Visual Examples**
-    - Implement additional example files using real-world data to demonstrate JMEOS functionalities.
-    - Create a diverse set of examples for applications like urban planning, environmental monitoring, and GIS.
--  **Creation of New MEOS Bindings**
-    - Develop new bindings for languages such as C and JavaScript, expanding MobilityDB's developer community.
-    - Support diverse applications and foster a more inclusive user base, contributing to spatiotemporal data processing knowledge.
