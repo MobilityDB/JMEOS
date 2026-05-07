@@ -248,7 +248,7 @@ public class NewFunctionsGenerator {
         return switch (cType) {
             case "void"                             -> "void";
             case "bool"                             -> "boolean";
-            case "char"                             -> "byte";
+            case "char"                             -> "String";
             case "float"                            -> "float";
             case "double", "float8"                 -> "double";
             case "int", "int32", "int32_t",
