@@ -80,15 +80,15 @@ jobs:
       # Copy the installed library to your project's src/lib directory
       - name: Copy MEOS library to JMEOS/src/
         run: |
-          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/src/
+          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/jmeos-core/src/
 
       # Check for the library in the src/lib directory
       - name: Check for the library
-        run: ls -la $GITHUB_WORKSPACE/src/
+        run: ls -la $GITHUB_WORKSPACE/jmeos-core/src/
 
       # Set up the environment variable LD_LIBRARY_PATH
       - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/src/" >> $GITHUB_ENV
+        run: echo "LD_LIBRARY_PATH=$(pwd)/jmeos-core/src/" >> $GITHUB_ENV
 
       # Check if libmeos.so exists in the target directory
       - name: Check if libmeos.so exists
