@@ -142,7 +142,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>../src/libmeos.so</file>
+                            <file>${project.basedir}/src/libmeos.so</file>
                             <groupId>org.jmeos</groupId>
                             <artifactId>meos</artifactId>
                             <version>1.0</version>
