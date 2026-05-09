@@ -38,6 +38,8 @@ public class functions {
 		String meos_get_datestyle();
 		String meos_get_intervalstyle();
 		void meos_initialize(String tz_str, error_handler_fn err_handler);
+		void meos_initialize();
+		void meos_set_spatial_ref_sys_csv(String path);
 		void meos_finalize();
 		int add_date_int(int d, int days);
 		Pointer add_interval_interval(Pointer interv1, Pointer interv2);
@@ -1531,6 +1533,19 @@ public class functions {
 		Pointer tpoint_space_split(Pointer temp, float xsize, float ysize, float zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer count);
 		Pointer tpoint_space_time_split(Pointer temp, float xsize, float ysize, float zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer time_buckets, Pointer count);
 		Pointer tstzspan_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer count);
+		// MEOS 1.3 additions
+		Pointer geom_to_geog(Pointer g);
+		boolean geom_contains(Pointer g1, Pointer g2);
+		Pointer tspatial_to_stbox(Pointer temp);
+		Pointer tgeo_at_geom(Pointer temp, Pointer g);
+		int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int econtains_geo_tgeo(Pointer g, Pointer temp);
+		int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist);
+		int eintersects_tgeo_geo(Pointer temp, Pointer g);
+		Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean border_inc1, boolean border_inc2);
+		double nad_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer geo_from_text(String wkt, int srid);
+		Pointer tpoint_trajectory(Pointer temp, boolean unary_union);
 	}
 
 	// Native library name
@@ -1571,6 +1586,8 @@ public class functions {
 		String meos_get_datestyle();
 		String meos_get_intervalstyle();
 		void meos_initialize(String tz_str, error_handler_fn err_handler);
+		void meos_initialize();
+		void meos_set_spatial_ref_sys_csv(String path);
 		void meos_finalize();
 		int add_date_int(int d, int days);
 		Pointer add_interval_interval(Pointer interv1, Pointer interv2);
@@ -3043,6 +3060,19 @@ public class functions {
 		Pointer tpoint_space_split(Pointer temp, float xsize, float ysize, float zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer count);
 		Pointer tpoint_space_time_split(Pointer temp, float xsize, float ysize, float zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer time_buckets, Pointer count);
 		Pointer tstzspan_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer count);
+		// MEOS 1.3 additions
+		Pointer geom_to_geog(Pointer g);
+		boolean geom_contains(Pointer g1, Pointer g2);
+		Pointer tspatial_to_stbox(Pointer temp);
+		Pointer tgeo_at_geom(Pointer temp, Pointer g);
+		int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int econtains_geo_tgeo(Pointer g, Pointer temp);
+		int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist);
+		int eintersects_tgeo_geo(Pointer temp, Pointer g);
+		Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean border_inc1, boolean border_inc2);
+		double nad_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer geo_from_text(String wkt, int srid);
+		Pointer tpoint_trajectory(Pointer temp, boolean unary_union);
 	}
 
 	/** Delegates MeosLibrary calls to the appropriate sub-interface proxy. */
@@ -4534,6 +4564,21 @@ public class functions {
 		@Override public Pointer tpoint_space_split(Pointer temp, float xsize, float ysize, float zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer count) { return _meos_d.tpoint_space_split(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc, space_buckets, count); }
 		@Override public Pointer tpoint_space_time_split(Pointer temp, float xsize, float ysize, float zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_buckets, Pointer time_buckets, Pointer count) { return _meos_d.tpoint_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, torigin, bitmatrix, border_inc, space_buckets, time_buckets, count); }
 		@Override public Pointer tstzspan_bucket_list(Pointer bounds, Pointer duration, long origin, Pointer count) { return _meos_d.tstzspan_bucket_list(bounds, duration, origin, count); }
+		// MEOS 1.3 additions
+		@Override public Pointer geom_to_geog(Pointer g) { return _meos_d.geom_to_geog(g); }
+		@Override public boolean geom_contains(Pointer g1, Pointer g2) { return _meos_d.geom_contains(g1, g2); }
+		@Override public Pointer tspatial_to_stbox(Pointer temp) { return _meos_d.tspatial_to_stbox(temp); }
+		@Override public Pointer tgeo_at_geom(Pointer temp, Pointer g) { return _meos_d.tgeo_at_geom(temp, g); }
+		@Override public int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2) { return _meos_d.adisjoint_tgeo_tgeo(temp1, temp2); }
+		@Override public int econtains_geo_tgeo(Pointer g, Pointer temp) { return _meos_d.econtains_geo_tgeo(g, temp); }
+		@Override public int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist) { return _meos_d.edwithin_tgeo_tgeo(temp1, temp2, dist); }
+		@Override public int eintersects_tgeo_geo(Pointer temp, Pointer g) { return _meos_d.eintersects_tgeo_geo(temp, g); }
+		@Override public Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean border_inc1, boolean border_inc2) { return _meos_d.tdwithin_tgeo_tgeo(temp1, temp2, dist, border_inc1, border_inc2); }
+		@Override public double nad_tgeo_tgeo(Pointer temp1, Pointer temp2) { return _meos_d.nad_tgeo_tgeo(temp1, temp2); }
+		@Override public void meos_initialize() { _meos_a.meos_initialize(); }
+		@Override public void meos_set_spatial_ref_sys_csv(String path) { _meos_a.meos_set_spatial_ref_sys_csv(path); }
+		@Override public Pointer geo_from_text(String wkt, int srid) { return _meos_d.geo_from_text(wkt, srid); }
+		@Override public Pointer tpoint_trajectory(Pointer temp, boolean unary_union) { return _meos_d.tpoint_trajectory(temp, unary_union); }
 	}
 
 	@SuppressWarnings("unused")
@@ -12325,5 +12370,77 @@ public class functions {
 	public static Pointer tstzspan_bucket_list(Pointer bounds, Pointer duration, OffsetDateTime origin, Pointer count) {
 		var origin_new = origin.toEpochSecond();
 		return _meos_d.tstzspan_bucket_list(bounds, duration, origin_new, count);
+	}
+
+	// ── MEOS 1.3 additions ────────────────────────────────────────────────────
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_to_geog(Pointer g) {
+		return _meos_d.geom_to_geog(g);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_contains(Pointer g1, Pointer g2) {
+		return _meos_d.geom_contains(g1, g2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tspatial_to_stbox(Pointer temp) {
+		return _meos_d.tspatial_to_stbox(temp);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tgeo_at_geom(Pointer temp, Pointer g) {
+		return _meos_d.tgeo_at_geom(temp, g);
+	}
+
+	@SuppressWarnings("unused")
+	public static int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return _meos_d.adisjoint_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int econtains_geo_tgeo(Pointer g, Pointer temp) {
+		return _meos_d.econtains_geo_tgeo(g, temp);
+	}
+
+	@SuppressWarnings("unused")
+	public static int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist) {
+		return _meos_d.edwithin_tgeo_tgeo(temp1, temp2, dist);
+	}
+
+	@SuppressWarnings("unused")
+	public static int eintersects_tgeo_geo(Pointer temp, Pointer g) {
+		return _meos_d.eintersects_tgeo_geo(temp, g);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean border_inc1, boolean border_inc2) {
+		return _meos_d.tdwithin_tgeo_tgeo(temp1, temp2, dist, border_inc1, border_inc2);
+	}
+
+	@SuppressWarnings("unused")
+	public static double nad_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return _meos_d.nad_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static void meos_initialize() {
+		_meos_a.meos_initialize();
+	}
+
+	@SuppressWarnings("unused")
+	public static void meos_set_spatial_ref_sys_csv(String path) {
+		_meos_a.meos_set_spatial_ref_sys_csv(path);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geo_from_text(String wkt, int srid) {
+		return _meos_d.geo_from_text(wkt, srid);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_trajectory(Pointer temp, boolean unary_union) {
+		return _meos_d.tpoint_trajectory(temp, unary_union);
 	}
 }

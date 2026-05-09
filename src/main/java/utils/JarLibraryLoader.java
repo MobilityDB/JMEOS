@@ -123,18 +123,19 @@ public class JarLibraryLoader<T> {
 			System.out.println("Running on Linux");
 			libraryPath = projectPath + "/src";
 			System.out.println("Linux library path: " + libraryPath);
-//			copyFileFromJar("/jmeos/lib", projectPath + "/src/lib");
-//          System.out.println("File copied successfully to: " + projectPath + "/src/lib");
-//          return LibraryLoader.create(libraryClass).search(projectPath + "/src/lib").load(libraryName);
-			libName= "libmeos.so";
-        } else if (getOSName().equals("Running on Windows")) {
-			System.out.println("In Windows");
+			libName = "libmeos.so";
+		} else if (getOSName().equals("macOS")) {
+			System.out.println("Running on macOS");
+			libraryPath = projectPath + "/src";
+			System.out.println("macOS library path: " + libraryPath);
+			libName = "libmeos.dylib";
+		} else if (getOSName().equals("Windows")) {
+			System.out.println("Running on Windows");
 			libraryPath = projectPath + "\\src\\lib";
-			System.out.println("Looking for library at: " + projectPath + libraryPath);
-//			return LibraryLoader.create(libraryClass).search(projectPath + "\\src\\lib").load(libraryName);
-			libName= "libmeos.so";
+			System.out.println("Windows library path: " + libraryPath);
+			libName = "libmeos.dll";
 		} else {
-			throw new UnsupportedOperationException("JMEOS is only supported on Linux and Windows OS");
+			throw new UnsupportedOperationException("JMEOS is only supported on Linux, macOS, and Windows");
 		}
 		}
 
