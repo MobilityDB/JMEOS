@@ -37,6 +37,8 @@ public class functions {
 
 		void meos_initialize_error_handler(error_handler_fn err_handler);
 
+		void meos_initialize_noexit_error_handler();
+
 		void meos_finalize_timezone();
 
 		boolean meos_set_datestyle(String newval, Pointer extra);
@@ -48,6 +50,10 @@ public class functions {
 		String meos_get_intervalstyle();
 
 		void meos_initialize(String tz_str, error_handler_fn err_handler);
+
+		void meos_initialize();
+
+		void meos_set_spatial_ref_sys_csv(String path);
 
 		void meos_finalize();
 
@@ -130,6 +136,16 @@ public class functions {
 		Pointer geo_from_ewkb(Pointer bytea_wkb, int srid);
 
 		Pointer geo_from_geojson(String geojson);
+
+		Pointer geo_from_text(String wkt, int srid);
+
+		Pointer geom_buffer(Pointer gs, double size, String params);
+
+		Pointer geom_convex_hull(Pointer gs);
+
+		Pointer geom_intersection2d(Pointer gs1, Pointer gs2);
+
+		Pointer geom_to_geog(Pointer geom);
 
 		String geo_out(Pointer gs);
 
@@ -1467,6 +1483,8 @@ public class functions {
 
 		Pointer tpoint_to_stbox(Pointer temp);
 
+		Pointer tspatial_to_stbox(Pointer temp);
+
 		boolean stbox_hast(Pointer box);
 
 		boolean stbox_hasx(Pointer box);
@@ -1703,6 +1721,10 @@ public class functions {
 
 		String tpoint_as_ewkt(Pointer temp, int maxdd);
 
+		String tspatial_as_ewkt(Pointer temp, int maxdd);
+
+		String tspatial_as_text(Pointer temp, int maxdd);
+
 		String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs);
 
 		Pointer temporal_as_wkb(Pointer temp, byte variant, Pointer size_out);
@@ -1871,9 +1893,9 @@ public class functions {
 
 		Pointer tnumber_valuespans(Pointer temp);
 
-		Pointer tpoint_end_value(Pointer temp);
+		Pointer tgeo_end_value(Pointer temp);
 
-		Pointer tpoint_start_value(Pointer temp);
+		Pointer tgeo_start_value(Pointer temp);
 
 		boolean tpoint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
 
@@ -1919,7 +1941,7 @@ public class functions {
 
 		Pointer tfloat_radians(Pointer temp);
 
-		Pointer tfloat_round(Pointer temp, int maxdd);
+		Pointer temporal_round(Pointer temp, int maxdd);
 
 		Pointer tfloat_scale_value(Pointer temp, double width);
 
@@ -1942,6 +1964,10 @@ public class functions {
 		Pointer tpoint_transform_pipeline(Pointer temp, String pipelinestr, int srid, boolean is_forward);
 
 		Pointer tpoint_transform_pj(Pointer temp, int srid, Pointer pj);
+
+		Pointer tspatial_set_srid(Pointer temp, int srid);
+
+		Pointer tspatial_transform(Pointer temp, int srid);
 
 		Pointer lwproj_transform(int srid_from, int srid_to);
 
@@ -2019,15 +2045,19 @@ public class functions {
 
 		Pointer tnumber_minus_tbox(Pointer temp, Pointer box);
 
+		Pointer tpoint_at_elevation(Pointer temp, Pointer s);
+
 		Pointer tpoint_at_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
 
-		Pointer tpoint_at_stbox(Pointer temp, Pointer box, boolean border_inc);
+		Pointer tgeo_at_stbox(Pointer temp, Pointer box, boolean border_inc);
+
+		Pointer tgeo_at_geom(Pointer temp, Pointer gs);
 
 		Pointer tpoint_at_value(Pointer temp, Pointer gs);
 
 		Pointer tpoint_minus_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
 
-		Pointer tpoint_minus_stbox(Pointer temp, Pointer box, boolean border_inc);
+		Pointer tgeo_minus_stbox(Pointer temp, Pointer box, boolean border_inc);
 
 		Pointer tpoint_minus_value(Pointer temp, Pointer gs);
 
@@ -2707,7 +2737,7 @@ public class functions {
 
 		Pointer sub_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer tfloat_derivative(Pointer temp);
+		Pointer temporal_derivative(Pointer temp);
 
 		Pointer tnumber_abs(Pointer temp);
 
@@ -2763,13 +2793,15 @@ public class functions {
 
 		double nad_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
+		double nad_tgeo_tgeo(Pointer temp1, Pointer temp2);
+
 		Pointer nai_tpoint_geo(Pointer temp, Pointer gs);
 
 		Pointer nai_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
 		Pointer shortestline_tpoint_geo(Pointer temp, Pointer gs);
 
-		Pointer shortestline_tpoint_tpoint(Pointer temp1, Pointer temp2);
+		Pointer shortestline_tgeo_tgeo(Pointer temp1, Pointer temp2);
 
 		boolean bearing_point_point(Pointer gs1, Pointer gs2, Pointer result);
 
@@ -2803,7 +2835,7 @@ public class functions {
 
 		Pointer tpoint_stboxes(Pointer temp, Pointer count);
 
-		Pointer tpoint_trajectory(Pointer temp);
+		Pointer tpoint_trajectory(Pointer temp, boolean unary_union);
 
 		Pointer tpoint_twcentroid(Pointer temp);
 
@@ -2843,6 +2875,8 @@ public class functions {
 
 		int econtains_geo_tpoint(Pointer gs, Pointer temp);
 
+		int econtains_geo_tgeo(Pointer gs, Pointer temp);
+
 		int edisjoint_tpoint_geo(Pointer temp, Pointer gs);
 
 		int edisjoint_tpoint_tpoint(Pointer temp1, Pointer temp2);
@@ -2851,19 +2885,29 @@ public class functions {
 
 		int edwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist);
 
+		int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist);
+
 		int eintersects_tpoint_geo(Pointer temp, Pointer gs);
+
+		int eintersects_tgeo_geo(Pointer temp, Pointer gs);
 
 		int eintersects_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
 		int etouches_tpoint_geo(Pointer temp, Pointer gs);
 
+		Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp);
+
 		Pointer tcontains_geo_tpoint(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
+
+		Pointer tcovers_tgeo_tgeo(Pointer temp1, Pointer temp2);
 
 		Pointer tdisjoint_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
 		Pointer tdisjoint_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
 		Pointer tdwithin_tpoint_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue);
+
+		Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist);
 
 		Pointer tdwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist, boolean restr, boolean atvalue);
 
@@ -3034,7 +3078,11 @@ public class functions {
 	public static void meos_initialize_error_handler(error_handler_fn err_handler) {
 		MeosLibrary.meos.meos_initialize_error_handler(err_handler);
 	}
-	
+
+	public static void meos_initialize_noexit_error_handler() {
+		MeosLibrary.meos.meos_initialize_noexit_error_handler();
+	}
+
 	@SuppressWarnings("unused")
 	public static void meos_finalize_timezone() {
 		MeosLibrary.meos.meos_finalize_timezone();
@@ -3064,7 +3112,17 @@ public class functions {
 	public static void meos_initialize(String tz_str, error_handler_fn err_handler) {
 		MeosLibrary.meos.meos_initialize(tz_str, err_handler);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static void meos_initialize() {
+		MeosLibrary.meos.meos_initialize();
+	}
+
+	@SuppressWarnings("unused")
+	public static void meos_set_spatial_ref_sys_csv(String path) {
+		MeosLibrary.meos.meos_set_spatial_ref_sys_csv(path);
+	}
+
 	@SuppressWarnings("unused")
 	public static void meos_finalize() {
 		MeosLibrary.meos.meos_finalize();
@@ -3285,7 +3343,32 @@ public class functions {
 	public static Pointer geo_from_geojson(String geojson) {
 		return MeosLibrary.meos.geo_from_geojson(geojson);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer geo_from_text(String wkt, int srid) {
+		return MeosLibrary.meos.geo_from_text(wkt, srid);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_buffer(Pointer gs, double size, String params) {
+		return MeosLibrary.meos.geom_buffer(gs, size, params);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_convex_hull(Pointer gs) {
+		return MeosLibrary.meos.geom_convex_hull(gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_intersection2d(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_intersection2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_to_geog(Pointer geom) {
+		return MeosLibrary.meos.geom_to_geog(geom);
+	}
+
 	@SuppressWarnings("unused")
 	public static String geo_out(Pointer gs) {
 		return MeosLibrary.meos.geo_out(gs);
@@ -3839,8 +3922,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.bigintset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3894,8 +3976,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.dateset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3924,8 +4005,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.datespanset_date_n(ss, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3969,8 +4049,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.floatset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4054,8 +4133,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.intset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4228,8 +4306,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tstzset_value_n(s, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -4293,8 +4370,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tstzspanset_timestamptz_n(ss, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6773,7 +6849,12 @@ public class functions {
 	public static Pointer tpoint_to_stbox(Pointer temp) {
 		return MeosLibrary.meos.tpoint_to_stbox(temp);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tspatial_to_stbox(Pointer temp) {
+		return MeosLibrary.meos.tspatial_to_stbox(temp);
+	}
+
 	@SuppressWarnings("unused")
 	public static boolean stbox_hast(Pointer box) {
 		return MeosLibrary.meos.stbox_hast(box);
@@ -6805,8 +6886,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6815,8 +6895,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6825,8 +6904,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6835,8 +6913,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_tmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6845,8 +6922,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6855,8 +6931,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6865,8 +6940,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_ymax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6875,8 +6949,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_ymin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6885,8 +6958,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_zmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6895,8 +6967,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.stbox_zmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6915,8 +6986,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6925,8 +6995,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6935,8 +7004,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6945,8 +7013,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_tmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6955,8 +7022,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6965,8 +7031,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_xmax_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6975,8 +7040,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6985,8 +7049,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbox_xmin_inc(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -6995,8 +7058,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tboxfloat_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7005,8 +7067,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tboxfloat_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7015,8 +7076,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tboxint_xmax(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7025,8 +7085,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tboxint_xmin(box, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7473,7 +7532,17 @@ public class functions {
 	public static String tpoint_as_ewkt(Pointer temp, int maxdd) {
 		return MeosLibrary.meos.tpoint_as_ewkt(temp, maxdd);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static String tspatial_as_ewkt(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.tspatial_as_ewkt(temp, maxdd);
+	}
+
+	@SuppressWarnings("unused")
+	public static String tspatial_as_text(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.tspatial_as_text(temp, maxdd);
+	}
+
 	@SuppressWarnings("unused")
 	public static String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs) {
 		return MeosLibrary.meos.temporal_as_mfjson(temp, with_bbox, flags, precision, srs);
@@ -7685,8 +7754,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tbool_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7824,8 +7892,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.temporal_timestamptz_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7865,8 +7932,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tfloat_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7906,8 +7972,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tint_value_n(temp, n, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -7931,13 +7996,13 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_end_value(Pointer temp) {
-		return MeosLibrary.meos.tpoint_end_value(temp);
+	public static Pointer tgeo_end_value(Pointer temp) {
+		return MeosLibrary.meos.tgeo_end_value(temp);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_start_value(Pointer temp) {
-		return MeosLibrary.meos.tpoint_start_value(temp);
+	public static Pointer tgeo_start_value(Pointer temp) {
+		return MeosLibrary.meos.tgeo_start_value(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -8063,8 +8128,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_round(Pointer temp, int maxdd) {
-		return MeosLibrary.meos.tfloat_round(temp, maxdd);
+	public static Pointer temporal_round(Pointer temp, int maxdd) {
+		return MeosLibrary.meos.temporal_round(temp, maxdd);
 	}
 	
 	@SuppressWarnings("unused")
@@ -8121,7 +8186,17 @@ public class functions {
 	public static Pointer tpoint_transform_pj(Pointer temp, int srid, Pointer pj) {
 		return MeosLibrary.meos.tpoint_transform_pj(temp, srid, pj);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tspatial_set_srid(Pointer temp, int srid) {
+		return MeosLibrary.meos.tspatial_set_srid(temp, srid);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tspatial_transform(Pointer temp, int srid) {
+		return MeosLibrary.meos.tspatial_transform(temp, srid);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer lwproj_transform(int srid_from, int srid_to) {
 		return MeosLibrary.meos.lwproj_transform(srid_from, srid_to);
@@ -8316,15 +8391,25 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tpoint_at_elevation(Pointer temp, Pointer s) {
+		return MeosLibrary.meos.tpoint_at_elevation(temp, s);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_at_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period) {
 		return MeosLibrary.meos.tpoint_at_geom_time(temp, gs, zspan, period);
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_at_stbox(Pointer temp, Pointer box, boolean border_inc) {
-		return MeosLibrary.meos.tpoint_at_stbox(temp, box, border_inc);
+	public static Pointer tgeo_at_stbox(Pointer temp, Pointer box, boolean border_inc) {
+		return MeosLibrary.meos.tgeo_at_stbox(temp, box, border_inc);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tgeo_at_geom(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tgeo_at_geom(temp, gs);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_at_value(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.tpoint_at_value(temp, gs);
@@ -8336,8 +8421,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_minus_stbox(Pointer temp, Pointer box, boolean border_inc) {
-		return MeosLibrary.meos.tpoint_minus_stbox(temp, box, border_inc);
+	public static Pointer tgeo_minus_stbox(Pointer temp, Pointer box, boolean border_inc) {
+		return MeosLibrary.meos.tgeo_minus_stbox(temp, box, border_inc);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10036,8 +10121,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_derivative(Pointer temp) {
-		return MeosLibrary.meos.tfloat_derivative(temp);
+	public static Pointer temporal_derivative(Pointer temp) {
+		return MeosLibrary.meos.temporal_derivative(temp);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10174,7 +10259,12 @@ public class functions {
 	public static double nad_tpoint_tpoint(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.nad_tpoint_tpoint(temp1, temp2);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static double nad_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.nad_tgeo_tgeo(temp1, temp2);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer nai_tpoint_geo(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.nai_tpoint_geo(temp, gs);
@@ -10191,8 +10281,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer shortestline_tpoint_tpoint(Pointer temp1, Pointer temp2) {
-		return MeosLibrary.meos.shortestline_tpoint_tpoint(temp1, temp2);
+	public static Pointer shortestline_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.shortestline_tgeo_tgeo(temp1, temp2);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10201,8 +10291,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.bearing_point_point(gs1, gs2, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -10241,8 +10330,7 @@ public class functions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = MeosLibrary.meos.tpoint_direction(temp, result);
-		Pointer new_result = result.getPointer(0);
-		return out ? new_result : null ;
+		return out ? result : null ;
 	}
 	
 	@SuppressWarnings("unused")
@@ -10286,8 +10374,8 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
-	public static Pointer tpoint_trajectory(Pointer temp) {
-		return MeosLibrary.meos.tpoint_trajectory(temp);
+	public static Pointer tpoint_trajectory(Pointer temp, boolean unary_union) {
+		return MeosLibrary.meos.tpoint_trajectory(temp, unary_union);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10389,7 +10477,12 @@ public class functions {
 	public static int econtains_geo_tpoint(Pointer gs, Pointer temp) {
 		return MeosLibrary.meos.econtains_geo_tpoint(gs, temp);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static int econtains_geo_tgeo(Pointer gs, Pointer temp) {
+		return MeosLibrary.meos.econtains_geo_tgeo(gs, temp);
+	}
+
 	@SuppressWarnings("unused")
 	public static int edisjoint_tpoint_geo(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.edisjoint_tpoint_geo(temp, gs);
@@ -10409,10 +10502,20 @@ public class functions {
 	public static int edwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist) {
 		return MeosLibrary.meos.edwithin_tpoint_tpoint(temp1, temp2, dist);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static int edwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist) {
+		return MeosLibrary.meos.edwithin_tgeo_tgeo(temp1, temp2, dist);
+	}
+
 	@SuppressWarnings("unused")
 	public static int eintersects_tpoint_geo(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.eintersects_tpoint_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int eintersects_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.eintersects_tgeo_geo(temp, gs);
 	}
 	
 	@SuppressWarnings("unused")
@@ -10426,10 +10529,20 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp) {
+		return MeosLibrary.meos.tcontains_geo_tgeo(gs, temp);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tcontains_geo_tpoint(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tcontains_geo_tpoint(gs, temp, restr, atvalue);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tcovers_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tcovers_tgeo_tgeo(temp1, temp2);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tdisjoint_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tdisjoint_tpoint_geo(temp, gs, restr, atvalue);
@@ -10446,10 +10559,15 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist) {
+		return MeosLibrary.meos.tdwithin_tgeo_tgeo(temp1, temp2, dist);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tdwithin_tpoint_tpoint(Pointer temp1, Pointer temp2, double dist, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tdwithin_tpoint_tpoint(temp1, temp2, dist, restr, atvalue);
 	}
-	
+
 	@SuppressWarnings("unused")
 	public static Pointer tintersects_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tintersects_tpoint_geo(temp, gs, restr, atvalue);
