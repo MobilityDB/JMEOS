@@ -483,9 +483,20 @@ public class FunctionsGenerator {
 	 * @param functionsBuilder builder of functions
 	 * @return the interface builder
 	 */
+	/**
+	 * NOTE (fix/split-meos-library-interface): This generator still emits the
+	 * original single-interface MeosLibrary template.  When the MEOS API grows,
+	 * running the generator would regenerate functions.java with the single large
+	 * interface and reintroduce MethodTooLargeException.
+	 *
+	 * <p>TODO: update this method (and generateClass) to emit split sub-interfaces
+	 * (MeosLibraryPartA/B/C/D …) in the same way as the hand-edited
+	 * functions.java that ships with this fix.  See the PR description for the
+	 * approach: split by sequential index into chunks of ≤ 400 methods.</p>
+	 */
 	private StringBuilder generateInterface(StringBuilder functionsBuilder) {
 		var builder = new StringBuilder();
-		
+
 		builder.append("""
 				public interface MeosLibrary {
 				    String libraryPath = "libmeos.so";
