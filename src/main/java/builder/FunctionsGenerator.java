@@ -183,6 +183,8 @@ public class FunctionsGenerator {
 		types.put("uintptr_t", "long");
 		types.put("size_t", "long");
 		types.put("interpType", "int"); // enum in C
+		types.put("RTreeSearchOp", "int"); // enum in C
+		types.put("error_handler_fn", "Pointer"); // function pointer in C
 		//types.put("\\char **","Pointer");
 		
 		return types;
