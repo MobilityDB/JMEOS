@@ -139,11 +139,45 @@ public class functions {
 
 		Pointer geo_from_text(String wkt, int srid);
 
+		boolean geom_contains(Pointer gs1, Pointer gs2);
+
+		boolean geom_covers(Pointer gs1, Pointer gs2);
+
+		boolean geom_disjoint2d(Pointer gs1, Pointer gs2);
+
+		boolean geom_dwithin2d(Pointer gs1, Pointer gs2, double tolerance);
+
+		boolean geom_intersects2d(Pointer gs1, Pointer gs2);
+
+		boolean geom_touches(Pointer gs1, Pointer gs2);
+
+		Pointer geom_boundary(Pointer gs);
+
 		Pointer geom_buffer(Pointer gs, double size, String params);
+
+		Pointer geom_centroid(Pointer gs);
 
 		Pointer geom_convex_hull(Pointer gs);
 
+		Pointer geom_difference2d(Pointer gs1, Pointer gs2);
+
 		Pointer geom_intersection2d(Pointer gs1, Pointer gs2);
+
+		Pointer geom_unary_union(Pointer gs, double prec);
+
+		double geom_distance2d(Pointer gs1, Pointer gs2);
+
+		double geom_length(Pointer gs);
+
+		double geom_perimeter(Pointer gs);
+
+		Pointer geo_reverse(Pointer gs);
+
+		Pointer geo_round(Pointer gs, int maxdd);
+
+		Pointer line_interpolate_point(Pointer gs, double distance_fraction, boolean repeat);
+
+		Pointer line_substring(Pointer gs, double from, double to);
 
 		Pointer geom_to_geog(Pointer geom);
 
@@ -3404,8 +3438,48 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
+	public static boolean geom_contains(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_contains(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_covers(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_covers(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_disjoint2d(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_disjoint2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_dwithin2d(Pointer gs1, Pointer gs2, double tolerance) {
+		return MeosLibrary.meos.geom_dwithin2d(gs1, gs2, tolerance);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_intersects2d(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_intersects2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean geom_touches(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_touches(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_boundary(Pointer gs) {
+		return MeosLibrary.meos.geom_boundary(gs);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer geom_buffer(Pointer gs, double size, String params) {
 		return MeosLibrary.meos.geom_buffer(gs, size, params);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_centroid(Pointer gs) {
+		return MeosLibrary.meos.geom_centroid(gs);
 	}
 
 	@SuppressWarnings("unused")
@@ -3414,8 +3488,53 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer geom_difference2d(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_difference2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer geom_intersection2d(Pointer gs1, Pointer gs2) {
 		return MeosLibrary.meos.geom_intersection2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geom_unary_union(Pointer gs, double prec) {
+		return MeosLibrary.meos.geom_unary_union(gs, prec);
+	}
+
+	@SuppressWarnings("unused")
+	public static double geom_distance2d(Pointer gs1, Pointer gs2) {
+		return MeosLibrary.meos.geom_distance2d(gs1, gs2);
+	}
+
+	@SuppressWarnings("unused")
+	public static double geom_length(Pointer gs) {
+		return MeosLibrary.meos.geom_length(gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static double geom_perimeter(Pointer gs) {
+		return MeosLibrary.meos.geom_perimeter(gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geo_reverse(Pointer gs) {
+		return MeosLibrary.meos.geo_reverse(gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geo_round(Pointer gs, int maxdd) {
+		return MeosLibrary.meos.geo_round(gs, maxdd);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer line_interpolate_point(Pointer gs, double distance_fraction, boolean repeat) {
+		return MeosLibrary.meos.line_interpolate_point(gs, distance_fraction, repeat);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer line_substring(Pointer gs, double from, double to) {
+		return MeosLibrary.meos.line_substring(gs, from, to);
 	}
 
 	@SuppressWarnings("unused")
