@@ -5,6 +5,15 @@
 JMEOS library for MobilityDB has been performed as the Master Thesis of the MSc in Computer Science of ULB.
 A report with the detailed informations is available in the thesis [folder](https://github.com/nmareghn/MobilityDB-JMEOS/tree/test/thesis).
 
+### For contributors and reviewers
+
+- Reviewing a pull request? See the
+  [PR Reviewer Guide](doc/contributing/reviewer-guide.md) — tier ranking,
+  dependency chain (JMEOS ↔ MobilitySpark) and the standards checklist.
+  Reviewers landing in any of the four ecosystem repos (MobilityDB /
+  MobilityDuck / MobilitySpark / JMEOS) find the same canonical structure
+  at the same path.
+
 ## Abstract
 
 The increasing complexity and volume of spatiotemporal data in various domains necessitate efficient and accessible tools for data handling and analysis. MobilityDB, an open-source moving object database, has established itself as a pioneer tool in this landscape. However, with the emergence of big data, there’s an urgent requirement to exploit MobilityDB’s capabilities, through widely used programming languages, such as Python and Java. It’s within this context that JMEOS, a Java-based library, becomes relevant. It bridges the gap between Java applications and MobilityDB, allowing for the seamless integration of advanced temporal types and functionalities. The main focus of this thesis is the implementation of a Java binding of the MEOS library. To this end, we map the functionalities through JNR-FFI, a popular C foreign function interface. By means of it, we implement analogous MobilityDB spatiotemporal types such as TBox, FloatSpan, PeriodSet or TGeomPoint. Lastly, we perform unit tests and code analysis to ensure the functionality and reliability of JMEOS . We finish the thesis by implementing use case example to demonstrate its efficacy in real-world scenarios and benchmarking its performance against MobilityDB and MEOS.
