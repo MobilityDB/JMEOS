@@ -2057,6 +2057,8 @@ public class functions {
 
 		Pointer tpoint_at_elevation(Pointer temp, Pointer s);
 
+		Pointer tpoint_minus_elevation(Pointer temp, Pointer s);
+
 		Pointer tpoint_at_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
 
 		Pointer tgeo_at_stbox(Pointer temp, Pointer box, boolean border_inc);
@@ -8471,6 +8473,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_at_elevation(Pointer temp, Pointer s) {
 		return MeosLibrary.meos.tpoint_at_elevation(temp, s);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tpoint_minus_elevation(Pointer temp, Pointer s) {
+		return MeosLibrary.meos.tpoint_minus_elevation(temp, s);
 	}
 
 	@SuppressWarnings("unused")
