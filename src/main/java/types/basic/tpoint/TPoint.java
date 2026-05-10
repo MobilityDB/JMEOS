@@ -106,7 +106,7 @@ public interface TPoint extends Serializable {
 	 * @return A new GeoJSON string representing the trajectory of the temporal point.
 	 */
 	default String as_geojson(int option, int precision, String srs){
-		return functions.geo_as_geojson(functions.tpoint_trajectory(getPointInner()),option,precision,srs);
+		return functions.geo_as_geojson(functions.tpoint_trajectory(getPointInner(), true),option,precision,srs);
 	}
 
 
@@ -172,13 +172,13 @@ public interface TPoint extends Serializable {
 	 *
 	 *  <p>
 	 *         MEOS Functions:
-	 *             <li>tpoint_start_value</li>
+	 *             <li>tgeo_start_value</li>
 	 * @param precision The precision of the returned point.
 	 * @return A {@link Point} with the start value.
 	 * @throws ParseException
 	 */
 	default Point start_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(getPointInner()),precision);
 	}
 
 	/**
@@ -186,13 +186,13 @@ public interface TPoint extends Serializable {
 	 *
 	 *  <p>
 	 *         MEOS Functions:
-	 *             <li>tpoint_end_value</li>
+	 *             <li>tgeo_end_value</li>
 	 * @param precision The precision of the returned point.
 	 * @return A {@link Point} with the end value.
 	 * @throws ParseException
 	 */
 	default Point end_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(getPointInner()),precision);
 	}
 
 /**
@@ -242,12 +242,12 @@ public interface TPoint extends Serializable {
 //
 //			 @Override
 //			 public Point start_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_start_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(this.get_inner()), precision);
 //			 }
 //
 //			 @Override
 //			 public Point end_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tpoint_end_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(this.get_inner()), precision);
 //			 }
 //		 };
 //	 }
@@ -364,7 +364,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>tpoint_start_value</li>
+	 *             <li>tgeo_start_value</li>
 	 * @return A {@link Boolean} indicating whether the temporal point has a z coordinate.
 	 */
 	default boolean has_z(){
@@ -612,7 +612,7 @@ public interface TPoint extends Serializable {
 	 *         MEOS Functions:
 	 *         <ul>
 	 *             <li>tpoint_at_value</li>
-	 *             <li>tpoint_at_stbox</li>
+	 *             <li>tgeo_at_stbox</li>
 	 *             <li>temporal_at_values</li>
 	 *             <li>temporal_at_timestamp</li>
 	 *             <li>temporal_at_timestampset</li>
@@ -630,7 +630,7 @@ public interface TPoint extends Serializable {
 		} else if (other instanceof GeoSet) {
 			return (TPoint) Factory.create_temporal(functions.temporal_at_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {
-			return (TPoint) Factory.create_temporal(functions.tpoint_at_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(functions.tgeo_at_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
 		}
 		else{
 			throw new OperationNotSupportedException("Operand not supported");
@@ -645,7 +645,7 @@ public interface TPoint extends Serializable {
 	 *
 	 *         MEOS Functions:
 	 *             <li>tpoint_minus_value</li>
-	 *             <li>tpoint_minus_stbox</li>
+	 *             <li>tgeo_minus_stbox</li>
 	 *             <li>temporal_minus_values</li>
 	 *             <li>temporal_minus_timestamp</li>
 	 *             <li>temporal_minus_timestampset</li>
@@ -662,7 +662,7 @@ public interface TPoint extends Serializable {
 		} else if (other instanceof GeoSet) {
 			return (TPoint) Factory.create_temporal(functions.temporal_minus_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {
-			return (TPoint) Factory.create_temporal(functions.tpoint_minus_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(functions.tgeo_minus_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
 		}
 		else{
 			throw new OperationNotSupportedException("Operand not supported");

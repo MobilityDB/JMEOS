@@ -1899,6 +1899,8 @@ public class functions {
 
 		boolean tpoint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
 
+		boolean tgeo_value_n(Pointer temp, int n, Pointer result);
+
 		boolean tpoint_value_n(Pointer temp, int n, Pointer result);
 
 		Pointer tpoint_values(Pointer temp, Pointer count);
@@ -2829,6 +2831,8 @@ public class functions {
 
 		Pointer tpoint_azimuth(Pointer temp);
 
+		Pointer tgeo_convex_hull(Pointer temp);
+
 		Pointer tpoint_convex_hull(Pointer temp);
 
 		Pointer tpoint_cumulative_length(Pointer temp);
@@ -2846,6 +2850,8 @@ public class functions {
 		double tpoint_length(Pointer temp);
 
 		Pointer tpoint_speed(Pointer temp);
+
+		int tspatial_srid(Pointer temp);
 
 		int tpoint_srid(Pointer temp);
 
@@ -2984,6 +2990,8 @@ public class functions {
 		Pointer tnumber_wavg_transfn(Pointer state, Pointer temp, Pointer interv);
 
 		Pointer tpoint_extent_transfn(Pointer box, Pointer temp);
+
+		Pointer tspatial_extent_transfn(Pointer box, Pointer temp);
 
 		Pointer tpoint_tcentroid_finalfn(Pointer state);
 
@@ -8034,6 +8042,14 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tgeo_value_n(Pointer temp, int n) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		boolean out = MeosLibrary.meos.tgeo_value_n(temp, n, result);
+		return out ? result.getPointer(0) : null;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_value_n(Pointer temp, int n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
@@ -10398,6 +10414,11 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tgeo_convex_hull(Pointer temp) {
+		return MeosLibrary.meos.tgeo_convex_hull(temp);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_convex_hull(Pointer temp) {
 		return MeosLibrary.meos.tpoint_convex_hull(temp);
 	}
@@ -10446,6 +10467,11 @@ public class functions {
 		return MeosLibrary.meos.tpoint_speed(temp);
 	}
 	
+	@SuppressWarnings("unused")
+	public static int tspatial_srid(Pointer temp) {
+		return MeosLibrary.meos.tspatial_srid(temp);
+	}
+
 	@SuppressWarnings("unused")
 	public static int tpoint_srid(Pointer temp) {
 		return MeosLibrary.meos.tpoint_srid(temp);
@@ -10796,7 +10822,12 @@ public class functions {
 	public static Pointer tpoint_extent_transfn(Pointer box, Pointer temp) {
 		return MeosLibrary.meos.tpoint_extent_transfn(box, temp);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tspatial_extent_transfn(Pointer box, Pointer temp) {
+		return MeosLibrary.meos.tspatial_extent_transfn(box, temp);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_tcentroid_finalfn(Pointer state) {
 		return MeosLibrary.meos.tpoint_tcentroid_finalfn(state);
