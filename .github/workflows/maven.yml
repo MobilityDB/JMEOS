@@ -45,17 +45,15 @@ jobs:
       - name: Print current working directory
         run: pwd
 
-      # Install GEOS library
-      - name: Install GEOS
-        run: sudo apt-get install -y libgeos-dev
-
-      # Install PROJ library
-      - name: Install PROJ
-        run: sudo apt-get install proj-bin libproj-dev proj-data
-
-      # Install JSON-C library
-      - name: Install JSON-C
-        run: sudo apt install libjson-c-dev
+      # Install system dependencies (GEOS, PROJ, JSON-C, GSL). Refresh
+      # apt cache first so the runner doesn't 404 on stale Azure-mirror
+      # state. GSL is required by MobilityDB; without it cmake fails
+      # with "Could NOT find GSL".
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libgeos-dev proj-bin libproj-dev proj-data libjson-c-dev libgsl-dev
 
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
