@@ -2971,6 +2971,28 @@ public class functions {
 
 		int etouches_tpoint_geo(Pointer temp, Pointer gs);
 
+		int edisjoint_tgeo_geo(Pointer temp, Pointer gs);
+		int edisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int adisjoint_tgeo_geo(Pointer temp, Pointer gs);
+		int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int eintersects_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int aintersects_tgeo_geo(Pointer temp, Pointer gs);
+		int aintersects_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int etouches_tgeo_geo(Pointer temp, Pointer gs);
+		int etouches_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int atouches_tgeo_geo(Pointer temp, Pointer gs);
+		int atouches_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int ecovers_tgeo_geo(Pointer temp, Pointer gs);
+		int ecovers_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int acovers_tgeo_geo(Pointer temp, Pointer gs);
+		int econtains_tgeo_geo(Pointer temp, Pointer gs);
+		int econtains_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int acontains_tgeo_geo(Pointer temp, Pointer gs);
+		int acontains_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		int adwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist);
+		int adwithin_tgeo_geo(Pointer temp, Pointer gs, double dist);
+		int edwithin_tgeo_geo(Pointer temp, Pointer gs, double dist);
+
 		Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp);
 
 		Pointer tcontains_geo_tpoint(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
@@ -3008,6 +3030,14 @@ public class functions {
 		Pointer ttouches_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
 		Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs);
+
+		Pointer tdisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer tintersects_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer ttouches_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer tcontains_tgeo_geo(Pointer temp, Pointer gs);
+		Pointer tcontains_tgeo_tgeo(Pointer temp1, Pointer temp2);
+		Pointer tcovers_tgeo_geo(Pointer temp, Pointer gs);
+		Pointer tdwithin_tgeo_geo(Pointer temp, Pointer gs, double dist);
 
 		Pointer tbool_tand_transfn(Pointer state, Pointer temp);
 
@@ -10835,7 +10865,112 @@ public class functions {
 	public static int etouches_tpoint_geo(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.etouches_tpoint_geo(temp, gs);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static int edisjoint_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.edisjoint_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int edisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.edisjoint_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int adisjoint_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.adisjoint_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int adisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.adisjoint_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int eintersects_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.eintersects_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int aintersects_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.aintersects_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int aintersects_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.aintersects_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int etouches_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.etouches_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int etouches_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.etouches_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int atouches_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.atouches_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int atouches_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.atouches_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int ecovers_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.ecovers_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int ecovers_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.ecovers_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int acovers_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.acovers_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int econtains_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.econtains_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int econtains_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.econtains_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int acontains_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.acontains_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static int acontains_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.acontains_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static int adwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist) {
+		return MeosLibrary.meos.adwithin_tgeo_tgeo(temp1, temp2, dist);
+	}
+
+	@SuppressWarnings("unused")
+	public static int adwithin_tgeo_geo(Pointer temp, Pointer gs, double dist) {
+		return MeosLibrary.meos.adwithin_tgeo_geo(temp, gs, dist);
+	}
+
+	@SuppressWarnings("unused")
+	public static int edwithin_tgeo_geo(Pointer temp, Pointer gs, double dist) {
+		return MeosLibrary.meos.edwithin_tgeo_geo(temp, gs, dist);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp) {
 		return MeosLibrary.meos.tcontains_geo_tgeo(gs, temp);
@@ -10929,6 +11064,41 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.ttouches_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tdisjoint_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tintersects_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tintersects_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer ttouches_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.ttouches_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tcontains_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tcontains_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tcontains_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tcontains_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tcovers_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tcovers_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdwithin_tgeo_geo(Pointer temp, Pointer gs, double dist) {
+		return MeosLibrary.meos.tdwithin_tgeo_geo(temp, gs, dist);
 	}
 
 	@SuppressWarnings("unused")
