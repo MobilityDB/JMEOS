@@ -2845,6 +2845,8 @@ public class functions {
 
 		Pointer tgeo_convex_hull(Pointer temp);
 
+		Pointer tgeo_traversed_area(Pointer temp, boolean unary_union);
+
 		Pointer tpoint_convex_hull(Pointer temp);
 
 		Pointer tpoint_cumulative_length(Pointer temp);
@@ -10476,10 +10478,15 @@ public class functions {
 	}
 	
 	@SuppressWarnings("unused")
+	public static Pointer tgeo_traversed_area(Pointer temp, boolean unary_union) {
+		return MeosLibrary.meos.tgeo_traversed_area(temp, unary_union);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_cumulative_length(Pointer temp) {
 		return MeosLibrary.meos.tpoint_cumulative_length(temp);
 	}
-	
+
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_direction(Pointer temp) {
 		boolean out;
