@@ -2681,6 +2681,22 @@ public class functions {
 
 		boolean right_tpoint_tpoint(Pointer temp1, Pointer temp2);
 
+		boolean above_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean back_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean before_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean below_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean front_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean left_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overabove_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overafter_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overback_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overbefore_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overbelow_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overfront_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overleft_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean overright_tspatial_tspatial(Pointer temp1, Pointer temp2);
+		boolean right_tspatial_tspatial(Pointer temp1, Pointer temp2);
+
 		Pointer tand_bool_tbool(boolean b, Pointer temp);
 
 		Pointer tand_tbool_bool(Pointer temp, boolean b);
@@ -2903,6 +2919,8 @@ public class functions {
 
 		Pointer tdisjoint_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
+		Pointer tdisjoint_tgeo_geo(Pointer temp, Pointer gs);
+
 		Pointer tdisjoint_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
 		Pointer tdwithin_tpoint_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue);
@@ -2913,9 +2931,13 @@ public class functions {
 
 		Pointer tintersects_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
+		Pointer tintersects_tgeo_geo(Pointer temp, Pointer gs);
+
 		Pointer tintersects_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
 		Pointer ttouches_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
+
+		Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs);
 
 		Pointer tbool_tand_transfn(Pointer state, Pointer temp);
 
@@ -9979,7 +10001,68 @@ public class functions {
 	public static boolean right_tpoint_tpoint(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.right_tpoint_tpoint(temp1, temp2);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static boolean above_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.above_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean back_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.back_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean before_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.before_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean below_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.below_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean front_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.front_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean left_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.left_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overabove_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overabove_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overafter_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overafter_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overback_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overback_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overbefore_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overbefore_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overbelow_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overbelow_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overfront_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overfront_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overleft_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overleft_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean overright_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.overright_tspatial_tspatial(temp1, temp2);
+	}
+	@SuppressWarnings("unused")
+	public static boolean right_tspatial_tspatial(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.right_tspatial_tspatial(temp1, temp2);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tand_bool_tbool(boolean b, Pointer temp) {
 		return MeosLibrary.meos.tand_bool_tbool(b, temp);
@@ -10547,7 +10630,12 @@ public class functions {
 	public static Pointer tdisjoint_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tdisjoint_tpoint_geo(temp, gs, restr, atvalue);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tdisjoint_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tdisjoint_tgeo_geo(temp, gs);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tdisjoint_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tdisjoint_tpoint_tpoint(temp1, temp2, restr, atvalue);
@@ -10572,17 +10660,27 @@ public class functions {
 	public static Pointer tintersects_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tintersects_tpoint_geo(temp, gs, restr, atvalue);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tintersects_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tintersects_tgeo_geo(temp, gs);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tintersects_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tintersects_tpoint_tpoint(temp1, temp2, restr, atvalue);
 	}
-	
+
 	@SuppressWarnings("unused")
 	public static Pointer ttouches_tpoint_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.ttouches_tpoint_geo(temp, gs, restr, atvalue);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.ttouches_tgeo_geo(temp, gs);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tbool_tand_transfn(Pointer state, Pointer temp) {
 		return MeosLibrary.meos.tbool_tand_transfn(state, temp);
