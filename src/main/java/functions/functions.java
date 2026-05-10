@@ -1943,6 +1943,14 @@ public class functions {
 
 		Pointer tfloat_radians(Pointer temp);
 
+		Pointer tfloat_exp(Pointer temp);
+
+		Pointer tfloat_ln(Pointer temp);
+
+		Pointer tfloat_log10(Pointer temp);
+
+		Pointer tnumber_trend(Pointer temp);
+
 		Pointer temporal_round(Pointer temp, int maxdd);
 
 		Pointer tfloat_scale_value(Pointer temp, double width);
@@ -8176,7 +8184,27 @@ public class functions {
 	public static Pointer tfloat_radians(Pointer temp) {
 		return MeosLibrary.meos.tfloat_radians(temp);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_exp(Pointer temp) {
+		return MeosLibrary.meos.tfloat_exp(temp);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_ln(Pointer temp) {
+		return MeosLibrary.meos.tfloat_ln(temp);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_log10(Pointer temp) {
+		return MeosLibrary.meos.tfloat_log10(temp);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_trend(Pointer temp) {
+		return MeosLibrary.meos.tnumber_trend(temp);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer temporal_round(Pointer temp, int maxdd) {
 		return MeosLibrary.meos.temporal_round(temp, maxdd);
