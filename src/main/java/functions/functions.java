@@ -2055,6 +2055,8 @@ public class functions {
 
 		Pointer tgeo_at_geom(Pointer temp, Pointer gs);
 
+		Pointer tgeo_minus_geom(Pointer temp, Pointer gs);
+
 		Pointer tpoint_at_value(Pointer temp, Pointer gs);
 
 		Pointer tpoint_minus_geom_time(Pointer temp, Pointer gs, Pointer zspan, Pointer period);
@@ -2928,6 +2930,16 @@ public class functions {
 		Pointer tdisjoint_tgeo_geo(Pointer temp, Pointer gs);
 
 		Pointer tdisjoint_tpoint_tpoint (Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
+
+		Pointer tdistance_tgeo_geo(Pointer temp, Pointer gs);
+
+		Pointer tdistance_tgeo_tgeo(Pointer temp1, Pointer temp2);
+
+		Pointer tdistance_tfloat_float(Pointer temp, double d);
+
+		Pointer tdistance_tint_int(Pointer temp, int i);
+
+		Pointer tdistance_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
 		Pointer tdwithin_tpoint_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue);
 
@@ -8449,6 +8461,11 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tgeo_minus_geom(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tgeo_minus_geom(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_at_value(Pointer temp, Pointer gs) {
 		return MeosLibrary.meos.tpoint_at_value(temp, gs);
 	}
@@ -10667,6 +10684,31 @@ public class functions {
 		return MeosLibrary.meos.tdisjoint_tpoint_tpoint(temp1, temp2, restr, atvalue);
 	}
 	
+	@SuppressWarnings("unused")
+	public static Pointer tdistance_tgeo_geo(Pointer temp, Pointer gs) {
+		return MeosLibrary.meos.tdistance_tgeo_geo(temp, gs);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdistance_tgeo_tgeo(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tdistance_tgeo_tgeo(temp1, temp2);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdistance_tfloat_float(Pointer temp, double d) {
+		return MeosLibrary.meos.tdistance_tfloat_float(temp, d);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdistance_tint_int(Pointer temp, int i) {
+		return MeosLibrary.meos.tdistance_tint_int(temp, i);
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdistance_tnumber_tnumber(Pointer temp1, Pointer temp2) {
+		return MeosLibrary.meos.tdistance_tnumber_tnumber(temp1, temp2);
+	}
+
 	@SuppressWarnings("unused")
 	public static Pointer tdwithin_tpoint_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue) {
 		return MeosLibrary.meos.tdwithin_tpoint_geo(temp, gs, dist, restr, atvalue);
