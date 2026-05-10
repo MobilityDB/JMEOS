@@ -75,7 +75,7 @@ public class STBox implements Box {
 		if(allow_space_only && other instanceof Geometry){
 			other_box = new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
 		} else if (other instanceof TPoint) {
-			other_box = new STBox(functions.tpoint_to_stbox(((TPoint)other).getPointInner()));
+			other_box = new STBox(functions.tspatial_to_stbox(((TPoint)other).getPointInner()));
 		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
@@ -334,12 +334,12 @@ public class STBox implements Box {
 	 * <p>.
 	 *
 	 *         MEOS Functions:
-	 *             <li>tpoint_to_stbox</li>
+	 *             <li>tspatial_to_stbox</li>
 	 * @param temporal A {@link TPoint} instance.
 	 * @return A new {@link STBox} instance.
 	 */
     public static STBox from_tpoint(TPoint temporal){
-        return new STBox(functions.tpoint_to_stbox(temporal.getPointInner()));
+        return new STBox(functions.tspatial_to_stbox(temporal.getPointInner()));
     }
 
 
@@ -829,7 +829,7 @@ public class STBox implements Box {
 	 *         to the right of "other. Checks the X dimension.
 	 *<p>
 	 *         MEOS Functions:
-	 *             <li>overleft_stbox_stbox, tpoint_to_stbox</li>
+	 *             <li>overleft_stbox_stbox, tspatial_to_stbox</li>
 	 * @param other The spatiotemporal object to compare with "this".
 	 * @return "true" if "this" is to the left of "other", "false" otherwise.
 	 */
@@ -1094,7 +1094,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_tpoint(TPoint other) {
-		return (float) functions.nad_tpoint_stbox(this._inner, other.getPointInner());
+		return (float) functions.nad_tgeo_stbox(this._inner, other.getPointInner());
 	}
 
 
@@ -1213,7 +1213,7 @@ public class STBox implements Box {
 	@Override
 	public tstzspan to_period(){
 		error_handler_fn errorHandler = new error_handler();
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize();
 		return new tstzspan(functions.stbox_to_tstzspan(this._inner));
 	}
 
@@ -1354,7 +1354,7 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(duration instanceof String){
-//				dt= functions.pg_interval_in(duration.toString(), -1);
+//				dt= functions.interval_in(duration.toString(), -1);
 //			}
 //			else dt = null;
 //		}
@@ -1365,11 +1365,11 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(start instanceof String){
-//				st= functions.pg_timestamptz_in(start.toString(), -1);
+//				st= functions.timestamptz_in(start.toString(), -1);
 //			}
 //			else{
 //				if(this.has_t()){
-//					st= functions.pg_timestamptz_in("2000-01-03", -1);
+//					st= functions.timestamptz_in("2000-01-03", -1);
 //				}
 //				else{
 //					st= null;
@@ -1383,10 +1383,10 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(this.geodetic()){
-//				gs= functions.pgis_geography_in("Point(0 0 0)", -1);
+//				gs= functions.geog_in("Point(0 0 0)", -1);
 //			}
 //			else{
-//				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+//				gs= functions.geom_in("Point (0 0 0)", -1);
 //			}
 //		}
 //

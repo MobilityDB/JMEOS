@@ -40,9 +40,9 @@ public class ConversionUtils {
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
 		error_handler handler= new error_handler();
-		functions.meos_initialize("UTC", handler);
+		functions.meos_initialize();
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		return functions.pg_timestamptz_in(formattedDt, -1);
+		return functions.timestamptz_in(formattedDt, -1);
 	}
 
 	
@@ -55,7 +55,7 @@ public class ConversionUtils {
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
 		// Parse the string to LocalDateTime
-		return LocalDateTime.parse(functions.pg_timestamptz_out(ts), formatter);
+		return LocalDateTime.parse(functions.timestamptz_out(ts), formatter);
 	}
 
 
@@ -67,11 +67,11 @@ public class ConversionUtils {
 		int hours = (int)td.toHours();
 		int minutes = (int)td.toMinutes();
 		double seconds = (double)td.toSeconds();
-		return functions.pg_interval_make(years,month,weeks,days,hours,minutes,seconds);
+		return functions.interval_make(years,month,weeks,days,hours,minutes,seconds);
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
-		String res= functions.pg_interval_out(p);
+		String res= functions.interval_out(p);
 		System.out.println(res);
 		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
 		Matcher matcher = pattern.matcher(res);
@@ -158,7 +158,7 @@ public class ConversionUtils {
 		if (geom.getSRID() > 0){
 			text = "SRID="+geom.getSRID()+";"+text;
 		}
-		Pointer ptr = functions.pgis_geometry_in(text,-1);
+		Pointer ptr = functions.geom_in(text,-1);
 		return ptr;
 	}
 
@@ -169,7 +169,7 @@ public class ConversionUtils {
 		if (geom.getSRID() > 0){
 			text = "SRID="+geom.getSRID()+";"+text;
 		}
-		Pointer ptr = functions.pgis_geography_in(text,-1);
+		Pointer ptr = functions.geog_in(text,-1);
 		return ptr;
 	}
 
@@ -182,7 +182,7 @@ public class ConversionUtils {
 		String text = functions.geo_as_text(geom,precision);
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(text);
-		int srid = functions.geo_get_srid(geom);
+		int srid = functions.geo_srid(geom);
 		if (srid > 0){
 			geometry.setSRID(srid);
 		}

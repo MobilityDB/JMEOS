@@ -4063,3 +4063,7 @@ extern Temporal *tne_trgeo_geo(const Temporal *temp, const GSERIALIZED *gs);
 /*****************************************************************************/
 
 #endif /* __MEOS_RGEO_H__ */
+extern int acovers_geo_tgeo(const GSERIALIZED *gs, const Temporal *temp);
+extern int acovers_tgeo_geo(const Temporal *temp, const GSERIALIZED *gs);
+extern int acovers_tgeo_tgeo(const Temporal *temp1, const Temporal *temp2);
+extern void meos_initialize_noexit_error_handler(void);

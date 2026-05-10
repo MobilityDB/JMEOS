@@ -727,8 +727,8 @@ public interface TNumber {
      *
      *         MEOS Functions:
      *         <ul>
-     *             <li>distance_tfloat_float</li>
-     *             <li>distance_tnumber_tnumber</li>
+     *             <li>tdistance_tfloat_float</li>
+     *             <li>tdistance_tnumber_tnumber</li>
      *         </ul>
      * @param other A {@link Integer}, {@link Float} or {@link TNumber} to
      *      *             compare to "this".
@@ -737,11 +737,11 @@ public interface TNumber {
      */
     default TFloat distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
-            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((other instanceof Float)) {
-            return (TFloat) Factory.create_temporal(functions.distance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TFloat) Factory.create_temporal(functions.distance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(functions.tdistance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -844,21 +844,21 @@ public interface TNumber {
         OffsetDateTime st= null;
         Pointer dt= null;
         if(time_start != null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else{
             if(time_start instanceof LocalDateTime){
                 st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
             }
             else{
-                st= functions.pg_timestamptz_in(time_start.toString(), -1);
+                st= functions.timestamptz_in(time_start.toString(), -1);
             }
 
             if(duration instanceof Duration){
                 dt= ConversionUtils.timedelta_to_interval((Duration) duration);
             }
             else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
+                dt= functions.interval_in(duration.toString(), -1);
             }
         }
         // Create a JNR-FFI runtime instance

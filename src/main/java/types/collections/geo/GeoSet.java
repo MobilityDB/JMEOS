@@ -62,12 +62,12 @@ public abstract class GeoSet extends Set<Geometry> {
      * Return the string representation of the content of "this".
      *  <p>
      *         MEOS Functions:
-     *             <li>geoset_out</li>
+     *             <li>set_out</li>
      * @return A new {@link String} instance
      */
     public String toString(){
         int max_decimals = 15;
-        return functions.geoset_out(this._inner,max_decimals);
+        return functions.spatialset_as_text(this._inner,max_decimals);
     }
 
 
@@ -77,12 +77,12 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *
      *         MEOS Functions:
-     *             <li>geoset_as_ewkt</li>
+     *             <li>spatialset_as_ewkt</li>
      * @return A {@link String} instance.
      */
     protected String as_ewkt(){
         int max_decimals = 15;
-        return functions.geoset_as_ewkt(this._inner,max_decimals);
+        return functions.spatialset_as_ewkt(this._inner,max_decimals);
     }
 
     /**
@@ -90,25 +90,25 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *
      *         MEOS Functions:
-     *             <li>geoset_as_text</li>
+     *             <li>spatialset_as_text</li>
      * @return A {@link String} instance.
      */
     protected String as_wkt(){
         int max_decimals = 15;
-        return functions.geoset_as_text(this._inner,max_decimals);
+        return functions.spatialset_as_text(this._inner,max_decimals);
     }
 
     /**
      * Returns the WKT representation of "this".
      *
      *         MEOS Functions:
-     *             <li>geoset_as_text</li>
+     *             <li>spatialset_as_text</li>
      *
      * @return A {@link String} instance.
      */
     protected String as_text(){
         int max_decimals = 15;
-        return functions.geoset_as_text(this._inner,max_decimals);
+        return functions.spatialset_as_text(this._inner,max_decimals);
     }
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -148,12 +148,12 @@ public abstract class GeoSet extends Set<Geometry> {
      * Returns the SRID of "this".
      *
      *         MEOS Functions:
-     *             <li>geoset_srid</li>
+     *             <li>spatialset_srid</li>
      *
      * @return An integer
      */
     protected int srid(){
-        return functions.geoset_srid(this._inner);
+        return functions.spatialset_srid(this._inner);
     }
 
 
@@ -171,7 +171,7 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>intersection_geoset_geo</li>
+     *             <li>intersection_set_geo</li>
      *             <li>intersection_set_set</li>
      * @param geom A {@link GeoSet} or {@link Geometry} instance
      * @return An object of the same type as "other" or "None" if the intersection is empty.
@@ -187,7 +187,7 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>intersection_geoset_geo</li>
+     *             <li>intersection_set_geo</li>
      *             <li>intersection_set_set</li>
      * @param geo A {@link GeoSet} or {@link Geometry} instance
      * @param type the type of GeoSet
@@ -204,7 +204,7 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      * <p>
      *         MEOS Functions:
-     *             <li>minus_geoset_geo</li>
+     *             <li>minus_set_geo</li>
      *             <li>minus_set_set</li>
      *
 
@@ -252,7 +252,7 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>union_geoset_geo</li>
+     *             <li>union_set_geo</li>
      *             <li>union_set_set</li>
      * @param geo A {@link GeoSet} or {@link Geometry} instance
      * @param type the type of GeoSet
@@ -284,7 +284,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @return A new {@link GeoSet} object of the same subtype of "this".
      */
     public GeoSet round(int decimals, String type){
-        return factory(type, functions.geoset_round(this._inner,decimals));
+        return factory(type, functions.set_round(this._inner,decimals));
     }
 
 

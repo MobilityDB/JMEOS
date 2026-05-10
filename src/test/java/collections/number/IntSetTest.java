@@ -23,7 +23,7 @@ public class IntSetTest {
 
     static Stream<Arguments> IntSet_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize();
         return Stream.of(
                 Arguments.of(5, false ),
                 Arguments.of(new IntSet("{5, 10}"), false )
@@ -32,7 +32,7 @@ public class IntSetTest {
 
     static Stream<Arguments> IntSet_distances() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize("UTC", errorHandler);
+        functions.meos_initialize();
         return Stream.of(
                 Arguments.of(5, 2 ),
                 Arguments.of(new IntSet("{5, 10}"), 2 )

@@ -98,8 +98,8 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 		super(lower,upper,true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
-		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
-		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
+		OffsetDateTime lower_ts = functions.timestamptz_in(lower, -1);
+		OffsetDateTime upper_ts = functions.timestamptz_in(upper, -1);
 		this._inner = functions.tstzspan_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 	}
 	
@@ -113,8 +113,8 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	 */
 	public tstzspan(String lower, String upper, boolean lowerInclusive, boolean upperInclusive) {
 		super(lower,upper,lowerInclusive,upperInclusive);
-		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower, -1);
-		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper, -1);
+		OffsetDateTime lower_ts = functions.timestamptz_in(lower, -1);
+		OffsetDateTime upper_ts = functions.timestamptz_in(upper, -1);
 		this._inner = functions.tstzspan_make(lower_ts, upper_ts, lowerInclusive, upperInclusive);
 	}
 
@@ -161,7 +161,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 		super(lower,upper.toString(),true,false);
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
-		OffsetDateTime lower_ts = functions.pg_timestamptz_in(lower,-1);
+		OffsetDateTime lower_ts = functions.timestamptz_in(lower,-1);
 		OffsetDateTime upper_ts = ConversionUtils.datetimeToTimestampTz(upper);
 		this._inner = functions.tstzspan_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 	}
@@ -177,7 +177,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 		this.lowerInclusive = true;
 		this.upperInclusive = false;
 		OffsetDateTime lower_ts = ConversionUtils.datetimeToTimestampTz(lower);
-		OffsetDateTime upper_ts = functions.pg_timestamptz_in(upper,-1);
+		OffsetDateTime upper_ts = functions.timestamptz_in(upper,-1);
 		this._inner = functions.tstzspan_make(lower_ts, upper_ts, this.lowerInclusive, this.upperInclusive);
 	}
 
@@ -203,7 +203,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	}
 	@Override
 	public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
-		return functions.tstzspan_make(functions.pg_timestamptz_in(lower,-1),functions.pg_timestamptz_in(upper,-1),lower_inc,upper_inc);
+		return functions.tstzspan_make(functions.timestamptz_in(lower,-1),functions.timestamptz_in(upper,-1),lower_inc,upper_inc);
 	}
 	@Override
 	public Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){

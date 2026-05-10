@@ -29,7 +29,7 @@ public class STBoxTest {
 	static error_handler_fn errorHandler = new error_handler();
 
     public STBoxTest() throws SQLException {
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize();
 		stbx = new STBox("STBOX X((1, 1),(2, 2))");
 		stbz = new STBox("STBOX Z((1, 1, 1),(2, 2, 2))");
 		stbt = new STBox("STBOX T([2019-09-01,2019-09-02])");
@@ -38,7 +38,7 @@ public class STBoxTest {
     }
 
 	static Stream<Arguments> STBox_sources() throws SQLException {
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize();
 		return Stream.of(
 				Arguments.of(new STBox("STBOX X((1, 1),(2, 2))"), "STBOX X((1, 1),(2, 2))" ),
 				Arguments.of(new STBox("STBOX Z((1, 1, 1),(2, 2, 2))"), "STBOX Z((1, 1, 1),(2, 2, 2))" ),
@@ -106,7 +106,7 @@ public class STBoxTest {
 	@ParameterizedTest(name = "Test from as constructor.")
 	@MethodSource("STBox_sources")
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize();
 		STBox stb = new STBox(str);
 		assertTrue(stb.eq(box));
 	}
@@ -115,7 +115,7 @@ public class STBoxTest {
 	@ParameterizedTest(name = "Test copy constructor.")
 	@MethodSource("STBox_sources")
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize("UTC", errorHandler);
+		functions.meos_initialize();
 		STBox stb = box.copy();
 		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());

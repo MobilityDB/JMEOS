@@ -95,7 +95,7 @@ public interface TGeogPoint extends TPoint {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+		Pointer resPointer= functions.tgeo_values(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
 		int count= intPointer.getInt(Integer.BYTES);
 		StringBuilder sb = null;
@@ -125,8 +125,8 @@ public interface TGeogPoint extends TPoint {
 	 * @return A new {@link TGeomPoint} object.
 	 */
 	default TGeomPoint to_geometric(){
-		return (TGeomPoint) Factory.create_temporal(functions.tgeogpoint_to_tgeompoint(getPointInner()),"Geom",getTemporalType());
-
+		throw new UnsupportedOperationException(
+			"tgeogpoint_to_tgeompoint has no MEOS 1.4 equivalent; convert per-instant via geog_to_geom and rebuild the temporal value");
 	}
 
 
@@ -145,7 +145,7 @@ public interface TGeogPoint extends TPoint {
 	 * @return True if "this" is always equal to "value", False otherwise.
 	 */
 	default boolean always_equal(Geometry value){
-		return functions.always_eq_tpoint_point(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
+		return functions.always_eq_tgeo_geo(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
 
 	}
 
@@ -160,7 +160,7 @@ public interface TGeogPoint extends TPoint {
 	 * @return True if "this" is always different to "value", False otherwise.
 	 */
 	default boolean always_not_equal(Geometry value){
-		return functions.always_ne_tpoint_point(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
+		return functions.always_ne_tgeo_geo(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
 	}
 
 
@@ -175,7 +175,7 @@ public interface TGeogPoint extends TPoint {
 	 * @return True if "this" is ever equal to "value", False otherwise.
 	 */
 	default boolean ever_equal(Geometry value){
-		return  functions.ever_eq_tpoint_point(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
+		return  functions.ever_eq_tgeo_geo(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
 	}
 
 
@@ -190,7 +190,7 @@ public interface TGeogPoint extends TPoint {
 	 * @return True if "this" is ever different to "value", False otherwise.
 	 */
 	default boolean ever_not_equal(Geometry value){
-		return functions.ever_ne_tpoint_point(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
+		return functions.ever_ne_tgeo_geo(getPointInner(),ConversionUtils.geography_to_gserialized(value)) > 0;
 
 	}
 
@@ -235,13 +235,13 @@ public interface TGeogPoint extends TPoint {
 	 *  <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>teq_tpoint_point</li>
+	 *             <li>teq_tgeo_geo</li>
 	 *             <li>teq_temporal_temporal</li>
 	 * @param other A temporal object to compare to "this".
 	 * @return A {@link TBool} with the result of the temporal equality relation.
 	 */
 	default TBool temporal_equal(Point other){
-		return (TBool) Factory.create_temporal(functions.teq_tpoint_point(getPointInner(), ConversionUtils.geography_to_gserialized(other)),getCustomType(),getTemporalType());
+		return (TBool) Factory.create_temporal(functions.teq_tgeo_geo(getPointInner(), ConversionUtils.geography_to_gserialized(other)),getCustomType(),getTemporalType());
 	}
 
 
@@ -253,13 +253,13 @@ public interface TGeogPoint extends TPoint {
 	 *  <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>tne_tpoint_point</li>
+	 *             <li>tne_tgeo_geo</li>
 	 *             <li>tne_temporal_temporal</li>
 	 * @param other A temporal object to compare to "this".
 	 * @return A {@link TBool} with the result of the temporal inequality relation.
 	 */
 	default TBool temporal_not_equal(Point other){
-		return (TBool) Factory.create_temporal(functions.tne_tpoint_point(getPointInner(), ConversionUtils.geography_to_gserialized(other)),getCustomType(),getTemporalType());
+		return (TBool) Factory.create_temporal(functions.tne_tgeo_geo(getPointInner(), ConversionUtils.geography_to_gserialized(other)),getCustomType(),getTemporalType());
 	}
 
 
