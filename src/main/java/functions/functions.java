@@ -1527,6 +1527,12 @@ public class functions {
 
 		boolean stbox_isgeodetic(Pointer box);
 
+		double stbox_area(Pointer box, boolean spheroid);
+
+		double stbox_perimeter(Pointer box, boolean spheroid);
+
+		double stbox_volume(Pointer box);
+
 		int stbox_srid(Pointer box);
 
 		boolean stbox_tmax(Pointer box, Pointer result);
@@ -7047,7 +7053,22 @@ public class functions {
 	public static boolean stbox_isgeodetic(Pointer box) {
 		return MeosLibrary.meos.stbox_isgeodetic(box);
 	}
-	
+
+	@SuppressWarnings("unused")
+	public static double stbox_area(Pointer box, boolean spheroid) {
+		return MeosLibrary.meos.stbox_area(box, spheroid);
+	}
+
+	@SuppressWarnings("unused")
+	public static double stbox_perimeter(Pointer box, boolean spheroid) {
+		return MeosLibrary.meos.stbox_perimeter(box, spheroid);
+	}
+
+	@SuppressWarnings("unused")
+	public static double stbox_volume(Pointer box) {
+		return MeosLibrary.meos.stbox_volume(box);
+	}
+
 	@SuppressWarnings("unused")
 	public static int stbox_srid(Pointer box) {
 		return MeosLibrary.meos.stbox_srid(box);
