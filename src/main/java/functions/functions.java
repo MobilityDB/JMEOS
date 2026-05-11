@@ -96,6 +96,8 @@ public class functions {
 
 		void meos_initialize_error_handler(Pointer err_handler);
 
+		void meos_initialize_noexit_error_handler();
+
 		void meos_finalize_timezone();
 
 		void meos_finalize_projsrs();
@@ -4378,8 +4380,6 @@ public class functions {
 
 		int acovers_tgeo_tgeo(Pointer temp1, Pointer temp2);
 
-		void meos_initialize_noexit_error_handler();
-
 		String mobilitydb_version();
 
 		String mobilitydb_full_version();
@@ -4595,6 +4595,11 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static void meos_initialize_error_handler(Pointer err_handler) {
 		MeosLibrary.meos.meos_initialize_error_handler(err_handler);
+	}
+	
+	@SuppressWarnings("unused")
+	public static void meos_initialize_noexit_error_handler() {
+		MeosLibrary.meos.meos_initialize_noexit_error_handler();
 	}
 	
 	@SuppressWarnings("unused")
@@ -15653,11 +15658,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static int acovers_tgeo_tgeo(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.acovers_tgeo_tgeo(temp1, temp2);
-	}
-	
-	@SuppressWarnings("unused")
-	public static void meos_initialize_noexit_error_handler() {
-		MeosLibrary.meos.meos_initialize_noexit_error_handler();
 	}
 	
 	@SuppressWarnings("unused")

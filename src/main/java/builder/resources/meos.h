@@ -439,6 +439,7 @@ typedef void (*error_handler_fn)(int, int, const char *);
 
 extern void meos_initialize_timezone(const char *name);
 extern void meos_initialize_error_handler(error_handler_fn err_handler);
+extern void meos_initialize_noexit_error_handler(void);
 extern void meos_finalize_timezone(void);
 extern void meos_finalize_projsrs(void);
 extern void meos_finalize_ways(void);
@@ -4066,7 +4067,6 @@ extern Temporal *tne_trgeo_geo(const Temporal *temp, const GSERIALIZED *gs);
 extern int acovers_geo_tgeo(const GSERIALIZED *gs, const Temporal *temp);
 extern int acovers_tgeo_geo(const Temporal *temp, const GSERIALIZED *gs);
 extern int acovers_tgeo_tgeo(const Temporal *temp1, const Temporal *temp2);
-extern void meos_initialize_noexit_error_handler(void);
 extern char *mobilitydb_version(void);
 extern char *mobilitydb_full_version(void);
 extern int temporal_mem_size(const Temporal *temp);
