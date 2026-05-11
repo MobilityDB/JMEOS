@@ -4380,6 +4380,26 @@ public class functions {
 
 		void meos_initialize_noexit_error_handler();
 
+		String mobilitydb_version();
+
+		String mobilitydb_full_version();
+
+		int temporal_mem_size(Pointer temp);
+
+		int temptype_basetype(int type);
+
+		Pointer temporal_values_p(Pointer temp, Pointer count);
+
+		Pointer set_make_free(Pointer values, int count, int basetype, boolean order);
+
+		Pointer tnumber_value_split(Pointer temp, long vsize, long vorigin, Pointer bins, Pointer count);
+
+		Pointer tnumber_value_time_split(Pointer temp, long size, Pointer duration, long vorigin, long torigin, Pointer value_bins, Pointer time_bins, Pointer count);
+
+		Pointer tnumber_value_time_boxes(Pointer temp, long vsize, Pointer duration, long vorigin, long torigin, Pointer count);
+
+		Pointer tbox_get_value_time_tile(long value, long t, long vsize, Pointer duration, long vorigin, long torigin, int basetype, int spantype);
+
 	}
 
 	@SuppressWarnings("unused")
@@ -15638,5 +15658,59 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static void meos_initialize_noexit_error_handler() {
 		MeosLibrary.meos.meos_initialize_noexit_error_handler();
+	}
+	
+	@SuppressWarnings("unused")
+	public static String mobilitydb_version() {
+		return MeosLibrary.meos.mobilitydb_version();
+	}
+	
+	@SuppressWarnings("unused")
+	public static String mobilitydb_full_version() {
+		return MeosLibrary.meos.mobilitydb_full_version();
+	}
+	
+	@SuppressWarnings("unused")
+	public static int temporal_mem_size(Pointer temp) {
+		return MeosLibrary.meos.temporal_mem_size(temp);
+	}
+	
+	@SuppressWarnings("unused")
+	public static int temptype_basetype(int type) {
+		return MeosLibrary.meos.temptype_basetype(type);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer temporal_values_p(Pointer temp, Pointer count) {
+		return MeosLibrary.meos.temporal_values_p(temp, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer set_make_free(Pointer values, int count, int basetype, boolean order) {
+		return MeosLibrary.meos.set_make_free(values, count, basetype, order);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_value_split(Pointer temp, long vsize, long vorigin, Pointer bins, Pointer count) {
+		return MeosLibrary.meos.tnumber_value_split(temp, vsize, vorigin, bins, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_value_time_split(Pointer temp, long size, Pointer duration, long vorigin, OffsetDateTime torigin, Pointer value_bins, Pointer time_bins, Pointer count) {
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tnumber_value_time_split(temp, size, duration, vorigin, torigin_new, value_bins, time_bins, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tnumber_value_time_boxes(Pointer temp, long vsize, Pointer duration, long vorigin, OffsetDateTime torigin, Pointer count) {
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tnumber_value_time_boxes(temp, vsize, duration, vorigin, torigin_new, count);
+	}
+	
+	@SuppressWarnings("unused")
+	public static Pointer tbox_get_value_time_tile(long value, OffsetDateTime t, long vsize, Pointer duration, long vorigin, OffsetDateTime torigin, int basetype, int spantype) {
+		var t_new = t.toEpochSecond();
+		var torigin_new = torigin.toEpochSecond();
+		return MeosLibrary.meos.tbox_get_value_time_tile(value, t_new, vsize, duration, vorigin, torigin_new, basetype, spantype);
 	}
 }

@@ -184,6 +184,8 @@ public class FunctionsGenerator {
 		types.put("size_t", "long");
 		types.put("interpType", "int"); // enum in C
 		types.put("RTreeSearchOp", "int"); // enum in C
+		types.put("MeosType", "int"); // enum in C (raw int; callers do the lowering)
+		types.put("Datum", "long"); // = uint64; opaque payload; callers pack via Double.doubleToLongBits / .longValue
 		types.put("error_handler_fn", "Pointer"); // function pointer in C
 		//types.put("\\char **","Pointer");
 		
