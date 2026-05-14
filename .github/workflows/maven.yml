@@ -60,6 +60,10 @@ jobs:
       - name: Install JSON-C
         run: sudo apt-get install -y libjson-c-dev
 
+      # Install GSL (required by MobilityDB CMake's find_package(GSL))
+      - name: Install GSL
+        run: sudo apt-get install -y libgsl-dev
+
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
         run: git clone https://github.com/MobilityDB/MobilityDB.git
