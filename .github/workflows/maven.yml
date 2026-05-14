@@ -45,17 +45,20 @@ jobs:
       - name: Print current working directory
         run: pwd
 
+      - name: Refresh apt package index
+        run: sudo apt-get update
+
       # Install GEOS library
       - name: Install GEOS
         run: sudo apt-get install -y libgeos-dev
 
       # Install PROJ library
       - name: Install PROJ
-        run: sudo apt-get install proj-bin libproj-dev proj-data
+        run: sudo apt-get install -y proj-bin libproj-dev proj-data
 
       # Install JSON-C library
       - name: Install JSON-C
-        run: sudo apt install libjson-c-dev
+        run: sudo apt-get install -y libjson-c-dev
 
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
