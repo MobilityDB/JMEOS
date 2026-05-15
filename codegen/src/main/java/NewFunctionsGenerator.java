@@ -415,7 +415,14 @@ public class NewFunctionsGenerator {
     // Code generation
     // -------------------------------------------------------------------------
 
+    // Number of JNR-FFI proxy interfaces to split into.
+    // Each proxy handles ≈ (totalMethods / PART_COUNT) declarations.
+    private static final int PART_COUNT = 4;
+
     private String generateFile(List<FunctionDef> functions) {
+        // Determine how many methods go into each part interface.
+        int partSize = (functions.size() + PART_COUNT - 1) / PART_COUNT;
+
         StringBuilder sb = new StringBuilder();
 
         sb.append("""
@@ -436,11 +443,12 @@ public class NewFunctionsGenerator {
                 """);
 
         sb.append("public class GeneratedFunctions {\n");
-        sb.append(generateInterface(functions));
+        sb.append(generateAllInterfaces(functions, partSize));
         sb.append("\n\n");
 
-        for (FunctionDef fn : functions) {
-            sb.append(generateStaticMethod(fn));
+        for (int i = 0; i < functions.size(); i++) {
+            int partIndex = Math.min(i / partSize, PART_COUNT - 1);
+            sb.append(generateStaticMethod(functions.get(i), partIndex));
             sb.append("\n");
         }
 
@@ -451,27 +459,54 @@ public class NewFunctionsGenerator {
     // ---- Interface ----------------------------------------------------------
 
     /**
-     * The inner interface uses low-level JNR types (long for timestamps, int
-     * for dates) so that JNR-FFI can marshal values directly to C without any
-     * intermediate object allocation.
+     * Generates the JNR-FFI proxy sub-interfaces (MeosLibraryPartA … D),
+     * the static proxy fields (_meos_a … d), a dispatch HashMap, and the
+     * backward-compatible MeosLibrary shim that routes calls via a lightweight
+     * {@link java.lang.reflect.Proxy} instead of a direct JNR-FFI proxy.
      */
-    private String generateInterface(List<FunctionDef> functions) {
+    private String generateAllInterfaces(List<FunctionDef> functions, int partSize) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\tpublic interface MeosLibrary {\n\n");
-        sb.append("\t\tString libraryPath = \"libmeos.so\";\n\n");
-        sb.append("\t\tMeosLibrary INSTANCE = JarLibraryLoader.create(MeosLibrary.class, libraryPath).getLibraryInstance();\n\n");
-        sb.append("\t\tMeosLibrary meos = MeosLibrary.INSTANCE;\n\n");
+        char[] letters = {'A', 'B', 'C', 'D'};
 
-        for (FunctionDef fn : functions) {
-            // Interface uses mapCTypeToJava (int/long), NOT wrapper types.
-            sb.append("\t\t")
-                    .append(fn.returnType).append(" ")
-                    .append(fn.name).append("(")
-                    .append(buildInterfaceParamList(fn.params))
-                    .append(");\n\n");
+        // 1. Part interfaces (no INSTANCE field; JNR-FFI proxies only)
+        for (int p = 0; p < PART_COUNT; p++) {
+            int start = p * partSize;
+            int end   = Math.min(start + partSize, functions.size());
+
+            sb.append("\tpublic interface MeosLibraryPart").append(letters[p]).append(" {\n\n");
+            for (int i = start; i < end; i++) {
+                FunctionDef fn = functions.get(i);
+                sb.append("\t\t")
+                        .append(fn.returnType).append(" ")
+                        .append(fn.name).append("(")
+                        .append(buildInterfaceParamList(fn.params))
+                        .append(");\n\n");
+            }
+            sb.append("\t}\n\n");
         }
 
-        sb.append("\t}");
+        // 2. Library path constant + JNR-FFI proxy singletons
+        sb.append("\tprivate static final String _LIB = \"libmeos.so\";\n\n");
+        for (char l : letters) {
+            sb.append("\tstatic final MeosLibraryPart").append(l)
+                    .append(" _meos_").append(Character.toLowerCase(l)).append(" =\n")
+                    .append("\t\t\tJarLibraryLoader.create(MeosLibraryPart").append(l)
+                    .append(".class, _LIB).getLibraryInstance();\n");
+        }
+        sb.append("\n");
+
+        // 3. Dispatch map: method-name to the the proxy that owns it
+        sb.append("\tprivate static final java.util.Map<String, Object> _dispatch;\n");
+        sb.append("\tstatic {\n");
+        sb.append("\t\t_dispatch = new java.util.HashMap<>(4096);\n");
+        for (char l : letters) {
+            sb.append("\t\tfor (java.lang.reflect.Method _m : MeosLibraryPart").append(l)
+                    .append(".class.getMethods())\n");
+            sb.append("\t\t\t_dispatch.put(_m.getName(), _meos_")
+                    .append(Character.toLowerCase(l)).append(");\n");
+        }
+        sb.append("\t}\n\n");
+
         return sb.toString();
     }
 
@@ -496,7 +531,7 @@ public class NewFunctionsGenerator {
      * For return types, we convert long → OffsetDateTime using
      *   OffsetDateTime.ofEpochSecond(_result, 0, ZoneOffset.UTC)
      */
-    private String generateStaticMethod(FunctionDef fn) {
+    private String generateStaticMethod(FunctionDef fn, int partIndex) {
         StringBuilder sb = new StringBuilder();
 
         // Detect the boolean+result pattern.
@@ -628,7 +663,9 @@ public class NewFunctionsGenerator {
                 args.add(converted ? p.name + "_new" : p.name);
             }
         }
-        String call = "MeosLibrary.meos." + fn.name + "(" + args + ");";
+
+        String partField = "_meos_" + (char) ('a' + partIndex);
+        String call = partField + "." + fn.name + "(" + args + ");";
 
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {

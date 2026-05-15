@@ -418,8 +418,7 @@ class NewFunctionsGeneratorTest {
             String out = generateFromJson("{\"functions\": []}");
             assertTrue(out.contains("package functions;"));
             assertTrue(out.contains("public class GeneratedFunctions {"));
-            assertTrue(out.contains("interface MeosLibrary {"));
-            assertTrue(out.contains("MeosLibrary INSTANCE ="));
+            assertTrue(out.contains("static final MeosLibraryPart"));
         }
 
         @Test
@@ -439,7 +438,7 @@ class NewFunctionsGeneratorTest {
             assertTrue(out.contains("void meos_initialize();"));
             // Static wrapper
             assertTrue(out.contains("public static void meos_initialize()"));
-            assertTrue(out.contains("MeosLibrary.meos.meos_initialize()"));
+            assertTrue(out.contains("_meos_a.meos_initialize()"));
             assertTrue(out.contains("MeosErrorHandler.checkError()"));
         }
 
