@@ -3396,6 +3396,10 @@ public class functions {
 
 		double nad_tgeo_tgeo(Pointer temp1, Pointer temp2);
 
+		double mindistance_tgeo_tgeo(Pointer temp1, Pointer temp2, double threshold);
+
+		double tgeoarr_tgeoarr_mindist(Pointer arr1, int count1, Pointer arr2, int count2);
+
 		Pointer nai_tgeo_geo(Pointer temp, Pointer gs);
 
 		Pointer nai_tgeo_tgeo(Pointer temp1, Pointer temp2);
@@ -13148,6 +13152,16 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static double nad_tgeo_tgeo(Pointer temp1, Pointer temp2) {
 		return MeosLibrary.meos.nad_tgeo_tgeo(temp1, temp2);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double mindistance_tgeo_tgeo(Pointer temp1, Pointer temp2, double threshold) {
+		return MeosLibrary.meos.mindistance_tgeo_tgeo(temp1, temp2, threshold);
+	}
+	
+	@SuppressWarnings("unused")
+	public static double tgeoarr_tgeoarr_mindist(Pointer arr1, int count1, Pointer arr2, int count2) {
+		return MeosLibrary.meos.tgeoarr_tgeoarr_mindist(arr1, count1, arr2, count2);
 	}
 	
 	@SuppressWarnings("unused")
