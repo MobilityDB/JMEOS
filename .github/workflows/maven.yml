@@ -57,6 +57,10 @@ jobs:
       - name: Install JSON-C
         run: sudo apt install libjson-c-dev
 
+      # Install GSL (required by MobilityDB skiplists since find_package(GSL REQUIRED))
+      - name: Install GSL
+        run: sudo apt-get install -y libgsl-dev
+
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
         run: git clone https://github.com/MobilityDB/MobilityDB.git
