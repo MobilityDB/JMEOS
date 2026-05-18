@@ -745,7 +745,7 @@ public interface TFloat extends TNumber {
             A new :class:`TFloat` instance.
 
         MEOS Functions:
-            tfloat_derivative
+            temporal_derivative
 */
 	default TFloat derivative(){
 		return (TFloat) Factory.create_temporal(functions.temporal_derivative(this.getNumberInner()), getCustomType(), getTemporalType());
@@ -791,7 +791,7 @@ public interface TFloat extends TNumber {
 	 *  <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>tfloat_round</li>
+	 *             <li>temporal_round</li>
 	 * @param max_decimals Maximum number of decimal digits.
 	 * @return A new {@link TFloat} instance.
 	 */

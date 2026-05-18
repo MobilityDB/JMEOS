@@ -178,7 +178,7 @@ public interface TPoint extends Serializable {
 	 *
 	 *  <p>
 	 *         MEOS Functions:
-	 *             <li>tpoint_start_value</li>
+	 *             <li>tgeo_start_value</li>
 	 * @param precision The precision of the returned point.
 	 * @return A {@link Point} with the start value.
 	 * @throws ParseException
@@ -192,7 +192,7 @@ public interface TPoint extends Serializable {
 	 *
 	 *  <p>
 	 *         MEOS Functions:
-	 *             <li>tpoint_end_value</li>
+	 *             <li>tgeo_end_value</li>
 	 * @param precision The precision of the returned point.
 	 * @return A {@link Point} with the end value.
 	 * @throws ParseException
@@ -370,7 +370,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>tpoint_start_value</li>
+	 *             <li>tgeo_start_value</li>
 	 * @return A {@link Boolean} indicating whether the temporal point has a z coordinate.
 	 */
 	default boolean has_z(){
@@ -618,7 +618,7 @@ public interface TPoint extends Serializable {
 	 *         MEOS Functions:
 	 *         <ul>
 	 *             <li>tpoint_at_value</li>
-	 *             <li>tpoint_at_stbox</li>
+	 *             <li>tgeo_at_stbox</li>
 	 *             <li>temporal_at_values</li>
 	 *             <li>temporal_at_timestamp</li>
 	 *             <li>temporal_at_timestampset</li>
@@ -651,7 +651,7 @@ public interface TPoint extends Serializable {
 	 *
 	 *         MEOS Functions:
 	 *             <li>tpoint_minus_value</li>
-	 *             <li>tpoint_minus_stbox</li>
+	 *             <li>tgeo_minus_stbox</li>
 	 *             <li>temporal_minus_values</li>
 	 *             <li>temporal_minus_timestamp</li>
 	 *             <li>temporal_minus_timestampset</li>
