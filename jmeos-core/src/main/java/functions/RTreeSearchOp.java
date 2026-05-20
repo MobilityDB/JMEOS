@@ -1,4 +1,4 @@
-package types.enums;
+package functions;
 
 public enum RTreeSearchOp {
     RTREE_OVERLAPS(0),    /**< Find stored boxes that overlap the query */
