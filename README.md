@@ -20,6 +20,7 @@ Java applications and MobilityDB, allowing for the seamless integration of advan
 - [Javadoc](#Javadoc)
 - [Code Analysis](#Code-Analysis)
 - [Docker Image](#Docker-Image)
+- [JAR Integration](#JAR-Integration)
 - [Use Case Examples](#Use-Case-Examples)
 - [Benchmark](#Benchmark)
 
@@ -248,6 +249,12 @@ docker run -it --name jmeos \
 ```
 
 > Use case examples have been moved to a dedicated repository: [JMEOS-Examples](https://github.com/MobilityDB/JMEOS-examples).
+
+## JAR Integration
+
+JMEOS can be used as a dependency in any Java/Maven project by importing the pre-built fat JAR.
+
+> For full instructions including Windows support, IntelliJ setup, and a ready-to-use Dockerfile for projects that depend on JMEOS, see **[README_JAR.md](README_JAR.md)**.
 
 ## Use Case Examples
 
