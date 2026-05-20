@@ -93,7 +93,7 @@ public class FunctionsGenerator {
         String outputPath = args.length > 1 ? args[1]
                 : base + "/jmeos-core/src/main/java/functions/GeneratedFunctions.java";
 
-        new NewFunctionsGenerator().run(inputPath, outputPath);
+        new FunctionsGenerator().run(inputPath, outputPath);
     }
 
     // -------------------------------------------------------------------------
