@@ -13,9 +13,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NewFunctionsGeneratorTest {
+class FunctionsGeneratorTest {
 
-    private NewFunctionsGenerator generator;
+    private FunctionsGenerator generator;
     private Path tempDir;
 
     // Reflected private methods
@@ -29,7 +29,7 @@ class NewFunctionsGeneratorTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        generator = new NewFunctionsGenerator();
+        generator = new FunctionsGenerator();
         tempDir = Files.createTempDirectory("codegen-test");
 
         mapCTypeToJava        = reflect("mapCTypeToJava",        String.class);
@@ -42,7 +42,7 @@ class NewFunctionsGeneratorTest {
         resolveResultStrategy = reflect("resolveResultStrategy", String.class);
 
         // collectEnumNames takes a JsonNode: accessed separately in its own test
-        collectEnumNames = NewFunctionsGenerator.class
+        collectEnumNames = FunctionsGenerator.class
                 .getDeclaredMethod("collectEnumNames",
                         com.fasterxml.jackson.databind.JsonNode.class);
         collectEnumNames.setAccessible(true);
@@ -62,7 +62,7 @@ class NewFunctionsGeneratorTest {
     // =========================================================================
 
     private Method reflect(String name, Class<?>... params) throws Exception {
-        Method m = NewFunctionsGenerator.class.getDeclaredMethod(name, params);
+        Method m = FunctionsGenerator.class.getDeclaredMethod(name, params);
         m.setAccessible(true);
         return m;
     }
@@ -164,7 +164,7 @@ class NewFunctionsGeneratorTest {
         @DisplayName("enum name registered in enumNames set --> int")
         void registeredEnum() throws Exception {
             // Inject a custom enum name into the generator's enumNames set
-            Field enumNamesField = NewFunctionsGenerator.class.getDeclaredField("enumNames");
+            Field enumNamesField = FunctionsGenerator.class.getDeclaredField("enumNames");
             enumNamesField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Set<String> names = (Set<String>) enumNamesField.get(generator);
@@ -363,7 +363,7 @@ class NewFunctionsGeneratorTest {
 
             collectEnumNames.invoke(generator, root);
 
-            Field enumNamesField = NewFunctionsGenerator.class.getDeclaredField("enumNames");
+            Field enumNamesField = FunctionsGenerator.class.getDeclaredField("enumNames");
             enumNamesField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Set<String> names = (Set<String>) enumNamesField.get(generator);
@@ -381,7 +381,7 @@ class NewFunctionsGeneratorTest {
 
             collectEnumNames.invoke(generator, root);
 
-            Field enumNamesField = NewFunctionsGenerator.class.getDeclaredField("enumNames");
+            Field enumNamesField = FunctionsGenerator.class.getDeclaredField("enumNames");
             enumNamesField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Set<String> names = (Set<String>) enumNamesField.get(generator);

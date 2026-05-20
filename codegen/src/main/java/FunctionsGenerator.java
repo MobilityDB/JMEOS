@@ -18,7 +18,7 @@ import java.util.*;
  *   - a public static wrapper method per function that delegates to the interface
  *     and calls MeosErrorHandler.checkError()
  */
-public class NewFunctionsGenerator {
+public class FunctionsGenerator {
 
     // Enum names extracted from the JSON "enums" section.
     // These are mapped to int in Java (JNR-FFI represents C enums as int).
