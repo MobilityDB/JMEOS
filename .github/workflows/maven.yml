@@ -45,6 +45,9 @@ jobs:
       - name: Print current working directory
         run: pwd
 
+      - name: Update apt cache
+        run: sudo apt-get update
+
       # Install GEOS library
       - name: Install GEOS
         run: sudo apt-get install -y libgeos-dev
@@ -56,6 +59,10 @@ jobs:
       # Install JSON-C library
       - name: Install JSON-C
         run: sudo apt install libjson-c-dev
+
+      # Install GSL library
+      - name: Install GSL
+        run: sudo apt-get install -y libgsl-dev
 
       # Fetch and install MEOS library
       - name: Fetch MEOS sources
@@ -71,17 +78,17 @@ jobs:
           sudo make install
 
       # Copy the installed library to your project's src/lib directory
-      - name: Copy MEOS library to JMEOS/src/lib
+      - name: Copy MEOS library to JMEOS/src/
         run: |
-          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/src/lib/
+          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/jmeos-core/src/
 
       # Check for the library in the src/lib directory
       - name: Check for the library
-        run: ls -la $GITHUB_WORKSPACE/src/lib
+        run: ls -la $GITHUB_WORKSPACE/jmeos-core/src/
 
       # Set up the environment variable LD_LIBRARY_PATH
       - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/src/lib" >> $GITHUB_ENV
+        run: echo "LD_LIBRARY_PATH=$(pwd)/jmeos-core/src/" >> $GITHUB_ENV
 
       # Check if libmeos.so exists in the target directory
       - name: Check if libmeos.so exists
