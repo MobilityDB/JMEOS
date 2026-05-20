@@ -29,6 +29,17 @@ import static types.temporal.TemporalType.*;
 public abstract class Temporal<V extends Serializable> implements Serializable, TemporalObject {
     private Pointer inner;
 
+    /**
+     * Custom-type strings of the base types for which MEOS does not support
+     * linear interpolation -- the temporal int, boolean and text. Used by
+     * {@link #append_instant} to choose the right `interp` value for the
+     * MEOS 1.4 temporal_append_tinstant signature; mirrors PyMEOS's
+     * {@code _continuous} class attribute / GoMEOS's
+     * {@code temptype_supports_linear} check.
+     */
+    private static final Set<String> STEP_ONLY_BASES =
+        Set.of("Boolean", "Integer", "String");
+
     /** ------------------------- Constructors ---------------------------------------- */
 
     public Temporal(){
@@ -762,7 +773,18 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         else{
             interv= ConversionUtils.timedelta_to_interval(max_time);
         }
-        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), TInterpolation.LINEAR.getValue(), (double) max_dist, interv, false);
+        // MEOS 1.4 added an explicit `interp` argument to
+        // temporal_append_tinstant; it is consulted only when `this` is a
+        // TInstant being promoted to a TSequence (ignored otherwise). It
+        // must carry the base type's natural interpolation -- LINEAR for
+        // continuous types, STEPWISE for the step-only ones (Boolean,
+        // Integer, String), for which MEOS rejects LINEAR -- exactly what
+        // MEOS 1.3 inferred internally from the temporal type before the
+        // argument existed.
+        int interp = STEP_ONLY_BASES.contains(this.getCustomType())
+            ? TInterpolation.STEPWISE.getValue()
+            : TInterpolation.LINEAR.getValue();
+        Pointer resultPointer= functions.temporal_append_tinstant(this.inner, instant.getInner(), interp, (double) max_dist, interv, false);
         return Factory.create_temporal(resultPointer, this.getCustomType(), this.getTemporalType());
     }
 
