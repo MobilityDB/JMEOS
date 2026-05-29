@@ -133,6 +133,7 @@ class FunctionsGeneratorTest {
         @Test void DateADT() throws Exception      { assertEquals("int",     mapJava("DateADT")); }
         @Test void Timestamp() throws Exception    { assertEquals("long",    mapJava("Timestamp")); }
         @Test void TimestampTz() throws Exception  { assertEquals("long",    mapJava("TimestampTz")); }
+        @Test void H3Index() throws Exception      { assertEquals("long",    mapJava("H3Index")); }
 
         @Test void charPointer() throws Exception  { assertEquals("String",  mapJava("char *")); }
         @Test void structPointer() throws Exception { assertEquals("Pointer", mapJava("STBox *")); }
