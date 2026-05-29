@@ -22,6 +22,7 @@ class FunctionsGeneratorTest {
     private Method mapCTypeToJava;
     private Method mapCTypeToJavaWrapper;
     private Method isTemporalCType;
+    private Method isOwnedCharReturn;
     private Method resolveResultStrategy;
     private Method sanitizeParamName;
     private Method collectEnumNames;
@@ -35,6 +36,7 @@ class FunctionsGeneratorTest {
         mapCTypeToJava        = reflect("mapCTypeToJava",        String.class);
         mapCTypeToJavaWrapper = reflect("mapCTypeToJavaWrapper", String.class);
         isTemporalCType       = reflect("isTemporalCType",       String.class);
+        isOwnedCharReturn     = reflect("isOwnedCharReturn",     String.class);
         sanitizeParamName     = reflect("sanitizeParamName",     String.class);
         run                   = reflect("run",                   String.class, String.class);
 
@@ -77,6 +79,10 @@ class FunctionsGeneratorTest {
 
     private boolean isTemporal(String cType) throws Exception {
         return (boolean) isTemporalCType.invoke(generator, cType);
+    }
+
+    private boolean isOwnedChar(String retCType) throws Exception {
+        return (boolean) isOwnedCharReturn.invoke(generator, retCType);
     }
 
     private Object resolveStrategy(String cType) throws Exception {
@@ -227,6 +233,25 @@ class FunctionsGeneratorTest {
         @Test void DateADT_false() throws Exception     { assertFalse(isTemporal("DateADT")); }
         @Test void Pointer_false() throws Exception     { assertFalse(isTemporal("STBox *")); }
         @Test void double_false() throws Exception      { assertFalse(isTemporal("double")); }
+    }
+
+    // =========================================================================
+    // isOwnedCharReturn
+    // =========================================================================
+
+    @Nested
+    @DisplayName("isOwnedCharReturn")
+    class IsOwnedCharReturnTests {
+
+        @Test void ownedCharPtr_true() throws Exception      { assertTrue(isOwnedChar("char *")); }
+        @Test void ownedCharPtrNoSpace_true() throws Exception { assertTrue(isOwnedChar("char*")); }
+
+        @Test void constCharPtr_false() throws Exception     { assertFalse(isOwnedChar("const char *")); }
+        @Test void doubleCharPtr_false() throws Exception    { assertFalse(isOwnedChar("char **")); }
+        @Test void text_false() throws Exception             { assertFalse(isOwnedChar("text *")); }
+        @Test void Pointer_false() throws Exception          { assertFalse(isOwnedChar("Temporal *")); }
+        @Test void void_false() throws Exception             { assertFalse(isOwnedChar("void")); }
+        @Test void int_false() throws Exception              { assertFalse(isOwnedChar("int")); }
     }
 
     // =========================================================================

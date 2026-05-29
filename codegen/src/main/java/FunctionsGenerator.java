@@ -309,6 +309,20 @@ public class FunctionsGenerator {
         return TIMESTAMP_C_TYPES.contains(cleaned);
     }
 
+    /**
+     * Returns true if the C return type is an OWNED {@code char *} that the
+     * caller must free: a non-const {@code char *}. {@code const char *}
+     * returns are borrowed/static (e.g. temporal_interp, temporal_subtype,
+     * geo_typename) and must NOT be freed. For an owned char* the interface
+     * binds the return as Pointer and the wrapper frees it after copying the
+     * string, instead of letting JNR-FFI copy the C string to a Java String
+     * and leak the original allocation.
+     */
+    private boolean isOwnedCharReturn(String retCType) {
+        if (retCType.contains("const")) return false;
+        return retCType.replaceAll("\\s+", "").equals("char*");
+    }
+
     // bool+result strategy: driven by the pointed-to C type
     //
     // The original version always generated:
@@ -443,6 +457,29 @@ public class FunctionsGenerator {
                 """);
 
         sb.append("public class GeneratedFunctions {\n");
+        // Native deallocator for char* returned by owning MEOS functions.
+        // MEOS standalone allocates with the system malloc (palloc/pfree map to
+        // malloc/free outside PostgreSQL); freeMemory() calls the system free
+        // underneath. Uses sun.misc.Unsafe rather than a JNR-FFI libc binding to
+        // avoid classloader-boundary issues, mirroring MobilitySpark MeosMemory.
+        sb.append("""
+                \tprivate static final sun.misc.Unsafe _UNSAFE;
+                \tstatic {
+                \t\ttry {
+                \t\t\tjava.lang.reflect.Field _f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+                \t\t\t_f.setAccessible(true);
+                \t\t\t_UNSAFE = (sun.misc.Unsafe) _f.get(null);
+                \t\t} catch (ReflectiveOperationException _e) {
+                \t\t\tthrow new ExceptionInInitializerError(_e);
+                \t\t}
+                \t}
+
+                \t/** Free a char* returned by an owning (non-const) MEOS function. Null-safe. */
+                \tprivate static void _freeCStr(Pointer _p) {
+                \t\tif (_p != null) _UNSAFE.freeMemory(_p.address());
+                \t}
+
+                """);
         sb.append(generateAllInterfaces(functions, partSize));
         sb.append("\n\n");
 
@@ -476,8 +513,11 @@ public class FunctionsGenerator {
             sb.append("\tpublic interface MeosLibraryPart").append(letters[p]).append(" {\n\n");
             for (int i = start; i < end; i++) {
                 FunctionDef fn = functions.get(i);
+                // Owned char* returns bind as Pointer so the wrapper can free
+                // the native allocation after copying the string.
+                String ifaceRet = isOwnedCharReturn(fn.retCType) ? "Pointer" : fn.returnType;
                 sb.append("\t\t")
-                        .append(fn.returnType).append(" ")
+                        .append(ifaceRet).append(" ")
                         .append(fn.name).append("(")
                         .append(buildInterfaceParamList(fn.params))
                         .append(");\n\n");
@@ -690,6 +730,15 @@ public class FunctionsGenerator {
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
+        } else if (isOwnedCharReturn(fn.retCType)) {
+            // Interface returns Pointer (owned char*). Copy the string, free the
+            // native allocation, and return the Java String — no leak.
+            sb.append("\t\tPointer _result = ").append(call).append("\n");
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\tif (_result == null) return null;\n");
+            sb.append("\t\tString _str = _result.getString(0);\n");
+            sb.append("\t\t_freeCStr(_result);\n");
+            sb.append("\t\treturn _str;\n");
         } else {
             sb.append("\t\tvar _result = ").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");

@@ -13,6 +13,22 @@ import functions.MeosErrorHandler;
 import java.time.*;
 
 public class GeneratedFunctions {
+	private static final sun.misc.Unsafe _UNSAFE;
+	static {
+		try {
+			java.lang.reflect.Field _f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+			_f.setAccessible(true);
+			_UNSAFE = (sun.misc.Unsafe) _f.get(null);
+		} catch (ReflectiveOperationException _e) {
+			throw new ExceptionInInitializerError(_e);
+		}
+	}
+
+	/** Free a char* returned by an owning (non-const) MEOS function. Null-safe. */
+	private static void _freeCStr(Pointer _p) {
+		if (_p != null) _UNSAFE.freeMemory(_p.address());
+	}
+
 	public interface MeosLibraryPartA {
 
 		Pointer rtree_create_intspan();
@@ -63,9 +79,9 @@ public class GeneratedFunctions {
 
 		boolean meos_set_intervalstyle(String newval, int extra);
 
-		String meos_get_datestyle();
+		Pointer meos_get_datestyle();
 
-		String meos_get_intervalstyle();
+		Pointer meos_get_intervalstyle();
 
 		void meos_set_spatial_ref_sys_csv(String path);
 
@@ -81,7 +97,7 @@ public class GeneratedFunctions {
 
 		boolean bool_in(String str);
 
-		String bool_out(boolean b);
+		Pointer bool_out(boolean b);
 
 		Pointer cstring2text(String str);
 
@@ -95,7 +111,7 @@ public class GeneratedFunctions {
 
 		double float_log10(double d);
 
-		String float8_out(double d, int maxdd);
+		Pointer float8_out(double d, int maxdd);
 
 		double float_round(double d, int maxdd);
 
@@ -117,23 +133,23 @@ public class GeneratedFunctions {
 
 		int pg_date_in(String str);
 
-		String pg_date_out(int d);
+		Pointer pg_date_out(int d);
 
 		int pg_interval_cmp(Pointer interv1, Pointer interv2);
 
 		Pointer pg_interval_in(String str, int typmod);
 
-		String pg_interval_out(Pointer interv);
+		Pointer pg_interval_out(Pointer interv);
 
 		long pg_timestamp_in(String str, int typmod);
 
-		String pg_timestamp_out(long t);
+		Pointer pg_timestamp_out(long t);
 
 		long pg_timestamptz_in(String str, int typmod);
 
-		String pg_timestamptz_out(long t);
+		Pointer pg_timestamptz_out(long t);
 
-		String text2cstring(Pointer txt);
+		Pointer text2cstring(Pointer txt);
 
 		int text_cmp(Pointer txt1, Pointer txt2);
 
@@ -145,7 +161,7 @@ public class GeneratedFunctions {
 
 		Pointer text_lower(Pointer txt);
 
-		String text_out(Pointer txt);
+		Pointer text_out(Pointer txt);
 
 		Pointer text_upper(Pointer txt);
 
@@ -159,59 +175,59 @@ public class GeneratedFunctions {
 
 		Pointer bigintset_in(String str);
 
-		String bigintset_out(Pointer set);
+		Pointer bigintset_out(Pointer set);
 
 		Pointer bigintspan_expand(Pointer s, long value);
 
 		Pointer bigintspan_in(String str);
 
-		String bigintspan_out(Pointer s);
+		Pointer bigintspan_out(Pointer s);
 
 		Pointer bigintspanset_in(String str);
 
-		String bigintspanset_out(Pointer ss);
+		Pointer bigintspanset_out(Pointer ss);
 
 		Pointer dateset_in(String str);
 
-		String dateset_out(Pointer s);
+		Pointer dateset_out(Pointer s);
 
 		Pointer datespan_in(String str);
 
-		String datespan_out(Pointer s);
+		Pointer datespan_out(Pointer s);
 
 		Pointer datespanset_in(String str);
 
-		String datespanset_out(Pointer ss);
+		Pointer datespanset_out(Pointer ss);
 
 		Pointer floatset_in(String str);
 
-		String floatset_out(Pointer set, int maxdd);
+		Pointer floatset_out(Pointer set, int maxdd);
 
 		Pointer floatspan_expand(Pointer s, double value);
 
 		Pointer floatspan_in(String str);
 
-		String floatspan_out(Pointer s, int maxdd);
+		Pointer floatspan_out(Pointer s, int maxdd);
 
 		Pointer floatspanset_in(String str);
 
-		String floatspanset_out(Pointer ss, int maxdd);
+		Pointer floatspanset_out(Pointer ss, int maxdd);
 
 		Pointer intset_in(String str);
 
-		String intset_out(Pointer set);
+		Pointer intset_out(Pointer set);
 
 		Pointer intspan_expand(Pointer s, int value);
 
 		Pointer intspan_in(String str);
 
-		String intspan_out(Pointer s);
+		Pointer intspan_out(Pointer s);
 
 		Pointer intspanset_in(String str);
 
-		String intspanset_out(Pointer ss);
+		Pointer intspanset_out(Pointer ss);
 
-		String set_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+		Pointer set_as_hexwkb(Pointer s, byte variant, Pointer size_out);
 
 		Pointer set_as_wkb(Pointer s, byte variant, Pointer size_out);
 
@@ -219,7 +235,7 @@ public class GeneratedFunctions {
 
 		Pointer set_from_wkb(Pointer wkb, long size);
 
-		String span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+		Pointer span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
 
 		Pointer span_as_wkb(Pointer s, byte variant, Pointer size_out);
 
@@ -227,7 +243,7 @@ public class GeneratedFunctions {
 
 		Pointer span_from_wkb(Pointer wkb, long size);
 
-		String spanset_as_hexwkb(Pointer ss, byte variant, Pointer size_out);
+		Pointer spanset_as_hexwkb(Pointer ss, byte variant, Pointer size_out);
 
 		Pointer spanset_as_wkb(Pointer ss, byte variant, Pointer size_out);
 
@@ -237,19 +253,19 @@ public class GeneratedFunctions {
 
 		Pointer textset_in(String str);
 
-		String textset_out(Pointer set);
+		Pointer textset_out(Pointer set);
 
 		Pointer tstzset_in(String str);
 
-		String tstzset_out(Pointer set);
+		Pointer tstzset_out(Pointer set);
 
 		Pointer tstzspan_in(String str);
 
-		String tstzspan_out(Pointer s);
+		Pointer tstzspan_out(Pointer s);
 
 		Pointer tstzspanset_in(String str);
 
-		String tstzspanset_out(Pointer ss);
+		Pointer tstzspanset_out(Pointer ss);
 
 		Pointer bigintset_make(Pointer values, int count);
 
@@ -1397,7 +1413,7 @@ public class GeneratedFunctions {
 
 		Pointer tstzspanset_bins(Pointer ss, Pointer duration, long torigin, Pointer count);
 
-		String tbox_as_hexwkb(Pointer box, byte variant, Pointer size);
+		Pointer tbox_as_hexwkb(Pointer box, byte variant, Pointer size);
 
 		Pointer tbox_as_wkb(Pointer box, byte variant, Pointer size_out);
 
@@ -1407,7 +1423,7 @@ public class GeneratedFunctions {
 
 		Pointer tbox_in(String str);
 
-		String tbox_out(Pointer box, int maxdd);
+		Pointer tbox_out(Pointer box, int maxdd);
 
 		Pointer float_timestamptz_to_tbox(double d, long t);
 
@@ -1537,11 +1553,11 @@ public class GeneratedFunctions {
 
 		Pointer tbool_in(String str);
 
-		String tbool_out(Pointer temp);
+		Pointer tbool_out(Pointer temp);
 
-		String temporal_as_hexwkb(Pointer temp, byte variant, Pointer size_out);
+		Pointer temporal_as_hexwkb(Pointer temp, byte variant, Pointer size_out);
 
-		String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs);
+		Pointer temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs);
 
 		Pointer temporal_as_wkb(Pointer temp, byte variant, Pointer size_out);
 
@@ -1553,19 +1569,19 @@ public class GeneratedFunctions {
 
 		Pointer tfloat_in(String str);
 
-		String tfloat_out(Pointer temp, int maxdd);
+		Pointer tfloat_out(Pointer temp, int maxdd);
 
 		Pointer tint_from_mfjson(String str);
 
 		Pointer tint_in(String str);
 
-		String tint_out(Pointer temp);
+		Pointer tint_out(Pointer temp);
 
 		Pointer ttext_from_mfjson(String str);
 
 		Pointer ttext_in(String str);
 
-		String ttext_out(Pointer temp);
+		Pointer ttext_out(Pointer temp);
 
 		Pointer tbool_from_base_temp(boolean b, Pointer temp);
 
@@ -2567,13 +2583,13 @@ public class GeneratedFunctions {
 
 		Pointer geo_as_ewkb(Pointer gs, String endian, Pointer size);
 
-		String geo_as_ewkt(Pointer gs, int precision);
+		Pointer geo_as_ewkt(Pointer gs, int precision);
 
-		String geo_as_geojson(Pointer gs, int option, int precision, String srs);
+		Pointer geo_as_geojson(Pointer gs, int option, int precision, String srs);
 
-		String geo_as_hexewkb(Pointer gs, String endian);
+		Pointer geo_as_hexewkb(Pointer gs, String endian);
 
-		String geo_as_text(Pointer gs, int precision);
+		Pointer geo_as_text(Pointer gs, int precision);
 
 		Pointer geo_from_ewkb(Pointer wkb, long wkb_size, int srid);
 
@@ -2581,7 +2597,7 @@ public class GeneratedFunctions {
 
 		Pointer geo_from_text(String wkt, int srid);
 
-		String geo_out(Pointer gs);
+		Pointer geo_out(Pointer gs);
 
 		Pointer geog_from_binary(String wkb_bytea);
 
@@ -2595,11 +2611,11 @@ public class GeneratedFunctions {
 
 		Pointer box3d_make(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int srid);
 
-		String box3d_out(Pointer box, int maxdd);
+		Pointer box3d_out(Pointer box, int maxdd);
 
 		Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
 
-		String gbox_out(Pointer box, int maxdd);
+		Pointer gbox_out(Pointer box, int maxdd);
 
 		Pointer geo_copy(Pointer g);
 
@@ -2737,9 +2753,9 @@ public class GeneratedFunctions {
 
 		Pointer geomset_in(String str);
 
-		String spatialset_as_text(Pointer set, int maxdd);
+		Pointer spatialset_as_text(Pointer set, int maxdd);
 
-		String spatialset_as_ewkt(Pointer set, int maxdd);
+		Pointer spatialset_as_ewkt(Pointer set, int maxdd);
 
 		Pointer geoset_make(Pointer values, int count);
 
@@ -2779,7 +2795,7 @@ public class GeneratedFunctions {
 
 		Pointer spatialset_transform_pipeline(Pointer s, String pipelinestr, int srid, boolean is_forward);
 
-		String stbox_as_hexwkb(Pointer box, byte variant, Pointer size);
+		Pointer stbox_as_hexwkb(Pointer box, byte variant, Pointer size);
 
 		Pointer stbox_as_wkb(Pointer box, byte variant, Pointer size_out);
 
@@ -2789,7 +2805,7 @@ public class GeneratedFunctions {
 
 		Pointer stbox_in(String str);
 
-		String stbox_out(Pointer box, int maxdd);
+		Pointer stbox_out(Pointer box, int maxdd);
 
 		Pointer geo_timestamptz_to_stbox(Pointer gs, long t);
 
@@ -2955,11 +2971,11 @@ public class GeneratedFunctions {
 
 		Pointer tgeompoint_in(String str);
 
-		String tspatial_as_ewkt(Pointer temp, int maxdd);
+		Pointer tspatial_as_ewkt(Pointer temp, int maxdd);
 
-		String tspatial_as_text(Pointer temp, int maxdd);
+		Pointer tspatial_as_text(Pointer temp, int maxdd);
 
-		String tspatial_out(Pointer temp, int maxdd);
+		Pointer tspatial_out(Pointer temp, int maxdd);
 
 		Pointer tgeo_from_base_temp(Pointer gs, Pointer temp);
 
@@ -3586,16 +3602,22 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String meos_get_datestyle() {
-		var _result = _meos_a.meos_get_datestyle();
+		Pointer _result = _meos_a.meos_get_datestyle();
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String meos_get_intervalstyle() {
-		var _result = _meos_a.meos_get_intervalstyle();
+		Pointer _result = _meos_a.meos_get_intervalstyle();
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3647,9 +3669,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String bool_out(boolean b) {
-		var _result = _meos_a.bool_out(b);
+		Pointer _result = _meos_a.bool_out(b);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3696,9 +3721,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String float8_out(double d, int maxdd) {
-		var _result = _meos_a.float8_out(d, maxdd);
+		Pointer _result = _meos_a.float8_out(d, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3776,9 +3804,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String pg_date_out(int d) {
-		var _result = _meos_a.pg_date_out(d);
+		Pointer _result = _meos_a.pg_date_out(d);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3797,9 +3828,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String pg_interval_out(Pointer interv) {
-		var _result = _meos_a.pg_interval_out(interv);
+		Pointer _result = _meos_a.pg_interval_out(interv);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3812,9 +3846,12 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static String pg_timestamp_out(LocalDateTime t) {
 		var t_new = t.toInstant(java.time.ZoneOffset.UTC).getEpochSecond();
-		var _result = _meos_a.pg_timestamp_out(t_new);
+		Pointer _result = _meos_a.pg_timestamp_out(t_new);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3827,16 +3864,22 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static String pg_timestamptz_out(OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.pg_timestamptz_out(t_new);
+		Pointer _result = _meos_a.pg_timestamptz_out(t_new);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String text2cstring(Pointer txt) {
-		var _result = _meos_a.text2cstring(txt);
+		Pointer _result = _meos_a.text2cstring(txt);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3876,9 +3919,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String text_out(Pointer txt) {
-		var _result = _meos_a.text_out(txt);
+		Pointer _result = _meos_a.text_out(txt);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3928,9 +3974,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String bigintset_out(Pointer set) {
-		var _result = _meos_a.bigintset_out(set);
+		Pointer _result = _meos_a.bigintset_out(set);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3949,9 +3998,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String bigintspan_out(Pointer s) {
-		var _result = _meos_a.bigintspan_out(s);
+		Pointer _result = _meos_a.bigintspan_out(s);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3963,9 +4015,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String bigintspanset_out(Pointer ss) {
-		var _result = _meos_a.bigintspanset_out(ss);
+		Pointer _result = _meos_a.bigintspanset_out(ss);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3977,9 +4032,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String dateset_out(Pointer s) {
-		var _result = _meos_a.dateset_out(s);
+		Pointer _result = _meos_a.dateset_out(s);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -3991,9 +4049,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String datespan_out(Pointer s) {
-		var _result = _meos_a.datespan_out(s);
+		Pointer _result = _meos_a.datespan_out(s);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4005,9 +4066,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String datespanset_out(Pointer ss) {
-		var _result = _meos_a.datespanset_out(ss);
+		Pointer _result = _meos_a.datespanset_out(ss);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4019,9 +4083,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String floatset_out(Pointer set, int maxdd) {
-		var _result = _meos_a.floatset_out(set, maxdd);
+		Pointer _result = _meos_a.floatset_out(set, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4040,9 +4107,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String floatspan_out(Pointer s, int maxdd) {
-		var _result = _meos_a.floatspan_out(s, maxdd);
+		Pointer _result = _meos_a.floatspan_out(s, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4054,9 +4124,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String floatspanset_out(Pointer ss, int maxdd) {
-		var _result = _meos_a.floatspanset_out(ss, maxdd);
+		Pointer _result = _meos_a.floatspanset_out(ss, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4068,9 +4141,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String intset_out(Pointer set) {
-		var _result = _meos_a.intset_out(set);
+		Pointer _result = _meos_a.intset_out(set);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4089,9 +4165,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String intspan_out(Pointer s) {
-		var _result = _meos_a.intspan_out(s);
+		Pointer _result = _meos_a.intspan_out(s);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4103,18 +4182,24 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String intspanset_out(Pointer ss) {
-		var _result = _meos_a.intspanset_out(ss);
+		Pointer _result = _meos_a.intspanset_out(ss);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String set_as_hexwkb(Pointer s, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_a.set_as_hexwkb(s, variant, size_out);
+		Pointer _result = _meos_a.set_as_hexwkb(s, variant, size_out);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4144,9 +4229,12 @@ public class GeneratedFunctions {
 	public static String span_as_hexwkb(Pointer s, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_a.span_as_hexwkb(s, variant, size_out);
+		Pointer _result = _meos_a.span_as_hexwkb(s, variant, size_out);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4176,9 +4264,12 @@ public class GeneratedFunctions {
 	public static String spanset_as_hexwkb(Pointer ss, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_a.spanset_as_hexwkb(ss, variant, size_out);
+		Pointer _result = _meos_a.spanset_as_hexwkb(ss, variant, size_out);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4213,9 +4304,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String textset_out(Pointer set) {
-		var _result = _meos_a.textset_out(set);
+		Pointer _result = _meos_a.textset_out(set);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4227,9 +4321,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tstzset_out(Pointer set) {
-		var _result = _meos_a.tstzset_out(set);
+		Pointer _result = _meos_a.tstzset_out(set);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4241,9 +4338,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tstzspan_out(Pointer s) {
-		var _result = _meos_a.tstzspan_out(s);
+		Pointer _result = _meos_a.tstzspan_out(s);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -4255,9 +4355,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tstzspanset_out(Pointer ss) {
-		var _result = _meos_a.tstzspanset_out(ss);
+		Pointer _result = _meos_a.tstzspanset_out(ss);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8351,9 +8454,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tbox_as_hexwkb(Pointer box, byte variant, Pointer size) {
-		var _result = _meos_b.tbox_as_hexwkb(box, variant, size);
+		Pointer _result = _meos_b.tbox_as_hexwkb(box, variant, size);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8388,9 +8494,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tbox_out(Pointer box, int maxdd) {
-		var _result = _meos_b.tbox_out(box, maxdd);
+		Pointer _result = _meos_b.tbox_out(box, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8883,25 +8992,34 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tbool_out(Pointer temp) {
-		var _result = _meos_b.tbool_out(temp);
+		Pointer _result = _meos_b.tbool_out(temp);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String temporal_as_hexwkb(Pointer temp, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_b.temporal_as_hexwkb(temp, variant, size_out);
+		Pointer _result = _meos_b.temporal_as_hexwkb(temp, variant, size_out);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String temporal_as_mfjson(Pointer temp, boolean with_bbox, int flags, int precision, String srs) {
-		var _result = _meos_b.temporal_as_mfjson(temp, with_bbox, flags, precision, srs);
+		Pointer _result = _meos_b.temporal_as_mfjson(temp, with_bbox, flags, precision, srs);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8943,9 +9061,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tfloat_out(Pointer temp, int maxdd) {
-		var _result = _meos_b.tfloat_out(temp, maxdd);
+		Pointer _result = _meos_b.tfloat_out(temp, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8964,9 +9085,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tint_out(Pointer temp) {
-		var _result = _meos_b.tint_out(temp);
+		Pointer _result = _meos_b.tint_out(temp);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -8985,9 +9109,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String ttext_out(Pointer temp) {
-		var _result = _meos_b.ttext_out(temp);
+		Pointer _result = _meos_b.ttext_out(temp);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -12508,30 +12635,42 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String geo_as_ewkt(Pointer gs, int precision) {
-		var _result = _meos_d.geo_as_ewkt(gs, precision);
+		Pointer _result = _meos_d.geo_as_ewkt(gs, precision);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String geo_as_geojson(Pointer gs, int option, int precision, String srs) {
-		var _result = _meos_d.geo_as_geojson(gs, option, precision, srs);
+		Pointer _result = _meos_d.geo_as_geojson(gs, option, precision, srs);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String geo_as_hexewkb(Pointer gs, String endian) {
-		var _result = _meos_d.geo_as_hexewkb(gs, endian);
+		Pointer _result = _meos_d.geo_as_hexewkb(gs, endian);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String geo_as_text(Pointer gs, int precision) {
-		var _result = _meos_d.geo_as_text(gs, precision);
+		Pointer _result = _meos_d.geo_as_text(gs, precision);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -12557,9 +12696,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String geo_out(Pointer gs) {
-		var _result = _meos_d.geo_out(gs);
+		Pointer _result = _meos_d.geo_out(gs);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -12606,9 +12748,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String box3d_out(Pointer box, int maxdd) {
-		var _result = _meos_d.box3d_out(box, maxdd);
+		Pointer _result = _meos_d.box3d_out(box, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -12620,9 +12765,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String gbox_out(Pointer box, int maxdd) {
-		var _result = _meos_d.gbox_out(box, maxdd);
+		Pointer _result = _meos_d.gbox_out(box, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -13106,16 +13254,22 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String spatialset_as_text(Pointer set, int maxdd) {
-		var _result = _meos_d.spatialset_as_text(set, maxdd);
+		Pointer _result = _meos_d.spatialset_as_text(set, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String spatialset_as_ewkt(Pointer set, int maxdd) {
-		var _result = _meos_d.spatialset_as_ewkt(set, maxdd);
+		Pointer _result = _meos_d.spatialset_as_ewkt(set, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -13257,9 +13411,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String stbox_as_hexwkb(Pointer box, byte variant, Pointer size) {
-		var _result = _meos_d.stbox_as_hexwkb(box, variant, size);
+		Pointer _result = _meos_d.stbox_as_hexwkb(box, variant, size);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -13294,9 +13451,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String stbox_out(Pointer box, int maxdd) {
-		var _result = _meos_d.stbox_out(box, maxdd);
+		Pointer _result = _meos_d.stbox_out(box, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
@@ -13907,23 +14067,32 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static String tspatial_as_ewkt(Pointer temp, int maxdd) {
-		var _result = _meos_d.tspatial_as_ewkt(temp, maxdd);
+		Pointer _result = _meos_d.tspatial_as_ewkt(temp, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String tspatial_as_text(Pointer temp, int maxdd) {
-		var _result = _meos_d.tspatial_as_text(temp, maxdd);
+		Pointer _result = _meos_d.tspatial_as_text(temp, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
 	public static String tspatial_out(Pointer temp, int maxdd) {
-		var _result = _meos_d.tspatial_out(temp, maxdd);
+		Pointer _result = _meos_d.tspatial_out(temp, maxdd);
 		MeosErrorHandler.checkError();
-		return _result;
+		if (_result == null) return null;
+		String _str = _result.getString(0);
+		_freeCStr(_result);
+		return _str;
 	}
 
 	@SuppressWarnings("unused")
