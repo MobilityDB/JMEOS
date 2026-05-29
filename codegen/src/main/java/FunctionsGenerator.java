@@ -266,6 +266,10 @@ public class FunctionsGenerator {
             // DateADT is int32 under the hood; Timestamp/TimestampTz are int64.
             case "DateADT"                          -> "int";
             case "Timestamp", "TimestampTz"         -> "long";
+            // H3Index is a uint64 cell identifier (DGGRID/H3), not an opaque
+            // struct pointer; without this it hits the default branch and
+            // becomes Pointer, breaking every h3index/th3index binding.
+            case "H3Index"                          -> "long";
 
             // Explicit enum names (in case not in JSON enums section)
             case "interpType", "RTreeSearchOp",
