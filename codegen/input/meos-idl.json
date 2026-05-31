@@ -56842,7 +56842,7 @@
       ]
     },
     {
-      "name": "trgeo_out",
+      "name": "trgeometry_out",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "char *",
@@ -56882,7 +56882,7 @@
       ]
     },
     {
-      "name": "geo_tpose_to_trgeo",
+      "name": "geo_tpose_to_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -56902,7 +56902,7 @@
       ]
     },
     {
-      "name": "trgeo_to_tpose",
+      "name": "trgeometry_to_tpose",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -56917,7 +56917,7 @@
       ]
     },
     {
-      "name": "trgeo_to_tpoint",
+      "name": "trgeometry_to_tpoint",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -56932,7 +56932,7 @@
       ]
     },
     {
-      "name": "trgeo_end_instant",
+      "name": "trgeometry_end_instant",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -56947,7 +56947,7 @@
       ]
     },
     {
-      "name": "trgeo_end_sequence",
+      "name": "trgeometry_end_sequence",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TSequence *",
@@ -56962,7 +56962,7 @@
       ]
     },
     {
-      "name": "trgeo_end_value",
+      "name": "trgeometry_end_value",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -56977,7 +56977,7 @@
       ]
     },
     {
-      "name": "trgeo_geom",
+      "name": "trgeometry_geom",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -56992,7 +56992,7 @@
       ]
     },
     {
-      "name": "trgeo_instant_n",
+      "name": "trgeometry_instant_n",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57012,7 +57012,7 @@
       ]
     },
     {
-      "name": "trgeo_instants",
+      "name": "trgeometry_instants",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant **",
@@ -57032,7 +57032,7 @@
       ]
     },
     {
-      "name": "trgeo_points",
+      "name": "trgeometry_points",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Set *",
@@ -57047,7 +57047,7 @@
       ]
     },
     {
-      "name": "trgeo_rotation",
+      "name": "trgeometry_rotation",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57062,7 +57062,7 @@
       ]
     },
     {
-      "name": "trgeo_segments",
+      "name": "trgeometry_segments",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TSequence **",
@@ -57082,7 +57082,7 @@
       ]
     },
     {
-      "name": "trgeo_sequence_n",
+      "name": "trgeometry_sequence_n",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TSequence *",
@@ -57102,7 +57102,7 @@
       ]
     },
     {
-      "name": "trgeo_sequences",
+      "name": "trgeometry_sequences",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TSequence **",
@@ -57122,7 +57122,7 @@
       ]
     },
     {
-      "name": "trgeo_start_instant",
+      "name": "trgeometry_start_instant",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57137,7 +57137,7 @@
       ]
     },
     {
-      "name": "trgeo_start_sequence",
+      "name": "trgeometry_start_sequence",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TSequence *",
@@ -57152,7 +57152,7 @@
       ]
     },
     {
-      "name": "trgeo_start_value",
+      "name": "trgeometry_start_value",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -57167,7 +57167,7 @@
       ]
     },
     {
-      "name": "trgeo_value_n",
+      "name": "trgeometry_value_n",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "bool",
@@ -57192,7 +57192,7 @@
       ]
     },
     {
-      "name": "trgeo_traversed_area",
+      "name": "trgeometry_traversed_area",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -57212,7 +57212,7 @@
       ]
     },
     {
-      "name": "trgeo_append_tinstant",
+      "name": "trgeometry_append_tinstant",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57252,7 +57252,7 @@
       ]
     },
     {
-      "name": "trgeo_append_tsequence",
+      "name": "trgeometry_append_tsequence",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57277,7 +57277,7 @@
       ]
     },
     {
-      "name": "trgeo_delete_timestamptz",
+      "name": "trgeometry_delete_timestamptz",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57302,7 +57302,7 @@
       ]
     },
     {
-      "name": "trgeo_delete_tstzset",
+      "name": "trgeometry_delete_tstzset",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57327,7 +57327,7 @@
       ]
     },
     {
-      "name": "trgeo_delete_tstzspan",
+      "name": "trgeometry_delete_tstzspan",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57352,7 +57352,7 @@
       ]
     },
     {
-      "name": "trgeo_delete_tstzspanset",
+      "name": "trgeometry_delete_tstzspanset",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57377,7 +57377,7 @@
       ]
     },
     {
-      "name": "trgeo_round",
+      "name": "trgeometry_round",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57397,7 +57397,7 @@
       ]
     },
     {
-      "name": "trgeo_set_interp",
+      "name": "trgeometry_set_interp",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57417,7 +57417,7 @@
       ]
     },
     {
-      "name": "trgeo_to_tinstant",
+      "name": "trgeometry_to_tinstant",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57432,7 +57432,7 @@
       ]
     },
     {
-      "name": "trgeo_after_timestamptz",
+      "name": "trgeometry_after_timestamptz",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57457,7 +57457,7 @@
       ]
     },
     {
-      "name": "trgeo_before_timestamptz",
+      "name": "trgeometry_before_timestamptz",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57482,7 +57482,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_value",
+      "name": "trgeometry_restrict_value",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57507,7 +57507,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_values",
+      "name": "trgeometry_restrict_values",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57532,7 +57532,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_timestamptz",
+      "name": "trgeometry_restrict_timestamptz",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57557,7 +57557,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_tstzset",
+      "name": "trgeometry_restrict_tstzset",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57582,7 +57582,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_tstzspan",
+      "name": "trgeometry_restrict_tstzspan",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57607,7 +57607,7 @@
       ]
     },
     {
-      "name": "trgeo_restrict_tstzspanset",
+      "name": "trgeometry_restrict_tstzspanset",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57632,7 +57632,7 @@
       ]
     },
     {
-      "name": "tdistance_trgeo_geo",
+      "name": "tdistance_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57652,7 +57652,7 @@
       ]
     },
     {
-      "name": "tdistance_trgeo_tpoint",
+      "name": "tdistance_trgeometry_tpoint",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57672,7 +57672,7 @@
       ]
     },
     {
-      "name": "tdistance_trgeo_trgeo",
+      "name": "tdistance_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -57692,7 +57692,7 @@
       ]
     },
     {
-      "name": "nad_stbox_trgeo",
+      "name": "nad_stbox_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "double",
@@ -57712,7 +57712,7 @@
       ]
     },
     {
-      "name": "nad_trgeo_geo",
+      "name": "nad_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "double",
@@ -57732,7 +57732,7 @@
       ]
     },
     {
-      "name": "nad_trgeo_stbox",
+      "name": "nad_trgeometry_stbox",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "double",
@@ -57752,7 +57752,7 @@
       ]
     },
     {
-      "name": "nad_trgeo_tpoint",
+      "name": "nad_trgeometry_tpoint",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "double",
@@ -57772,7 +57772,7 @@
       ]
     },
     {
-      "name": "nad_trgeo_trgeo",
+      "name": "nad_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "double",
@@ -57792,7 +57792,7 @@
       ]
     },
     {
-      "name": "nai_trgeo_geo",
+      "name": "nai_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57812,7 +57812,7 @@
       ]
     },
     {
-      "name": "nai_trgeo_tpoint",
+      "name": "nai_trgeometry_tpoint",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57832,7 +57832,7 @@
       ]
     },
     {
-      "name": "nai_trgeo_trgeo",
+      "name": "nai_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "TInstant *",
@@ -57852,7 +57852,7 @@
       ]
     },
     {
-      "name": "shortestline_trgeo_geo",
+      "name": "shortestline_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -57872,7 +57872,7 @@
       ]
     },
     {
-      "name": "shortestline_trgeo_tpoint",
+      "name": "shortestline_trgeometry_tpoint",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -57892,7 +57892,7 @@
       ]
     },
     {
-      "name": "shortestline_trgeo_trgeo",
+      "name": "shortestline_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int *",
@@ -57912,7 +57912,7 @@
       ]
     },
     {
-      "name": "always_eq_geo_trgeo",
+      "name": "always_eq_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -57932,7 +57932,7 @@
       ]
     },
     {
-      "name": "always_eq_trgeo_geo",
+      "name": "always_eq_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -57952,7 +57952,7 @@
       ]
     },
     {
-      "name": "always_eq_trgeo_trgeo",
+      "name": "always_eq_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -57972,7 +57972,7 @@
       ]
     },
     {
-      "name": "always_ne_geo_trgeo",
+      "name": "always_ne_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -57992,7 +57992,7 @@
       ]
     },
     {
-      "name": "always_ne_trgeo_geo",
+      "name": "always_ne_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58012,7 +58012,7 @@
       ]
     },
     {
-      "name": "always_ne_trgeo_trgeo",
+      "name": "always_ne_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58032,7 +58032,7 @@
       ]
     },
     {
-      "name": "ever_eq_geo_trgeo",
+      "name": "ever_eq_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58052,7 +58052,7 @@
       ]
     },
     {
-      "name": "ever_eq_trgeo_geo",
+      "name": "ever_eq_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58072,7 +58072,7 @@
       ]
     },
     {
-      "name": "ever_eq_trgeo_trgeo",
+      "name": "ever_eq_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58092,7 +58092,7 @@
       ]
     },
     {
-      "name": "ever_ne_geo_trgeo",
+      "name": "ever_ne_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58112,7 +58112,7 @@
       ]
     },
     {
-      "name": "ever_ne_trgeo_geo",
+      "name": "ever_ne_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58132,7 +58132,7 @@
       ]
     },
     {
-      "name": "ever_ne_trgeo_trgeo",
+      "name": "ever_ne_trgeometry_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "int",
@@ -58152,7 +58152,7 @@
       ]
     },
     {
-      "name": "teq_geo_trgeo",
+      "name": "teq_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -58172,7 +58172,7 @@
       ]
     },
     {
-      "name": "teq_trgeo_geo",
+      "name": "teq_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -58192,7 +58192,7 @@
       ]
     },
     {
-      "name": "tne_geo_trgeo",
+      "name": "tne_geo_trgeometry",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
@@ -58212,7 +58212,7 @@
       ]
     },
     {
-      "name": "tne_trgeo_geo",
+      "name": "tne_trgeometry_geo",
       "file": "meos_rgeo.h",
       "returnType": {
         "c": "Temporal *",
