@@ -154,6 +154,27 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.bearing_tpoint_tpoint(arg0, arg1);
     }
 
+    /** MEOS {@code bigint_timestamptz_to_tbox} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer bigint_timestamptz_to_tbox(long arg0, java.time.OffsetDateTime arg1) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("bigint_timestamptz_to_tbox requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.bigint_timestamptz_to_tbox(arg0, arg1);
+    }
+
+    /** MEOS {@code bigint_to_tbox} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer bigint_to_tbox(long arg0) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("bigint_to_tbox requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.bigint_to_tbox(arg0);
+    }
+
+    /** MEOS {@code bigint_tstzspan_to_tbox} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer bigint_tstzspan_to_tbox(long arg0, jnr.ffi.Pointer arg1) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("bigint_tstzspan_to_tbox requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.bigint_tstzspan_to_tbox(arg0, arg1);
+    }
+
     /** MEOS {@code bigintspan_to_floatspan} — meos.h · scalar / stateless. */
     public static jnr.ffi.Pointer bigintspan_to_floatspan(jnr.ffi.Pointer arg0) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
@@ -166,6 +187,13 @@ public final class MeosOpsParityGaps {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("bigintspan_to_intspan requires libmeos — set -Dmeos.enabled=true");
         return functions.GeneratedFunctions.bigintspan_to_intspan(arg0);
+    }
+
+    /** MEOS {@code box3d_in} — meos_geo.h · scalar / stateless. */
+    public static jnr.ffi.Pointer box3d_in(java.lang.String arg0) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("box3d_in requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.box3d_in(arg0);
     }
 
     /** MEOS {@code econtains_geo_trgeo} — meos_rgeo.h · scalar / stateless. */
@@ -257,6 +285,20 @@ public final class MeosOpsParityGaps {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("floatspan_to_bigintspan requires libmeos — set -Dmeos.enabled=true");
         return functions.GeneratedFunctions.floatspan_to_bigintspan(arg0);
+    }
+
+    /** MEOS {@code gbox_in} — meos_geo.h · scalar / stateless. */
+    public static jnr.ffi.Pointer gbox_in(java.lang.String arg0) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("gbox_in requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.gbox_in(arg0);
+    }
+
+    /** MEOS {@code geo_wlof} — meos_geo.h · scalar / stateless. */
+    public static jnr.ffi.Pointer geo_wlof(jnr.ffi.Pointer arg0, int arg1, int arg2, double arg3, jnr.ffi.Pointer arg4, jnr.ffi.Pointer arg5) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("geo_wlof requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.geo_wlof(arg0, arg1, arg2, arg3, arg4, arg5);
     }
 
     /** MEOS {@code geogpoint_make2d} — meos_geo.h · scalar / stateless. */
@@ -362,13 +404,6 @@ public final class MeosOpsParityGaps {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("meos_initialize_noexit_error_handler requires libmeos — set -Dmeos.enabled=true");
         functions.GeneratedFunctions.meos_initialize_noexit_error_handler();
-    }
-
-    /** MEOS {@code meos_initialize_pointcloud} — meos.h · scalar / stateless. */
-    public static void meos_initialize_pointcloud() {
-        if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("meos_initialize_pointcloud requires libmeos — set -Dmeos.enabled=true");
-        functions.GeneratedFunctions.meos_initialize_pointcloud();
     }
 
     /** MEOS {@code meos_set_arrow_roundtrip} — meos.h · scalar / stateless. */
@@ -742,6 +777,20 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.tbox_to_bigintspan(arg0);
     }
 
+    /** MEOS {@code tboxbigint_xmax} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer tboxbigint_xmax(jnr.ffi.Pointer arg0) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("tboxbigint_xmax requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.tboxbigint_xmax(arg0);
+    }
+
+    /** MEOS {@code tboxbigint_xmin} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer tboxbigint_xmin(jnr.ffi.Pointer arg0) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("tboxbigint_xmin requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.tboxbigint_xmin(arg0);
+    }
+
     /** MEOS {@code tcbuffer_convex_hull} — meos_cbuffer.h · scalar / stateless. */
     public static jnr.ffi.Pointer tcbuffer_convex_hull(jnr.ffi.Pointer arg0) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
@@ -778,10 +827,10 @@ public final class MeosOpsParityGaps {
     }
 
     /** MEOS {@code tcbuffer_value_at_timestamptz} — meos_cbuffer.h · scalar / stateless. */
-    public static boolean tcbuffer_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
+    public static jnr.ffi.Pointer tcbuffer_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("tcbuffer_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.tcbuffer_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        return functions.GeneratedFunctions.tcbuffer_value_at_timestamptz(arg0, arg1, arg2);
     }
 
     /** MEOS {@code tcbuffer_value_n} — meos_cbuffer.h · scalar / stateless. */
@@ -847,11 +896,39 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.tdwithin_tgeoarr_tgeoarr(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
+    /** MEOS {@code temporal_average_hausdorff_distance} — meos.h · scalar / stateless. */
+    public static double temporal_average_hausdorff_distance(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("temporal_average_hausdorff_distance requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.temporal_average_hausdorff_distance(arg0, arg1);
+    }
+
     /** MEOS {@code temporal_basetype_name} — meos.h · scalar / stateless. */
     public static java.lang.String temporal_basetype_name(jnr.ffi.Pointer arg0) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("temporal_basetype_name requires libmeos — set -Dmeos.enabled=true");
         return functions.GeneratedFunctions.temporal_basetype_name(arg0);
+    }
+
+    /** MEOS {@code temporal_ext_kalman_filter} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer temporal_ext_kalman_filter(jnr.ffi.Pointer arg0, double arg1, double arg2, double arg3, boolean arg4) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("temporal_ext_kalman_filter requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.temporal_ext_kalman_filter(arg0, arg1, arg2, arg3, arg4);
+    }
+
+    /** MEOS {@code temporal_instants_p} — meos.h · scalar / stateless. */
+    public static jnr.ffi.Pointer temporal_instants_p(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("temporal_instants_p requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.temporal_instants_p(arg0, arg1);
+    }
+
+    /** MEOS {@code temporal_lcss_distance} — meos.h · scalar / stateless. */
+    public static double temporal_lcss_distance(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, double arg2) {
+        if (!MeosOpsRuntime.MEOS_AVAILABLE)
+            throw new UnsupportedOperationException("temporal_lcss_distance requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.temporal_lcss_distance(arg0, arg1, arg2);
     }
 
     /** MEOS {@code temporal_tcount_combinefn} — meos.h · scalar / stateless. */
@@ -1037,10 +1114,10 @@ public final class MeosOpsParityGaps {
     }
 
     /** MEOS {@code tnpoint_value_at_timestamptz} — meos_npoint.h · scalar / stateless. */
-    public static boolean tnpoint_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
+    public static jnr.ffi.Pointer tnpoint_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("tnpoint_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.tnpoint_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        return functions.GeneratedFunctions.tnpoint_value_at_timestamptz(arg0, arg1, arg2);
     }
 
     /** MEOS {@code tnpoint_value_n} — meos_npoint.h · scalar / stateless. */
