@@ -77,14 +77,12 @@ public class STBox implements Box {
 		} else if (other instanceof TPoint) {
 			other_box = new STBox(functions.tspatial_to_stbox(((TPoint)other).getPointInner()));
 		} else if (allow_time_only) {
-			switch (other) {
-				case STBox st -> other_box = new STBox(st.get_inner());
-				case tstzset p -> other_box = new STBox(functions.tstzset_to_stbox(p.get_inner()));
-				case tstzspan ps -> other_box = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
-				case Temporal t -> other_box = new STBox(functions.tstzset_to_stbox(functions.temporal_to_tstzspan(t.getInner())));
-				case tstzspanset ts -> other_box = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
-				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
-			}
+			if (other instanceof STBox st) other_box = new STBox(st.get_inner());
+				else if (other instanceof tstzset p) other_box = new STBox(functions.tstzset_to_stbox(p.get_inner()));
+				else if (other instanceof tstzspan ps) other_box = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
+				else if (other instanceof Temporal t) other_box = new STBox(functions.tstzset_to_stbox(functions.temporal_to_tstzspan(t.getInner())));
+				else if (other instanceof tstzspanset ts) other_box = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
+				else throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return other_box;
 	}
@@ -248,12 +246,10 @@ public class STBox implements Box {
 	 */
 	public static STBox from_time(Time other) {
 		STBox returnValue;
-		switch (other){
-			case tstzset p -> returnValue = new STBox(functions.tstzset_to_stbox(p.get_inner()));
-			case tstzspan ps -> returnValue = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
-			case tstzspanset ts -> returnValue = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
-		}
+			if (other instanceof tstzset p) returnValue = new STBox(functions.tstzset_to_stbox(p.get_inner()));
+			else if (other instanceof tstzspan ps) returnValue = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
+			else if (other instanceof tstzspanset ts) returnValue = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
+			else throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		return returnValue;
 	}
 	

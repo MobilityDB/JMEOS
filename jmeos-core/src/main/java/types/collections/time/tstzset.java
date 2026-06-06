@@ -333,13 +333,11 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
      */
 	public boolean is_contained_in(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.contained_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.contained_spanset_spanset(functions.set_to_span(this._inner), ps.get_inner());
-			case Temporal t -> returnValue = this.is_contained_in(t.time());
-			case Box b -> returnValue = functions.contained_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.is_contained_in((Base) other);
-		}
+		if (other instanceof tstzspan p) returnValue = functions.contained_span_span(functions.set_to_span(this._inner), p.get_inner());
+		else if (other instanceof tstzspanset ps) returnValue = functions.contained_spanset_spanset(functions.set_to_span(this._inner), ps.get_inner());
+		else if (other instanceof Temporal t) returnValue = this.is_contained_in(t.time());
+		else if (other instanceof Box b) returnValue = functions.contained_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+		else returnValue = super.is_contained_in((Base) other);
 		return returnValue;
 	}
 
@@ -369,11 +367,9 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
      */
 	public boolean contains(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzset ts -> returnValue = functions.contains_set_set(this._inner, ts.get_inner());
-			case Temporal t -> returnValue = this.contains(t.time());
-			default -> returnValue = super.contains((Base) other);
-		}
+			if (other instanceof tstzset ts) returnValue = functions.contains_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Temporal t) returnValue = this.contains(t.time());
+			else returnValue = super.contains((Base) other);
 		return returnValue;
 	}
 
@@ -403,13 +399,11 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
      */
 	public boolean overlaps(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.overlaps_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overlaps_spanset_spanset(functions.set_to_spanset(this._inner), ps.get_inner());
-			case tstzset ts -> returnValue = functions.overlaps_set_set(this._inner, ts.get_inner());
-			case Box b -> returnValue = functions.overlaps_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.overlaps((Base) other);
-		}
+			if (other instanceof tstzspan p) returnValue = functions.overlaps_span_span(functions.set_to_span(this._inner), p.get_inner());
+			else if (other instanceof tstzspanset ps) returnValue = functions.overlaps_spanset_spanset(functions.set_to_spanset(this._inner), ps.get_inner());
+			else if (other instanceof tstzset ts) returnValue = functions.overlaps_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Box b) returnValue = functions.overlaps_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+			else returnValue = super.overlaps((Base) other);
 		return returnValue;
 	}
 
@@ -461,14 +455,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
      */
 	public boolean is_after(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.right_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.right_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
-			case tstzset ts -> returnValue = functions.right_set_set(this._inner, ts.get_inner());
-			case Temporal t -> returnValue = this.to_period().is_after(other);
-			case Box b -> returnValue = functions.right_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.is_left((Base) other);
-		}
+			if (other instanceof tstzspan p) returnValue = functions.right_span_span(functions.set_to_span(this._inner), p.get_inner());
+			else if (other instanceof tstzspanset ps) returnValue = functions.right_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
+			else if (other instanceof tstzset ts) returnValue = functions.right_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Temporal t) returnValue = this.to_period().is_after(other);
+			else if (other instanceof Box b) returnValue = functions.right_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+			else returnValue = super.is_left((Base) other);
 		return returnValue;
 	}
 
@@ -498,14 +490,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public boolean is_before(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.left_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.left_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
-			case tstzset ts -> returnValue = functions.left_set_set(this._inner, ts.get_inner());
-			case Temporal t -> returnValue = this.to_period().is_before(other);
-			case Box b -> returnValue = functions.left_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.is_left((Base) other);
-		}
+			if (other instanceof tstzspan p) returnValue = functions.left_span_span(functions.set_to_span(this._inner), p.get_inner());
+			else if (other instanceof tstzspanset ps) returnValue = functions.left_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
+			else if (other instanceof tstzset ts) returnValue = functions.left_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Temporal t) returnValue = this.to_period().is_before(other);
+			else if (other instanceof Box b) returnValue = functions.left_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+			else returnValue = super.is_left((Base) other);
 		return returnValue;
 	}
 
@@ -534,14 +524,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public boolean is_over_or_after(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.overright_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overright_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
-			case tstzset ts -> returnValue = functions.overright_set_set(this._inner, ts.get_inner());
-			case Temporal t -> returnValue = this.to_period().is_over_or_after(other);
-			case Box b -> returnValue = functions.overright_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.is_over_or_right((Base) other);
-		}
+			if (other instanceof tstzspan p) returnValue = functions.overright_span_span(functions.set_to_span(this._inner), p.get_inner());
+			else if (other instanceof tstzspanset ps) returnValue = functions.overright_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
+			else if (other instanceof tstzset ts) returnValue = functions.overright_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Temporal t) returnValue = this.to_period().is_over_or_after(other);
+			else if (other instanceof Box b) returnValue = functions.overright_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+			else returnValue = super.is_over_or_right((Base) other);
 		return returnValue;
 	}
 
@@ -571,14 +559,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public boolean is_over_or_before(TemporalObject other) throws Exception {
 		boolean returnValue;
-		switch (other) {
-			case tstzspan p -> returnValue = functions.overleft_span_span(functions.set_to_span(this._inner), p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overleft_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
-			case tstzset ts -> returnValue = functions.overleft_set_set(this._inner, ts.get_inner());
-			case Temporal t -> returnValue = this.to_period().is_over_or_before(other);
-			case Box b -> returnValue = functions.overleft_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
-			default -> returnValue = super.is_over_or_left((Base) other);
-		}
+			if (other instanceof tstzspan p) returnValue = functions.overleft_span_span(functions.set_to_span(this._inner), p.get_inner());
+			else if (other instanceof tstzspanset ps) returnValue = functions.overleft_span_spanset(functions.set_to_span(this._inner), ps.get_inner());
+			else if (other instanceof tstzset ts) returnValue = functions.overleft_set_set(this._inner, ts.get_inner());
+			else if (other instanceof Temporal t) returnValue = this.to_period().is_over_or_before(other);
+			else if (other instanceof Box b) returnValue = functions.overleft_span_span(functions.set_to_span(this._inner), b.to_period().get_inner());
+			else returnValue = super.is_over_or_left((Base) other);
 		return returnValue;
 	}
 
@@ -650,14 +636,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public Time intersection(TemporalObject other) throws Exception {
 		Time returnValue = null;
-		switch (other) {
-			case tstzspan p -> returnValue = new tstzspanset(functions.intersection_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspanset(functions.intersection_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
-			case tstzset ts -> returnValue = new tstzset(functions.intersection_set_set(this._inner,ts.get_inner()));
-			case Temporal t -> returnValue = (Time) this.intersection(t.time());
-			case Box b -> returnValue = (Time) this.intersection(b.to_period());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
-		}
+			if (other instanceof tstzspan p) returnValue = new tstzspanset(functions.intersection_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
+			else if (other instanceof tstzspanset ps) returnValue = new tstzspanset(functions.intersection_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
+			else if (other instanceof tstzset ts) returnValue = new tstzset(functions.intersection_set_set(this._inner,ts.get_inner()));
+			else if (other instanceof Temporal t) returnValue = (Time) this.intersection(t.time());
+			else if (other instanceof Box b) returnValue = (Time) this.intersection(b.to_period());
+			else throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		return returnValue;
 	}
 
@@ -696,14 +680,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public Time minus(TemporalObject other) throws Exception {
 		Time returnValue = null;
-		switch (other) {
-			case tstzspan p -> returnValue = new tstzspanset(functions.minus_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspanset(functions.minus_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
-			case tstzset ts -> returnValue = new tstzset(functions.minus_set_set(this._inner,ts.get_inner()));
-			case Temporal t -> returnValue = (Time) this.minus(t.time());
-			case Box b -> returnValue = (Time) this.minus(b.to_period());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
-		}
+			if (other instanceof tstzspan p) returnValue = new tstzspanset(functions.minus_spanset_span(functions.set_to_spanset(this._inner), p.get_inner()));
+			else if (other instanceof tstzspanset ps) returnValue = new tstzspanset(functions.minus_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
+			else if (other instanceof tstzset ts) returnValue = new tstzset(functions.minus_set_set(this._inner,ts.get_inner()));
+			else if (other instanceof Temporal t) returnValue = (Time) this.minus(t.time());
+			else if (other instanceof Box b) returnValue = (Time) this.minus(b.to_period());
+			else throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		return returnValue;
 	}
 
@@ -743,14 +725,12 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 */
 	public Time union(TemporalObject other) throws Exception {
 		Time returnValue = null;
-		switch (other) {
-			case tstzspan p -> returnValue = new tstzspan(functions.union_spanset_span(functions.set_to_spanset(this._inner),p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspanset(functions.union_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
-			case tstzset ts -> returnValue =  new tstzset(functions.union_set_set(this._inner,ts.get_inner()));
-			case Temporal t -> returnValue = (Time) this.union(t.time());
-			case Box b -> returnValue = (Time) this.union(b.to_period());
-			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
-		}
+			if (other instanceof tstzspan p) returnValue = new tstzspan(functions.union_spanset_span(functions.set_to_spanset(this._inner),p.get_inner()));
+			else if (other instanceof tstzspanset ps) returnValue = new tstzspanset(functions.union_spanset_spanset(functions.set_to_spanset(this._inner),ps.get_inner()));
+			else if (other instanceof tstzset ts) returnValue =  new tstzset(functions.union_set_set(this._inner,ts.get_inner()));
+			else if (other instanceof Temporal t) returnValue = (Time) this.union(t.time());
+			else if (other instanceof Box b) returnValue = (Time) this.union(b.to_period());
+			else throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		return returnValue;
 	}
 
