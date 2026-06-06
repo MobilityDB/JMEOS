@@ -59,13 +59,25 @@ so they capture only the serializable UDF, not the extension. The builder adapts
 to the call-site arity by null-padding the impl's optional args (so `asMFJSON(g)`
 reaches the impl's default precision).
 
-- **single impl** (81 functions): direct ScalaUDF over the one impl. Generated,
-  compiled, and served live over Spark Connect under the identity names
-  (`asMFJSON(trip)`, `numSequences(trip)`, …) — retiring the camelCase remap and
-  `dialect_spark.go`'s `sparkNameMap` for this set.
-- **multi impl** (139 functions, one SQL name over several type-specific impls):
-  listed in the generated file for the **v2** per-row `meos_typeof_hexwkb`
-  dispatch (the FFI peek is present in `GeneratedFunctions`).
+- **single impl**: direct ScalaUDF over the one impl, bound to the identity name
+  (`asMFJSON(trip)`, `numSequences(trip)`, …) — no camelCase remap, no
+  `dialect_spark.go` `sparkNameMap` for this set.
+- **multi impl, arg0-dispatchable** (one SQL name over several type-specific impls
+  whose first argument differs in MEOS type): one ScalaUDF whose companion-object
+  closure peeks `meostype_name(meos_typeof_hexwkb(arg0))` and routes to the impl
+  whose receiver type matches, with the `Temporal`-receiver impl as the catch-all
+  default. `Xmin/Ymin/Xmax/Ymax/Tmin/Tmax` route `stbox→stbox*`, `tbox→tbox*`;
+  `stbox` routes `tstzspan→tstzspanToStbox` with `tpointToStbox` as default. The
+  receiver category is read from the impl's `primaryMeos` first C-parameter type
+  (the last non-marshaling `GeneratedFunctions` call in the UDF body). Served live:
+  `Xmin(stbox(trip))` resolves the inner and outer tags per row to the real value.
+- **multi impl, not arg0-dispatchable** (all impls share the first-arg type; the
+  differentiating argument is later, e.g. `atTime` on its time argument): listed
+  in the generated file for the arg-N dispatch extension.
+
+The registrar serves the `/items`-collection OGC function set (`asMFJSON`, `stbox`,
+the `Xmin/Ymin/Xmax/Ymax/Tmin/Tmax` accessors, `numSequences`, `sequenceN`,
+`trajectory`) under identity names over Spark Connect.
 
 The same two specs feed the PG/DuckDB identity dialects, PyMEOS, and Flink/Kafka.
 
