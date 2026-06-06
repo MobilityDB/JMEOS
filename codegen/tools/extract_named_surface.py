@@ -33,12 +33,16 @@ def split_top(args):
     return [a.strip() for a in out if a.strip()]
 
 def parse_arg(a):
-    """One arg -> (type, has_default). Forms: 'type' | 'name type' | '[name] type DEFAULT v'."""
-    has_def = bool(re.search(r'\bDEFAULT\b', a, re.IGNORECASE))
-    head = re.split(r'\bDEFAULT\b', a, flags=re.IGNORECASE)[0].strip()
+    """One arg -> (type, has_default, default). Forms: 'type' | 'name type' |
+    '[name] type DEFAULT v'. The default literal (after DEFAULT) lets the registrar
+    fill an omitted optional argument with the canonical value, not a null pad."""
+    parts = re.split(r'\bDEFAULT\b', a, flags=re.IGNORECASE)
+    has_def = len(parts) > 1
+    head = parts[0].strip()
     toks = head.split()
     typ = toks[-1] if toks else head           # type is the last token before DEFAULT
-    return typ, has_def
+    default = parts[1].strip().rstrip(',') if has_def else None
+    return typ, has_def, default
 
 def parse_sql(root):
     funcs = {}
@@ -46,7 +50,7 @@ def parse_sql(root):
         text = open(f, encoding='utf-8', errors='ignore').read()
         for m in CREATE_RE.finditer(text):
             name, arglist, ret = m.group(1), m.group(2), m.group(3)
-            args = [dict(zip(('type', 'hasDefault'), parse_arg(a))) for a in split_top(arglist)]
+            args = [dict(zip(('type', 'hasDefault', 'default'), parse_arg(a))) for a in split_top(arglist)]
             req = sum(1 for a in args if not a['hasDefault'])
             funcs.setdefault(name, []).append(
                 {'args': args, 'returns': ret, 'minArity': req, 'maxArity': len(args)})
