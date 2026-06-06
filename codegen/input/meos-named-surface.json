@@ -1,6 +1,6 @@
 {
  "source": "MobilityDB SQL catalog + doxygen @sqlfn/@csqlfn chain",
- "functionCount": 1284,
+ "functionCount": 1285,
  "functions": [
   {
    "name": "NearestApproachDistance",
@@ -13358,12 +13358,12 @@
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "-1"
       }
      ],
      "returns": "text",
@@ -13380,12 +13380,12 @@
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "-1"
       }
      ],
      "returns": "text",
@@ -14679,17 +14679,17 @@
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "4096"
       },
       {
        "type": "int4",
        "hasDefault": true,
-       "default": null
+       "default": "256"
       },
       {
        "type": "bool",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE)\n-- RETURNS tgeompoint\nRETURNS geom_times\nAS 'MODULE_PATHNAME','Tpoint_AsMVTGeom'\nLANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n/*****************************************************************************/\n\nCREATE TYPE geom_wlof AS (\n  geom geometry"
       },
       {
        "type": "wlocalOutlierFactor(geometry[]",
@@ -14704,7 +14704,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": null
+       "default": "0.0"
       }
      ],
      "returns": "SETOF",
@@ -17312,7 +17312,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpatch",
@@ -17334,7 +17334,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpoint",
@@ -17362,7 +17362,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpatch",
@@ -20953,7 +20953,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "floatspan[]",
@@ -20975,7 +20975,7 @@
       {
        "type": "date",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-01'"
       }
      ],
      "returns": "datespan[]",
@@ -20997,7 +20997,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzspan[]",
@@ -21063,7 +21063,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "floatspan[]",
@@ -21085,7 +21085,7 @@
       {
        "type": "date",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-01'"
       }
      ],
      "returns": "datespan[]",
@@ -21107,7 +21107,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzspan[]",
@@ -30994,6 +30994,14 @@
    ],
    "c": [
     {
+     "pg": "Edwithin_trgeometry_geo",
+     "meos": "edwithin_trgeo_geo"
+    },
+    {
+     "pg": "Edwithin_trgeometry_trgeometry",
+     "meos": "edwithin_trgeo_trgeo"
+    },
+    {
      "pg": "Edwithin_tcbuffer_geo",
      "meos": "ea_dwithin_tcbuffer_geo"
     },
@@ -36498,7 +36506,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tgeompoint",
@@ -36530,7 +36538,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tfloat",
@@ -38461,7 +38469,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "floatspan",
@@ -38483,7 +38491,7 @@
       {
        "type": "date",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "datespan",
@@ -38505,7 +38513,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "0"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzspan",
@@ -38805,12 +38813,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "stbox",
@@ -40147,7 +40155,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'km2'"
       }
      ],
      "returns": "tfloat",
@@ -40491,7 +40499,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'km'"
       }
      ],
      "returns": "tfloat",
@@ -40609,7 +40617,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'km'"
       }
      ],
      "returns": "tfloat",
@@ -40833,46 +40841,6 @@
      "returns": "boolean",
      "minArity": 1,
      "maxArity": 1
-    }
-   ],
-   "c": []
-  },
-  {
-   "name": "h3_latlng_to_cell",
-   "overloads": [
-    {
-     "args": [
-      {
-       "type": "tgeompoint",
-       "hasDefault": false,
-       "default": null
-      },
-      {
-       "type": "integer",
-       "hasDefault": false,
-       "default": null
-      }
-     ],
-     "returns": "th3index",
-     "minArity": 2,
-     "maxArity": 2
-    },
-    {
-     "args": [
-      {
-       "type": "tgeogpoint",
-       "hasDefault": false,
-       "default": null
-      },
-      {
-       "type": "integer",
-       "hasDefault": false,
-       "default": null
-      }
-     ],
-     "returns": "th3index",
-     "minArity": 2,
-     "maxArity": 2
     }
    ],
    "c": []
@@ -44637,10 +44605,6 @@
     {
      "pg": "Tpoint_length",
      "meos": "tpoint_length"
-    },
-    {
-     "pg": "Tpoint_length",
-     "meos": "tpoint_speed"
     },
     {
      "pg": "Tnpoint_length",
@@ -48800,7 +48764,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpatch",
@@ -48822,7 +48786,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpoint",
@@ -48850,7 +48814,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "TRUE"
       }
      ],
      "returns": "tpcpatch",
@@ -50878,6 +50842,10 @@
     {
      "pg": "NAD_tgeo_tgeo",
      "meos": "nad_tgeo_tgeo"
+    },
+    {
+     "pg": "NAD_tgeo_tgeo",
+     "meos": "mindistance_tgeo_tgeo"
     },
     {
      "pg": "NAD_tnumber_number",
@@ -61663,6 +61631,18 @@
     {
      "args": [
       {
+       "type": "trgeometry",
+       "hasDefault": false,
+       "default": null
+      }
+     ],
+     "returns": "geomset",
+     "minArity": 1,
+     "maxArity": 1
+    },
+    {
+     "args": [
+      {
        "type": "tcbuffer",
        "hasDefault": false,
        "default": null
@@ -61698,6 +61678,10 @@
     }
    ],
    "c": [
+    {
+     "pg": "Trgeometry_points",
+     "meos": "trgeometry_points"
+    },
     {
      "pg": "Tcbuffer_points",
      "meos": "tcbuffer_members"
@@ -64129,6 +64113,18 @@
     {
      "args": [
       {
+       "type": "trgeometry",
+       "hasDefault": false,
+       "default": null
+      }
+     ],
+     "returns": "tfloat",
+     "minArity": 1,
+     "maxArity": 1
+    },
+    {
+     "args": [
+      {
        "type": "tpose",
        "hasDefault": false,
        "default": null
@@ -64151,7 +64147,12 @@
      "maxArity": 1
     }
    ],
-   "c": []
+   "c": [
+    {
+     "pg": "Trgeometry_rotation",
+     "meos": "trgeometry_rotation"
+    }
+   ]
   },
   {
    "name": "round",
@@ -67377,6 +67378,10 @@
     }
    ],
    "c": [
+    {
+     "pg": "Temporal_segments",
+     "meos": "trgeometry_segments"
+    },
     {
      "pg": "Temporal_segments",
      "meos": "tsequence_segments"
@@ -80100,7 +80105,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80127,12 +80132,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80211,7 +80216,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80238,12 +80243,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80322,7 +80327,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80349,12 +80354,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80433,7 +80438,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80460,12 +80465,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80544,7 +80549,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80571,12 +80576,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80655,7 +80660,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -80682,12 +80687,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80777,7 +80782,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -80804,12 +80809,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80888,7 +80893,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -80915,12 +80920,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -80999,7 +81004,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -81026,12 +81031,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81110,7 +81115,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -81137,12 +81142,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81221,7 +81226,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -81248,12 +81253,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81355,12 +81360,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -81451,12 +81456,12 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "TRUE"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -81556,12 +81561,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -81593,17 +81598,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81697,12 +81702,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -81734,17 +81739,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81838,12 +81843,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -81875,17 +81880,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -81979,12 +81984,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -82016,17 +82021,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82120,12 +82125,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -82157,17 +82162,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82261,12 +82266,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "stbox[]",
@@ -82298,17 +82303,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82413,12 +82418,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -82450,17 +82455,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82554,12 +82559,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -82591,17 +82596,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82695,12 +82700,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -82732,17 +82737,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82836,12 +82841,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -82873,17 +82878,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -82977,12 +82982,12 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -83014,17 +83019,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       },
       {
        "type": "boolean",
@@ -83119,7 +83124,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -83151,17 +83156,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -83245,7 +83250,7 @@
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -83277,17 +83282,17 @@
       {
        "type": "geometry",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'Point(0 0 0)'"
       },
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'Point(0 0 0)'"
+       "default": "'2000-01-03'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "TRUE"
       }
      ],
      "returns": "SETOF",
@@ -96215,6 +96220,10 @@
      "meos": "tpose_speed"
     },
     {
+     "pg": "Tpoint_speed",
+     "meos": "tpoint_speed"
+    },
+    {
      "pg": "Tnpoint_speed",
      "meos": "tnpointseq_speed"
     },
@@ -99111,6 +99120,14 @@
      "meos": "pose_tstzspan_to_stbox"
     },
     {
+     "pg": "Geo_timestamptz_to_stbox",
+     "meos": "geo_timestamptz_to_stbox"
+    },
+    {
+     "pg": "Geo_tstzspan_to_stbox",
+     "meos": "geo_tstzspan_to_stbox"
+    },
+    {
      "pg": "Geo_to_stbox",
      "meos": "geo_stbox"
     },
@@ -101003,7 +101020,7 @@
       {
        "type": "interval",
        "hasDefault": true,
-       "default": "'0 minutes'"
+       "default": "'0 minutes')\n  -- RETURNS tgeometry\n  -- AS 'MODULE_PATHNAME', 'Temporal_stops'\n  -- LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n-- CREATE FUNCTION stops(tgeography"
       },
       {
        "type": "float",
@@ -104499,17 +104516,17 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       }
      ],
      "returns": "tbigint",
@@ -104526,7 +104543,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "NULL"
       }
      ],
      "returns": "tbigint",
@@ -104579,12 +104596,12 @@
       {
        "type": "interval",
        "hasDefault": true,
-       "default": null
+       "default": "NULL"
       },
       {
        "type": "float",
        "hasDefault": true,
-       "default": null
+       "default": "NULL"
       }
      ],
      "returns": "tbigint",
@@ -105149,7 +105166,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'step'"
+       "default": "NULL"
       }
      ],
      "returns": "tbool",
@@ -107663,7 +107680,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'linear'"
+       "default": "NULL"
       }
      ],
      "returns": "tcbuffer",
@@ -135689,7 +135706,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'linear'"
+       "default": "NULL"
       }
      ],
      "returns": "tfloat",
@@ -137235,6 +137252,29 @@
      "returns": "tgeogpoint",
      "minArity": 1,
      "maxArity": 1
+    }
+   ],
+   "c": []
+  },
+  {
+   "name": "tgeogpoint_to_th3index",
+   "overloads": [
+    {
+     "args": [
+      {
+       "type": "tgeogpoint",
+       "hasDefault": false,
+       "default": null
+      },
+      {
+       "type": "integer",
+       "hasDefault": false,
+       "default": null
+      }
+     ],
+     "returns": "th3index",
+     "minArity": 2,
+     "maxArity": 2
     }
    ],
    "c": []
@@ -138931,6 +138971,29 @@
      "returns": "tgeompoint",
      "minArity": 1,
      "maxArity": 1
+    }
+   ],
+   "c": []
+  },
+  {
+   "name": "tgeompoint_to_th3index",
+   "overloads": [
+    {
+     "args": [
+      {
+       "type": "tgeompoint",
+       "hasDefault": false,
+       "default": null
+      },
+      {
+       "type": "integer",
+       "hasDefault": false,
+       "default": null
+      }
+     ],
+     "returns": "th3index",
+     "minArity": 2,
+     "maxArity": 2
     }
    ],
    "c": []
@@ -141279,7 +141342,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'step'"
+       "default": "NULL"
       }
      ],
      "returns": "tint",
@@ -144410,12 +144473,12 @@
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       }
      ],
      "returns": "tpcbox",
@@ -145447,7 +145510,7 @@
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       }
      ],
      "returns": "tpcbox",
@@ -145513,12 +145576,12 @@
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       }
      ],
      "returns": "tpcbox",
@@ -145566,12 +145629,12 @@
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       }
      ],
      "returns": "tpcbox",
@@ -145624,12 +145687,12 @@
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       },
       {
        "type": "integer",
        "hasDefault": true,
-       "default": null
+       "default": "0"
       }
      ],
      "returns": "tpcbox",
@@ -145708,7 +145771,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       }
      ],
      "returns": "tpcpatch",
@@ -145730,7 +145793,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       }
      ],
      "returns": "tpcpatch",
@@ -145789,17 +145852,17 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       }
      ],
      "returns": "tpcpatch",
@@ -146006,7 +146069,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       }
      ],
      "returns": "tpcpoint",
@@ -146028,7 +146091,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       }
      ],
      "returns": "tpcpoint",
@@ -146087,17 +146150,17 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": null
+       "default": "'step'"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       },
       {
        "type": "boolean",
        "hasDefault": true,
-       "default": null
+       "default": "true"
       }
      ],
      "returns": "tpcpoint",
@@ -146542,7 +146605,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'linear'"
+       "default": "NULL"
       }
      ],
      "returns": "tpose",
@@ -146804,7 +146867,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "trgeometry",
@@ -146826,7 +146889,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tcbuffer",
@@ -146848,7 +146911,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tpose",
@@ -146870,7 +146933,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tgeometry",
@@ -146892,7 +146955,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tgeography",
@@ -146914,7 +146977,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tgeompoint",
@@ -146936,7 +146999,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tgeogpoint",
@@ -146958,7 +147021,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tint",
@@ -146980,7 +147043,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tbigint",
@@ -147002,7 +147065,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tfloat",
@@ -147024,7 +147087,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "timestamptz",
@@ -147046,7 +147109,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzset",
@@ -147068,7 +147131,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzspan",
@@ -147090,7 +147153,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tprecision'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n-- CREATE FUNCTION tsample(trgeometry"
+       "default": "'2000-01-03'"
       }
      ],
      "returns": "tstzspanset",
@@ -148041,7 +148104,7 @@
       {
        "type": "bool",
        "hasDefault": true,
-       "default": "true"
+       "default": "FALSE"
       }
      ],
      "returns": "geometry",
@@ -148058,7 +148121,7 @@
       {
        "type": "bool",
        "hasDefault": true,
-       "default": "true"
+       "default": "FALSE"
       }
      ],
      "returns": "geometry",
@@ -148075,7 +148138,7 @@
       {
        "type": "bool",
        "hasDefault": true,
-       "default": "true"
+       "default": "FALSE"
       }
      ],
      "returns": "geometry",
@@ -148092,7 +148155,7 @@
       {
        "type": "bool",
        "hasDefault": true,
-       "default": "true"
+       "default": "FALSE"
       }
      ],
      "returns": "geometry",
@@ -148109,7 +148172,7 @@
       {
        "type": "bool",
        "hasDefault": true,
-       "default": "true"
+       "default": "FALSE"
       }
      ],
      "returns": "geography",
@@ -148466,7 +148529,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'linear'"
+       "default": "NULL"
       }
      ],
      "returns": "trgeometry",
@@ -148705,7 +148768,7 @@
       {
        "type": "timestamptz",
        "hasDefault": true,
-       "default": "'2000-01-03'"
+       "default": "'2000-01-03')\n--   RETURNS trgeometry\n--   AS 'MODULE_PATHNAME', 'Temporal_tsample'\n--   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;\n\n/*****************************************************************************\n * Restriction Functions\n *****************************************************************************/\n\n-- CREATE FUNCTION atValues(trgeometry"
       },
       {
        "type": "minusValues(trgeometry",
@@ -150000,7 +150063,7 @@
       {
        "type": "text",
        "hasDefault": true,
-       "default": "'step'"
+       "default": "NULL"
       }
      ],
      "returns": "ttext",
@@ -152096,7 +152159,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "floatspan[]",
@@ -152168,7 +152231,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "tbox[]",
@@ -152982,7 +153045,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       }
      ],
      "returns": "SETOF",
@@ -153116,7 +153179,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       },
       {
        "type": "timestamptz",
@@ -153218,7 +153281,7 @@
       {
        "type": "float",
        "hasDefault": true,
-       "default": "0"
+       "default": "0.0"
       },
       {
        "type": "timestamptz",

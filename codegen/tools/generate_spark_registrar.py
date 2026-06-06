@@ -33,42 +33,64 @@ for sn, d in impls.items():
         meos2spark.setdefault(d['primaryMeos'], []).append(sn)
 
 # C-FFI param types -> receiver category, so a multi-impl SQL name can dispatch on
-# arg0's runtime MEOS type tag (meos_typeof_hexwkb) to the type-specific impl.
+# a runtime MEOS type tag (meos_typeof_hexwkb of the differentiating argument) to
+# the type-specific impl.
 idl = json.load(open(os.path.join(HERE, '..', 'input', 'meos-idl.json')))
-prim2ctype0 = {}
-for fdef in idl['functions']:
-    ps = fdef.get('params') or []
-    if ps:
-        prim2ctype0[fdef['name']] = ps[0].get('cType', '')
+prim2params = {f['name']: [p.get('cType', '') for p in (f.get('params') or [])]
+               for f in idl['functions']}
+# every meostype_name string, longest first for greedy matching of the concrete
+# type embedded in a primaryMeos name (e.g. temporal_at_tstzspanset -> tstzspanset)
+TNAMES = json.load(open('/tmp/tnames.json')) if os.path.exists('/tmp/tnames.json') else []
 
 def category(ctype):
     if 'STBox' in ctype: return 'stbox'
     if 'TBox' in ctype: return 'tbox'
     if 'GSERIALIZED' in ctype: return 'geo'
     if 'Temporal' in ctype: return 'temporal'
-    if 'Span' in ctype: return 'span'
-    if 'Set' in ctype: return 'set'
+    if 'Span' in ctype or 'Set' in ctype: return 'spanset'
     return 'other'
 
-# meostype_name strings each impl's arg0 category answers to (geo serves both
-# geometry/geography; temporal is the catch-all default; span/set take the
-# concrete source type from the *_to_* primaryMeos name)
 CAT_TNAMES = {'stbox': ['stbox'], 'tbox': ['tbox'],
-              'geo': ['geometry', 'geography', 'geometryset', 'geographyset']}
+              'geo': ['geometry', 'geography', 'geomset', 'geogset']}
 
-def impl_routes(spark):
-    """(tnames, isDefault) for an impl, by its primaryMeos arg0 category."""
-    d = impls[spark]
-    cat = category(prim2ctype0.get(d['primaryMeos'], ''))
+def ctype_at(spark, pos):
+    ps = prim2params.get(impls[spark]['primaryMeos'], [])
+    return ps[pos] if pos < len(ps) else ''
+
+def impl_tnames(spark, pos):
+    """(tnames, isDefault) the impl answers to at arg position `pos`. Concrete
+    receivers map to fixed tags; a Temporal receiver is the catch-all default; a
+    generic Span/Set takes the concrete tag embedded in its primaryMeos name;
+    a non-WKB receiver (timestamptz/numeric) yields nothing (cannot be peeked)."""
+    cat = category(ctype_at(spark, pos))
     if cat == 'temporal':
         return [], True
     if cat in CAT_TNAMES:
         return CAT_TNAMES[cat], False
-    if cat in ('span', 'set'):
-        pm = d['primaryMeos']
-        src = pm.split('_to_')[0] if '_to_' in pm else None
-        return ([src] if src else []), False
+    if cat == 'spanset':
+        pm = impls[spark]['primaryMeos']
+        hit = next((t for t in TNAMES if t in pm), None)
+        return ([hit] if hit else []), False
     return [], False
+
+def dispatch_for(names):
+    """Pick the first arg position at which the impls differ and yield a usable
+    routes map, then return (pos, routes, default) or None."""
+    arity = min(impls[s]['arity'] for s in names)
+    for pos in range(arity):
+        routes, default = {}, None
+        for s in names:
+            tns, isdef = impl_tnames(s, pos)
+            for tn in tns:
+                routes.setdefault(tn, s)
+            if isdef and default is None:
+                default = s
+        # this position differentiates if it routes to >=2 distinct impls (or one
+        # concrete route plus a temporal default)
+        targets = set(routes.values()) | ({default} if default else set())
+        if routes and len(targets) > 1:
+            return pos, routes, default
+    return None
 
 single, multi, dispatch = [], [], []
 for fn in named['functions']:
@@ -82,23 +104,10 @@ for fn in named['functions']:
             or min(names, key=len)
         single.append((fn['name'], pick))
     elif len(names) > 1:
-        cats = {category(prim2ctype0.get(impls[s]['primaryMeos'], '')) for s in names}
-        # arg0 distinguishes only when impls differ on the FIRST-arg category and
-        # at least one is a concrete WKB-peekable receiver (box/geo/span/set)
-        peekable = cats & {'stbox', 'tbox', 'geo', 'span', 'set'}
-        if len(cats) > 1 and peekable:
-            routes = {}      # tname -> spark impl
-            default = None
-            for s in names:
-                tns, isdef = impl_routes(s)
-                for tn in tns:
-                    routes.setdefault(tn, s)
-                if isdef and default is None:
-                    default = s
-            if routes:
-                dispatch.append((fn['name'], names, routes, default))
-            else:
-                multi.append((fn['name'], names))
+        d = dispatch_for(names)
+        if d:
+            pos, routes, default = d
+            dispatch.append((fn['name'], names, pos, routes, default))
         else:
             multi.append((fn['name'], names))
 
@@ -106,9 +115,13 @@ import re as _re
 named_by_name = {fn['name']: fn for fn in named['functions']}
 
 def scala_default(v):
-    if v is not None and _re.fullmatch(r'-?\d+', v):
+    if v is None:
+        return 'null'
+    if _re.fullmatch(r'-?\d+', v):
         return f'(Integer.valueOf({v}): AnyRef)'
-    return 'null'   # absent or non-integer default: fall back to a null pad
+    if v.strip().upper() in ('TRUE', 'FALSE'):
+        return f'(java.lang.Boolean.{v.strip().upper()}: AnyRef)'
+    return 'null'   # unsupported default literal: fall back to a null pad
 
 def defaults_arr(canon, arity):
     """Fill an omitted optional arg with the SQL default ONLY when the impl exposes
@@ -138,19 +151,26 @@ for canon, spark in single:
                  f'"{d["retType"]}", {fqn}, {defaults_arr(canon, d["arity"])})')
 
 dlines = []
-for canon, names, routes, default in dispatch:
+def fqn(s):
+    x = impls[s]
+    return f"{x['pkg']}.{x['class']}.{x['field']}"
+
+def route_target(canon, s):
+    # (impl, impl arity, impl SQL-default fills) so the dispatch can pad an omitted
+    # optional argument of the chosen impl exactly as the single-impl path does
+    d = impls[s]
+    return f"({fqn(s)}: AnyRef, {d['arity']}, {defaults_arr(canon, d['arity'])})"
+
+for canon, names, pos, routes, default in dispatch:
     if canon in seen:
         continue
     seen.add(canon)
-    d = impls[names[0]]    # arity/types shared across the type-specific impls
-    argts = ', '.join(f'"{t}"' for t in d['argTypes'])
-    def fqn(s):
-        x = impls[s]
-        return f"{x['pkg']}.{x['class']}.{x['field']}"
-    rmap = ', '.join(f'"{tn}" -> ({fqn(s)}: AnyRef)' for tn, s in sorted(routes.items()))
-    dflt = f"({fqn(default)}: AnyRef)" if default else "null"
-    dlines.append(f'    injMulti(ext, "{canon}", {d["arity"]}, Array[String]({argts}), '
-                  f'"{d["retType"]}", Map[String, AnyRef]({rmap}), {dflt})')
+    d = impls[names[0]]
+    retT = d['retType']
+    rmap = ', '.join(f'"{tn}" -> {route_target(canon, s)}' for tn, s in sorted(routes.items()))
+    dflt = route_target(canon, default) if default else "null"
+    dlines.append(f'    injMulti(ext, "{canon}", {pos}, "{retT}", '
+                  f'Map[String, (AnyRef, Int, Array[AnyRef])]({rmap}), {dflt})')
 
 HEADER = '''/* GENERATED by codegen/tools/generate_spark_registrar.py from the canonical
  * named-operation surface (meos-named-surface.json) joined with the MobilitySpark
@@ -191,15 +211,16 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     try ext.injectFunction((FunctionIdentifier(name), new ExpressionInfo(name, name), builder))
     catch { case _: Throwable => }
   }
-  // One SQL name over several type-specific impls: dispatch per row on arg0's
-  // runtime MEOS type tag to the impl whose receiver type matches.
-  private def injMulti(ext: SparkSessionExtensions, name: String, arity: Int,
-                       argTs: Array[String], retT: String,
-                       routes: Map[String, AnyRef], dflt: AnyRef): Unit = {
+  // One SQL name over several type-specific impls: dispatch per row on the
+  // differentiating argument's MEOS type tag to the impl whose receiver matches.
+  // Each route carries (impl, impl arity, impl SQL-default fills).
+  private def injMulti(ext: SparkSessionExtensions, name: String, dpos: Int, retT: String,
+                       routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+                       dflt: (AnyRef, Int, Array[AnyRef])): Unit = {
     val builder = (children: Seq[Expression]) => {
-      val n = math.min(children.size, arity)
-      ScalaUDF(MobilitySparkConnectExtensionsGen.disp(n, routes, dflt, arity), dt(retT), children,
-        argTs.take(n).map(t => Some(enc(t))).toSeq, Some(enc(retT)), Some(name))
+      val n = children.size
+      ScalaUDF(MobilitySparkConnectExtensionsGen.disp(n, dpos, routes, dflt), dt(retT), children,
+        children.map(_ => Some(enc("String"))), Some(enc(retT)), Some(name))
     }
     try ext.injectFunction((FunctionIdentifier(name), new ExpressionInfo(name, name), builder))
     catch { case _: Throwable => }
@@ -241,19 +262,25 @@ with open(out, 'w') as f:
     case 3 => (a: Any, b: Any, c: Any) => call(u, m, Seq(a, b, c), defaults)
     case _ => (a: Any, b: Any, c: Any, d: Any) => call(u, m, Seq(a, b, c, d), defaults)
   }
-  // route by arg0's MEOS type-tag name to the matching type-specific impl
-  private def pick(a0: Any, routes: Map[String, AnyRef], dflt: AnyRef): AnyRef = a0 match {
-    case s: String =>
-      val tn = try GeneratedFunctions.meostype_name(GeneratedFunctions.meos_typeof_hexwkb(s))
-               catch { case _: Throwable => null }
-      routes.getOrElse(tn, dflt)
-    case _ => dflt
-  }
-  def disp(n: Int, routes: Map[String, AnyRef], dflt: AnyRef, m: Int): AnyRef = n match {
-    case 1 => (a: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a), null) }
-    case 2 => (a: Any, b: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b), null) }
-    case 3 => (a: Any, b: Any, c: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c), null) }
-    case _ => (a: Any, b: Any, c: Any, d: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c, d), null) }
+  // route by the differentiating argument's MEOS type-tag name to the matching
+  // (impl, impl arity, defaults); the default route handles temporal/unknown tags
+  private def pick(args: Seq[Any], dpos: Int, routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+                   dflt: (AnyRef, Int, Array[AnyRef])): (AnyRef, Int, Array[AnyRef]) =
+    (if (dpos < args.length) args(dpos) else null) match {
+      case s: String =>
+        val tn = try GeneratedFunctions.meostype_name(GeneratedFunctions.meos_typeof_hexwkb(s))
+                 catch { case _: Throwable => null }
+        routes.getOrElse(tn, dflt)
+      case _ => dflt
+    }
+  private def run(t: (AnyRef, Int, Array[AnyRef]), a: Seq[Any]): Any =
+    if (t == null || t._1 == null) null else call(t._1, t._2, a, t._3)
+  def disp(n: Int, dpos: Int, routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+           dflt: (AnyRef, Int, Array[AnyRef])): AnyRef = n match {
+    case 1 => (a: Any) => run(pick(Seq(a), dpos, routes, dflt), Seq(a))
+    case 2 => (a: Any, b: Any) => run(pick(Seq(a, b), dpos, routes, dflt), Seq(a, b))
+    case 3 => (a: Any, b: Any, c: Any) => run(pick(Seq(a, b, c), dpos, routes, dflt), Seq(a, b, c))
+    case _ => (a: Any, b: Any, c: Any, d: Any) => run(pick(Seq(a, b, c, d), dpos, routes, dflt), Seq(a, b, c, d))
   }
 }
 ''')
