@@ -60,4 +60,4 @@ dependency-reduced-pom.xml
 *.mov
 
 # CMake
-cmake-build-*/
+cmake-build-*/jar/

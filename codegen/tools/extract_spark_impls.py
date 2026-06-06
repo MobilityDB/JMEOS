@@ -22,6 +22,18 @@ REG_RE = re.compile(r'register\(\s*"([^"]+)"\s*,\s*(\w+)\s*,\s*DataTypes\.(\w+)\
 # a public static UDFn field declaration: capture name + generic type args
 FIELD_RE = re.compile(r'public\s+static\s+final\s+UDF(\d)<([^>]*)>\s+(\w+)\s*=', re.MULTILINE)
 GENFN_RE = re.compile(r'GeneratedFunctions\.(\w+)\s*\(')
+# I/O helpers a UDF body calls for marshaling, not the semantic operation
+HELPER_RE = re.compile(r'(_from_hexwkb|_from_binary|_from_wkb|_from_hexewkb|_in|_out|'
+                       r'_as_hexwkb|_as_wkb|_as_text|_from_mfjson|_from_text|geo_from_text|'
+                       r'pg_timestamptz_in|free)$')
+
+def primary_meos(meos):
+    """The semantic MEOS function of a UDF body: the last non-marshaling call
+    (the result-producing op, after any input parse / bbox-prefilter helpers)."""
+    for m in reversed(meos):
+        if not HELPER_RE.search(m):
+            return m
+    return meos[-1] if meos else None
 
 def scan_impls(root):
     impls = {}      # sparkName -> dict
@@ -40,14 +52,16 @@ def scan_impls(root):
             body = text[m.end(): decls[i + 1].start() if i + 1 < len(decls) else len(text)]
             meos = list(dict.fromkeys(GENFN_RE.findall(body)))   # ordered-unique
             fields[field] = {'class': cls, 'pkg': pkg, 'arity': arity,
-                             'argTypes': targs[:-1], 'retType': targs[-1], 'meosFns': meos}
+                             'argTypes': targs[:-1], 'retType': targs[-1], 'meosFns': meos,
+                             'primaryMeos': primary_meos(meos)}
         for m in REG_RE.finditer(text):
             sparkName, field, ret = m.group(1), m.group(2), m.group(3)
             fd = fields.get(field)
             if fd:
                 impls[sparkName] = {'field': field, 'class': fd['class'], 'pkg': fd['pkg'],
                                     'retDataType': ret, 'arity': fd['arity'], 'argTypes': fd['argTypes'],
-                                    'retType': fd['retType'], 'meosFns': fd['meosFns']}
+                                    'retType': fd['retType'], 'meosFns': fd['meosFns'],
+                                    'primaryMeos': fd['primaryMeos']}
     return impls
 
 def main():
@@ -63,8 +77,8 @@ def main():
     # MEOS C fn -> spark impl(s)
     meos2spark = {}
     for sn, d in impls.items():
-        for mf in d['meosFns']:
-            meos2spark.setdefault(mf, []).append(sn)
+        if d.get('primaryMeos'):
+            meos2spark.setdefault(d['primaryMeos'], []).append(sn)
     derived = {}
     for fn in surface:
         for c in fn['c']:
