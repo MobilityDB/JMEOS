@@ -75,6 +75,12 @@ for fn in named['functions']:
     names = sorted({sn for c in fn['c'] for sn in meos2spark.get(c['meos'], [])})
     if len(names) == 1:
         single.append((fn['name'], names[0]))
+    elif len(names) > 1 and len({impls[s]['primaryMeos'] for s in names}) == 1:
+        # several Spark registrations (bare + camelCase) of one MEOS op: single op,
+        # bind the identity name to the impl named for it (else the shortest name)
+        pick = next((s for s in names if s.lower() == fn['name'].lower()), None) \
+            or min(names, key=len)
+        single.append((fn['name'], pick))
     elif len(names) > 1:
         cats = {category(prim2ctype0.get(impls[s]['primaryMeos'], '')) for s in names}
         # arg0 distinguishes only when impls differ on the FIRST-arg category and
@@ -96,6 +102,29 @@ for fn in named['functions']:
         else:
             multi.append((fn['name'], names))
 
+import re as _re
+named_by_name = {fn['name']: fn for fn in named['functions']}
+
+def scala_default(v):
+    if v is not None and _re.fullmatch(r'-?\d+', v):
+        return f'(Integer.valueOf({v}): AnyRef)'
+    return 'null'   # absent or non-integer default: fall back to a null pad
+
+def defaults_arr(canon, arity):
+    """Fill an omitted optional arg with the SQL default ONLY when the impl exposes
+    exactly one overload's worth of args (impl arity == that overload's maxArity, so
+    positions align); otherwise null-pad and let the impl's own default hold (the
+    impl may expose a non-leading subset of the canonical args)."""
+    fn = named_by_name.get(canon)
+    ov = next((o for o in fn['overloads'] if o['maxArity'] == arity), None) if fn else None
+    if not ov:
+        items = ', '.join('null' for _ in range(arity))
+    else:
+        items = ', '.join(
+            scala_default(ov['args'][i].get('default') if i < len(ov['args']) else None)
+            for i in range(arity))
+    return f'Array[AnyRef]({items})'
+
 lines = []
 seen = set()
 for canon, spark in single:
@@ -106,7 +135,7 @@ for canon, spark in single:
     fqn = f"{d['pkg']}.{d['class']}.{d['field']}"
     argts = ', '.join(f'"{t}"' for t in d['argTypes'])
     lines.append(f'    inj(ext, "{canon}", {d["arity"]}, Array[String]({argts}), '
-                 f'"{d["retType"]}", {fqn})')
+                 f'"{d["retType"]}", {fqn}, {defaults_arr(canon, d["arity"])})')
 
 dlines = []
 for canon, names, routes, default in dispatch:
@@ -153,10 +182,10 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     case _ => StringType
   }
   private def inj(ext: SparkSessionExtensions, name: String, arity: Int,
-                  argTs: Array[String], retT: String, udf: AnyRef): Unit = {
+                  argTs: Array[String], retT: String, udf: AnyRef, defaults: Array[AnyRef]): Unit = {
     val builder = (children: Seq[Expression]) => {
       val n = math.min(children.size, arity)
-      ScalaUDF(MobilitySparkConnectExtensionsGen.fn(n, udf, arity), dt(retT), children,
+      ScalaUDF(MobilitySparkConnectExtensionsGen.fn(n, udf, arity, defaults), dt(retT), children,
         argTs.take(n).map(t => Some(enc(t))).toSeq, Some(enc(retT)), Some(name))
     }
     try ext.injectFunction((FunctionIdentifier(name), new ExpressionInfo(name, name), builder))
@@ -194,8 +223,11 @@ with open(out, 'w') as f:
     # Companion object: the shipped ScalaUDF closures live here so they capture
     # only the serializable UDF object, never the (non-serializable) extension.
     f.write('''object MobilitySparkConnectExtensionsGen {
-  private def call(u: AnyRef, m: Int, a: Seq[Any]): Any = {
-    def g(i: Int): AnyRef = if (i < a.length) a(i).asInstanceOf[AnyRef] else null
+  private def call(u: AnyRef, m: Int, a: Seq[Any], defaults: Array[AnyRef]): Any = {
+    // fill an omitted optional arg with the canonical SQL default, not a null pad
+    def g(i: Int): AnyRef =
+      if (i < a.length) a(i).asInstanceOf[AnyRef]
+      else if (defaults != null && i < defaults.length) defaults(i) else null
     m match {
       case 1 => u.asInstanceOf[UDF1[Any, Any]].call(g(0))
       case 2 => u.asInstanceOf[UDF2[Any, Any, Any]].call(g(0), g(1))
@@ -203,11 +235,11 @@ with open(out, 'w') as f:
       case _ => u.asInstanceOf[UDF4[Any, Any, Any, Any, Any]].call(g(0), g(1), g(2), g(3))
     }
   }
-  def fn(n: Int, u: AnyRef, m: Int): AnyRef = n match {
-    case 1 => (a: Any) => call(u, m, Seq(a))
-    case 2 => (a: Any, b: Any) => call(u, m, Seq(a, b))
-    case 3 => (a: Any, b: Any, c: Any) => call(u, m, Seq(a, b, c))
-    case _ => (a: Any, b: Any, c: Any, d: Any) => call(u, m, Seq(a, b, c, d))
+  def fn(n: Int, u: AnyRef, m: Int, defaults: Array[AnyRef]): AnyRef = n match {
+    case 1 => (a: Any) => call(u, m, Seq(a), defaults)
+    case 2 => (a: Any, b: Any) => call(u, m, Seq(a, b), defaults)
+    case 3 => (a: Any, b: Any, c: Any) => call(u, m, Seq(a, b, c), defaults)
+    case _ => (a: Any, b: Any, c: Any, d: Any) => call(u, m, Seq(a, b, c, d), defaults)
   }
   // route by arg0's MEOS type-tag name to the matching type-specific impl
   private def pick(a0: Any, routes: Map[String, AnyRef], dflt: AnyRef): AnyRef = a0 match {
@@ -218,10 +250,10 @@ with open(out, 'w') as f:
     case _ => dflt
   }
   def disp(n: Int, routes: Map[String, AnyRef], dflt: AnyRef, m: Int): AnyRef = n match {
-    case 1 => (a: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a)) }
-    case 2 => (a: Any, b: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b)) }
-    case 3 => (a: Any, b: Any, c: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c)) }
-    case _ => (a: Any, b: Any, c: Any, d: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c, d)) }
+    case 1 => (a: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a), null) }
+    case 2 => (a: Any, b: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b), null) }
+    case 3 => (a: Any, b: Any, c: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c), null) }
+    case _ => (a: Any, b: Any, c: Any, d: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c, d), null) }
   }
 }
 ''')
