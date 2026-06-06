@@ -25,13 +25,37 @@ name, the UDF body calls the linked MEOS C function, and the overloads/defaults
 fix the call-arity exactly (no runtime null-padding heuristic). A new function in
 the SQL catalog flows into every binding with no per-binding edit.
 
-## A2 — emitters that consume this spec (next)
+## Canonical name -> Spark impl (derived, not hand-mapped)
 
-- **MobilitySpark UDFs + Connect registrar:** for each function, remap the name to
-  the Spark idiom, emit a UDF over the linked MEOS C function for each overload
-  arity, and emit the matching `SparkSessionExtensions.injectFunction` entry.
-- Same spec feeds the PG/DuckDB identity dialects, PyMEOS, and the Flink/Kafka
-  facades.
+`extract_spark_impls.py <mobilityspark-root>` scans the MobilitySpark `*UDFs`
+classes for each `register("sparkName", field, DataTypes.RET)` and the field's
+body `GeneratedFunctions.<meos_fn>` calls, then joins on the named surface's
+`SQL -> MEOS C` linkage to recover **canonical name -> Spark impl** mechanically.
+This is what proves the camelCase remap (`asMFJSON->temporalAsMfjson`,
+`Xmin->stboxXmin`, ...) is derivable and need not be a hand-written dialect table.
+
+The join (1308 Spark impls) classifies each canonical function for the emitter:
+
+- **single impl** (`asMFJSON->temporalAsMfjson`, `azimuth->tpointAzimuth`,
+  `sequenceN`, `numSequences`): emit the **canonical (identity) name** bound to
+  the one impl; arity adapts by null-padding the impl's optional args.
+- **multi impl** (`Xmin->{stboxXmin,tboxXmin,tboxfloatXmin,tboxintXmin}`,
+  `Tmin->{stboxTmin,tboxTmin}`, `atTime->{atTime,temporalAtTstzspan,...}`): the
+  receiver/arg type is opaque (every MEOS value is a hex String in Spark), so the
+  identity-named builder must **dispatch on the WKB type tag** (`meos_typeof_hexwkb`
+  of the relevant arg) to the impl whose MEOS function matches that type. This is
+  the reason the type-prefixed names exist; the registrar removes the need for them.
+- **join gaps** (`speed->[]`): the SQL function's `@csqlfn` chain resolved to a
+  type variant (`trgeometry_speed`) different from the MEOS function the Spark UDF
+  calls; close by capturing all per-type C variants per SQL name.
+
+## A2 — the emitter (consumes the two derived specs)
+
+- **MobilitySpark Connect registrar:** for each canonical function, emit an
+  `injectFunction` under the **identity** name; single-impl -> direct ScalaUDF over
+  the impl; multi-impl -> a WKB-type-tag dispatch builder selecting the impl.
+  Retires both the hand-written registrar and `dialect_spark.go`'s `sparkNameMap`.
+- Same two specs feed the PG/DuckDB identity dialects, PyMEOS, and Flink/Kafka.
 
 ## Refinements tracked
 
