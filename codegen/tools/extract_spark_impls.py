@@ -29,6 +29,8 @@ def scan_impls(root):
     for f in glob.glob(os.path.join(root, 'src', 'main', 'java', '**', '*UDFs.java'), recursive=True):
         text = open(f, encoding='utf-8', errors='ignore').read()
         cls = os.path.basename(f)[:-5]
+        pkgm = re.search(r'^\s*package\s+([\w.]+)\s*;', text, re.MULTILINE)
+        pkg = pkgm.group(1) if pkgm else ''
         # field declarations + the body that follows (until the next "public static" or EOF)
         decls = list(FIELD_RE.finditer(text))
         for i, m in enumerate(decls):
@@ -37,14 +39,14 @@ def scan_impls(root):
             field = m.group(3)
             body = text[m.end(): decls[i + 1].start() if i + 1 < len(decls) else len(text)]
             meos = list(dict.fromkeys(GENFN_RE.findall(body)))   # ordered-unique
-            fields[field] = {'class': cls, 'arity': arity,
+            fields[field] = {'class': cls, 'pkg': pkg, 'arity': arity,
                              'argTypes': targs[:-1], 'retType': targs[-1], 'meosFns': meos}
         for m in REG_RE.finditer(text):
             sparkName, field, ret = m.group(1), m.group(2), m.group(3)
             fd = fields.get(field)
             if fd:
-                impls[sparkName] = {'field': field, 'class': fd['class'], 'retDataType': ret,
-                                    'arity': fd['arity'], 'argTypes': fd['argTypes'],
+                impls[sparkName] = {'field': field, 'class': fd['class'], 'pkg': fd['pkg'],
+                                    'retDataType': ret, 'arity': fd['arity'], 'argTypes': fd['argTypes'],
                                     'retType': fd['retType'], 'meosFns': fd['meosFns']}
     return impls
 

@@ -51,11 +51,23 @@ The join (1308 Spark impls) classifies each canonical function for the emitter:
 
 ## A2 — the emitter (consumes the two derived specs)
 
-- **MobilitySpark Connect registrar:** for each canonical function, emit an
-  `injectFunction` under the **identity** name; single-impl -> direct ScalaUDF over
-  the impl; multi-impl -> a WKB-type-tag dispatch builder selecting the impl.
-  Retires both the hand-written registrar and `dialect_spark.go`'s `sparkNameMap`.
-- Same two specs feed the PG/DuckDB identity dialects, PyMEOS, and Flink/Kafka.
+`generate_spark_registrar.py` joins the two specs and emits
+`output/MobilitySparkConnectExtensionsGen.scala`, a `SparkSessionExtensions` that
+injects each canonical function under its **identity** name (no camelCase remap,
+no hand-written table). The shipped `ScalaUDF` closures live in a companion object
+so they capture only the serializable UDF, not the extension. The builder adapts
+to the call-site arity by null-padding the impl's optional args (so `asMFJSON(g)`
+reaches the impl's default precision).
+
+- **single impl** (81 functions): direct ScalaUDF over the one impl. Generated,
+  compiled, and served live over Spark Connect under the identity names
+  (`asMFJSON(trip)`, `numSequences(trip)`, …) — retiring the camelCase remap and
+  `dialect_spark.go`'s `sparkNameMap` for this set.
+- **multi impl** (139 functions, one SQL name over several type-specific impls):
+  listed in the generated file for the **v2** per-row `meos_typeof_hexwkb`
+  dispatch (the FFI peek is present in `GeneratedFunctions`).
+
+The same two specs feed the PG/DuckDB identity dialects, PyMEOS, and Flink/Kafka.
 
 ## Refinements tracked
 
