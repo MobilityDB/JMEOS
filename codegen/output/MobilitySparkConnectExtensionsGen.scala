@@ -37,15 +37,16 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     try ext.injectFunction((FunctionIdentifier(name), new ExpressionInfo(name, name), builder))
     catch { case _: Throwable => }
   }
-  // One SQL name over several type-specific impls: dispatch per row on arg0's
-  // runtime MEOS type tag to the impl whose receiver type matches.
-  private def injMulti(ext: SparkSessionExtensions, name: String, arity: Int,
-                       argTs: Array[String], retT: String,
-                       routes: Map[String, AnyRef], dflt: AnyRef): Unit = {
+  // One SQL name over several type-specific impls: dispatch per row on the
+  // differentiating argument's MEOS type tag to the impl whose receiver matches.
+  // Each route carries (impl, impl arity, impl SQL-default fills).
+  private def injMulti(ext: SparkSessionExtensions, name: String, dpos: Int, retT: String,
+                       routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+                       dflt: (AnyRef, Int, Array[AnyRef])): Unit = {
     val builder = (children: Seq[Expression]) => {
-      val n = math.min(children.size, arity)
-      ScalaUDF(MobilitySparkConnectExtensionsGen.disp(n, routes, dflt, arity), dt(retT), children,
-        argTs.take(n).map(t => Some(enc(t))).toSeq, Some(enc(retT)), Some(name))
+      val n = children.size
+      ScalaUDF(MobilitySparkConnectExtensionsGen.disp(n, dpos, routes, dflt), dt(retT), children,
+        children.map(_ => Some(enc("String"))), Some(enc(retT)), Some(name))
     }
     try ext.injectFunction((FunctionIdentifier(name), new ExpressionInfo(name, name), builder))
     catch { case _: Throwable => }
@@ -107,6 +108,7 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     inj(ext, "intset", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.SpanAlgebraUDFs.floatsetToIntset, Array[AnyRef](null))
     inj(ext, "intsetFromHexWKB", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.IOAliasUDFs.asHexEWKB, Array[AnyRef](null))
     inj(ext, "isGeodetic", 1, Array[String]("String"), "Boolean", org.mobilitydb.spark.geo.STBoxUDFs.stboxIsGeodetic, Array[AnyRef](null))
+    inj(ext, "length", 1, Array[String]("String"), "Double", org.mobilitydb.spark.demo.BerlinMODUDFs.length, Array[AnyRef](null))
     inj(ext, "lowerInc", 1, Array[String]("String"), "Boolean", org.mobilitydb.spark.temporal.MoreAccessorUDFs.lowerInc, Array[AnyRef](null))
     inj(ext, "maxInstant", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.MoreAccessorUDFs.maxInstant, Array[AnyRef](null))
     inj(ext, "merge", 2, Array[String]("String", "String"), "String", org.mobilitydb.spark.temporal.AccessorUDFs.merge, Array[AnyRef](null, null))
@@ -141,6 +143,7 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     inj(ext, "span_overleft", 2, Array[String]("String", "String"), "Boolean", org.mobilitydb.spark.temporal.SpanAlgebraUDFs.spanOverleft, Array[AnyRef](null, null))
     inj(ext, "span_overright", 2, Array[String]("String", "String"), "Boolean", org.mobilitydb.spark.temporal.SpanAlgebraUDFs.spanOverright, Array[AnyRef](null, null))
     inj(ext, "span_right", 2, Array[String]("String", "String"), "Boolean", org.mobilitydb.spark.temporal.SpanAlgebraUDFs.spanRight, Array[AnyRef](null, null))
+    inj(ext, "speed", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.TemporalUDFs.speed, Array[AnyRef](null))
     inj(ext, "startDate", 1, Array[String]("String"), "Integer", org.mobilitydb.spark.temporal.AccessorAliasUDFs.startDate, Array[AnyRef](null))
     inj(ext, "startInstant", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.MoreAccessorUDFs.startInstant, Array[AnyRef](null))
     inj(ext, "startSequence", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.MoreAccessorUDFs.startSequence, Array[AnyRef](null))
@@ -169,7 +172,7 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     inj(ext, "tintSeqSet", 2, Array[String]("String", "Timestamp"), "String", org.mobilitydb.spark.temporal.SubtypeConstructorUDFs.ttextInst, Array[AnyRef](null, null))
     inj(ext, "tintSeqSetGaps", 2, Array[String]("String[]", "String"), "String", org.mobilitydb.spark.pose.PoseUDFs.tposeSeqSetGaps, Array[AnyRef](null, null))
     inj(ext, "trajectory", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.TransformUDFs.tpointTrajectory, Array[AnyRef](null))
-    inj(ext, "traversedArea", 2, Array[String]("String", "Boolean"), "String", org.mobilitydb.spark.temporal.AccessorGapUDFs.traversedArea, Array[AnyRef](null, null))
+    inj(ext, "traversedArea", 2, Array[String]("String", "Boolean"), "String", org.mobilitydb.spark.temporal.AccessorGapUDFs.traversedArea, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef)))
     inj(ext, "trend", 1, Array[String]("String"), "String", org.mobilitydb.spark.temporal.MathGapUDFs.trend, Array[AnyRef](null))
     inj(ext, "twAvg", 1, Array[String]("String"), "Double", org.mobilitydb.spark.temporal.MathGapUDFs.twavg, Array[AnyRef](null))
     inj(ext, "twCentroid", 1, Array[String]("String"), "String", org.mobilitydb.spark.geo.GeoAnalyticsUDFs.twCentroid, Array[AnyRef](null))
@@ -180,22 +183,39 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
     inj(ext, "whenTrue", 1, Array[String]("String"), "String", org.mobilitydb.spark.demo.BerlinMODUDFs.whenTrue, Array[AnyRef](null))
 
     // multi-impl: per-row arg0 MEOS-type-tag dispatch
-    injMulti(ext, "SRID", 1, Array[String]("String"), "Integer", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxSrid: AnyRef)), (org.mobilitydb.spark.temporal.MoreAccessorUDFs.tpointSrid: AnyRef))
-    injMulti(ext, "Tmax", 1, Array[String]("String"), "java.sql.Timestamp", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxTmax: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxTmax: AnyRef)), null)
-    injMulti(ext, "Tmin", 1, Array[String]("String"), "java.sql.Timestamp", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxTmin: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxTmin: AnyRef)), null)
-    injMulti(ext, "Xmax", 1, Array[String]("String"), "Double", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxXmax: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxXmax: AnyRef)), null)
-    injMulti(ext, "Xmin", 1, Array[String]("String"), "Double", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxXmin: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxXmin: AnyRef)), null)
-    injMulti(ext, "asHexWKB", 2, Array[String]("String", "Timestamp"), "String", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.temporal.TileUDFs.getSpaceTile: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxExpandFloat: AnyRef)), (org.mobilitydb.spark.temporal.SubtypeConstructorUDFs.afterTimestamp: AnyRef))
-    injMulti(ext, "hasT", 1, Array[String]("String"), "Boolean", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxHast: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxHast: AnyRef)), null)
-    injMulti(ext, "hasX", 1, Array[String]("String"), "Boolean", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxHasx: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxHasx: AnyRef)), null)
-    injMulti(ext, "intspanset", 1, Array[String]("Double"), "String", Map[String, AnyRef]("floatspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspansetToInt: AnyRef), "set" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.setToSpanset: AnyRef)), null)
-    injMulti(ext, "round", 2, Array[String]("String", "Integer"), "String", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxRound: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxRound: AnyRef)), null)
-    injMulti(ext, "setSRID", 2, Array[String]("String", "Integer"), "String", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxSetSrid: AnyRef)), (org.mobilitydb.spark.geo.GeoAnalyticsUDFs.setSRID: AnyRef))
-    injMulti(ext, "shiftTime", 2, Array[String]("String", "String"), "String", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxShiftScaleTime: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxShiftScaleTime: AnyRef)), (org.mobilitydb.spark.temporal.AccessorUDFs.shift: AnyRef))
-    injMulti(ext, "span", 1, Array[String]("Double"), "String", Map[String, AnyRef]("set" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.setToSpan: AnyRef), "span" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.spanToSpanset: AnyRef)), null)
-    injMulti(ext, "stbox", 1, Array[String]("String"), "String", Map[String, AnyRef]("tstzspan" -> (org.mobilitydb.spark.geo.STBoxUDFs.tstzspanToStbox: AnyRef)), (org.mobilitydb.spark.geo.GeoUDFs.tpointToStbox: AnyRef))
-    injMulti(ext, "tbox", 1, Array[String]("Double"), "String", Map[String, AnyRef]("numspan_timestamptz" -> (org.mobilitydb.spark.temporal.TBoxUDFs.numspanTimestamptzToTbox: AnyRef), "set" -> (org.mobilitydb.spark.temporal.TBoxUDFs.setToTbox: AnyRef), "span" -> (org.mobilitydb.spark.temporal.TBoxUDFs.spanToTbox: AnyRef), "spanset" -> (org.mobilitydb.spark.temporal.TBoxUDFs.spansetToTbox: AnyRef)), (org.mobilitydb.spark.temporal.AccessorUDFs.tnumberToTbox: AnyRef))
-    injMulti(ext, "timeSpan", 1, Array[String]("String"), "String", Map[String, AnyRef]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxToTstzspan: AnyRef), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxToTstzspan: AnyRef)), (org.mobilitydb.spark.temporal.TransformUDFs.temporalToTstzspan: AnyRef))
+    injMulti(ext, "SRID", 0, "Integer", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxSrid: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.MoreAccessorUDFs.tpointSrid: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "Tmax", 0, "java.sql.Timestamp", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxTmax: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxTmax: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "Tmin", 0, "java.sql.Timestamp", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxTmin: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxTmin: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "Xmax", 0, "Double", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxXmax: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxXmax: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "Xmin", 0, "Double", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxXmin: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxXmin: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "asHexWKB", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.temporal.TileUDFs.getSpaceTile: AnyRef, 5, Array[AnyRef](null, null, null, null, null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxExpandFloat: AnyRef, 2, Array[AnyRef](null, null))), (org.mobilitydb.spark.temporal.SubtypeConstructorUDFs.afterTimestamp: AnyRef, 2, Array[AnyRef](null, null)))
+    injMulti(ext, "atTime", 1, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzset" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalAtTstzset: AnyRef, 2, Array[AnyRef](null, null)), "tstzspan" -> (org.mobilitydb.spark.temporal.AccessorUDFs.atSpan: AnyRef, 2, Array[AnyRef](null, null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.AccessorUDFs.atSpanset: AnyRef, 2, Array[AnyRef](null, null))), null)
+    injMulti(ext, "ceil", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatsetCeil: AnyRef, 1, Array[AnyRef](null)), "floatspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspansetCeil: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.MathGapUDFs.ceil: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "degrees", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatsetDegrees: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.MathGapUDFs.degrees: AnyRef, 2, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef))))
+    injMulti(ext, "deleteTime", 1, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzset" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalDeleteTstzset: AnyRef, 2, Array[AnyRef](null, null)), "tstzspan" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalDeleteTstzspan: AnyRef, 2, Array[AnyRef](null, null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalDeleteTstzspanset: AnyRef, 2, Array[AnyRef](null, null))), null)
+    injMulti(ext, "duration", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("datespan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.datespanDuration: AnyRef, 1, Array[AnyRef](null)), "tstzspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.tstzspanDuration: AnyRef, 1, Array[AnyRef](null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetDuration: AnyRef, 2, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef)))), (org.mobilitydb.spark.temporal.MoreAccessorUDFs.duration: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "endTimestamp", 0, "Timestamp", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetEndTimestamptz: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.TemporalUDFs.endTimestamp: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "floor", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatsetFloor: AnyRef, 1, Array[AnyRef](null)), "floatspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspansetFloor: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.MathGapUDFs.floor: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "getValues", 0, "java.sql.Date", Map[String, (AnyRef, Int, Array[AnyRef])]("dateset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.datesetEndValue: AnyRef, 1, Array[AnyRef](null)), "floatset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.floatsetEndValue: AnyRef, 1, Array[AnyRef](null)), "intset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intsetEndValue: AnyRef, 1, Array[AnyRef](null)), "textset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.textsetEndValue: AnyRef, 1, Array[AnyRef](null)), "tstzset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzsetEndValue: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.AccessorUDFs.tnumberValuespans: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "hasT", 0, "Boolean", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxHast: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxHast: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "hasX", 0, "Boolean", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxHasx: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxHasx: AnyRef, 1, Array[AnyRef](null))), null)
+    injMulti(ext, "lower", 0, "Long", Map[String, (AnyRef, Int, Array[AnyRef])]("bigintspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.bigintspanLower: AnyRef, 1, Array[AnyRef](null)), "datespan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.datespanLower: AnyRef, 1, Array[AnyRef](null)), "floatspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.floatspanLower: AnyRef, 1, Array[AnyRef](null)), "intspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intspanLower: AnyRef, 1, Array[AnyRef](null)), "intspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intspansetLower: AnyRef, 1, Array[AnyRef](null)), "textset" -> (org.mobilitydb.spark.temporal.TransformUDFs.textsetLower: AnyRef, 1, Array[AnyRef](null)), "tstzspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspanLower: AnyRef, 1, Array[AnyRef](null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetLower: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.TTextUDFs.ttextLower: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "minusTime", 1, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzset" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalMinusTstzset: AnyRef, 2, Array[AnyRef](null, null)), "tstzspan" -> (org.mobilitydb.spark.temporal.AccessorUDFs.minusTime: AnyRef, 2, Array[AnyRef](null, null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.RestrictionUDFs.temporalMinusTstzspanset: AnyRef, 2, Array[AnyRef](null, null))), null)
+    injMulti(ext, "radians", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatsetRadians: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.MathGapUDFs.radians: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "round", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspansetRound: AnyRef, 2, Array[AnyRef](null, (Integer.valueOf(0): AnyRef))), "stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxRound: AnyRef, 2, Array[AnyRef](null, (Integer.valueOf(0): AnyRef))), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxRound: AnyRef, 2, Array[AnyRef](null, (Integer.valueOf(0): AnyRef)))), null)
+    injMulti(ext, "setSRID", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxSetSrid: AnyRef, 2, Array[AnyRef](null, null))), (org.mobilitydb.spark.geo.GeoAnalyticsUDFs.setSRID: AnyRef, 2, Array[AnyRef](null, null)))
+    injMulti(ext, "set_distance", 0, "Long", Map[String, (AnyRef, Int, Array[AnyRef])]("bigintset" -> (org.mobilitydb.spark.temporal.SetOpsUDFs.distanceBigintsetBigintset: AnyRef, 2, Array[AnyRef](null, null)), "floatset" -> (org.mobilitydb.spark.temporal.SetOpsUDFs.distanceFloatsetFloatset: AnyRef, 2, Array[AnyRef](null, null)), "intset" -> (org.mobilitydb.spark.temporal.SetOpsUDFs.distanceIntsetIntset: AnyRef, 2, Array[AnyRef](null, null)), "tstzset" -> (org.mobilitydb.spark.temporal.SetOpsUDFs.distanceTstzsetTstzset: AnyRef, 2, Array[AnyRef](null, null))), null)
+    injMulti(ext, "shift", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("floatspan" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspanShiftScale: AnyRef, 3, Array[AnyRef](null, null, null)), "floatspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.floatspansetShiftScale: AnyRef, 3, Array[AnyRef](null, null, null)), "intspan" -> (org.mobilitydb.spark.temporal.TransformUDFs.intspanShiftScale: AnyRef, 3, Array[AnyRef](null, null, null)), "intspanset" -> (org.mobilitydb.spark.temporal.TransformUDFs.intspansetShiftScale: AnyRef, 3, Array[AnyRef](null, null, null)), "tstzspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.tstzspanShiftScale: AnyRef, 3, Array[AnyRef](null, null, null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.tstzspansetShiftScale: AnyRef, 3, Array[AnyRef](null, null, null))), null)
+    injMulti(ext, "shiftTime", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxShiftScaleTime: AnyRef, 3, Array[AnyRef](null, null, null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxShiftScaleTime: AnyRef, 3, Array[AnyRef](null, null, null))), (org.mobilitydb.spark.temporal.AccessorUDFs.shift: AnyRef, 2, Array[AnyRef](null, null)))
+    injMulti(ext, "span_distance", 0, "Long", Map[String, (AnyRef, Int, Array[AnyRef])]("bigintspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.bigintspanDistance: AnyRef, 2, Array[AnyRef](null, null)), "datespan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.datespanDistance: AnyRef, 2, Array[AnyRef](null, null)), "floatspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.floatspanDistance: AnyRef, 2, Array[AnyRef](null, null)), "floatspanset" -> (org.mobilitydb.spark.temporal.SetSpanGapUDFs.spansetDistance: AnyRef, 2, Array[AnyRef](null, null)), "intspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.intspanDistance: AnyRef, 2, Array[AnyRef](null, null)), "tstzspan" -> (org.mobilitydb.spark.temporal.SpanAlgebraUDFs.tstzspanDistance: AnyRef, 2, Array[AnyRef](null, null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.SetSpanGapUDFs.timeDistanceSpanset: AnyRef, 2, Array[AnyRef](null, null))), null)
+    injMulti(ext, "startTimestamp", 0, "Timestamp", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetStartTimestamptz: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.TemporalUDFs.startTimestamp: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "startValue", 0, "java.sql.Date", Map[String, (AnyRef, Int, Array[AnyRef])]("dateset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.datesetStartValue: AnyRef, 1, Array[AnyRef](null)), "floatset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.floatsetStartValue: AnyRef, 1, Array[AnyRef](null)), "intset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intsetStartValue: AnyRef, 1, Array[AnyRef](null)), "textset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.textsetStartValue: AnyRef, 1, Array[AnyRef](null)), "tstzset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzsetStartValue: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.AccessorUDFs.tfloatStartValue: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "stbox", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzspan" -> (org.mobilitydb.spark.geo.STBoxUDFs.tstzspanToStbox: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.geo.GeoUDFs.tpointToStbox: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "tbox", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.setToTbox: AnyRef, 1, Array[AnyRef](null)), "timestamptz" -> (org.mobilitydb.spark.temporal.TBoxUDFs.numspanTimestamptzToTbox: AnyRef, 2, Array[AnyRef](null, null))), (org.mobilitydb.spark.temporal.AccessorUDFs.tnumberToTbox: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "timeSpan", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("stbox" -> (org.mobilitydb.spark.geo.STBoxUDFs.stboxToTstzspan: AnyRef, 1, Array[AnyRef](null)), "tbox" -> (org.mobilitydb.spark.temporal.TBoxUDFs.tboxToTstzspan: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.TransformUDFs.temporalToTstzspan: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "timestamps", 0, "String", Map[String, (AnyRef, Int, Array[AnyRef])]("tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetNumTimestamps: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.AccessorGapUDFs.atValue: AnyRef, 2, Array[AnyRef](null, null)))
+    injMulti(ext, "upper", 0, "Long", Map[String, (AnyRef, Int, Array[AnyRef])]("bigintspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.bigintspanUpper: AnyRef, 1, Array[AnyRef](null)), "datespan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.datespanUpper: AnyRef, 1, Array[AnyRef](null)), "floatspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.floatspanUpper: AnyRef, 1, Array[AnyRef](null)), "intspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intspanUpper: AnyRef, 1, Array[AnyRef](null)), "intspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.intspansetUpper: AnyRef, 1, Array[AnyRef](null)), "textset" -> (org.mobilitydb.spark.temporal.TransformUDFs.textsetUpper: AnyRef, 1, Array[AnyRef](null)), "tstzspan" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspanUpper: AnyRef, 1, Array[AnyRef](null)), "tstzspanset" -> (org.mobilitydb.spark.temporal.SpanAccessorUDFs.tstzspansetUpper: AnyRef, 1, Array[AnyRef](null))), (org.mobilitydb.spark.temporal.TTextUDFs.ttextUpper: AnyRef, 1, Array[AnyRef](null)))
+    injMulti(ext, "width", 0, "Long", Map[String, (AnyRef, Int, Array[AnyRef])]("bigintspan" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.bigintspanWidth: AnyRef, 1, Array[AnyRef](null)), "bigintspanset" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.bigintspansetWidth: AnyRef, 2, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef))), "floatspan" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.floatspanWidth: AnyRef, 1, Array[AnyRef](null)), "floatspanset" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.floatspansetWidth: AnyRef, 2, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef))), "intspan" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.intspanWidth: AnyRef, 1, Array[AnyRef](null)), "intspanset" -> (org.mobilitydb.spark.temporal.AccessorAliasUDFs.intspansetWidth: AnyRef, 2, Array[AnyRef](null, (java.lang.Boolean.FALSE: AnyRef)))), null)
   }
   // multi-impl not arg0-dispatchable (all impls share arg0 type; need
   // the differentiating arg, e.g. atTime on the time argument):
@@ -210,16 +230,10 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
   //   angularDifference -> ['tnumberAngularDifference', 'tpointAngularDifference']
   //   area -> ['stboxArea', 'stboxPerimeter']
   //   atGeometry -> ['atElevation', 'atGeometry', 'tgeoAtGeom', 'tpointAtElevation']
-  //   atTime -> ['atSpan', 'atSpanset', 'atTime', 'temporalAtTimestamptz', 'temporalAtTstzset', 'temporalAtTstzspan', 'temporalAtTstzspanset']
   //   atValue -> ['tboolAtValue', 'tfloatAtValue', 'tintAtValue', 'tpointAtValue', 'ttextAtValue']
   //   bearing -> ['bearing', 'bearingToPoint']
-  //   ceil -> ['ceil', 'floatsetCeil', 'floatspansetCeil', 'tfloatCeil']
-  //   degrees -> ['degrees', 'floatsetDegrees', 'tfloatDegrees']
-  //   deleteTime -> ['deleteTime', 'temporalDeleteTimestamptz', 'temporalDeleteTstzset', 'temporalDeleteTstzspan', 'temporalDeleteTstzspanset']
-  //   duration -> ['datespanDuration', 'duration', 'tstzspanDuration', 'tstzspansetDuration']
   //   eDisjoint -> ['eDisjoint', 'eDisjointTgeoTgeo']
   //   eDwithin -> ['eDwithin', 'eDwithinGeo']
-  //   endTimestamp -> ['endTimestamp', 'tstzspansetEndTimestamptz']
   //   endValue -> ['tboolEndValue', 'tfloatEndValue', 'tintEndValue', 'tpointEndValue', 'ttextEndValue']
   //   ever_eq -> ['everEqBoolTbool', 'everEqFloatTfloat', 'everEqIntTint', 'everEqTboolBool', 'everEqTemporal', 'everEqTfloatFloat', 'everEqTintInt']
   //   ever_ge -> ['everGeFloatTfloat', 'everGeIntTint', 'everGeTemporal', 'everGeTfloatFloat', 'everGeTintInt']
@@ -228,32 +242,23 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
   //   ever_lt -> ['everLtFloatTfloat', 'everLtIntTint', 'everLtTemporal', 'everLtTfloatFloat', 'everLtTintInt']
   //   ever_ne -> ['everNeFloatTfloat', 'everNeIntTint', 'everNeTboolBool', 'everNeTemporal', 'everNeTfloatFloat', 'everNeTintInt']
   //   floatspan -> ['tboxToFloatspan', 'tboxToIntspan']
-  //   floor -> ['floatsetFloor', 'floatspansetFloor', 'floor', 'tfloatFloor']
-  //   getValues -> ['datesetEndValue', 'floatsetEndValue', 'intsetEndValue', 'textsetEndValue', 'tnumberValuespans', 'tstzsetEndValue', 'ttextValueAtTimestamptz']
-  //   length -> ['length', 'speed', 'tpointLength', 'tpointSpeed']
+  //   intspanset -> ['floatToSpanset', 'floatspansetToInt', 'intToSpanset', 'intspanset', 'setToSpanset']
   //   ln -> ['exp', 'ln', 'log10', 'tfloatExp', 'tfloatLn', 'tfloatLog10']
-  //   lower -> ['bigintspanLower', 'datespanLower', 'floatspanLower', 'floatspansetLower', 'intspanLower', 'intspansetLower', 'textsetLower', 'tstzspanLower', 'tstzspansetLower', 'ttextLower']
   //   maxValue -> ['tfloatMaxValue', 'tintMaxValue', 'ttextMaxValue']
   //   minValue -> ['tfloatMinValue', 'tintMinValue', 'ttextMinValue']
   //   minusGeometry -> ['tgeoMinusGeom', 'tpointMinusElevation']
-  //   minusTime -> ['minusTime', 'temporalMinusTimestamptz', 'temporalMinusTstzset', 'temporalMinusTstzspan', 'temporalMinusTstzspanset']
   //   minusValue -> ['minusValue', 'tboolMinusValue', 'tfloatMinusValue', 'tintMinusValue', 'tpointMinusValue', 'ttextMinusValue']
-  //   radians -> ['floatsetRadians', 'radians', 'tfloatRadians']
   //   scaleValue -> ['tfloatScaleValue', 'tintScaleValue']
   //   set -> ['floatToSet', 'intToSet', 'timestamptzToSet']
-  //   set_distance -> ['distanceBigintsetBigintset', 'distanceFloatsetFloatset', 'distanceIntsetIntset', 'distanceTstzsetTstzset', 'setDistance', 'set_distance']
-  //   shift -> ['floatspanShiftScale', 'floatspansetShiftScale', 'intspanShiftScale', 'intspansetShiftScale', 'shiftScale', 'tstzspanShiftScale', 'tstzspansetShiftScale']
   //   shiftScaleValue -> ['tfloatShiftScaleValue', 'tintShiftScaleValue']
   //   shiftValue -> ['tfloatShiftValue', 'tintShiftValue']
+  //   span -> ['floatToSpan', 'intToSpan', 'setToSpan', 'spanToSpanset', 'spanset', 'timestamptzToSpan']
   //   span_contained -> ['spanContainedIn', 'spanContainedInSpanset']
   //   span_contains -> ['spanContains', 'spansetContainsSpan']
-  //   span_distance -> ['bigintspanDistance', 'datespanDistance', 'floatspanDistance', 'intspanDistance', 'spanDistance', 'span_distance', 'spanset_distance', 'timeDistance', 'time_distance', 'time_distance_spanset', 'tstzspanDistance']
   //   span_intersection -> ['spanIntersection', 'span_intersection', 'spansetIntersection', 'spansetIntersectionSpan', 'spanset_intersection']
   //   span_minus -> ['spansetMinus', 'spansetMinusSpan', 'spanset_minus']
   //   span_overlaps -> ['spanOverlaps', 'spansetOverlaps']
   //   span_union -> ['spansetUnion', 'spansetUnionSpan', 'spanset_union']
-  //   startTimestamp -> ['getTimestamp', 'startTimestamp', 'tstzspansetStartTimestamptz']
-  //   startValue -> ['datesetStartValue', 'floatsetStartValue', 'getValue', 'intsetStartValue', 'startValue', 'tboolGetValue', 'tboolStartValue', 'textsetStartValue', 'tfloatGetValue', 'tfloatStartValue', 'tintGetValue', 'tintStartValue', 'tpointGetValue', 'tpointStartValue', 'tstzsetStartValue', 'ttextGetValue', 'ttextStartValue']
   //   tContains -> ['tContains', 'tContainsTgeoGeo']
   //   tDisjoint -> ['tDisjoint', 'tDisjointTgeoTgeo']
   //   tDistance -> ['tdistanceTfloatFloat', 'tdistanceTgeoGeo', 'tdistanceTgeoTgeo', 'tdistanceTintInt', 'tdistanceTnumberTnumber']
@@ -261,16 +266,13 @@ class MobilitySparkConnectExtensionsGen extends (SparkSessionExtensions => Unit)
   //   tIntersects -> ['tIntersects', 'tIntersectsTgeoTgeo']
   //   tTouches -> ['tTouches', 'tTouchesTogeoTgeo']
   //   textset_cat -> ['textsetCat', 'textsetCatTextTextset', 'textsetCatTextsetText']
-  //   timestamps -> ['atValue', 'tstzspansetNumTimestamps']
   //   tint -> ['tboolInst', 'tcbufferInst', 'tfloatInst', 'tfloatToTint', 'tgeompointInst', 'tintInst', 'tposeInst']
   //   tnumber_add -> ['addTfloatFloat', 'addTintInt', 'addTnumberTnumber', 'tnumber_add']
   //   tnumber_div -> ['divTfloatFloat', 'divTnumberTnumber', 'tnumber_div']
   //   tnumber_mul -> ['multTfloatFloat', 'multTintInt', 'multTnumberTnumber', 'tnumber_mul']
   //   tnumber_sub -> ['subTfloatFloat', 'subTintInt', 'subTnumberTnumber', 'tnumber_sub']
-  //   upper -> ['bigintspanUpper', 'datespanUpper', 'floatspanUpper', 'floatspansetUpper', 'intspanUpper', 'intspansetUpper', 'textsetUpper', 'tstzspanUpper', 'tstzspansetUpper', 'ttextUpper']
   //   valueAtTimestamp -> ['tboolValueAtTimestamptz', 'tfloatValueAtTimestamptz', 'tintValueAtTimestamptz', 'valueAtTimestamp']
   //   valueN -> ['everNeBoolTbool', 'tboolValueN', 'tfloatValueN', 'tintValueN', 'tpointValueN', 'ttextInitcap', 'ttextValueN', 'valueN']
-  //   width -> ['bigintspanWidth', 'bigintspansetWidth', 'floatspanWidth', 'floatspansetWidth', 'intspanWidth', 'intspansetWidth', 'width']
 }
 
 object MobilitySparkConnectExtensionsGen {
@@ -292,18 +294,24 @@ object MobilitySparkConnectExtensionsGen {
     case 3 => (a: Any, b: Any, c: Any) => call(u, m, Seq(a, b, c), defaults)
     case _ => (a: Any, b: Any, c: Any, d: Any) => call(u, m, Seq(a, b, c, d), defaults)
   }
-  // route by arg0's MEOS type-tag name to the matching type-specific impl
-  private def pick(a0: Any, routes: Map[String, AnyRef], dflt: AnyRef): AnyRef = a0 match {
-    case s: String =>
-      val tn = try GeneratedFunctions.meostype_name(GeneratedFunctions.meos_typeof_hexwkb(s))
-               catch { case _: Throwable => null }
-      routes.getOrElse(tn, dflt)
-    case _ => dflt
-  }
-  def disp(n: Int, routes: Map[String, AnyRef], dflt: AnyRef, m: Int): AnyRef = n match {
-    case 1 => (a: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a), null) }
-    case 2 => (a: Any, b: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b), null) }
-    case 3 => (a: Any, b: Any, c: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c), null) }
-    case _ => (a: Any, b: Any, c: Any, d: Any) => { val u = pick(a, routes, dflt); if (u == null) null else call(u, m, Seq(a, b, c, d), null) }
+  // route by the differentiating argument's MEOS type-tag name to the matching
+  // (impl, impl arity, defaults); the default route handles temporal/unknown tags
+  private def pick(args: Seq[Any], dpos: Int, routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+                   dflt: (AnyRef, Int, Array[AnyRef])): (AnyRef, Int, Array[AnyRef]) =
+    (if (dpos < args.length) args(dpos) else null) match {
+      case s: String =>
+        val tn = try GeneratedFunctions.meostype_name(GeneratedFunctions.meos_typeof_hexwkb(s))
+                 catch { case _: Throwable => null }
+        routes.getOrElse(tn, dflt)
+      case _ => dflt
+    }
+  private def run(t: (AnyRef, Int, Array[AnyRef]), a: Seq[Any]): Any =
+    if (t == null || t._1 == null) null else call(t._1, t._2, a, t._3)
+  def disp(n: Int, dpos: Int, routes: Map[String, (AnyRef, Int, Array[AnyRef])],
+           dflt: (AnyRef, Int, Array[AnyRef])): AnyRef = n match {
+    case 1 => (a: Any) => run(pick(Seq(a), dpos, routes, dflt), Seq(a))
+    case 2 => (a: Any, b: Any) => run(pick(Seq(a, b), dpos, routes, dflt), Seq(a, b))
+    case 3 => (a: Any, b: Any, c: Any) => run(pick(Seq(a, b, c), dpos, routes, dflt), Seq(a, b, c))
+    case _ => (a: Any, b: Any, c: Any, d: Any) => run(pick(Seq(a, b, c, d), dpos, routes, dflt), Seq(a, b, c, d))
   }
 }
