@@ -95,9 +95,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <!--                    <forkCount>4</forkCount>-->
-                    <!--                    <reuseForks>true</reuseForks>-->
-                    <!--                    <argLine>-Xmx4096m -XX:MaxMetaspaceSize=512m</argLine>-->
+                    <!-- MEOS keeps process-global state: meos_initialize cannot be
+                         re-run after a meos_finalize in the same JVM. Give each test
+                         class its own fork so the native MEOS lifecycle is clean. -->
+                    <reuseForks>false</reuseForks>
                     <skipTests>false</skipTests>
                 </configuration>
             </plugin>
