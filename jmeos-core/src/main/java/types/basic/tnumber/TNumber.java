@@ -11,6 +11,7 @@ import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TInt;
 import types.boxes.TBox;
 import functions.functions;
+import functions.GeneratedFunctions;
 import types.collections.number.*;
 import types.collections.time.Time;
 import types.collections.time.tstzset;
@@ -445,9 +446,9 @@ public interface TNumber {
      *
      *         MEOS Functions:
      *         <ul>
-     *             <li>mult_tint_int</li>
-     *             <li>mult_tfloat_float</li>
-     *             <li>mult_tnumber_tnumber</li>
+     *             <li>mul_tint_int</li>
+     *             <li>mul_tfloat_float</li>
+     *             <li>mul_tnumber_tnumber</li>
      *         </ul>
      * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
      *      *      *             to "this".
@@ -456,11 +457,11 @@ public interface TNumber {
      */
     default TNumber mul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.mult_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -476,8 +477,8 @@ public interface TNumber {
      *
      *         MEOS Functions:
      *         <ul>
-     *             <li>mult_int_tint</li>
-     *             <li>mult_float_tfloat</li>
+     *             <li>mul_int_tint</li>
+     *             <li>mul_float_tfloat</li>
      *         </ul>
      * @param other A {@link Integer} or {@link Float} to add to "this".
      * @return A new temporal object of the same subtype as "this".
@@ -485,9 +486,9 @@ public interface TNumber {
      */
     default TNumber rmul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
