@@ -2,11 +2,13 @@ package types.collections.number;
 import types.collections.base.Base;
 import types.collections.base.Set;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import functions.functions;
+import functions.GeneratedFunctions;
 
 /**
  * Class for representing a set of text values.
@@ -32,12 +34,12 @@ public class IntSet extends Set<Integer> implements Number{
 
     public IntSet(String str){
         super(str);
-        _inner = functions.intset_in(str);
+        _inner = GeneratedFunctions.intset_in(str);
     }
 
     @Override
     public Pointer createStringInner(String str){
-        return functions.intset_in(str);
+        return GeneratedFunctions.intset_in(str);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A new {@link String} instance
      */
     public String toString(){
-        return functions.intset_out(this._inner);
+        return GeneratedFunctions.intset_out(this._inner);
     }
 
     /* ------------------------- Conversions ----------------------------------- */
@@ -78,7 +80,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A new {@link IntSpanSet} instance
      */
     public IntSpanSet to_spanset(){
-        return new IntSpanSet(functions.set_to_spanset(this._inner));
+        return new IntSpanSet(GeneratedFunctions.set_to_spanset(this._inner));
     }
 
 
@@ -93,7 +95,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link IntSpan} instance
      */
     public IntSpan to_span(){
-        return new IntSpan(functions.set_to_span(this._inner));
+        return new IntSpan(GeneratedFunctions.set_to_span(this._inner));
     }
 
     public FloatSet to_floatset(){
@@ -123,7 +125,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link Integer} instance
      */
     public Integer start_element(){
-        return functions.intset_start_value(this._inner);
+        return GeneratedFunctions.intset_start_value(this._inner);
     }
 
 
@@ -138,7 +140,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link Integer} instance
      */
     public Integer end_element(){
-        return functions.intset_end_value(this._inner);
+        return GeneratedFunctions.intset_end_value(this._inner);
     }
 
     /*
@@ -156,11 +158,11 @@ public class IntSet extends Set<Integer> implements Number{
 
     public Integer element_n(int n) throws Exception {
         super.element_n(n);
-        return Objects.requireNonNull(functions.intset_value_n(this._inner, n + 1)).getInt(Integer.BYTES);
+        return Objects.requireNonNull(GeneratedFunctions.intset_value_n(this._inner, n + 1)).getInt(Integer.BYTES);
     }
 
     public List<Integer> elements(){
-        Pointer elems = functions.intset_values(this._inner);
+        Pointer elems = GeneratedFunctions.intset_values(this._inner, Memory.allocate(Runtime.getSystemRuntime(), 4));
         List<Integer> ret = new ArrayList<Integer>();
         for (int i=0;i<this.num_elements();i++)
         {
@@ -220,7 +222,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A new {@link IntSet} instance
      */
     public IntSet shift_scale(int delta, int width){
-        return new IntSet(functions.intset_shift_scale(this._inner, delta,width,delta != 0, width != 0));
+        return new IntSet(GeneratedFunctions.intset_shift_scale(this._inner, delta,width,delta != 0, width != 0));
     }
 
 
@@ -231,7 +233,7 @@ public class IntSet extends Set<Integer> implements Number{
 
     public boolean contains(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.contains_set_int(this._inner, (int) other);
+            return GeneratedFunctions.contains_set_int(this._inner, (int) other);
         }
         else {
             return super.contains((Base) other);
@@ -264,7 +266,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.left_set_int(this._inner, (int) other);
+            return GeneratedFunctions.left_set_int(this._inner, (int) other);
         }
         else{
             return super.is_left((Base) other);
@@ -287,7 +289,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_over_or_left(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overleft_set_int(this._inner, (int) other);
+            return GeneratedFunctions.overleft_set_int(this._inner, (int) other);
         }
         else{
             return super.is_over_or_left((Base) other);
@@ -311,7 +313,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.right_set_int(this._inner, (int) other);
+            return GeneratedFunctions.right_set_int(this._inner, (int) other);
         }
         else{
             return super.is_right((Base) other);
@@ -335,7 +337,7 @@ public class IntSet extends Set<Integer> implements Number{
      */
     public boolean is_over_or_right(Object other) throws Exception {
         if (other instanceof Integer){
-            return functions.overright_set_int(this._inner, (int) other);
+            return GeneratedFunctions.overright_set_int(this._inner, (int) other);
         }
         else{
             return super.is_over_or_right((Base) other);
@@ -363,10 +365,10 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet intersection(Object other) throws Exception{
         Pointer result = null;
         if (other instanceof Integer){
-            result= functions.intersection_set_int(this._inner, (int) other);
+            result= GeneratedFunctions.intersection_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
-            result= functions.intersection_set_set(this._inner, ((IntSet) other)._inner);
+            result= GeneratedFunctions.intersection_set_set(this._inner, ((IntSet) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -390,10 +392,10 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet minus(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.minus_set_int(this._inner, (int) other);
+            result = GeneratedFunctions.minus_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
-            result = functions.minus_set_set(this._inner, ((IntSet) other)._inner);
+            result = GeneratedFunctions.minus_set_set(this._inner, ((IntSet) other)._inner);
         }
 
         return new IntSet(result);
@@ -412,7 +414,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A {@link Integer} instance or "None" if the difference is empty.
      */
     public Pointer subtract_from(int other){
-        return functions.minus_int_set(other,this._inner);
+        return GeneratedFunctions.minus_int_set(other,this._inner);
     }
 
 
@@ -432,10 +434,10 @@ public class IntSet extends Set<Integer> implements Number{
     public IntSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer){
-            result = functions.union_set_int(this._inner, (int) other);
+            result = GeneratedFunctions.union_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
-            result = functions.union_set_set(this._inner, ((IntSet) other)._inner);
+            result = GeneratedFunctions.union_set_set(this._inner, ((IntSet) other)._inner);
         }
         return new IntSet(result);
     }
@@ -463,10 +465,10 @@ public class IntSet extends Set<Integer> implements Number{
     public float distance(Object other) throws Exception {
         float answer=0;
         if (other instanceof Integer){
-            answer= (float) functions.distance_set_int(this._inner, (int) other);
+            answer= (float) GeneratedFunctions.distance_set_int(this._inner, (int) other);
         }
         else if(other instanceof IntSet){
-            answer= functions.distance_intset_intset(this._inner, ((IntSet) other)._inner);
+            answer= GeneratedFunctions.distance_intset_intset(this._inner, ((IntSet) other)._inner);
         }
         else if(other instanceof IntSpan){
             answer= this.to_spanset().distance(other);
