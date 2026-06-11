@@ -15,6 +15,16 @@ import java.time.*;
 public class GeneratedFunctions {
 	public interface MeosLibraryPartA {
 
+		void meos_error(int errlevel, int errcode, String format);
+
+		int meos_errno();
+
+		int meos_errno_set(int err);
+
+		int meos_errno_restore(int err);
+
+		int meos_errno_reset();
+
 		Pointer meos_array_create(int elem_size);
 
 		void meos_array_add(Pointer array, Pointer value);
@@ -59,21 +69,17 @@ public class GeneratedFunctions {
 
 		int rtree_search_temporal_dedup(Pointer rtree, int op, Pointer temp, int maxboxes, Pointer result);
 
-		void meos_error(int errlevel, int errcode, String format);
+		void meos_initialize_error_handler(error_handler_fn err_handler);
 
-		int meos_errno();
-
-		int meos_errno_set(int err);
-
-		int meos_errno_restore(int err);
-
-		int meos_errno_reset();
+		void meos_initialize_noexit_error_handler();
 
 		void meos_initialize_timezone(String name);
 
-		void meos_initialize_error_handler(error_handler_fn err_handler);
+		void meos_initialize_collation();
 
 		void meos_finalize_timezone();
+
+		void meos_finalize_collation();
 
 		void meos_finalize_projsrs();
 
@@ -95,99 +101,15 @@ public class GeneratedFunctions {
 
 		void meos_finalize();
 
-		int add_date_int(int d, int days);
-
-		Pointer add_interval_interval(Pointer interv1, Pointer interv2);
-
-		long add_timestamptz_interval(long t, Pointer interv);
-
-		boolean bool_in(String str);
-
-		String bool_out(boolean b);
-
-		Pointer cstring2text(String str);
-
-		long date_to_timestamp(int dateVal);
-
-		long date_to_timestamptz(int d);
-
-		double float_exp(double d);
-
-		double float_ln(double d);
-
-		double float_log10(double d);
-
-		String float8_out(double d, int maxdd);
-
-		double float_round(double d, int maxdd);
-
-		int int32_cmp(int l, int r);
-
-		int int64_cmp(long l, long r);
-
-		Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs);
-
-		int minus_date_date(int d1, int d2);
-
-		int minus_date_int(int d, int days);
-
-		long minus_timestamptz_interval(long t, Pointer interv);
-
-		Pointer minus_timestamptz_timestamptz(long t1, long t2);
-
-		Pointer mul_interval_double(Pointer interv, double factor);
-
-		int pg_date_in(String str);
-
-		String pg_date_out(int d);
-
-		int pg_interval_cmp(Pointer interv1, Pointer interv2);
-
-		Pointer pg_interval_in(String str, int typmod);
-
-		String pg_interval_out(Pointer interv);
-
-		long pg_timestamp_in(String str, int typmod);
-
-		String pg_timestamp_out(long t);
-
-		long pg_timestamptz_in(String str, int typmod);
-
-		String pg_timestamptz_out(long t);
-
-		String text2cstring(Pointer txt);
-
-		int text_cmp(Pointer txt1, Pointer txt2);
-
-		Pointer text_copy(Pointer txt);
-
-		Pointer text_in(String str);
-
-		Pointer text_initcap(Pointer txt);
-
-		Pointer text_lower(Pointer txt);
-
-		String text_out(Pointer txt);
-
-		Pointer text_upper(Pointer txt);
-
-		Pointer textcat_text_text(Pointer txt1, Pointer txt2);
-
-		long timestamptz_shift(long t, Pointer interv);
-
-		int timestamp_to_date(long t);
-
-		int timestamptz_to_date(long t);
-
 		Pointer bigintset_in(String str);
 
 		String bigintset_out(Pointer set);
 
-		Pointer bigintspan_expand(Pointer s, long value);
+		Pointer bigintspan_expand(Pointer sp, long value);
 
 		Pointer bigintspan_in(String str);
 
-		String bigintspan_out(Pointer s);
+		String bigintspan_out(Pointer sp);
 
 		Pointer bigintspanset_in(String str);
 
@@ -199,7 +121,7 @@ public class GeneratedFunctions {
 
 		Pointer datespan_in(String str);
 
-		String datespan_out(Pointer s);
+		String datespan_out(Pointer sp);
 
 		Pointer datespanset_in(String str);
 
@@ -209,11 +131,11 @@ public class GeneratedFunctions {
 
 		String floatset_out(Pointer set, int maxdd);
 
-		Pointer floatspan_expand(Pointer s, double value);
+		Pointer floatspan_expand(Pointer sp, double value);
 
 		Pointer floatspan_in(String str);
 
-		String floatspan_out(Pointer s, int maxdd);
+		String floatspan_out(Pointer sp, int maxdd);
 
 		Pointer floatspanset_in(String str);
 
@@ -223,11 +145,11 @@ public class GeneratedFunctions {
 
 		String intset_out(Pointer set);
 
-		Pointer intspan_expand(Pointer s, int value);
+		Pointer intspan_expand(Pointer sp, int value);
 
 		Pointer intspan_in(String str);
 
-		String intspan_out(Pointer s);
+		String intspan_out(Pointer sp);
 
 		Pointer intspanset_in(String str);
 
@@ -241,9 +163,9 @@ public class GeneratedFunctions {
 
 		Pointer set_from_wkb(Pointer wkb, long size);
 
-		String span_as_hexwkb(Pointer s, byte variant, Pointer size_out);
+		String span_as_hexwkb(Pointer sp, byte variant, Pointer size_out);
 
-		Pointer span_as_wkb(Pointer s, byte variant, Pointer size_out);
+		Pointer span_as_wkb(Pointer sp, byte variant, Pointer size_out);
 
 		Pointer span_from_hexwkb(String hexwkb);
 
@@ -267,7 +189,7 @@ public class GeneratedFunctions {
 
 		Pointer tstzspan_in(String str);
 
-		String tstzspan_out(Pointer s);
+		String tstzspan_out(Pointer sp);
 
 		Pointer tstzspanset_in(String str);
 
@@ -291,7 +213,7 @@ public class GeneratedFunctions {
 
 		Pointer set_copy(Pointer s);
 
-		Pointer span_copy(Pointer s);
+		Pointer span_copy(Pointer sp);
 
 		Pointer spanset_copy(Pointer ss);
 
@@ -321,7 +243,7 @@ public class GeneratedFunctions {
 
 		Pointer dateset_to_tstzset(Pointer s);
 
-		Pointer datespan_to_tstzspan(Pointer s);
+		Pointer datespan_to_tstzspan(Pointer sp);
 
 		Pointer datespanset_to_tstzspanset(Pointer ss);
 
@@ -357,7 +279,7 @@ public class GeneratedFunctions {
 
 		Pointer set_to_spanset(Pointer s);
 
-		Pointer span_to_spanset(Pointer s);
+		Pointer span_to_spanset(Pointer sp);
 
 		Pointer text_to_set(Pointer txt);
 
@@ -369,7 +291,7 @@ public class GeneratedFunctions {
 
 		Pointer tstzset_to_dateset(Pointer s);
 
-		Pointer tstzspan_to_datespan(Pointer s);
+		Pointer tstzspan_to_datespan(Pointer sp);
 
 		Pointer tstzspanset_to_datespanset(Pointer ss);
 
@@ -379,7 +301,7 @@ public class GeneratedFunctions {
 
 		boolean bigintset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer bigintset_values(Pointer s);
+		Pointer bigintset_values(Pointer s, Pointer count);
 
 		long bigintspan_lower(Pointer s);
 
@@ -399,7 +321,7 @@ public class GeneratedFunctions {
 
 		boolean dateset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer dateset_values(Pointer s);
+		Pointer dateset_values(Pointer s, Pointer count);
 
 		Pointer datespan_duration(Pointer s);
 
@@ -425,7 +347,7 @@ public class GeneratedFunctions {
 
 		boolean floatset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer floatset_values(Pointer s);
+		Pointer floatset_values(Pointer s, Pointer count);
 
 		double floatspan_lower(Pointer s);
 
@@ -445,7 +367,7 @@ public class GeneratedFunctions {
 
 		boolean intset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer intset_values(Pointer s);
+		Pointer intset_values(Pointer s, Pointer count);
 
 		int intspan_lower(Pointer s);
 
@@ -461,23 +383,23 @@ public class GeneratedFunctions {
 
 		int set_hash(Pointer s);
 
-		int set_hash_extended(Pointer s, int seed);
+		long set_hash_extended(Pointer s, long seed);
 
 		int set_num_values(Pointer s);
 
-		int span_hash(Pointer s);
+		int span_hash(Pointer sp);
 
-		int span_hash_extended(Pointer s, int seed);
+		long span_hash_extended(Pointer sp, long seed);
 
-		boolean span_lower_inc(Pointer s);
+		boolean span_lower_inc(Pointer sp);
 
-		boolean span_upper_inc(Pointer s);
+		boolean span_upper_inc(Pointer sp);
 
 		Pointer spanset_end_span(Pointer ss);
 
 		int spanset_hash(Pointer ss);
 
-		int spanset_hash_extended(Pointer ss, int seed);
+		long spanset_hash_extended(Pointer ss, long seed);
 
 		boolean spanset_lower_inc(Pointer ss);
 
@@ -487,7 +409,7 @@ public class GeneratedFunctions {
 
 		Pointer spanset_span_n(Pointer ss, int i);
 
-		Pointer spanset_spanarr(Pointer ss);
+		Pointer spanset_spanarr(Pointer ss, Pointer count);
 
 		Pointer spanset_start_span(Pointer ss);
 
@@ -499,7 +421,7 @@ public class GeneratedFunctions {
 
 		boolean textset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer textset_values(Pointer s);
+		Pointer textset_values(Pointer s, Pointer count);
 
 		long tstzset_end_value(Pointer s);
 
@@ -507,7 +429,7 @@ public class GeneratedFunctions {
 
 		boolean tstzset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer tstzset_values(Pointer s);
+		Pointer tstzset_values(Pointer s, Pointer count);
 
 		Pointer tstzspan_duration(Pointer s);
 
@@ -533,13 +455,13 @@ public class GeneratedFunctions {
 
 		Pointer bigintset_shift_scale(Pointer s, long shift, long width, boolean hasshift, boolean haswidth);
 
-		Pointer bigintspan_shift_scale(Pointer s, long shift, long width, boolean hasshift, boolean haswidth);
+		Pointer bigintspan_shift_scale(Pointer sp, long shift, long width, boolean hasshift, boolean haswidth);
 
 		Pointer bigintspanset_shift_scale(Pointer ss, long shift, long width, boolean hasshift, boolean haswidth);
 
 		Pointer dateset_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth);
 
-		Pointer datespan_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth);
+		Pointer datespan_shift_scale(Pointer sp, int shift, int width, boolean hasshift, boolean haswidth);
 
 		Pointer datespanset_shift_scale(Pointer ss, int shift, int width, boolean hasshift, boolean haswidth);
 
@@ -553,17 +475,17 @@ public class GeneratedFunctions {
 
 		Pointer floatset_shift_scale(Pointer s, double shift, double width, boolean hasshift, boolean haswidth);
 
-		Pointer floatspan_ceil(Pointer s);
+		Pointer floatspan_ceil(Pointer sp);
 
-		Pointer floatspan_degrees(Pointer s, boolean normalize);
+		Pointer floatspan_degrees(Pointer sp, boolean normalize);
 
-		Pointer floatspan_floor(Pointer s);
+		Pointer floatspan_floor(Pointer sp);
 
-		Pointer floatspan_radians(Pointer s);
+		Pointer floatspan_radians(Pointer sp);
 
-		Pointer floatspan_round(Pointer s, int maxdd);
+		Pointer floatspan_round(Pointer sp, int maxdd);
 
-		Pointer floatspan_shift_scale(Pointer s, double shift, double width, boolean hasshift, boolean haswidth);
+		Pointer floatspan_shift_scale(Pointer sp, double shift, double width, boolean hasshift, boolean haswidth);
 
 		Pointer floatspanset_ceil(Pointer ss);
 
@@ -579,11 +501,11 @@ public class GeneratedFunctions {
 
 		Pointer intset_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth);
 
-		Pointer intspan_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth);
+		Pointer intspan_shift_scale(Pointer sp, int shift, int width, boolean hasshift, boolean haswidth);
 
 		Pointer intspanset_shift_scale(Pointer ss, int shift, int width, boolean hasshift, boolean haswidth);
 
-		Pointer tstzspan_expand(Pointer s, Pointer interv);
+		Pointer tstzspan_expand(Pointer sp, Pointer interv);
 
 		Pointer set_round(Pointer s, int maxdd);
 
@@ -603,9 +525,9 @@ public class GeneratedFunctions {
 
 		Pointer tstzset_tprecision(Pointer s, Pointer duration, long torigin);
 
-		Pointer tstzspan_shift_scale(Pointer s, Pointer shift, Pointer duration);
+		Pointer tstzspan_shift_scale(Pointer sp, Pointer shift, Pointer duration);
 
-		Pointer tstzspan_tprecision(Pointer s, Pointer duration, long torigin);
+		Pointer tstzspan_tprecision(Pointer sp, Pointer duration, long torigin);
 
 		Pointer tstzspanset_shift_scale(Pointer ss, Pointer shift, Pointer duration);
 
@@ -625,19 +547,19 @@ public class GeneratedFunctions {
 
 		boolean set_ne(Pointer s1, Pointer s2);
 
-		int span_cmp(Pointer s1, Pointer s2);
+		int span_cmp(Pointer sp1, Pointer sp2);
 
-		boolean span_eq(Pointer s1, Pointer s2);
+		boolean span_eq(Pointer sp1, Pointer sp2);
 
-		boolean span_ge(Pointer s1, Pointer s2);
+		boolean span_ge(Pointer sp1, Pointer sp2);
 
-		boolean span_gt(Pointer s1, Pointer s2);
+		boolean span_gt(Pointer sp1, Pointer sp2);
 
-		boolean span_le(Pointer s1, Pointer s2);
+		boolean span_le(Pointer sp1, Pointer sp2);
 
-		boolean span_lt(Pointer s1, Pointer s2);
+		boolean span_lt(Pointer sp1, Pointer sp2);
 
-		boolean span_ne(Pointer s1, Pointer s2);
+		boolean span_ne(Pointer sp1, Pointer sp2);
 
 		int spanset_cmp(Pointer ss1, Pointer ss2);
 
@@ -653,31 +575,31 @@ public class GeneratedFunctions {
 
 		boolean spanset_ne(Pointer ss1, Pointer ss2);
 
-		Pointer set_spans(Pointer s);
+		Pointer set_spans(Pointer s, Pointer count);
 
 		Pointer set_split_each_n_spans(Pointer s, int elems_per_span, Pointer count);
 
 		Pointer set_split_n_spans(Pointer s, int span_count, Pointer count);
 
-		Pointer spanset_spans(Pointer ss);
+		Pointer spanset_spans(Pointer ss, Pointer count);
 
 		Pointer spanset_split_each_n_spans(Pointer ss, int elems_per_span, Pointer count);
 
 		Pointer spanset_split_n_spans(Pointer ss, int span_count, Pointer count);
 
-		boolean adjacent_span_bigint(Pointer s, long i);
+		boolean adjacent_span_bigint(Pointer sp, long i);
 
-		boolean adjacent_span_date(Pointer s, int d);
+		boolean adjacent_span_date(Pointer sp, int d);
 
-		boolean adjacent_span_float(Pointer s, double d);
+		boolean adjacent_span_float(Pointer sp, double d);
 
-		boolean adjacent_span_int(Pointer s, int i);
+		boolean adjacent_span_int(Pointer sp, int i);
 
-		boolean adjacent_span_span(Pointer s1, Pointer s2);
+		boolean adjacent_span_span(Pointer sp1, Pointer sp2);
 
-		boolean adjacent_span_spanset(Pointer s, Pointer ss);
+		boolean adjacent_span_spanset(Pointer sp, Pointer ss);
 
-		boolean adjacent_span_timestamptz(Pointer s, long t);
+		boolean adjacent_span_timestamptz(Pointer sp, long t);
 
 		boolean adjacent_spanset_bigint(Pointer ss, long i);
 
@@ -689,41 +611,41 @@ public class GeneratedFunctions {
 
 		boolean adjacent_spanset_timestamptz(Pointer ss, long t);
 
-		boolean adjacent_spanset_span(Pointer ss, Pointer s);
+		boolean adjacent_spanset_span(Pointer ss, Pointer sp);
 
 		boolean adjacent_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean contained_bigint_set(long i, Pointer s);
 
-		boolean contained_bigint_span(long i, Pointer s);
+		boolean contained_bigint_span(long i, Pointer sp);
 
 		boolean contained_bigint_spanset(long i, Pointer ss);
 
 		boolean contained_date_set(int d, Pointer s);
 
-		boolean contained_date_span(int d, Pointer s);
+		boolean contained_date_span(int d, Pointer sp);
 
 		boolean contained_date_spanset(int d, Pointer ss);
 
 		boolean contained_float_set(double d, Pointer s);
 
-		boolean contained_float_span(double d, Pointer s);
+		boolean contained_float_span(double d, Pointer sp);
 
 		boolean contained_float_spanset(double d, Pointer ss);
 
 		boolean contained_int_set(int i, Pointer s);
 
-		boolean contained_int_span(int i, Pointer s);
+		boolean contained_int_span(int i, Pointer sp);
 
 		boolean contained_int_spanset(int i, Pointer ss);
 
 		boolean contained_set_set(Pointer s1, Pointer s2);
 
-		boolean contained_span_span(Pointer s1, Pointer s2);
+		boolean contained_span_span(Pointer sp1, Pointer sp2);
 
-		boolean contained_span_spanset(Pointer s, Pointer ss);
+		boolean contained_span_spanset(Pointer sp, Pointer ss);
 
-		boolean contained_spanset_span(Pointer ss, Pointer s);
+		boolean contained_spanset_span(Pointer ss, Pointer sp);
 
 		boolean contained_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -731,7 +653,7 @@ public class GeneratedFunctions {
 
 		boolean contained_timestamptz_set(long t, Pointer s);
 
-		boolean contained_timestamptz_span(long t, Pointer s);
+		boolean contained_timestamptz_span(long t, Pointer sp);
 
 		boolean contained_timestamptz_spanset(long t, Pointer ss);
 
@@ -749,19 +671,19 @@ public class GeneratedFunctions {
 
 		boolean contains_set_timestamptz(Pointer s, long t);
 
-		boolean contains_span_bigint(Pointer s, long i);
+		boolean contains_span_bigint(Pointer sp, long i);
 
-		boolean contains_span_date(Pointer s, int d);
+		boolean contains_span_date(Pointer sp, int d);
 
-		boolean contains_span_float(Pointer s, double d);
+		boolean contains_span_float(Pointer sp, double d);
 
-		boolean contains_span_int(Pointer s, int i);
+		boolean contains_span_int(Pointer sp, int i);
 
-		boolean contains_span_span(Pointer s1, Pointer s2);
+		boolean contains_span_span(Pointer sp1, Pointer sp2);
 
-		boolean contains_span_spanset(Pointer s, Pointer ss);
+		boolean contains_span_spanset(Pointer sp, Pointer ss);
 
-		boolean contains_span_timestamptz(Pointer s, long t);
+		boolean contains_span_timestamptz(Pointer sp, long t);
 
 		boolean contains_spanset_bigint(Pointer ss, long i);
 
@@ -771,7 +693,7 @@ public class GeneratedFunctions {
 
 		boolean contains_spanset_int(Pointer ss, int i);
 
-		boolean contains_spanset_span(Pointer ss, Pointer s);
+		boolean contains_spanset_span(Pointer ss, Pointer sp);
 
 		boolean contains_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -779,17 +701,17 @@ public class GeneratedFunctions {
 
 		boolean overlaps_set_set(Pointer s1, Pointer s2);
 
-		boolean overlaps_span_span(Pointer s1, Pointer s2);
+		boolean overlaps_span_span(Pointer sp1, Pointer sp2);
 
-		boolean overlaps_span_spanset(Pointer s, Pointer ss);
+		boolean overlaps_span_spanset(Pointer sp, Pointer ss);
 
-		boolean overlaps_spanset_span(Pointer ss, Pointer s);
+		boolean overlaps_spanset_span(Pointer ss, Pointer sp);
 
 		boolean overlaps_spanset_spanset(Pointer ss1, Pointer ss2);
 
 		boolean after_date_set(int d, Pointer s);
 
-		boolean after_date_span(int d, Pointer s);
+		boolean after_date_span(int d, Pointer sp);
 
 		boolean after_date_spanset(int d, Pointer ss);
 
@@ -797,9 +719,9 @@ public class GeneratedFunctions {
 
 		boolean after_set_timestamptz(Pointer s, long t);
 
-		boolean after_span_date(Pointer s, int d);
+		boolean after_span_date(Pointer sp, int d);
 
-		boolean after_span_timestamptz(Pointer s, long t);
+		boolean after_span_timestamptz(Pointer sp, long t);
 
 		boolean after_spanset_date(Pointer ss, int d);
 
@@ -807,13 +729,13 @@ public class GeneratedFunctions {
 
 		boolean after_timestamptz_set(long t, Pointer s);
 
-		boolean after_timestamptz_span(long t, Pointer s);
+		boolean after_timestamptz_span(long t, Pointer sp);
 
 		boolean after_timestamptz_spanset(long t, Pointer ss);
 
 		boolean before_date_set(int d, Pointer s);
 
-		boolean before_date_span(int d, Pointer s);
+		boolean before_date_span(int d, Pointer sp);
 
 		boolean before_date_spanset(int d, Pointer ss);
 
@@ -821,9 +743,9 @@ public class GeneratedFunctions {
 
 		boolean before_set_timestamptz(Pointer s, long t);
 
-		boolean before_span_date(Pointer s, int d);
+		boolean before_span_date(Pointer sp, int d);
 
-		boolean before_span_timestamptz(Pointer s, long t);
+		boolean before_span_timestamptz(Pointer sp, long t);
 
 		boolean before_spanset_date(Pointer ss, int d);
 
@@ -831,25 +753,25 @@ public class GeneratedFunctions {
 
 		boolean before_timestamptz_set(long t, Pointer s);
 
-		boolean before_timestamptz_span(long t, Pointer s);
+		boolean before_timestamptz_span(long t, Pointer sp);
 
 		boolean before_timestamptz_spanset(long t, Pointer ss);
 
 		boolean left_bigint_set(long i, Pointer s);
 
-		boolean left_bigint_span(long i, Pointer s);
+		boolean left_bigint_span(long i, Pointer sp);
 
 		boolean left_bigint_spanset(long i, Pointer ss);
 
 		boolean left_float_set(double d, Pointer s);
 
-		boolean left_float_span(double d, Pointer s);
+		boolean left_float_span(double d, Pointer sp);
 
 		boolean left_float_spanset(double d, Pointer ss);
 
 		boolean left_int_set(int i, Pointer s);
 
-		boolean left_int_span(int i, Pointer s);
+		boolean left_int_span(int i, Pointer sp);
 
 		boolean left_int_spanset(int i, Pointer ss);
 
@@ -863,15 +785,15 @@ public class GeneratedFunctions {
 
 		boolean left_set_text(Pointer s, Pointer txt);
 
-		boolean left_span_bigint(Pointer s, long i);
+		boolean left_span_bigint(Pointer sp, long i);
 
-		boolean left_span_float(Pointer s, double d);
+		boolean left_span_float(Pointer sp, double d);
 
-		boolean left_span_int(Pointer s, int i);
+		boolean left_span_int(Pointer sp, int i);
 
-		boolean left_span_span(Pointer s1, Pointer s2);
+		boolean left_span_span(Pointer sp1, Pointer sp2);
 
-		boolean left_span_spanset(Pointer s, Pointer ss);
+		boolean left_span_spanset(Pointer sp, Pointer ss);
 
 		boolean left_spanset_bigint(Pointer ss, long i);
 
@@ -879,7 +801,7 @@ public class GeneratedFunctions {
 
 		boolean left_spanset_int(Pointer ss, int i);
 
-		boolean left_spanset_span(Pointer ss, Pointer s);
+		boolean left_spanset_span(Pointer ss, Pointer sp);
 
 		boolean left_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -887,7 +809,7 @@ public class GeneratedFunctions {
 
 		boolean overafter_date_set(int d, Pointer s);
 
-		boolean overafter_date_span(int d, Pointer s);
+		boolean overafter_date_span(int d, Pointer sp);
 
 		boolean overafter_date_spanset(int d, Pointer ss);
 
@@ -895,9 +817,9 @@ public class GeneratedFunctions {
 
 		boolean overafter_set_timestamptz(Pointer s, long t);
 
-		boolean overafter_span_date(Pointer s, int d);
+		boolean overafter_span_date(Pointer sp, int d);
 
-		boolean overafter_span_timestamptz(Pointer s, long t);
+		boolean overafter_span_timestamptz(Pointer sp, long t);
 
 		boolean overafter_spanset_date(Pointer ss, int d);
 
@@ -905,13 +827,13 @@ public class GeneratedFunctions {
 
 		boolean overafter_timestamptz_set(long t, Pointer s);
 
-		boolean overafter_timestamptz_span(long t, Pointer s);
+		boolean overafter_timestamptz_span(long t, Pointer sp);
 
 		boolean overafter_timestamptz_spanset(long t, Pointer ss);
 
 		boolean overbefore_date_set(int d, Pointer s);
 
-		boolean overbefore_date_span(int d, Pointer s);
+		boolean overbefore_date_span(int d, Pointer sp);
 
 		boolean overbefore_date_spanset(int d, Pointer ss);
 
@@ -919,9 +841,9 @@ public class GeneratedFunctions {
 
 		boolean overbefore_set_timestamptz(Pointer s, long t);
 
-		boolean overbefore_span_date(Pointer s, int d);
+		boolean overbefore_span_date(Pointer sp, int d);
 
-		boolean overbefore_span_timestamptz(Pointer s, long t);
+		boolean overbefore_span_timestamptz(Pointer sp, long t);
 
 		boolean overbefore_spanset_date(Pointer ss, int d);
 
@@ -929,25 +851,25 @@ public class GeneratedFunctions {
 
 		boolean overbefore_timestamptz_set(long t, Pointer s);
 
-		boolean overbefore_timestamptz_span(long t, Pointer s);
+		boolean overbefore_timestamptz_span(long t, Pointer sp);
 
 		boolean overbefore_timestamptz_spanset(long t, Pointer ss);
 
 		boolean overleft_bigint_set(long i, Pointer s);
 
-		boolean overleft_bigint_span(long i, Pointer s);
+		boolean overleft_bigint_span(long i, Pointer sp);
 
 		boolean overleft_bigint_spanset(long i, Pointer ss);
 
 		boolean overleft_float_set(double d, Pointer s);
 
-		boolean overleft_float_span(double d, Pointer s);
+		boolean overleft_float_span(double d, Pointer sp);
 
 		boolean overleft_float_spanset(double d, Pointer ss);
 
 		boolean overleft_int_set(int i, Pointer s);
 
-		boolean overleft_int_span(int i, Pointer s);
+		boolean overleft_int_span(int i, Pointer sp);
 
 		boolean overleft_int_spanset(int i, Pointer ss);
 
@@ -961,15 +883,15 @@ public class GeneratedFunctions {
 
 		boolean overleft_set_text(Pointer s, Pointer txt);
 
-		boolean overleft_span_bigint(Pointer s, long i);
+		boolean overleft_span_bigint(Pointer sp, long i);
 
-		boolean overleft_span_float(Pointer s, double d);
+		boolean overleft_span_float(Pointer sp, double d);
 
-		boolean overleft_span_int(Pointer s, int i);
+		boolean overleft_span_int(Pointer sp, int i);
 
-		boolean overleft_span_span(Pointer s1, Pointer s2);
+		boolean overleft_span_span(Pointer sp1, Pointer sp2);
 
-		boolean overleft_span_spanset(Pointer s, Pointer ss);
+		boolean overleft_span_spanset(Pointer sp, Pointer ss);
 
 		boolean overleft_spanset_bigint(Pointer ss, long i);
 
@@ -977,7 +899,7 @@ public class GeneratedFunctions {
 
 		boolean overleft_spanset_int(Pointer ss, int i);
 
-		boolean overleft_spanset_span(Pointer ss, Pointer s);
+		boolean overleft_spanset_span(Pointer ss, Pointer sp);
 
 		boolean overleft_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -985,19 +907,19 @@ public class GeneratedFunctions {
 
 		boolean overright_bigint_set(long i, Pointer s);
 
-		boolean overright_bigint_span(long i, Pointer s);
+		boolean overright_bigint_span(long i, Pointer sp);
 
 		boolean overright_bigint_spanset(long i, Pointer ss);
 
 		boolean overright_float_set(double d, Pointer s);
 
-		boolean overright_float_span(double d, Pointer s);
+		boolean overright_float_span(double d, Pointer sp);
 
 		boolean overright_float_spanset(double d, Pointer ss);
 
 		boolean overright_int_set(int i, Pointer s);
 
-		boolean overright_int_span(int i, Pointer s);
+		boolean overright_int_span(int i, Pointer sp);
 
 		boolean overright_int_spanset(int i, Pointer ss);
 
@@ -1011,15 +933,15 @@ public class GeneratedFunctions {
 
 		boolean overright_set_text(Pointer s, Pointer txt);
 
-		boolean overright_span_bigint(Pointer s, long i);
+		boolean overright_span_bigint(Pointer sp, long i);
 
-		boolean overright_span_float(Pointer s, double d);
+		boolean overright_span_float(Pointer sp, double d);
 
-		boolean overright_span_int(Pointer s, int i);
+		boolean overright_span_int(Pointer sp, int i);
 
-		boolean overright_span_span(Pointer s1, Pointer s2);
+		boolean overright_span_span(Pointer sp1, Pointer sp2);
 
-		boolean overright_span_spanset(Pointer s, Pointer ss);
+		boolean overright_span_spanset(Pointer sp, Pointer ss);
 
 		boolean overright_spanset_bigint(Pointer ss, long i);
 
@@ -1027,7 +949,7 @@ public class GeneratedFunctions {
 
 		boolean overright_spanset_int(Pointer ss, int i);
 
-		boolean overright_spanset_span(Pointer ss, Pointer s);
+		boolean overright_spanset_span(Pointer ss, Pointer sp);
 
 		boolean overright_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -1035,19 +957,19 @@ public class GeneratedFunctions {
 
 		boolean right_bigint_set(long i, Pointer s);
 
-		boolean right_bigint_span(long i, Pointer s);
+		boolean right_bigint_span(long i, Pointer sp);
 
 		boolean right_bigint_spanset(long i, Pointer ss);
 
 		boolean right_float_set(double d, Pointer s);
 
-		boolean right_float_span(double d, Pointer s);
+		boolean right_float_span(double d, Pointer sp);
 
 		boolean right_float_spanset(double d, Pointer ss);
 
 		boolean right_int_set(int i, Pointer s);
 
-		boolean right_int_span(int i, Pointer s);
+		boolean right_int_span(int i, Pointer sp);
 
 		boolean right_int_spanset(int i, Pointer ss);
 
@@ -1061,15 +983,15 @@ public class GeneratedFunctions {
 
 		boolean right_set_text(Pointer s, Pointer txt);
 
-		boolean right_span_bigint(Pointer s, long i);
+		boolean right_span_bigint(Pointer sp, long i);
 
-		boolean right_span_float(Pointer s, double d);
+		boolean right_span_float(Pointer sp, double d);
 
-		boolean right_span_int(Pointer s, int i);
+		boolean right_span_int(Pointer sp, int i);
 
-		boolean right_span_span(Pointer s1, Pointer s2);
+		boolean right_span_span(Pointer sp1, Pointer sp2);
 
-		boolean right_span_spanset(Pointer s, Pointer ss);
+		boolean right_span_spanset(Pointer sp, Pointer ss);
 
 		boolean right_spanset_bigint(Pointer ss, long i);
 
@@ -1077,7 +999,7 @@ public class GeneratedFunctions {
 
 		boolean right_spanset_int(Pointer ss, int i);
 
-		boolean right_spanset_span(Pointer ss, Pointer s);
+		boolean right_spanset_span(Pointer ss, Pointer sp);
 
 		boolean right_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -1105,19 +1027,19 @@ public class GeneratedFunctions {
 
 		Pointer intersection_set_timestamptz(Pointer s, long t);
 
-		Pointer intersection_span_bigint(Pointer s, long i);
+		Pointer intersection_span_bigint(Pointer sp, long i);
 
-		Pointer intersection_span_date(Pointer s, int d);
+		Pointer intersection_span_date(Pointer sp, int d);
 
-		Pointer intersection_span_float(Pointer s, double d);
+		Pointer intersection_span_float(Pointer sp, double d);
 
-		Pointer intersection_span_int(Pointer s, int i);
+		Pointer intersection_span_int(Pointer sp, int i);
 
-		Pointer intersection_span_span(Pointer s1, Pointer s2);
+		Pointer intersection_span_span(Pointer sp1, Pointer sp2);
 
-		Pointer intersection_span_spanset(Pointer s, Pointer ss);
+		Pointer intersection_span_spanset(Pointer sp, Pointer ss);
 
-		Pointer intersection_span_timestamptz(Pointer s, long t);
+		Pointer intersection_span_timestamptz(Pointer sp, long t);
 
 		Pointer intersection_spanset_bigint(Pointer ss, long i);
 
@@ -1127,7 +1049,7 @@ public class GeneratedFunctions {
 
 		Pointer intersection_spanset_int(Pointer ss, int i);
 
-		Pointer intersection_spanset_span(Pointer ss, Pointer s);
+		Pointer intersection_spanset_span(Pointer ss, Pointer sp);
 
 		Pointer intersection_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -1139,25 +1061,25 @@ public class GeneratedFunctions {
 
 		Pointer minus_bigint_set(long i, Pointer s);
 
-		Pointer minus_bigint_span(long i, Pointer s);
+		Pointer minus_bigint_span(long i, Pointer sp);
 
 		Pointer minus_bigint_spanset(long i, Pointer ss);
 
 		Pointer minus_date_set(int d, Pointer s);
 
-		Pointer minus_date_span(int d, Pointer s);
+		Pointer minus_date_span(int d, Pointer sp);
 
 		Pointer minus_date_spanset(int d, Pointer ss);
 
 		Pointer minus_float_set(double d, Pointer s);
 
-		Pointer minus_float_span(double d, Pointer s);
+		Pointer minus_float_span(double d, Pointer sp);
 
 		Pointer minus_float_spanset(double d, Pointer ss);
 
 		Pointer minus_int_set(int i, Pointer s);
 
-		Pointer minus_int_span(int i, Pointer s);
+		Pointer minus_int_span(int i, Pointer sp);
 
 		Pointer minus_int_spanset(int i, Pointer ss);
 
@@ -1175,19 +1097,19 @@ public class GeneratedFunctions {
 
 		Pointer minus_set_timestamptz(Pointer s, long t);
 
-		Pointer minus_span_bigint(Pointer s, long i);
+		Pointer minus_span_bigint(Pointer sp, long i);
 
-		Pointer minus_span_date(Pointer s, int d);
+		Pointer minus_span_date(Pointer sp, int d);
 
-		Pointer minus_span_float(Pointer s, double d);
+		Pointer minus_span_float(Pointer sp, double d);
 
-		Pointer minus_span_int(Pointer s, int i);
+		Pointer minus_span_int(Pointer sp, int i);
 
-		Pointer minus_span_span(Pointer s1, Pointer s2);
+		Pointer minus_span_span(Pointer sp1, Pointer sp2);
 
-		Pointer minus_span_spanset(Pointer s, Pointer ss);
+		Pointer minus_span_spanset(Pointer sp, Pointer ss);
 
-		Pointer minus_span_timestamptz(Pointer s, long t);
+		Pointer minus_span_timestamptz(Pointer sp, long t);
 
 		Pointer minus_spanset_bigint(Pointer ss, long i);
 
@@ -1197,7 +1119,7 @@ public class GeneratedFunctions {
 
 		Pointer minus_spanset_int(Pointer ss, int i);
 
-		Pointer minus_spanset_span(Pointer ss, Pointer s);
+		Pointer minus_spanset_span(Pointer ss, Pointer sp);
 
 		Pointer minus_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -1207,31 +1129,31 @@ public class GeneratedFunctions {
 
 		Pointer minus_timestamptz_set(long t, Pointer s);
 
-		Pointer minus_timestamptz_span(long t, Pointer s);
+		Pointer minus_timestamptz_span(long t, Pointer sp);
 
 		Pointer minus_timestamptz_spanset(long t, Pointer ss);
 
 		Pointer union_bigint_set(long i, Pointer s);
 
-		Pointer union_bigint_span(Pointer s, long i);
+		Pointer union_bigint_span(Pointer sp, long i);
 
 		Pointer union_bigint_spanset(long i, Pointer ss);
 
 		Pointer union_date_set(int d, Pointer s);
 
-		Pointer union_date_span(Pointer s, int d);
+		Pointer union_date_span(Pointer sp, int d);
 
 		Pointer union_date_spanset(int d, Pointer ss);
 
 		Pointer union_float_set(double d, Pointer s);
 
-		Pointer union_float_span(Pointer s, double d);
+		Pointer union_float_span(Pointer sp, double d);
 
 		Pointer union_float_spanset(double d, Pointer ss);
 
 		Pointer union_int_set(int i, Pointer s);
 
-		Pointer union_int_span(int i, Pointer s);
+		Pointer union_int_span(int i, Pointer sp);
 
 		Pointer union_int_spanset(int i, Pointer ss);
 
@@ -1259,6 +1181,8 @@ public class GeneratedFunctions {
 
 		Pointer union_span_span(Pointer s1, Pointer s2);
 
+		Pointer super_union_span_span(Pointer s1, Pointer s2, boolean strict);
+
 		Pointer union_span_spanset(Pointer s, Pointer ss);
 
 		Pointer union_span_timestamptz(Pointer s, long t);
@@ -1271,7 +1195,7 @@ public class GeneratedFunctions {
 
 		Pointer union_spanset_int(Pointer ss, int i);
 
-		Pointer union_spanset_span(Pointer ss, Pointer s);
+		Pointer union_spanset_span(Pointer ss, Pointer sp);
 
 		Pointer union_spanset_spanset(Pointer ss1, Pointer ss2);
 
@@ -1281,39 +1205,39 @@ public class GeneratedFunctions {
 
 		Pointer union_timestamptz_set(long t, Pointer s);
 
-		Pointer union_timestamptz_span(long t, Pointer s);
+		Pointer union_timestamptz_span(long t, Pointer sp);
 
 		Pointer union_timestamptz_spanset(long t, Pointer ss);
 
 		long distance_bigintset_bigintset(Pointer s1, Pointer s2);
 
-		long distance_bigintspan_bigintspan(Pointer s1, Pointer s2);
+		long distance_bigintspan_bigintspan(Pointer sp1, Pointer sp2);
 
-		long distance_bigintspanset_bigintspan(Pointer ss, Pointer s);
+		long distance_bigintspanset_bigintspan(Pointer ss, Pointer sp);
 
 		long distance_bigintspanset_bigintspanset(Pointer ss1, Pointer ss2);
 
 		int distance_dateset_dateset(Pointer s1, Pointer s2);
 
-		int distance_datespan_datespan(Pointer s1, Pointer s2);
+		int distance_datespan_datespan(Pointer sp1, Pointer sp2);
 
-		int distance_datespanset_datespan(Pointer ss, Pointer s);
+		int distance_datespanset_datespan(Pointer ss, Pointer sp);
 
 		int distance_datespanset_datespanset(Pointer ss1, Pointer ss2);
 
 		double distance_floatset_floatset(Pointer s1, Pointer s2);
 
-		double distance_floatspan_floatspan(Pointer s1, Pointer s2);
+		double distance_floatspan_floatspan(Pointer sp1, Pointer sp2);
 
-		double distance_floatspanset_floatspan(Pointer ss, Pointer s);
+		double distance_floatspanset_floatspan(Pointer ss, Pointer sp);
 
 		double distance_floatspanset_floatspanset(Pointer ss1, Pointer ss2);
 
 		int distance_intset_intset(Pointer s1, Pointer s2);
 
-		int distance_intspan_intspan(Pointer s1, Pointer s2);
+		int distance_intspan_intspan(Pointer sp1, Pointer sp2);
 
-		int distance_intspanset_intspan(Pointer ss, Pointer s);
+		int distance_intspanset_intspan(Pointer ss, Pointer sp);
 
 		int distance_intspanset_intspanset(Pointer ss1, Pointer ss2);
 
@@ -1327,15 +1251,15 @@ public class GeneratedFunctions {
 
 		double distance_set_timestamptz(Pointer s, long t);
 
-		long distance_span_bigint(Pointer s, long i);
+		long distance_span_bigint(Pointer sp, long i);
 
-		int distance_span_date(Pointer s, int d);
+		int distance_span_date(Pointer sp, int d);
 
-		double distance_span_float(Pointer s, double d);
+		double distance_span_float(Pointer sp, double d);
 
-		int distance_span_int(Pointer s, int i);
+		int distance_span_int(Pointer sp, int i);
 
-		double distance_span_timestamptz(Pointer s, long t);
+		double distance_span_timestamptz(Pointer sp, long t);
 
 		long distance_spanset_bigint(Pointer ss, long i);
 
@@ -1349,9 +1273,9 @@ public class GeneratedFunctions {
 
 		double distance_tstzset_tstzset(Pointer s1, Pointer s2);
 
-		double distance_tstzspan_tstzspan(Pointer s1, Pointer s2);
+		double distance_tstzspan_tstzspan(Pointer sp1, Pointer sp2);
 
-		double distance_tstzspanset_tstzspan(Pointer ss, Pointer s);
+		double distance_tstzspanset_tstzspan(Pointer ss, Pointer sp);
 
 		double distance_tstzspanset_tstzspanset(Pointer ss1, Pointer ss2);
 
@@ -1377,9 +1301,9 @@ public class GeneratedFunctions {
 
 		Pointer set_union_transfn(Pointer state, Pointer s);
 
-		Pointer span_extent_transfn(Pointer state, Pointer s);
+		Pointer span_extent_transfn(Pointer state, Pointer sp);
 
-		Pointer span_union_transfn(Pointer state, Pointer s);
+		Pointer span_union_transfn(Pointer state, Pointer sp);
 
 		Pointer spanset_extent_transfn(Pointer state, Pointer ss);
 
@@ -1395,31 +1319,31 @@ public class GeneratedFunctions {
 
 		long bigint_get_bin(long value, long vsize, long vorigin);
 
-		Pointer bigintspan_bins(Pointer s, long vsize, long vorigin, Pointer count);
+		Pointer bigintspan_bins(Pointer sp, long vsize, long vorigin, Pointer count);
 
 		Pointer bigintspanset_bins(Pointer ss, long vsize, long vorigin, Pointer count);
 
 		int date_get_bin(int d, Pointer duration, int torigin);
 
-		Pointer datespan_bins(Pointer s, Pointer duration, int torigin, Pointer count);
+		Pointer datespan_bins(Pointer sp, Pointer duration, int torigin, Pointer count);
 
 		Pointer datespanset_bins(Pointer ss, Pointer duration, int torigin, Pointer count);
 
 		double float_get_bin(double value, double vsize, double vorigin);
 
-		Pointer floatspan_bins(Pointer s, double vsize, double vorigin, Pointer count);
+		Pointer floatspan_bins(Pointer sp, double vsize, double vorigin, Pointer count);
 
 		Pointer floatspanset_bins(Pointer ss, double vsize, double vorigin, Pointer count);
 
 		int int_get_bin(int value, int vsize, int vorigin);
 
-		Pointer intspan_bins(Pointer s, int vsize, int vorigin, Pointer count);
+		Pointer intspan_bins(Pointer sp, int vsize, int vorigin, Pointer count);
 
 		Pointer intspanset_bins(Pointer ss, int vsize, int vorigin, Pointer count);
 
 		long timestamptz_get_bin(long t, Pointer duration, long torigin);
 
-		Pointer tstzspan_bins(Pointer s, Pointer duration, long origin, Pointer count);
+		Pointer tstzspan_bins(Pointer sp, Pointer duration, long origin, Pointer count);
 
 		Pointer tstzspanset_bins(Pointer ss, Pointer duration, long torigin, Pointer count);
 
@@ -1437,27 +1361,33 @@ public class GeneratedFunctions {
 
 		Pointer float_timestamptz_to_tbox(double d, long t);
 
-		Pointer float_tstzspan_to_tbox(double d, Pointer s);
+		Pointer float_tstzspan_to_tbox(double d, Pointer sp);
 
 		Pointer int_timestamptz_to_tbox(int i, long t);
 
+		Pointer bigint_timestamptz_to_tbox(long i, long t);
+
 		Pointer int_tstzspan_to_tbox(int i, Pointer s);
 
-		Pointer numspan_tstzspan_to_tbox(Pointer span, Pointer s);
+		Pointer bigint_tstzspan_to_tbox(long i, Pointer s);
+
+		Pointer numspan_tstzspan_to_tbox(Pointer s, Pointer p);
 
 		Pointer numspan_timestamptz_to_tbox(Pointer span, long t);
 
 		Pointer tbox_copy(Pointer box);
 
-		Pointer tbox_make(Pointer s, Pointer p);
+		Pointer tbox_make(Pointer sp1, Pointer sp2);
 
 		Pointer float_to_tbox(double d);
 
 		Pointer int_to_tbox(int i);
 
+		Pointer bigint_to_tbox(long i);
+
 		Pointer set_to_tbox(Pointer s);
 
-		Pointer span_to_tbox(Pointer s);
+		Pointer span_to_tbox(Pointer sp);
 
 		Pointer spanset_to_tbox(Pointer ss);
 
@@ -1473,7 +1403,7 @@ public class GeneratedFunctions {
 
 		int tbox_hash(Pointer box);
 
-		int tbox_hash_extended(Pointer box, int seed);
+		long tbox_hash_extended(Pointer box, long seed);
 
 		boolean tbox_hast(Pointer box);
 
@@ -1501,7 +1431,11 @@ public class GeneratedFunctions {
 
 		boolean tboxint_xmax(Pointer box, Pointer result);
 
+		boolean tboxbigint_xmax(Pointer box, Pointer result);
+
 		boolean tboxint_xmin(Pointer box, Pointer result);
+
+		boolean tboxbigint_xmin(Pointer box, Pointer result);
 
 		Pointer tbigintbox_expand(Pointer box, long i);
 
@@ -1511,15 +1445,15 @@ public class GeneratedFunctions {
 
 		Pointer tbox_round(Pointer box, int maxdd);
 
+		Pointer tfloatbox_shift_scale(Pointer box, double shift, double width, boolean hasshift, boolean haswidth);
+
+		Pointer tintbox_shift_scale(Pointer box, int shift, int width, boolean hasshift, boolean haswidth);
+
 		Pointer tbox_shift_scale_time(Pointer box, Pointer shift, Pointer duration);
 
 		Pointer tfloatbox_expand(Pointer box, double d);
 
-		Pointer tfloatbox_shift_scale(Pointer box, double shift, double width, boolean hasshift, boolean haswidth);
-
 		Pointer tintbox_expand(Pointer box, int i);
-
-		Pointer tintbox_shift_scale(Pointer box, int shift, int width, boolean hasshift, boolean haswidth);
 
 		Pointer union_tbox_tbox(Pointer box1, Pointer box2, boolean strict);
 
@@ -1587,6 +1521,42 @@ public class GeneratedFunctions {
 
 		Pointer temporal_from_wkb(Pointer wkb, long size);
 
+		boolean meos_temporal_to_arrow(Pointer temp, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_temporal_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_temporal_arrow_roundtrip(Pointer temp);
+
+		boolean meos_set_to_arrow(Pointer s, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_set_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_set_arrow_roundtrip(Pointer s);
+
+		boolean meos_span_to_arrow(Pointer s, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_span_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_span_arrow_roundtrip(Pointer s);
+
+		boolean meos_spanset_to_arrow(Pointer ss, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_spanset_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_spanset_arrow_roundtrip(Pointer ss);
+
+		boolean meos_tbox_to_arrow(Pointer box, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_tbox_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_tbox_arrow_roundtrip(Pointer box);
+
+		boolean meos_stbox_to_arrow(Pointer box, Pointer out_schema, Pointer out_array);
+
+		Pointer meos_stbox_from_arrow(Pointer schema, Pointer array);
+
+		Pointer meos_stbox_arrow_roundtrip(Pointer box);
+
 		Pointer tfloat_from_mfjson(String str);
 
 		Pointer tfloat_in(String str);
@@ -1621,7 +1591,7 @@ public class GeneratedFunctions {
 
 		Pointer tboolseq_from_base_tstzset(boolean b, Pointer s);
 
-		Pointer tboolseq_from_base_tstzspan(boolean b, Pointer s);
+		Pointer tboolseq_from_base_tstzspan(boolean b, Pointer sp);
 
 		Pointer tboolseqset_from_base_tstzspanset(boolean b, Pointer ss);
 
@@ -1633,7 +1603,7 @@ public class GeneratedFunctions {
 
 		Pointer tfloatseq_from_base_tstzset(double d, Pointer s);
 
-		Pointer tfloatseq_from_base_tstzspan(double d, Pointer s, int interp);
+		Pointer tfloatseq_from_base_tstzspan(double d, Pointer sp, int interp);
 
 		Pointer tfloatseqset_from_base_tstzspanset(double d, Pointer ss, int interp);
 
@@ -1659,7 +1629,7 @@ public class GeneratedFunctions {
 
 		Pointer ttextseq_from_base_tstzset(Pointer txt, Pointer s);
 
-		Pointer ttextseq_from_base_tstzspan(Pointer txt, Pointer s);
+		Pointer ttextseq_from_base_tstzspan(Pointer txt, Pointer sp);
 
 		Pointer ttextseqset_from_base_tstzspanset(Pointer txt, Pointer ss);
 
@@ -1675,9 +1645,9 @@ public class GeneratedFunctions {
 
 		Pointer tfloat_to_tint(Pointer temp);
 
-		Pointer tint_to_tbigint(Pointer temp);
-
 		Pointer tint_to_tfloat(Pointer temp);
+
+		Pointer tint_to_tbigint(Pointer temp);
 
 		Pointer tnumber_to_span(Pointer temp);
 
@@ -1691,8 +1661,6 @@ public class GeneratedFunctions {
 
 		long tbigint_start_value(Pointer temp);
 
-		boolean tbigint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
-
 		boolean tbigint_value_n(Pointer temp, long n, Pointer result);
 
 		Pointer tbigint_values(Pointer temp, Pointer count);
@@ -1701,7 +1669,7 @@ public class GeneratedFunctions {
 
 		boolean tbool_start_value(Pointer temp);
 
-		boolean tbool_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tbool_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tbool_value_n(Pointer temp, int n, Pointer result);
 
@@ -1720,6 +1688,8 @@ public class GeneratedFunctions {
 		Pointer temporal_instant_n(Pointer temp, int n);
 
 		Pointer temporal_instants(Pointer temp, Pointer count);
+
+		Pointer temporal_instants_p(Pointer temp, Pointer count);
 
 		String temporal_interp(Pointer temp);
 
@@ -1753,6 +1723,8 @@ public class GeneratedFunctions {
 
 		String temporal_subtype(Pointer temp);
 
+		String temporal_basetype_name(Pointer temp);
+
 		Pointer temporal_time(Pointer temp);
 
 		Pointer temporal_timestamps(Pointer temp, Pointer count);
@@ -1760,8 +1732,6 @@ public class GeneratedFunctions {
 		boolean temporal_timestamptz_n(Pointer temp, int n, Pointer result);
 
 		boolean temporal_upper_inc(Pointer temp);
-
-		double tfloat_avg_value(Pointer temp);
 
 		double tfloat_end_value(Pointer temp);
 
@@ -1771,7 +1741,7 @@ public class GeneratedFunctions {
 
 		double tfloat_start_value(Pointer temp);
 
-		boolean tfloat_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tfloat_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tfloat_value_n(Pointer temp, int n, Pointer result);
 
@@ -1785,7 +1755,7 @@ public class GeneratedFunctions {
 
 		int tint_start_value(Pointer temp);
 
-		boolean tint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tint_value_n(Pointer temp, int n, Pointer result);
 
@@ -1807,7 +1777,7 @@ public class GeneratedFunctions {
 
 		Pointer ttext_start_value(Pointer temp);
 
-		boolean ttext_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean ttext_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean ttext_value_n(Pointer temp, int n, Pointer result);
 
@@ -1867,7 +1837,7 @@ public class GeneratedFunctions {
 
 		Pointer temporal_delete_tstzset(Pointer temp, Pointer s, boolean connect);
 
-		Pointer temporal_delete_tstzspan(Pointer temp, Pointer s, boolean connect);
+		Pointer temporal_delete_tstzspan(Pointer temp, Pointer sp, boolean connect);
 
 		Pointer temporal_delete_tstzspanset(Pointer temp, Pointer ss, boolean connect);
 
@@ -1878,10 +1848,6 @@ public class GeneratedFunctions {
 		Pointer temporal_merge_array(Pointer temparr, int count);
 
 		Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect);
-
-		Pointer tbigint_at_value(Pointer temp, long i);
-
-		Pointer tbigint_minus_value(Pointer temp, long i);
 
 		Pointer tbool_at_value(Pointer temp, boolean b);
 
@@ -1897,7 +1863,7 @@ public class GeneratedFunctions {
 
 		Pointer temporal_at_tstzset(Pointer temp, Pointer s);
 
-		Pointer temporal_at_tstzspan(Pointer temp, Pointer s);
+		Pointer temporal_at_tstzspan(Pointer temp, Pointer sp);
 
 		Pointer temporal_at_tstzspanset(Pointer temp, Pointer ss);
 
@@ -1913,7 +1879,7 @@ public class GeneratedFunctions {
 
 		Pointer temporal_minus_tstzset(Pointer temp, Pointer s);
 
-		Pointer temporal_minus_tstzspan(Pointer temp, Pointer s);
+		Pointer temporal_minus_tstzspan(Pointer temp, Pointer sp);
 
 		Pointer temporal_minus_tstzspanset(Pointer temp, Pointer ss);
 
@@ -1927,13 +1893,13 @@ public class GeneratedFunctions {
 
 		Pointer tint_minus_value(Pointer temp, int i);
 
-		Pointer tnumber_at_span(Pointer temp, Pointer span);
+		Pointer tnumber_at_span(Pointer temp, Pointer sp);
 
 		Pointer tnumber_at_spanset(Pointer temp, Pointer ss);
 
 		Pointer tnumber_at_tbox(Pointer temp, Pointer box);
 
-		Pointer tnumber_minus_span(Pointer temp, Pointer span);
+		Pointer tnumber_minus_span(Pointer temp, Pointer sp);
 
 		Pointer tnumber_minus_spanset(Pointer temp, Pointer ss);
 
@@ -2047,19 +2013,15 @@ public class GeneratedFunctions {
 
 		int always_lt_tint_int(Pointer temp, int i);
 
+		int always_lt_tbigint_bigint(Pointer temp, long i);
+
 		int always_lt_ttext_text(Pointer temp, Pointer txt);
-
-	}
-
-	public interface MeosLibraryPartB {
 
 		int always_ne_bool_tbool(boolean b, Pointer temp);
 
 		int always_ne_float_tfloat(double d, Pointer temp);
 
 		int always_ne_int_tint(int i, Pointer temp);
-
-		int always_lt_tbigint_bigint(Pointer temp, long i);
 
 		int always_ne_bigint_tbigint(long i, Pointer temp);
 
@@ -2239,6 +2201,10 @@ public class GeneratedFunctions {
 
 		Pointer tgt_ttext_text(Pointer temp, Pointer txt);
 
+	}
+
+	public interface MeosLibraryPartB {
+
 		Pointer tle_float_tfloat(double d, Pointer temp);
 
 		Pointer tle_int_tint(int i, Pointer temp);
@@ -2297,89 +2263,89 @@ public class GeneratedFunctions {
 
 		Pointer tnumber_tboxes(Pointer temp, Pointer count);
 
-		boolean adjacent_numspan_tnumber(Pointer s, Pointer temp);
+		boolean adjacent_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean adjacent_tbox_tnumber(Pointer box, Pointer temp);
 
 		boolean adjacent_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean adjacent_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean adjacent_temporal_tstzspan(Pointer temp, Pointer sp);
 
-		boolean adjacent_tnumber_numspan(Pointer temp, Pointer s);
+		boolean adjacent_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean adjacent_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean adjacent_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean adjacent_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean adjacent_tstzspan_temporal(Pointer sp, Pointer temp);
 
-		boolean contained_numspan_tnumber(Pointer s, Pointer temp);
+		boolean contained_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean contained_tbox_tnumber(Pointer box, Pointer temp);
 
 		boolean contained_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean contained_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean contained_temporal_tstzspan(Pointer temp, Pointer sp);
 
-		boolean contained_tnumber_numspan(Pointer temp, Pointer s);
+		boolean contained_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean contained_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean contained_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean contained_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean contained_tstzspan_temporal(Pointer sp, Pointer temp);
 
-		boolean contains_numspan_tnumber(Pointer s, Pointer temp);
+		boolean contains_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean contains_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean contains_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean contains_temporal_tstzspan(Pointer temp, Pointer sp);
 
 		boolean contains_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean contains_tnumber_numspan(Pointer temp, Pointer s);
+		boolean contains_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean contains_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean contains_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean contains_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean contains_tstzspan_temporal(Pointer sp, Pointer temp);
 
-		boolean overlaps_numspan_tnumber(Pointer s, Pointer temp);
+		boolean overlaps_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean overlaps_tbox_tnumber(Pointer box, Pointer temp);
 
 		boolean overlaps_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean overlaps_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean overlaps_temporal_tstzspan(Pointer temp, Pointer sp);
 
-		boolean overlaps_tnumber_numspan(Pointer temp, Pointer s);
+		boolean overlaps_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean overlaps_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean overlaps_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean overlaps_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean overlaps_tstzspan_temporal(Pointer sp, Pointer temp);
 
-		boolean same_numspan_tnumber(Pointer s, Pointer temp);
+		boolean same_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean same_tbox_tnumber(Pointer box, Pointer temp);
 
 		boolean same_temporal_temporal(Pointer temp1, Pointer temp2);
 
-		boolean same_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean same_temporal_tstzspan(Pointer temp, Pointer sp);
 
-		boolean same_tnumber_numspan(Pointer temp, Pointer s);
+		boolean same_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean same_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean same_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean same_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean same_tstzspan_temporal(Pointer sp, Pointer temp);
 
 		boolean after_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean after_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean after_temporal_tstzspan(Pointer temp, Pointer sp);
 
 		boolean after_temporal_temporal(Pointer temp1, Pointer temp2);
 
@@ -2387,11 +2353,11 @@ public class GeneratedFunctions {
 
 		boolean after_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean after_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean after_tstzspan_temporal(Pointer sp, Pointer temp);
 
 		boolean before_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean before_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean before_temporal_tstzspan(Pointer temp, Pointer sp);
 
 		boolean before_temporal_temporal(Pointer temp1, Pointer temp2);
 
@@ -2399,13 +2365,13 @@ public class GeneratedFunctions {
 
 		boolean before_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean before_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean before_tstzspan_temporal(Pointer sp, Pointer temp);
 
 		boolean left_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean left_numspan_tnumber(Pointer s, Pointer temp);
+		boolean left_numspan_tnumber(Pointer sp, Pointer temp);
 
-		boolean left_tnumber_numspan(Pointer temp, Pointer s);
+		boolean left_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean left_tnumber_tbox(Pointer temp, Pointer box);
 
@@ -2413,7 +2379,7 @@ public class GeneratedFunctions {
 
 		boolean overafter_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean overafter_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean overafter_temporal_tstzspan(Pointer temp, Pointer sp);
 
 		boolean overafter_temporal_temporal(Pointer temp1, Pointer temp2);
 
@@ -2421,11 +2387,11 @@ public class GeneratedFunctions {
 
 		boolean overafter_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean overafter_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean overafter_tstzspan_temporal(Pointer sp, Pointer temp);
 
 		boolean overbefore_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean overbefore_temporal_tstzspan(Pointer temp, Pointer s);
+		boolean overbefore_temporal_tstzspan(Pointer temp, Pointer sp);
 
 		boolean overbefore_temporal_temporal(Pointer temp1, Pointer temp2);
 
@@ -2433,33 +2399,33 @@ public class GeneratedFunctions {
 
 		boolean overbefore_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean overbefore_tstzspan_temporal(Pointer s, Pointer temp);
+		boolean overbefore_tstzspan_temporal(Pointer sp, Pointer temp);
 
-		boolean overleft_numspan_tnumber(Pointer s, Pointer temp);
+		boolean overleft_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean overleft_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean overleft_tnumber_numspan(Pointer temp, Pointer s);
+		boolean overleft_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean overleft_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean overleft_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean overright_numspan_tnumber(Pointer s, Pointer temp);
+		boolean overright_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean overright_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean overright_tnumber_numspan(Pointer temp, Pointer s);
+		boolean overright_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean overright_tnumber_tbox(Pointer temp, Pointer box);
 
 		boolean overright_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
-		boolean right_numspan_tnumber(Pointer s, Pointer temp);
+		boolean right_numspan_tnumber(Pointer sp, Pointer temp);
 
 		boolean right_tbox_tnumber(Pointer box, Pointer temp);
 
-		boolean right_tnumber_numspan(Pointer temp, Pointer s);
+		boolean right_tnumber_numspan(Pointer temp, Pointer sp);
 
 		boolean right_tnumber_tbox(Pointer temp, Pointer box);
 
@@ -2509,19 +2475,19 @@ public class GeneratedFunctions {
 
 		Pointer div_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer mult_bigint_tbigint(long i, Pointer tnumber);
+		Pointer mul_bigint_tbigint(long i, Pointer tnumber);
 
-		Pointer mult_float_tfloat(double d, Pointer tnumber);
+		Pointer mul_float_tfloat(double d, Pointer tnumber);
 
-		Pointer mult_int_tint(int i, Pointer tnumber);
+		Pointer mul_int_tint(int i, Pointer tnumber);
 
-		Pointer mult_tbigint_bigint(Pointer tnumber, long i);
+		Pointer mul_tbigint_bigint(Pointer tnumber, long i);
 
-		Pointer mult_tfloat_float(Pointer tnumber, double d);
+		Pointer mul_tfloat_float(Pointer tnumber, double d);
 
-		Pointer mult_tint_int(Pointer tnumber, int i);
+		Pointer mul_tint_int(Pointer tnumber, int i);
 
-		Pointer mult_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
+		Pointer mul_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
 		Pointer sub_bigint_tbigint(long i, Pointer tnumber);
 
@@ -2591,7 +2557,11 @@ public class GeneratedFunctions {
 
 		Pointer tbool_tand_transfn(Pointer state, Pointer temp);
 
+		Pointer tbool_tand_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tbool_tor_transfn(Pointer state, Pointer temp);
+
+		Pointer tbool_tor_combinefn(Pointer state1, Pointer state2);
 
 		Pointer temporal_extent_transfn(Pointer s, Pointer temp);
 
@@ -2603,11 +2573,19 @@ public class GeneratedFunctions {
 
 		Pointer temporal_tcount_transfn(Pointer state, Pointer temp);
 
+		Pointer temporal_tcount_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tfloat_tmax_transfn(Pointer state, Pointer temp);
+
+		Pointer tfloat_tmax_combinefn(Pointer state1, Pointer state2);
 
 		Pointer tfloat_tmin_transfn(Pointer state, Pointer temp);
 
+		Pointer tfloat_tmin_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tfloat_tsum_transfn(Pointer state, Pointer temp);
+
+		Pointer tfloat_tsum_combinefn(Pointer state1, Pointer state2);
 
 		Pointer tfloat_wmax_transfn(Pointer state, Pointer temp, Pointer interv);
 
@@ -2619,9 +2597,15 @@ public class GeneratedFunctions {
 
 		Pointer tint_tmax_transfn(Pointer state, Pointer temp);
 
+		Pointer tint_tmax_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tint_tmin_transfn(Pointer state, Pointer temp);
 
+		Pointer tint_tmin_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tint_tsum_transfn(Pointer state, Pointer temp);
+
+		Pointer tint_tsum_combinefn(Pointer state1, Pointer state2);
 
 		Pointer tint_wmax_transfn(Pointer state, Pointer temp, Pointer interv);
 
@@ -2635,21 +2619,27 @@ public class GeneratedFunctions {
 
 		Pointer tnumber_tavg_transfn(Pointer state, Pointer temp);
 
+		Pointer tnumber_tavg_combinefn(Pointer state1, Pointer state2);
+
 		Pointer tnumber_wavg_transfn(Pointer state, Pointer temp, Pointer interv);
 
 		Pointer tstzset_tcount_transfn(Pointer state, Pointer s);
 
-		Pointer tstzspan_tcount_transfn(Pointer state, Pointer s);
+		Pointer tstzspan_tcount_transfn(Pointer state, Pointer sp);
 
 		Pointer tstzspanset_tcount_transfn(Pointer state, Pointer ss);
 
 		Pointer ttext_tmax_transfn(Pointer state, Pointer temp);
 
+		Pointer ttext_tmax_combinefn(Pointer state1, Pointer state2);
+
 		Pointer ttext_tmin_transfn(Pointer state, Pointer temp);
 
-		Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize);
+		Pointer ttext_tmin_combinefn(Pointer state1, Pointer state2);
 
-		Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize);
+		Pointer temporal_simplify_dp(Pointer temp, double dist, boolean synchronize);
+
+		Pointer temporal_simplify_max_dist(Pointer temp, double dist, boolean synchronize);
 
 		Pointer temporal_simplify_min_dist(Pointer temp, double dist);
 
@@ -2669,9 +2659,15 @@ public class GeneratedFunctions {
 
 		double temporal_hausdorff_distance(Pointer temp1, Pointer temp2);
 
+		double temporal_average_hausdorff_distance(Pointer temp1, Pointer temp2);
+
+		double temporal_lcss_distance(Pointer temp1, Pointer temp2, double epsilon);
+
+		Pointer temporal_ext_kalman_filter(Pointer temp, double gate, double q, double variance, boolean to_drop);
+
 		Pointer temporal_time_bins(Pointer temp, Pointer duration, long origin, Pointer count);
 
-		Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin, Pointer time_bins, Pointer count);
+		Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin);
 
 		Pointer tfloat_time_boxes(Pointer temp, Pointer duration, long torigin, Pointer count);
 
@@ -2679,11 +2675,11 @@ public class GeneratedFunctions {
 
 		Pointer tfloat_value_boxes(Pointer temp, double vsize, double vorigin, Pointer count);
 
-		Pointer tfloat_value_split(Pointer temp, double size, double origin, Pointer bins, Pointer count);
+		Pointer tfloat_value_split(Pointer temp, double size, double origin);
 
 		Pointer tfloat_value_time_boxes(Pointer temp, double vsize, Pointer duration, double vorigin, long torigin, Pointer count);
 
-		Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, long torigin, Pointer value_bins, Pointer time_bins, Pointer count);
+		Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, long torigin);
 
 		Pointer tfloatbox_time_tiles(Pointer box, Pointer duration, long torigin, Pointer count);
 
@@ -2697,17 +2693,27 @@ public class GeneratedFunctions {
 
 		Pointer tint_value_boxes(Pointer temp, int vsize, int vorigin, Pointer count);
 
-		Pointer tint_value_split(Pointer temp, int vsize, int vorigin, Pointer bins, Pointer count);
+		Pointer tint_value_split(Pointer temp, int vsize, int vorigin);
 
 		Pointer tint_value_time_boxes(Pointer temp, int vsize, Pointer duration, int vorigin, long torigin, Pointer count);
 
-		Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, long torigin, Pointer value_bins, Pointer time_bins, Pointer count);
+		Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, long torigin);
 
 		Pointer tintbox_time_tiles(Pointer box, Pointer duration, long torigin, Pointer count);
 
 		Pointer tintbox_value_tiles(Pointer box, int xsize, int xorigin, Pointer count);
 
 		Pointer tintbox_value_time_tiles(Pointer box, int xsize, Pointer duration, int xorigin, long torigin, Pointer count);
+
+		Pointer box3d_from_gbox(Pointer box);
+
+		Pointer box3d_make(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int srid);
+
+		String box3d_out(Pointer box, int maxdd);
+
+		Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
+
+		String gbox_out(Pointer box, int maxdd);
 
 		Pointer geo_as_ewkb(Pointer gs, String endian, Pointer size);
 
@@ -2727,8 +2733,6 @@ public class GeneratedFunctions {
 
 		String geo_out(Pointer gs);
 
-		Pointer geog_from_binary(String wkb_bytea);
-
 		Pointer geog_from_hexewkb(String wkt);
 
 		Pointer geog_in(String str, int typmod);
@@ -2737,15 +2741,11 @@ public class GeneratedFunctions {
 
 		Pointer geom_in(String str, int typmod);
 
-		Pointer box3d_make(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int srid);
+		Pointer box3d_in(String str);
 
-		String box3d_out(Pointer box, int maxdd);
+		Pointer gbox_in(String str);
 
-		Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
-
-		String gbox_out(Pointer box, int maxdd);
-
-		Pointer geo_copy(Pointer g);
+		Pointer geo_copy(Pointer gs);
 
 		Pointer geogpoint_make2d(int srid, double x, double y);
 
@@ -2759,19 +2759,19 @@ public class GeneratedFunctions {
 
 		Pointer geog_to_geom(Pointer geog);
 
-		boolean geo_is_empty(Pointer g);
+		boolean geo_is_empty(Pointer gs);
 
 		boolean geo_is_unitary(Pointer gs);
 
 		String geo_typename(int type);
 
-		double geog_area(Pointer g, boolean use_spheroid);
+		double geog_area(Pointer gs, boolean use_spheroid);
 
-		Pointer geog_centroid(Pointer g, boolean use_spheroid);
+		Pointer geog_centroid(Pointer gs, boolean use_spheroid);
 
-		double geog_length(Pointer g, boolean use_spheroid);
+		double geog_length(Pointer gs, boolean use_spheroid);
 
-		double geog_perimeter(Pointer g, boolean use_spheroid);
+		double geog_perimeter(Pointer gs, boolean use_spheroid);
 
 		boolean geom_azimuth(Pointer gs1, Pointer gs2, Pointer result);
 
@@ -2825,7 +2825,7 @@ public class GeneratedFunctions {
 
 		Pointer geom_intersection2d_coll(Pointer gs1, Pointer gs2);
 
-		Pointer geom_min_bounding_radius(Pointer geom, Pointer radius);
+		Pointer geom_min_bounding_radius(Pointer geom);
 
 		Pointer geom_shortestline2d(Pointer gs1, Pointer s2);
 
@@ -2881,6 +2881,8 @@ public class GeneratedFunctions {
 
 		Pointer geomset_in(String str);
 
+		String spatialset_out(Pointer s, int maxdd);
+
 		String spatialset_as_text(Pointer set, int maxdd);
 
 		String spatialset_as_ewkt(Pointer set, int maxdd);
@@ -2895,7 +2897,7 @@ public class GeneratedFunctions {
 
 		boolean geoset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer geoset_values(Pointer s);
+		Pointer geoset_values(Pointer s, Pointer count);
 
 		boolean contained_geo_set(Pointer gs, Pointer s);
 
@@ -3083,6 +3085,8 @@ public class GeneratedFunctions {
 
 		boolean stbox_ne(Pointer box1, Pointer box2);
 
+		String tspatial_out(Pointer temp, int maxdd);
+
 		Pointer tgeogpoint_from_mfjson(String str);
 
 		Pointer tgeogpoint_in(String str);
@@ -3102,8 +3106,6 @@ public class GeneratedFunctions {
 		String tspatial_as_ewkt(Pointer temp, int maxdd);
 
 		String tspatial_as_text(Pointer temp, int maxdd);
-
-		String tspatial_out(Pointer temp, int maxdd);
 
 		Pointer tgeo_from_base_temp(Pointer gs, Pointer temp);
 
@@ -3145,7 +3147,7 @@ public class GeneratedFunctions {
 
 		Pointer tgeompoint_to_tgeometry(Pointer temp);
 
-		boolean tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom, Pointer gsarr, Pointer timesarr, Pointer count);
+		Pointer tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom);
 
 		boolean tpoint_tfloat_to_geomeas(Pointer tpoint, Pointer measure, boolean segmentize, Pointer result);
 
@@ -3167,7 +3169,7 @@ public class GeneratedFunctions {
 
 		Pointer tgeo_traversed_area(Pointer temp, boolean unary_union);
 
-		boolean tgeo_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tgeo_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tgeo_value_n(Pointer temp, int n, Pointer result);
 
@@ -3521,6 +3523,16 @@ public class GeneratedFunctions {
 
 		Pointer shortestline_tgeo_tgeo(Pointer temp1, Pointer temp2);
 
+		double mindistance_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2);
+
+		double mindistance_tgeo_tgeo(Pointer temp1, Pointer temp2, double threshold);
+
+		Pointer edwithin_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, double dist, Pointer count);
+
+		Pointer tdwithin_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, double dist, Pointer count, Pointer periods);
+
+		Pointer adisjoint_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, Pointer count);
+
 		Pointer tpoint_tcentroid_finalfn(Pointer state);
 
 		Pointer tpoint_tcentroid_transfn(Pointer state, Pointer temp);
@@ -3539,17 +3551,19 @@ public class GeneratedFunctions {
 
 		Pointer stbox_time_tiles(Pointer bounds, Pointer duration, long torigin, boolean border_inc, Pointer count);
 
-		Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer count);
+		Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc);
 
-		Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer time_bins, Pointer count);
+		Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc);
 
-		Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k);
+		Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k, Pointer count);
 
 		Pointer geo_cluster_dbscan(Pointer geoms, int ngeoms, double tolerance, int minpoints, Pointer count);
 
 		Pointer geo_cluster_intersecting(Pointer geoms, int ngeoms, Pointer count);
 
 		Pointer geo_cluster_within(Pointer geoms, int ngeoms, double tolerance, Pointer count);
+
+		Pointer geo_wlof(Pointer geoms, int ngeoms, int k, double epsilon, Pointer newcount, Pointer clusters);
 
 		String cbuffer_as_ewkt(Pointer cb, int maxdd);
 
@@ -3655,7 +3669,7 @@ public class GeneratedFunctions {
 
 		boolean cbufferset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer cbufferset_values(Pointer s);
+		Pointer cbufferset_values(Pointer s, Pointer count);
 
 		Pointer cbuffer_union_transfn(Pointer state, Pointer cb);
 
@@ -3697,11 +3711,13 @@ public class GeneratedFunctions {
 
 		Pointer tcbuffer_radius(Pointer temp);
 
+		Pointer tcbuffer_traversed_area(Pointer temp, boolean unary_union);
+
+		Pointer tcbuffer_convex_hull(Pointer temp);
+
 		Pointer tcbuffer_start_value(Pointer temp);
 
-		Pointer tcbuffer_trav_area(Pointer temp, boolean merge_union);
-
-		boolean tcbuffer_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tcbuffer_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tcbuffer_value_n(Pointer temp, int n, Pointer result);
 
@@ -3803,6 +3819,8 @@ public class GeneratedFunctions {
 
 		int acovers_tcbuffer_geo(Pointer temp, Pointer gs);
 
+		int acovers_tcbuffer_tcbuffer(Pointer temp1, Pointer temp2);
+
 		int adisjoint_tcbuffer_geo(Pointer temp, Pointer gs);
 
 		int adisjoint_tcbuffer_cbuffer(Pointer temp, Pointer cb);
@@ -3834,6 +3852,8 @@ public class GeneratedFunctions {
 		int econtains_tcbuffer_geo(Pointer temp, Pointer gs);
 
 		int ecovers_cbuffer_tcbuffer(Pointer cb, Pointer temp);
+
+		int ecovers_geo_tcbuffer(Pointer gs, Pointer temp);
 
 		int ecovers_tcbuffer_cbuffer(Pointer temp, Pointer cb);
 
@@ -3937,17 +3957,17 @@ public class GeneratedFunctions {
 
 		Pointer cbuffer_parse(Pointer str, boolean end);
 
-		String cbuffer_wkt_out(int value, int maxdd, boolean extended);
+		String cbuffer_wkt_out(Pointer value, int maxdd, boolean extended);
 
 		Pointer cbuffer_point_p(Pointer cb);
 
-		int datum_cbuffer_round(int buffer, long size);
+		Pointer datum_cbuffer_round(Pointer buffer, Pointer size);
 
 		Pointer cbuffer_transf_pj(Pointer cb, int srid_to, Pointer pj);
 
 		double cbuffer_distance(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_distance(int cb1, int cb2);
+		Pointer datum_cbuffer_distance(Pointer cb1, Pointer cb2);
 
 		int cbuffersegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, long lower, long upper, Pointer t1, Pointer t2);
 
@@ -3963,17 +3983,17 @@ public class GeneratedFunctions {
 
 		int cbuffer_touches(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_contains(int cb1, int cb2);
+		Pointer datum_cbuffer_contains(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_covers(int cb1, int cb2);
+		Pointer datum_cbuffer_covers(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_disjoint(int cb1, int cb2);
+		Pointer datum_cbuffer_disjoint(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_intersects(int cb1, int cb2);
+		Pointer datum_cbuffer_intersects(Pointer cb1, Pointer cb2);
 
-		int datum_cbuffer_dwithin(int cb1, int cb2, int dist);
+		Pointer datum_cbuffer_dwithin(Pointer cb1, Pointer cb2, Pointer dist);
 
-		int datum_cbuffer_touches(int cb1, int cb2);
+		Pointer datum_cbuffer_touches(Pointer cb1, Pointer cb2);
 
 		boolean temptype_subtype(int subtype);
 
@@ -3990,6 +4010,8 @@ public class GeneratedFunctions {
 		String interptype_name(int interp);
 
 		int interptype_from_string(String interp_str);
+
+		int meos_typeof_hexwkb(String hexwkb);
 
 		String meostype_name(int type);
 
@@ -4075,7 +4097,7 @@ public class GeneratedFunctions {
 
 		boolean temporal_basetype(int type);
 
-		boolean temptype_continuous(int type);
+		boolean temptype_supports_linear(int type);
 
 		boolean basetype_byvalue(int type);
 
@@ -4086,10 +4108,6 @@ public class GeneratedFunctions {
 		boolean talphanum_type(int type);
 
 		boolean talpha_type(int type);
-
-	}
-
-	public interface MeosLibraryPartC {
 
 		boolean tnumber_type(int type);
 
@@ -4131,19 +4149,19 @@ public class GeneratedFunctions {
 
 		Pointer gsl_get_aggregation_rng();
 
-		int datum_ceil(Pointer d);
+		Pointer datum_ceil(Pointer d);
 
-		int datum_degrees(Pointer d, Pointer normalize);
+		Pointer datum_degrees(Pointer d, Pointer normalize);
 
-		int datum_float_round(Pointer value, Pointer size);
+		Pointer datum_float_round(Pointer value, Pointer size);
 
-		int datum_floor(Pointer d);
+		Pointer datum_floor(Pointer d);
 
 		int datum_hash(Pointer d, int basetype);
 
 		int datum_hash_extended(Pointer d, int basetype, int seed);
 
-		int datum_radians(Pointer d);
+		Pointer datum_radians(Pointer d);
 
 		void floatspan_round_set(Pointer s, int maxdd, Pointer result);
 
@@ -4167,7 +4185,7 @@ public class GeneratedFunctions {
 
 		Pointer span_make(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype);
 
-		void span_set(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype, int spantype, Pointer s);
+		void span_set(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype, int spantype, Pointer result);
 
 		Pointer spanset_make_exp(Pointer spans, int count, int maxcount, boolean normalize, boolean order);
 
@@ -4177,7 +4195,7 @@ public class GeneratedFunctions {
 
 		Pointer set_spanset(Pointer s);
 
-		void value_set_span(Pointer value, int basetype, Pointer s);
+		void value_set_span(Pointer value, int basetype, Pointer result);
 
 		Pointer value_set(Pointer d, int basetype);
 
@@ -4185,11 +4203,11 @@ public class GeneratedFunctions {
 
 		Pointer value_spanset(Pointer d, int basetype);
 
-		int numspan_width(Pointer s);
+		Pointer numspan_width(Pointer s);
 
-		int numspanset_width(Pointer ss, boolean boundspan);
+		Pointer numspanset_width(Pointer ss, boolean boundspan);
 
-		int set_end_value(Pointer s);
+		Pointer set_end_value(Pointer s);
 
 		int set_mem_size(Pointer s);
 
@@ -4197,21 +4215,21 @@ public class GeneratedFunctions {
 
 		void set_set_span(Pointer s, Pointer result);
 
-		int set_start_value(Pointer s);
+		Pointer set_start_value(Pointer s);
 
 		boolean set_value_n(Pointer s, int n, Pointer result);
 
-		Pointer set_vals(Pointer s);
+		Pointer set_vals(Pointer s, Pointer count);
 
-		Pointer set_values(Pointer s);
+		Pointer set_values(Pointer s, Pointer count);
 
-		int spanset_lower(Pointer ss);
+		Pointer spanset_lower(Pointer ss);
 
 		int spanset_mem_size(Pointer ss);
 
-		Pointer spanset_sps(Pointer ss);
+		Pointer spanset_sps(Pointer ss, Pointer count);
 
-		int spanset_upper(Pointer ss);
+		Pointer spanset_upper(Pointer ss);
 
 		void bigintspan_set_floatspan(Pointer s1, Pointer s2);
 
@@ -4319,7 +4337,7 @@ public class GeneratedFunctions {
 
 		boolean bbox_type(int bboxtype);
 
-		int bbox_get_size(int bboxtype);
+		long bbox_get_size(int bboxtype);
 
 		int bbox_max_dims(int bboxtype);
 
@@ -4357,8 +4375,6 @@ public class GeneratedFunctions {
 
 		Pointer minus_value_spanset(Pointer value, Pointer ss);
 
-		Pointer super_union_span_span(Pointer s1, Pointer s2);
-
 		Pointer union_set_value(Pointer s, Pointer value);
 
 		Pointer union_span_value(Pointer s, Pointer value);
@@ -4371,21 +4387,25 @@ public class GeneratedFunctions {
 
 		Pointer union_value_spanset(Pointer value, Pointer ss);
 
-		int distance_set_set(Pointer s1, Pointer s2);
+		Pointer distance_set_set(Pointer s1, Pointer s2);
 
-		int distance_set_value(Pointer s, Pointer value);
+		Pointer distance_set_value(Pointer s, Pointer value);
 
-		int distance_span_span(Pointer s1, Pointer s2);
+	}
 
-		int distance_span_value(Pointer s, Pointer value);
+	public interface MeosLibraryPartC {
 
-		int distance_spanset_span(Pointer ss, Pointer s);
+		Pointer distance_span_span(Pointer s1, Pointer s2);
 
-		int distance_spanset_spanset(Pointer ss1, Pointer ss2);
+		Pointer distance_span_value(Pointer s, Pointer value);
 
-		int distance_spanset_value(Pointer ss, Pointer value);
+		Pointer distance_spanset_span(Pointer ss, Pointer s);
 
-		int distance_value_value(Pointer l, Pointer r, int basetype);
+		Pointer distance_spanset_spanset(Pointer ss1, Pointer ss2);
+
+		Pointer distance_spanset_value(Pointer ss, Pointer value);
+
+		Pointer distance_value_value(Pointer l, Pointer r, int basetype);
 
 		Pointer spanbase_extent_transfn(Pointer state, Pointer value, int basetype);
 
@@ -4395,25 +4415,25 @@ public class GeneratedFunctions {
 
 		Pointer number_timestamptz_to_tbox(Pointer d, int basetype, long t);
 
-		void tbox_set(Pointer s, Pointer p, Pointer box);
+		void tbox_set(Pointer s, Pointer p, Pointer result);
 
-		void float_set_tbox(double d, Pointer box);
+		void float_set_tbox(double d, Pointer result);
 
-		void int_set_tbox(int i, Pointer box);
+		void int_set_tbox(int i, Pointer result);
 
-		void number_set_tbox(Pointer d, int basetype, Pointer box);
+		void number_set_tbox(Pointer d, int basetype, Pointer result);
 
 		Pointer number_tbox(Pointer value, int basetype);
 
-		void numset_set_tbox(Pointer s, Pointer box);
+		void numset_set_tbox(Pointer s, Pointer result);
 
-		void numspan_set_tbox(Pointer span, Pointer box);
+		void numspan_set_tbox(Pointer span, Pointer result);
 
-		void timestamptz_set_tbox(long t, Pointer box);
+		void timestamptz_set_tbox(long t, Pointer result);
 
-		void tstzset_set_tbox(Pointer s, Pointer box);
+		void tstzset_set_tbox(Pointer s, Pointer result);
 
-		void tstzspan_set_tbox(Pointer s, Pointer box);
+		void tstzspan_set_tbox(Pointer s, Pointer result);
 
 		Pointer tbox_shift_scale_value(Pointer box, Pointer shift, Pointer width, boolean hasshift, boolean haswidth);
 
@@ -4456,6 +4476,16 @@ public class GeneratedFunctions {
 		Pointer tinstant_in(String str, int temptype);
 
 		String tinstant_out(Pointer inst, int maxdd);
+
+		Pointer tbigintinst_from_mfjson(Pointer mfjson);
+
+		Pointer tbigintinst_in(String str);
+
+		Pointer tbigintseq_from_mfjson(Pointer mfjson);
+
+		Pointer tbigintseqset_from_mfjson(Pointer mfjson);
+
+		Pointer tbigintseqset_in(String str);
 
 		Pointer tintinst_from_mfjson(Pointer mfjson);
 
@@ -4527,25 +4557,25 @@ public class GeneratedFunctions {
 
 		Pointer tsequenceset_make_free(Pointer sequences, int count, boolean normalize);
 
-		void temporal_set_tstzspan(Pointer temp, Pointer s);
+		void temporal_set_tstzspan(Pointer temp, Pointer result);
 
-		void tinstant_set_tstzspan(Pointer inst, Pointer s);
+		void tinstant_set_tstzspan(Pointer inst, Pointer result);
 
-		void tnumber_set_tbox(Pointer temp, Pointer box);
+		void tnumber_set_tbox(Pointer temp, Pointer result);
 
-		void tnumberinst_set_tbox(Pointer inst, Pointer box);
+		void tnumberinst_set_tbox(Pointer inst, Pointer result);
 
-		void tnumberseq_set_tbox(Pointer seq, Pointer box);
+		void tnumberseq_set_tbox(Pointer seq, Pointer result);
 
-		void tnumberseqset_set_tbox(Pointer ss, Pointer box);
+		void tnumberseqset_set_tbox(Pointer ss, Pointer result);
 
-		void tsequence_set_tstzspan(Pointer seq, Pointer s);
+		void tsequence_set_tstzspan(Pointer seq, Pointer result);
 
-		void tsequenceset_set_tstzspan(Pointer ss, Pointer s);
+		void tsequenceset_set_tstzspan(Pointer ss, Pointer result);
 
 		Pointer temporal_end_inst(Pointer temp);
 
-		int temporal_end_value(Pointer temp);
+		Pointer temporal_end_value(Pointer temp);
 
 		Pointer temporal_inst_n(Pointer temp, int n);
 
@@ -4553,21 +4583,21 @@ public class GeneratedFunctions {
 
 		Pointer temporal_max_inst_p(Pointer temp);
 
-		int temporal_max_value(Pointer temp);
+		Pointer temporal_max_value(Pointer temp);
 
-		int temporal_mem_size(Pointer temp);
+		long temporal_mem_size(Pointer temp);
 
 		Pointer temporal_min_inst_p(Pointer temp);
 
-		int temporal_min_value(Pointer temp);
+		Pointer temporal_min_value(Pointer temp);
 
 		Pointer temporal_sequences_p(Pointer temp, Pointer count);
 
-		void temporal_set_bbox(Pointer temp, Pointer box);
+		void temporal_set_bbox(Pointer temp, Pointer result);
 
 		Pointer temporal_start_inst(Pointer temp);
 
-		int temporal_start_value(Pointer temp);
+		Pointer temporal_start_value(Pointer temp);
 
 		Pointer temporal_values_p(Pointer temp, Pointer count);
 
@@ -4579,21 +4609,21 @@ public class GeneratedFunctions {
 
 		Pointer tinstant_insts(Pointer inst, Pointer count);
 
-		void tinstant_set_bbox(Pointer inst, Pointer box);
+		void tinstant_set_bbox(Pointer inst, Pointer result);
 
 		Pointer tinstant_time(Pointer inst);
 
 		Pointer tinstant_timestamps(Pointer inst, Pointer count);
 
-		int tinstant_value_p(Pointer inst);
+		Pointer tinstant_value_p(Pointer inst);
 
-		int tinstant_value(Pointer inst);
+		Pointer tinstant_value(Pointer inst);
 
 		boolean tinstant_value_at_timestamptz(Pointer inst, long t, Pointer result);
 
 		Pointer tinstant_values_p(Pointer inst, Pointer count);
 
-		void tnumber_set_span(Pointer temp, Pointer span);
+		void tnumber_set_span(Pointer temp, Pointer result);
 
 		Pointer tnumberinst_valuespans(Pointer inst);
 
@@ -4611,15 +4641,15 @@ public class GeneratedFunctions {
 
 		int tsequence_hash(Pointer seq);
 
-		Pointer tsequence_insts_p(Pointer seq);
+		Pointer tsequence_insts_p(Pointer seq, Pointer count);
 
 		Pointer tsequence_max_inst_p(Pointer seq);
 
-		int tsequence_max_val(Pointer seq);
+		Pointer tsequence_max_val(Pointer seq);
 
 		Pointer tsequence_min_inst_p(Pointer seq);
 
-		int tsequence_min_val(Pointer seq);
+		Pointer tsequence_min_val(Pointer seq);
 
 		Pointer tsequence_segments(Pointer seq, Pointer count);
 
@@ -4643,15 +4673,15 @@ public class GeneratedFunctions {
 
 		Pointer tsequenceset_inst_n(Pointer ss, int n);
 
-		Pointer tsequenceset_insts_p(Pointer ss);
+		Pointer tsequenceset_insts_p(Pointer ss, Pointer count);
 
 		Pointer tsequenceset_max_inst_p(Pointer ss);
 
-		int tsequenceset_max_val(Pointer ss);
+		Pointer tsequenceset_max_val(Pointer ss);
 
 		Pointer tsequenceset_min_inst_p(Pointer ss);
 
-		int tsequenceset_min_val(Pointer ss);
+		Pointer tsequenceset_min_val(Pointer ss);
 
 		int tsequenceset_num_instants(Pointer ss);
 
@@ -4659,7 +4689,7 @@ public class GeneratedFunctions {
 
 		Pointer tsequenceset_segments(Pointer ss, Pointer count);
 
-		Pointer tsequenceset_sequences_p(Pointer ss);
+		Pointer tsequenceset_sequences_p(Pointer ss, Pointer count);
 
 		long tsequenceset_start_timestamptz(Pointer ss);
 
@@ -4771,11 +4801,11 @@ public class GeneratedFunctions {
 
 		void tsequence_expand_bbox(Pointer seq, Pointer inst);
 
-		void tsequence_set_bbox(Pointer seq, Pointer box);
+		void tsequence_set_bbox(Pointer seq, Pointer result);
 
 		void tsequenceset_expand_bbox(Pointer ss, Pointer seq);
 
-		void tsequenceset_set_bbox(Pointer ss, Pointer box);
+		void tsequenceset_set_bbox(Pointer ss, Pointer result);
 
 		Pointer tcontseq_after_timestamptz(Pointer seq, long t, boolean strict);
 
@@ -4921,6 +4951,8 @@ public class GeneratedFunctions {
 
 		Pointer tnumberinst_abs(Pointer inst);
 
+		double tnumberinst_distance(Pointer inst1, Pointer inst2);
+
 		Pointer tnumberseq_abs(Pointer seq);
 
 		Pointer tnumberseq_angular_difference(Pointer seq);
@@ -4944,8 +4976,6 @@ public class GeneratedFunctions {
 		double nad_tnumber_tnumber(Pointer temp1, Pointer temp2);
 
 		Pointer tdistance_tnumber_number(Pointer temp, Pointer value);
-
-		double tnumberinst_distance(Pointer inst1, Pointer inst2);
 
 		double tnumberseq_integral(Pointer seq);
 
@@ -4989,7 +5019,7 @@ public class GeneratedFunctions {
 
 		Pointer tnumber_value_time_boxes(Pointer temp, Pointer vsize, Pointer duration, Pointer vorigin, long torigin, Pointer count);
 
-		Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin, Pointer bins, Pointer count);
+		Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin);
 
 		Pointer tbox_get_value_time_tile(Pointer value, long t, Pointer vsize, Pointer duration, Pointer vorigin, long torigin, int basetype, int spantype);
 
@@ -5125,15 +5155,17 @@ public class GeneratedFunctions {
 
 		int tcbuffersegm_dwithin_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist, long lower, long upper, Pointer t1, Pointer t2);
 
-		int tcbuffersegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist, long lower, long upper, Pointer t1, Pointer t2);
+		int tcbuffersegm_tdwithin_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist, long lower, long upper, Pointer t1, Pointer t2);
+
+		int tcbuffersegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist);
 
 		boolean cbuffer_set_stbox(Pointer cb, Pointer box);
 
 		void cbufferarr_set_stbox(Pointer values, int count, Pointer box);
 
-		boolean cbuffer_timestamptz_set_stbox(Pointer cb, long t, Pointer box);
+		void cbuffer_timestamptz_set_stbox(Pointer cb, long t, Pointer box);
 
-		boolean cbuffer_tstzspan_set_stbox(Pointer cb, Pointer s, Pointer box);
+		void cbuffer_tstzspan_set_stbox(Pointer cb, Pointer s, Pointer box);
 
 		void tcbufferinst_set_stbox(Pointer inst, Pointer box);
 
@@ -5141,13 +5173,13 @@ public class GeneratedFunctions {
 
 		void tcbufferseq_expand_stbox(Pointer seq, Pointer inst);
 
-		Pointer tcbufferinst_trav_area(Pointer inst);
+		Pointer tcbufferinst_traversed_area(Pointer inst);
 
-		Pointer tcbufferseq_trav_area(Pointer seq);
+		Pointer tcbufferseq_traversed_area(Pointer seq, boolean unary_union);
 
-		Pointer tcbufferseqset_trav_area(Pointer ss);
+		Pointer tcbufferseqset_traversed_area(Pointer ss, boolean unary_union);
 
-		Pointer tcbuffersegm_trav_area(Pointer inst1, Pointer inst2);
+		Pointer tcbuffersegm_traversed_area(Pointer inst1, Pointer inst2);
 
 		Pointer tcbuffer_restrict_cbuffer(Pointer temp, Pointer cb, boolean atfunc);
 
@@ -5207,6 +5239,12 @@ public class GeneratedFunctions {
 
 		Pointer tinterrel_tcbuffer_geo(Pointer temp, Pointer gs, boolean tinter);
 
+		Pointer clipper2_clip_poly_poly(Pointer subj, Pointer clip, int op);
+
+		Pointer clipper2_traj_poly_periods(Pointer seq, Pointer gs, Pointer out_count);
+
+		Pointer clip_poly_poly(Pointer subj, Pointer clip, int operation);
+
 		int lwproj_lookup(int srid_from, int srid_to, Pointer pj);
 
 		int spheroid_init_from_srid(int srid, Pointer s);
@@ -5219,7 +5257,7 @@ public class GeneratedFunctions {
 
 		Pointer geog_serialize(Pointer lwgeom);
 
-		Pointer postgis_valid_typmod(Pointer gs, int typmod);
+		Pointer meos_postgis_valid_typmod(Pointer gs, int typmod);
 
 		String geo_as_wkt(Pointer gs, int precision, boolean extended);
 
@@ -5227,9 +5265,9 @@ public class GeneratedFunctions {
 
 		Pointer box3d_to_lwgeom(Pointer box);
 
-		Pointer POSTGIS2GEOS(Pointer pglwgeom);
+		Pointer MEOS_POSTGIS2GEOS(Pointer pglwgeom);
 
-		Pointer GEOS2POSTGIS(Pointer geom, String want3d);
+		Pointer MEOS_GEOS2POSTGIS(Pointer geom, String want3d);
 
 		boolean geom_spatialrel(Pointer gs1, Pointer gs2, int rel);
 
@@ -5246,6 +5284,60 @@ public class GeneratedFunctions {
 		boolean stbox_gist_inner_consistent(Pointer key, Pointer query, int strategy);
 
 		boolean stbox_index_recheck(int strategy);
+
+		Pointer stboxnode_copy(Pointer box);
+
+		int getQuadrant8D(Pointer centroid, Pointer inBox);
+
+		void stboxnode_init(Pointer centroid, Pointer nodebox);
+
+		void stboxnode_quadtree_next(Pointer nodebox, Pointer centroid, int quadrant, Pointer next_nodebox);
+
+		void stboxnode_kdtree_next(Pointer nodebox, Pointer centroid, int node, int level, Pointer next_nodebox);
+
+		boolean overlap8D(Pointer nodebox, Pointer query);
+
+		boolean overlapKD(Pointer nodebox, Pointer query, int level);
+
+		boolean contain8D(Pointer nodebox, Pointer query);
+
+		boolean containKD(Pointer nodebox, Pointer query, int level);
+
+		boolean left8D(Pointer nodebox, Pointer query);
+
+		boolean overLeft8D(Pointer nodebox, Pointer query);
+
+		boolean right8D(Pointer nodebox, Pointer query);
+
+		boolean overRight8D(Pointer nodebox, Pointer query);
+
+		boolean below8D(Pointer nodebox, Pointer query);
+
+		boolean overBelow8D(Pointer nodebox, Pointer query);
+
+		boolean above8D(Pointer nodebox, Pointer query);
+
+		boolean overAbove8D(Pointer nodebox, Pointer query);
+
+		boolean front8D(Pointer nodebox, Pointer query);
+
+		boolean overFront8D(Pointer nodebox, Pointer query);
+
+		boolean back8D(Pointer nodebox, Pointer query);
+
+		boolean overBack8D(Pointer nodebox, Pointer query);
+
+		boolean before8D(Pointer nodebox, Pointer query);
+
+		boolean overBefore8D(Pointer nodebox, Pointer query);
+
+		boolean after8D(Pointer nodebox, Pointer query);
+
+		boolean overAfter8D(Pointer nodebox, Pointer query);
+
+		double distance_stbox_nodebox(Pointer query, Pointer nodebox);
+
+		void tspatial_spgist_get_stbox(Pointer value, int type, Pointer result);
 
 		void mobilitydb_init();
 
@@ -5271,9 +5363,9 @@ public class GeneratedFunctions {
 
 		double stbox_spatial_distance(Pointer box1, Pointer box2);
 
-		int tgeompointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, long lower, long upper, Pointer t1, Pointer t2);
+		int tgeompointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param);
 
-		int tgeogpointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, long lower, long upper, Pointer t1, Pointer t2);
+		int tgeogpointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param);
 
 		double tinstant_distance(Pointer inst1, Pointer inst2, Pointer func);
 
@@ -5293,17 +5385,17 @@ public class GeneratedFunctions {
 
 		boolean datum_point_same(Pointer point1, Pointer point2);
 
-		int datum2_point_eq(Pointer point1, Pointer point2);
+		Pointer datum2_point_eq(Pointer point1, Pointer point2);
 
-		int datum2_point_ne(Pointer point1, Pointer point2);
+		Pointer datum2_point_ne(Pointer point1, Pointer point2);
 
-		int datum2_point_same(Pointer point1, Pointer point2);
+		Pointer datum2_point_same(Pointer point1, Pointer point2);
 
-		int datum2_point_nsame(Pointer point1, Pointer point2);
+		Pointer datum2_point_nsame(Pointer point1, Pointer point2);
 
-		int datum2_geom_centroid(Pointer geo);
+		Pointer datum2_geom_centroid(Pointer geo);
 
-		int datum2_geog_centroid(Pointer geo);
+		Pointer datum2_geog_centroid(Pointer geo);
 
 		Pointer geo_extract_elements(Pointer gs, Pointer count);
 
@@ -5313,15 +5405,15 @@ public class GeneratedFunctions {
 
 		Pointer point_distance_fn(short flags);
 
-		int datum_geom_distance2d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_distance2d(Pointer geom1, Pointer geom2);
 
-		int datum_geom_distance3d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_distance3d(Pointer geom1, Pointer geom2);
 
-		int datum_geog_distance(Pointer geog1, Pointer geog2);
+		Pointer datum_geog_distance(Pointer geog1, Pointer geog2);
 
-		int datum_pt_distance2d(Pointer geom1, Pointer geom2);
+		Pointer datum_pt_distance2d(Pointer geom1, Pointer geom2);
 
-		int datum_pt_distance3d(Pointer geom1, Pointer geom2);
+		Pointer datum_pt_distance3d(Pointer geom1, Pointer geom2);
 
 		short spatial_flags(Pointer d, int basetype);
 
@@ -5421,7 +5513,7 @@ public class GeneratedFunctions {
 
 		Pointer geocircle_make(double x, double y, double radius, int srid);
 
-		int pointsegm_interpolate(Pointer start, Pointer end, Pointer ratio);
+		Pointer pointsegm_interpolate(Pointer start, Pointer end, Pointer ratio);
 
 		Pointer pointsegm_locate(Pointer start, Pointer end, Pointer point, Pointer dist);
 
@@ -5441,31 +5533,31 @@ public class GeneratedFunctions {
 
 		int tpointseq_stops_iter(Pointer seq, double maxdist, int mintunits, Pointer result);
 
-		int datum_geom_contains(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_contains(Pointer geom1, Pointer geom2);
 
-		int datum_geom_covers(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_covers(Pointer geom1, Pointer geom2);
 
-		int datum_geom_disjoint2d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_disjoint2d(Pointer geom1, Pointer geom2);
 
-		int datum_geom_disjoint3d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_disjoint3d(Pointer geom1, Pointer geom2);
 
-		int datum_geog_disjoint(Pointer geog1, Pointer geog2);
+		Pointer datum_geog_disjoint(Pointer geog1, Pointer geog2);
 
-		int datum_geom_intersects2d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_intersects2d(Pointer geom1, Pointer geom2);
 
-		int datum_geom_intersects3d(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_intersects3d(Pointer geom1, Pointer geom2);
 
-		int datum_geog_intersects(Pointer geog1, Pointer geog2);
+		Pointer datum_geog_intersects(Pointer geog1, Pointer geog2);
 
-		int datum_geom_touches(Pointer geom1, Pointer geom2);
+		Pointer datum_geom_touches(Pointer geom1, Pointer geom2);
 
-		int datum_geom_dwithin2d(Pointer geom1, Pointer geom2, Pointer dist);
+		Pointer datum_geom_dwithin2d(Pointer geom1, Pointer geom2, Pointer dist);
 
-		int datum_geom_dwithin3d(Pointer geom1, Pointer geom2, Pointer dist);
+		Pointer datum_geom_dwithin3d(Pointer geom1, Pointer geom2, Pointer dist);
 
-		int datum_geog_dwithin(Pointer geog1, Pointer geog2, Pointer dist);
+		Pointer datum_geog_dwithin(Pointer geog1, Pointer geog2, Pointer dist);
 
-		int datum_geom_relate_pattern(Pointer geog1, Pointer geog2, Pointer p);
+		Pointer datum_geom_relate_pattern(Pointer geog1, Pointer geog2, Pointer p);
 
 		Pointer geo_disjoint_fn(short flags1, short flags2);
 
@@ -5545,7 +5637,7 @@ public class GeneratedFunctions {
 
 		Pointer tpoint_at_tile(Pointer temp, Pointer box);
 
-		void stbox_tile_state_set(double x, double y, double z, long t, double xsize, double ysize, double zsize, long tunits, boolean hasx, boolean hasz, boolean hast, boolean geodetic, int srid, Pointer result);
+		void stbox_tile_state_set(double x, double y, double z, long t, double xsize, double ysize, double zsize, long tunits, boolean hasx, boolean hasz, boolean hast, int srid, Pointer result);
 
 		Pointer stbox_tile_state_make(Pointer temp, Pointer box, double xsize, double ysize, double zsize, Pointer duration, int sorigin, long torigin, boolean border_inc);
 
@@ -5687,9 +5779,9 @@ public class GeneratedFunctions {
 
 		boolean ensure_valid_th3index_tgeogpoint(Pointer temp1, Pointer temp2);
 
-		int datum2_h3index_eq(Pointer d1, Pointer d2, int type);
+		Pointer datum2_h3index_eq(Pointer d1, Pointer d2, int type);
 
-		int datum2_h3index_ne(Pointer d1, Pointer d2, int type);
+		Pointer datum2_h3index_ne(Pointer d1, Pointer d2, int type);
 
 		void th3indexinst_set_stbox(Pointer inst, Pointer box);
 
@@ -5729,67 +5821,523 @@ public class GeneratedFunctions {
 
 		double h3_gs_great_circle_distance_meos(Pointer a, Pointer b, int unit);
 
-		int datum_h3_get_resolution(Pointer d);
+		Pointer datum_h3_get_resolution(Pointer d);
 
-		int datum_h3_get_base_cell_number(Pointer d);
+		Pointer datum_h3_get_base_cell_number(Pointer d);
 
-		int datum_h3_is_valid_cell(Pointer d);
+		Pointer datum_h3_is_valid_cell(Pointer d);
 
-		int datum_h3_is_res_class_iii(Pointer d);
+		Pointer datum_h3_is_res_class_iii(Pointer d);
 
-		int datum_h3_is_pentagon(Pointer d);
+		Pointer datum_h3_is_pentagon(Pointer d);
 
-		int datum_h3_cell_to_parent(Pointer cell_d, Pointer res_d);
+		Pointer datum_h3_cell_to_parent(Pointer cell_d, Pointer res_d);
 
-		int datum_h3_cell_to_parent_next(Pointer cell_d);
+		Pointer datum_h3_cell_to_parent_next(Pointer cell_d);
 
-		int datum_h3_cell_to_center_child(Pointer cell_d, Pointer res_d);
+		Pointer datum_h3_cell_to_center_child(Pointer cell_d, Pointer res_d);
 
-		int datum_h3_cell_to_center_child_next(Pointer cell_d);
+		Pointer datum_h3_cell_to_center_child_next(Pointer cell_d);
 
-		int datum_h3_cell_to_child_pos(Pointer cell_d, Pointer parent_res_d);
+		Pointer datum_h3_cell_to_child_pos(Pointer cell_d, Pointer parent_res_d);
 
-		int datum_h3_child_pos_to_cell(Pointer pos_d, Pointer parent_d, Pointer child_res_d);
+		Pointer datum_h3_child_pos_to_cell(Pointer pos_d, Pointer parent_d, Pointer child_res_d);
 
-		int datum_h3_are_neighbor_cells(Pointer origin_d, Pointer dest_d);
+		Pointer datum_h3_are_neighbor_cells(Pointer origin_d, Pointer dest_d);
 
-		int datum_h3_cells_to_directed_edge(Pointer origin_d, Pointer dest_d);
+		Pointer datum_h3_cells_to_directed_edge(Pointer origin_d, Pointer dest_d);
 
-		int datum_h3_is_valid_directed_edge(Pointer d);
+		Pointer datum_h3_is_valid_directed_edge(Pointer d);
 
-		int datum_h3_get_directed_edge_origin(Pointer d);
+		Pointer datum_h3_get_directed_edge_origin(Pointer d);
 
-		int datum_h3_get_directed_edge_destination(Pointer d);
+		Pointer datum_h3_get_directed_edge_destination(Pointer d);
 
-		int datum_h3_directed_edge_to_boundary(Pointer d);
+		Pointer datum_h3_directed_edge_to_boundary(Pointer d);
 
-		int datum_h3_cell_to_vertex(Pointer cell_d, Pointer vnum_d);
+		Pointer datum_h3_cell_to_vertex(Pointer cell_d, Pointer vnum_d);
 
-		int datum_h3_vertex_to_latlng(Pointer d);
+		Pointer datum_h3_vertex_to_latlng(Pointer d);
 
-		int datum_h3_is_valid_vertex(Pointer d);
+		Pointer datum_h3_is_valid_vertex(Pointer d);
 
-		int datum_h3_grid_distance(Pointer origin_d, Pointer dest_d);
+		Pointer datum_h3_grid_distance(Pointer origin_d, Pointer dest_d);
 
-		int datum_h3_cell_to_local_ij(Pointer origin_d, Pointer cell_d);
+		Pointer datum_h3_cell_to_local_ij(Pointer origin_d, Pointer cell_d);
 
-		int datum_h3_local_ij_to_cell(Pointer origin_d, Pointer coord_d);
+		Pointer datum_h3_local_ij_to_cell(Pointer origin_d, Pointer coord_d);
 
-		int datum_h3_latlng_to_cell(Pointer point_d, Pointer res_d);
+		Pointer datum_h3_latlng_to_cell(Pointer point_d, Pointer res_d);
 
-		int datum_h3_cell_to_latlng(Pointer d);
+		Pointer datum_h3_cell_to_latlng(Pointer d);
 
-		int datum_h3_cell_to_boundary(Pointer d);
+		Pointer datum_h3_cell_to_boundary(Pointer d);
 
-		int datum_h3_cell_area(Pointer cell_d, Pointer unit_d);
+		Pointer datum_h3_cell_area(Pointer cell_d, Pointer unit_d);
 
-		int datum_h3_edge_length(Pointer edge_d, Pointer unit_d);
+		Pointer datum_h3_edge_length(Pointer edge_d, Pointer unit_d);
 
-		int datum_h3_great_circle_distance(Pointer a_d, Pointer b_d, Pointer unit_d);
+		Pointer datum_h3_great_circle_distance(Pointer a_d, Pointer b_d, Pointer unit_d);
 
-		long h3index_in(String str);
+		Pointer json_in(String str);
 
-		String h3index_out(long cell);
+		String json_out(Pointer js);
+
+		Pointer jsonb_from_text(Pointer txt, boolean unique_keys);
+
+		Pointer jsonb_in(String str);
+
+		String jsonb_out(Pointer jb);
+
+		Pointer json_make(Pointer keys_vals, int count);
+
+		Pointer json_make_two_arg(Pointer keys, Pointer values, int count);
+
+		Pointer jsonb_copy(Pointer jb);
+
+		Pointer jsonb_make(Pointer keys_vals, int count);
+
+		Pointer jsonb_make_two_arg(Pointer keys, Pointer values, int count);
+
+		boolean jsonb_to_bool(Pointer jb);
+
+		String jsonb_to_cstring(Pointer jb);
+
+		int jsonb_to_float4(Pointer jb);
+
+		int jsonb_to_float8(Pointer jb);
+
+		short jsonb_to_int16(Pointer jb);
+
+		int jsonb_to_int32(Pointer jb);
+
+		long jsonb_to_int64(Pointer jb);
+
+		int jsonb_to_numeric(Pointer jb);
+
+		Pointer jsonb_to_text(Pointer jb);
+
+		Pointer json_array_element(Pointer js, int element);
+
+		Pointer json_array_element_text(Pointer js, int element);
+
+		Pointer json_array_elements(Pointer js, Pointer count);
+
+		Pointer json_array_elements_text(Pointer js, Pointer count);
+
+		int json_array_length(Pointer js);
+
+		Pointer json_each(Pointer js, Pointer values, Pointer count);
+
+		Pointer json_each_text(Pointer js, Pointer values, Pointer count);
+
+		Pointer json_extract_path(Pointer js, Pointer path_elems, int path_len);
+
+		Pointer json_extract_path_text(Pointer js, Pointer path_elems, int path_len);
+
+		Pointer json_object_field(Pointer js, Pointer key);
+
+		Pointer json_object_field_text(Pointer js, Pointer key);
+
+		Pointer json_object_keys(Pointer js, Pointer count);
+
+		Pointer json_typeof(Pointer js);
+
+		Pointer jsonb_array_element(Pointer jb, int element);
+
+		Pointer jsonb_array_element_text(Pointer jb, int element);
+
+		Pointer jsonb_array_elements(Pointer jb, Pointer count);
+
+		Pointer jsonb_array_elements_text(Pointer jb, Pointer count);
+
+		int jsonb_array_length(Pointer jb);
+
+		boolean jsonb_contained(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_contains(Pointer jb1, Pointer jb2);
+
+		Pointer jsonb_each(Pointer jb, Pointer values, Pointer count);
+
+		Pointer jsonb_each_text(Pointer jb, Pointer values, Pointer count);
+
+		boolean jsonb_exists(Pointer jb, Pointer key);
+
+		boolean jsonb_exists_array(Pointer jb, Pointer keys_elems, int keys_len, boolean any);
+
+		Pointer jsonb_extract_path(Pointer jb, Pointer path_elems, int path_len);
+
+		Pointer jsonb_extract_path_text(Pointer jb, Pointer path_elems, int path_len);
+
+		int jsonb_hash(Pointer jb);
+
+		int jsonb_hash_extended(Pointer jb, int seed);
+
+		Pointer jsonb_object_field(Pointer jb, Pointer key);
+
+		Pointer jsonb_object_field_text(Pointer jb, Pointer key);
+
+		Pointer jsonb_object_keys(Pointer jb, Pointer count);
+
+		Pointer json_strip_nulls(Pointer js, boolean strip_in_arrays);
+
+		Pointer jsonb_concat(Pointer jb1, Pointer jb2);
+
+		Pointer jsonb_delete(Pointer jb, Pointer key);
+
+		Pointer jsonb_delete_array(Pointer jb, Pointer keys_elems, int keys_len);
+
+		Pointer jsonb_delete_index(Pointer jb, int idx);
+
+		Pointer jsonb_delete_path(Pointer jb, Pointer path_elems, int path_len);
+
+		Pointer jsonb_insert(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean after);
+
+		Pointer jsonb_pretty(Pointer jb);
+
+		Pointer jsonb_set(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean create);
+
+		Pointer jsonb_set_lax(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean create, Pointer handle_null);
+
+		Pointer jsonb_strip_nulls(Pointer jb, boolean strip_in_arrays);
+
+		int jsonb_cmp(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_eq(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_ge(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_gt(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_le(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_lt(Pointer jb1, Pointer jb2);
+
+		boolean jsonb_ne(Pointer jb1, Pointer jb2);
+
+		int jsonb_path_exists(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		boolean jsonb_path_match(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonb_path_query_all(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonb_path_query_array(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonb_path_query_first(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonpath_in(String str);
+
+		Pointer jsonpath_copy(Pointer jp);
+
+		String jsonpath_out(Pointer jp);
+
+		Pointer jsonbset_in(String str);
+
+		String jsonbset_out(Pointer s, int maxdd);
+
+		Pointer jsonbset_make(Pointer values, int count);
+
+		Pointer jsonb_to_set(Pointer jb);
+
+		Pointer jsonbset_end_value(Pointer s);
+
+		Pointer jsonbset_start_value(Pointer s);
+
+		boolean jsonbset_value_n(Pointer s, int n, Pointer result);
+
+		Pointer jsonbset_values(Pointer s);
+
+		Pointer concat_jsonbset_jsonb(Pointer s, Pointer jb, boolean invert);
+
+		Pointer jsonbset_array_length(Pointer set);
+
+		Pointer jsonbset_object_field(Pointer set, Pointer key, boolean astext, int null_handle);
+
+		Pointer jsonbset_array_element(Pointer set, int idx, boolean astext, int null_handle);
+
+		Pointer jsonbset_delete_index(Pointer set, int idx);
+
+		Pointer jsonbset_delete(Pointer set, Pointer key);
+
+		Pointer jsonbset_delete_array(Pointer set, Pointer keys, int count);
+
+		Pointer jsonbset_exists(Pointer set, Pointer key);
+
+		Pointer jsonbset_exists_array(Pointer set, Pointer keys, int count, boolean any);
+
+		Pointer jsonbset_set(Pointer set, Pointer keys, int count, Pointer newjb, boolean create, Pointer null_handle, boolean lax);
+
+		Pointer jsonbset_to_alphanumset(Pointer set, String key, int settype, int null_handle);
+
+		Pointer jsonbset_to_intset(Pointer set, String key, int null_handle);
+
+		Pointer jsonbset_to_floatset(Pointer set, String key, int null_handle);
+
+		Pointer jsonbset_to_textset_key(Pointer set, String key, int null_handle);
+
+		Pointer jsonbset_strip_nulls(Pointer set, boolean strip_in_arrays);
+
+		Pointer jsonbset_pretty(Pointer set);
+
+		Pointer jsonbset_delete_path(Pointer set, Pointer path_elems, int path_len);
+
+		Pointer jsonbset_extract_path(Pointer set, Pointer path_elems, int path_len, boolean astext, int null_handle);
+
+		Pointer jsonbset_insert(Pointer set, Pointer path_elems, int path_len, Pointer newjb, boolean after);
+
+		Pointer jsonbset_path_exists(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonbset_path_match(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonbset_path_query_array(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer jsonbset_path_query_first(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		boolean contained_jsonb_set(Pointer jb, Pointer s);
+
+		boolean contains_set_jsonb(Pointer s, Pointer jb);
+
+		Pointer intersection_jsonb_set(Pointer jb, Pointer s);
+
+		Pointer intersection_set_jsonb(Pointer s, Pointer jb);
+
+		Pointer jsonb_union_transfn(Pointer state, Pointer jb);
+
+		Pointer minus_jsonb_set(Pointer jb, Pointer s);
+
+		Pointer minus_set_jsonb(Pointer s, Pointer jb);
+
+		Pointer union_jsonb_set(Pointer jb, Pointer s);
+
+		Pointer union_set_jsonb(Pointer s, Pointer jb);
+
+		Pointer tjsonb_from_mfjson(String str);
+
+		Pointer tjsonb_in(String str);
+
+		String tjsonb_out(Pointer temp);
+
+		Pointer tjsonbinst_from_mfjson(Pointer mfjson);
+
+		Pointer tjsonbinst_in(String str);
+
+		Pointer tjsonbseq_from_mfjson(Pointer mfjson);
+
+		Pointer tjsonbseq_in(String str, int interp);
+
+		Pointer tjsonbseqset_from_mfjson(Pointer mfjson);
+
+		Pointer tjsonbseqset_in(String str);
+
+		Pointer tjsonb_from_base_temp(Pointer jsonb, Pointer temp);
+
+		Pointer tjsonbinst_make(Pointer jsonb, long t);
+
+		Pointer tjsonbseq_from_base_tstzset(Pointer jsonb, Pointer s);
+
+		Pointer tjsonbseq_from_base_tstzspan(Pointer jsonb, Pointer sp);
+
+		Pointer tjsonbseqset_from_base_tstzspanset(Pointer jsonb, Pointer ss);
+
+		Pointer tjsonb_to_ttext(Pointer temp);
+
+		Pointer ttext_to_tjsonb(Pointer temp);
+
+		Pointer tjsonb_end_value(Pointer temp);
+
+		Pointer tjsonb_start_value(Pointer temp);
+
+		boolean tjsonb_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+
+		boolean tjsonb_value_n(Pointer temp, int n, Pointer result);
+
+		Pointer tjsonb_values(Pointer temp, Pointer count);
+
+		Pointer concat_tjsonb_jsonb(Pointer temp, Pointer jb, boolean invert);
+
+		Pointer concat_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		Pointer contains_tjsonb_jsonb(Pointer temp, Pointer jb, boolean invert);
+
+		Pointer contains_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		int null_handle_type_from_string(String str);
+
+		Pointer tjson_array_element(Pointer temp, int idx, int null_handle);
+
+		Pointer tjson_array_length(Pointer temp);
+
+		Pointer tjson_extract_path(Pointer temp, Pointer path_elems, int path_len, int null_handle);
+
+		Pointer tjson_object_field(Pointer temp, Pointer key, boolean astext, int null_handle);
+
+		Pointer tjson_strip_nulls(Pointer temp, boolean strip_in_arrays);
+
+		Pointer tjsonb_array_element(Pointer temp, int idx, boolean astext, int null_handle);
+
+		Pointer tjsonb_array_length(Pointer temp);
+
+		Pointer tjsonb_delete(Pointer temp, Pointer key);
+
+		Pointer tjsonb_delete_array(Pointer temp, Pointer keys, int count);
+
+		Pointer tjsonb_delete_index(Pointer temp, int idx);
+
+		Pointer tjsonb_delete_path(Pointer temp, Pointer path_elems, int path_len);
+
+		Pointer tjsonb_exists(Pointer temp, Pointer key);
+
+		Pointer tjsonb_exists_array(Pointer temp, Pointer keys, int count, boolean any);
+
+		Pointer tjsonb_extract_path(Pointer temp, Pointer path_elems, int path_len, boolean astext, int null_handle);
+
+		Pointer tjsonb_insert(Pointer temp, Pointer keys, int count, Pointer newjb, boolean after);
+
+		Pointer tjsonb_object_field(Pointer temp, Pointer key, boolean astext, int null_handle);
+
+		Pointer tjsonb_path_exists(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer tjsonb_path_match(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer tjsonb_path_query_array(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer tjsonb_path_query_first(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz);
+
+		Pointer tjsonb_pretty(Pointer temp);
+
+		Pointer tjsonb_set(Pointer temp, Pointer keys, int count, Pointer newjb, boolean create, Pointer handle_null, boolean lax);
+
+		Pointer tjsonb_strip_nulls(Pointer temp, boolean strip_in_arrays);
+
+		Pointer tjsonb_to_tbool(Pointer temp, String key, int null_handle);
+
+		Pointer tjsonb_to_tfloat(Pointer temp, String key, int interp, int null_handle);
+
+		Pointer tjsonb_to_tint(Pointer temp, String key, int null_handle);
+
+		Pointer tjsonb_to_ttext_key(Pointer temp, String key, int null_handle);
+
+		Pointer tjsonb_at_value(Pointer temp, Pointer jsb);
+
+		Pointer tjsonb_minus_value(Pointer temp, Pointer jsb);
+
+		int always_eq_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		int always_eq_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		int always_eq_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		int always_ne_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		int always_ne_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		int always_ne_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		int ever_eq_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		int ever_eq_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		int ever_eq_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		int ever_ne_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		int ever_ne_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		int ever_ne_tjsonb_tjsonb(Pointer temp1, Pointer temp2);
+
+		Pointer teq_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		Pointer teq_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		Pointer tne_jsonb_tjsonb(Pointer jb, Pointer temp);
+
+		Pointer tne_tjsonb_jsonb(Pointer temp, Pointer jb);
+
+		Pointer setPath(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int op_type);
+
+		void setPathObject(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int npairs, int op_type);
+
+		void setPathArray(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int nelems, int op_type);
+
+		Pointer datum_jsonb_concat(Pointer l, Pointer r);
+
+		Pointer datum_jsonb_contained(Pointer l, Pointer r);
+
+		Pointer datum_jsonb_contains(Pointer l, Pointer r);
+
+		Pointer datum_jsonb_delete(Pointer jb, Pointer key);
+
+		Pointer datum_jsonb_delete_array(Pointer jb, Pointer array, Pointer count);
+
+		Pointer datum_jsonb_delete_index(Pointer jb, Pointer idx);
+
+		Pointer datum_json_array_element(Pointer txt, Pointer element);
+
+		Pointer datum_jsonb_array_element(Pointer jb, Pointer element);
+
+		Pointer datum_json_array_element_text(Pointer txt, Pointer element);
+
+		Pointer datum_jsonb_array_element_text(Pointer jb, Pointer element);
+
+		Pointer datum_jsonb_exists(Pointer l, Pointer r);
+
+		Pointer datum_jsonb_exists_array(Pointer value, Pointer array, Pointer count, Pointer any);
+
+		Pointer datum_json_array_length(Pointer txt);
+
+		Pointer datum_jsonb_array_length(Pointer txt);
+
+		Pointer datum_json_object_field(Pointer txt, Pointer key);
+
+		Pointer datum_jsonb_object_field(Pointer jb, Pointer key);
+
+		Pointer datum_json_object_field_text(Pointer txt, Pointer key);
+
+		Pointer datum_jsonb_object_field_text(Pointer jb, Pointer key);
+
+		Pointer datum_json_strip_nulls(Pointer txt, Pointer strip_in_arrays);
+
+		Pointer datum_jsonb_strip_nulls(Pointer jb, Pointer strip_in_arrays);
+
+		Pointer datum_jsonb_pretty(Pointer jb);
+
+		Pointer datum_json_extract_path(Pointer txt, Pointer path_elems, Pointer path_len);
+
+		Pointer datum_jsonb_extract_path(Pointer jb, Pointer path_elems, Pointer path_len);
+
+		Pointer datum_json_extract_path_text(Pointer txt, Pointer path_elems, Pointer path_len);
+
+		Pointer datum_jsonb_extract_path_text(Pointer jb, Pointer path_elems, Pointer path_len);
+
+		Pointer datum_jsonb_set(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer create);
+
+		Pointer datum_jsonb_set_lax(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer create, Pointer null_handle);
+
+		Pointer datum_jsonb_delete_path(Pointer jb, Pointer keys, Pointer count);
+
+		Pointer datum_jsonb_insert(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer after);
+
+		Pointer datum_jsonb_path_exists(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz);
+
+		Pointer datum_jsonb_path_match(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz);
+
+		Pointer datum_jsonb_path_query_array(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz);
+
+		Pointer datum_jsonb_path_query_first(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz);
+
+		Pointer datum_jsonb_to_text(Pointer jb);
+
+		Pointer datum_text_to_jsonb(Pointer txt);
+
+		Pointer datum_jsonb_to_alphanum(Pointer jb, Pointer key, Pointer temptype, Pointer null_handle);
+
+		Pointer tjsonb_to_talphanum(Pointer temp, String key, int resbasetype, int interp, int null_handle);
+
+		Pointer jsonbfunc_jsonbset(Pointer s, int func, int intype, int restype);
+
+		Pointer jsonbfunc_jsonbset_jsonb(Pointer s, Pointer jb, Pointer func, boolean invert);
+
+		Pointer jsonbfunc_jsonbset_text(Pointer s, Pointer txt, Pointer func);
 
 		Pointer th3index_in(String str);
 
@@ -5891,7 +6439,7 @@ public class GeneratedFunctions {
 
 		Pointer geo_to_h3index_set(Pointer gs, int resolution);
 
-		int ever_eq_anyof_h3indexset_th3index(Pointer cells, Pointer th3idx);
+		int ever_eq_h3indexset_th3index(Pointer cells, Pointer th3idx);
 
 		Pointer th3index_are_neighbor_cells(Pointer origin, Pointer dest);
 
@@ -5925,31 +6473,33 @@ public class GeneratedFunctions {
 
 		Pointer proj_get_context();
 
-		int datum_geo_round(Pointer value, Pointer size);
+		Pointer geos_get_context();
+
+		Pointer datum_geo_round(Pointer value, Pointer size);
 
 		Pointer point_round(Pointer gs, int maxdd);
 
-		void stbox_set(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer s, Pointer box);
+		void stbox_set(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer s, Pointer result);
 
 		void gbox_set_stbox(Pointer box, int srid, Pointer result);
 
-		boolean geo_set_stbox(Pointer gs, Pointer box);
+		boolean geo_set_stbox(Pointer gs, Pointer result);
 
-		void geoarr_set_stbox(Pointer values, int count, Pointer box);
+		void geoarr_set_stbox(Pointer values, int count, Pointer result);
 
-		boolean spatial_set_stbox(Pointer d, int basetype, Pointer box);
+		boolean spatial_set_stbox(Pointer d, int basetype, Pointer result);
 
-		void spatialset_set_stbox(Pointer set, Pointer box);
+		void spatialset_set_stbox(Pointer set, Pointer result);
 
-		void stbox_set_box3d(Pointer box, Pointer box3d);
+		void stbox_set_box3d(Pointer box, Pointer result);
 
-		void stbox_set_gbox(Pointer box, Pointer gbox);
+		void stbox_set_gbox(Pointer box, Pointer result);
 
-		void tstzset_set_stbox(Pointer s, Pointer box);
+		void tstzset_set_stbox(Pointer s, Pointer result);
 
-		void tstzspan_set_stbox(Pointer s, Pointer box);
+		void tstzspan_set_stbox(Pointer s, Pointer result);
 
-		void tstzspanset_set_stbox(Pointer s, Pointer box);
+		void tstzspanset_set_stbox(Pointer s, Pointer result);
 
 		void stbox_expand(Pointer box1, Pointer box2);
 
@@ -6003,7 +6553,7 @@ public class GeneratedFunctions {
 
 		Pointer tgeometryseqset_in(String str);
 
-		void tspatial_set_stbox(Pointer temp, Pointer box);
+		void tspatial_set_stbox(Pointer temp, Pointer result);
 
 		void tspatialseq_set_stbox(Pointer seq, Pointer box);
 
@@ -6030,6 +6580,10 @@ public class GeneratedFunctions {
 		int spatial_srid(Pointer d, int basetype);
 
 		boolean spatial_set_srid(Pointer d, int basetype, int srid);
+
+	}
+
+	public interface MeosLibraryPartD {
 
 		int tspatialinst_srid(Pointer inst);
 
@@ -6119,15 +6673,11 @@ public class GeneratedFunctions {
 
 		Pointer nsegment_to_geom(Pointer ns);
 
-		Pointer nsegment_to_stbox(Pointer np);
+		Pointer nsegment_to_stbox(Pointer ns);
 
 		int npoint_hash(Pointer np);
 
 		int npoint_hash_extended(Pointer np, int seed);
-
-	}
-
-	public interface MeosLibraryPartD {
 
 		double npoint_position(Pointer np);
 
@@ -6205,7 +6755,7 @@ public class GeneratedFunctions {
 
 		boolean npointset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer npointset_values(Pointer s);
+		Pointer npointset_values(Pointer s, Pointer count);
 
 		boolean contained_npoint_set(Pointer np, Pointer s);
 
@@ -6263,7 +6813,7 @@ public class GeneratedFunctions {
 
 		Pointer tnpoint_trajectory(Pointer temp);
 
-		boolean tnpoint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tnpoint_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tnpoint_value_n(Pointer temp, int n, Pointer result);
 
@@ -6289,7 +6839,7 @@ public class GeneratedFunctions {
 
 		Pointer tdistance_tnpoint_npoint(Pointer temp, Pointer np);
 
-		Pointer tdistance_tnpoint_point(Pointer temp, Pointer gs);
+		Pointer tdistance_tnpoint_geo(Pointer temp, Pointer gs);
 
 		Pointer tdistance_tnpoint_tnpoint(Pointer temp1, Pointer temp2);
 
@@ -6649,7 +7199,7 @@ public class GeneratedFunctions {
 
 		int pose_hash_extended(Pointer pose, int seed);
 
-		Pointer pose_orientation(Pointer pose);
+		Pointer pose_orientation(Pointer pose, Pointer count);
 
 		double pose_rotation(Pointer pose);
 
@@ -6717,7 +7267,7 @@ public class GeneratedFunctions {
 
 		boolean poseset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer poseset_values(Pointer s);
+		Pointer poseset_values(Pointer s, Pointer count);
 
 		boolean contained_pose_set(Pointer pose, Pointer s);
 
@@ -6775,7 +7325,7 @@ public class GeneratedFunctions {
 
 		Pointer tpose_trajectory(Pointer temp);
 
-		boolean tpose_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer value);
+		boolean tpose_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
 
 		boolean tpose_value_n(Pointer temp, int n, Pointer result);
 
@@ -6795,7 +7345,7 @@ public class GeneratedFunctions {
 
 		Pointer tdistance_tpose_pose(Pointer temp, Pointer pose);
 
-		Pointer tdistance_tpose_point(Pointer temp, Pointer gs);
+		Pointer tdistance_tpose_geo(Pointer temp, Pointer gs);
 
 		Pointer tdistance_tpose_tpose(Pointer temp1, Pointer temp2);
 
@@ -6851,13 +7401,9 @@ public class GeneratedFunctions {
 
 		Pointer tne_tpose_pose(Pointer temp, Pointer pose);
 
-		Pointer trgeometry_in(String str);
-
-		Pointer trgeometry_from_mfjson(String mfjson);
-
 		String trgeometry_out(Pointer temp);
 
-		Pointer trgeometryinst_make(Pointer geom, Pointer pose, long t);
+		Pointer trgeoinst_make(Pointer geom, Pointer pose, long t);
 
 		Pointer geo_tpose_to_trgeometry(Pointer gs, Pointer temp);
 
@@ -6905,6 +7451,34 @@ public class GeneratedFunctions {
 
 		Pointer trgeometry_body_point_trajectory(Pointer temp, Pointer gs);
 
+		Pointer trgeometry_space_boxes(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer count);
+
+		Pointer trgeometry_space_time_boxes(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer count);
+
+		Pointer trgeometry_stboxes(Pointer temp, Pointer count);
+
+		Pointer trgeometry_split_n_stboxes(Pointer temp, int box_count, Pointer count);
+
+		Pointer trgeometry_split_each_n_stboxes(Pointer temp, int elem_count, Pointer count);
+
+		double trgeometry_hausdorff_distance(Pointer temp1, Pointer temp2);
+
+		double trgeometry_frechet_distance(Pointer temp1, Pointer temp2);
+
+		double trgeometry_dyntimewarp_distance(Pointer temp1, Pointer temp2);
+
+		Pointer trgeometry_frechet_path(Pointer temp1, Pointer temp2, Pointer count);
+
+		Pointer trgeometry_dyntimewarp_path(Pointer temp1, Pointer temp2, Pointer count);
+
+		double trgeometry_length(Pointer temp);
+
+		Pointer trgeometry_cumulative_length(Pointer temp);
+
+		Pointer trgeometry_speed(Pointer temp);
+
+		Pointer trgeometry_twcentroid(Pointer temp);
+
 		Pointer trgeometry_append_tinstant(Pointer temp, Pointer inst, int interp, double maxdist, Pointer maxt, boolean expand);
 
 		Pointer trgeometry_append_tsequence(Pointer temp, Pointer seq, boolean expand);
@@ -6926,8 +7500,6 @@ public class GeneratedFunctions {
 		Pointer trgeometry_after_timestamptz(Pointer temp, long t, boolean strict);
 
 		Pointer trgeometry_before_timestamptz(Pointer temp, long t, boolean strict);
-
-		Pointer trgeometry_restrict_value(Pointer temp, Pointer value, boolean atfunc);
 
 		Pointer trgeometry_restrict_values(Pointer temp, Pointer s, boolean atfunc);
 
@@ -6975,16 +7547,6 @@ public class GeneratedFunctions {
 
 		Pointer shortestline_trgeometry_trgeometry(Pointer temp1, Pointer temp2);
 
-		double trgeometry_hausdorff_distance(Pointer temp1, Pointer temp2);
-
-		double trgeometry_frechet_distance(Pointer temp1, Pointer temp2);
-
-		double trgeometry_dyntimewarp_distance(Pointer temp1, Pointer temp2);
-
-		Pointer trgeometry_frechet_path(Pointer temp1, Pointer temp2, Pointer count);
-
-		Pointer trgeometry_dyntimewarp_path(Pointer temp1, Pointer temp2, Pointer count);
-
 		int always_eq_geo_trgeometry(Pointer gs, Pointer temp);
 
 		int always_eq_trgeometry_geo(Pointer temp, Pointer gs);
@@ -7021,14 +7583,6 @@ public class GeneratedFunctions {
 
 		int acontains_geo_trgeo(Pointer gs, Pointer temp);
 
-		int econtains_trgeo_geo(Pointer temp, Pointer gs);
-
-		int acontains_trgeo_geo(Pointer temp, Pointer gs);
-
-		int econtains_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
-		int acontains_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
 		int ecovers_geo_trgeo(Pointer gs, Pointer temp);
 
 		int acovers_geo_trgeo(Pointer gs, Pointer temp);
@@ -7037,41 +7591,17 @@ public class GeneratedFunctions {
 
 		int acovers_trgeo_geo(Pointer temp, Pointer gs);
 
-		int ecovers_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
-		int acovers_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
-		int edisjoint_geo_trgeo(Pointer gs, Pointer temp);
-
-		int adisjoint_geo_trgeo(Pointer gs, Pointer temp);
-
 		int edisjoint_trgeo_geo(Pointer temp, Pointer gs);
 
 		int adisjoint_trgeo_geo(Pointer temp, Pointer gs);
-
-		int eintersects_geo_trgeo(Pointer gs, Pointer temp);
-
-		int aintersects_geo_trgeo(Pointer gs, Pointer temp);
 
 		int eintersects_trgeo_geo(Pointer temp, Pointer gs);
 
 		int aintersects_trgeo_geo(Pointer temp, Pointer gs);
 
-		int etouches_geo_trgeo(Pointer gs, Pointer temp);
-
-		int atouches_geo_trgeo(Pointer gs, Pointer temp);
-
 		int etouches_trgeo_geo(Pointer temp, Pointer gs);
 
 		int atouches_trgeo_geo(Pointer temp, Pointer gs);
-
-		int etouches_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
-		int atouches_trgeo_trgeo(Pointer temp1, Pointer temp2);
-
-		int edwithin_geo_trgeo(Pointer gs, Pointer temp, double dist);
-
-		int adwithin_geo_trgeo(Pointer gs, Pointer temp, double dist);
 
 		int edwithin_trgeo_geo(Pointer temp, Pointer gs, double dist);
 
@@ -7125,7 +7655,7 @@ public class GeneratedFunctions {
 
 		void nsegment_set(long rid, double pos1, double pos2, Pointer ns);
 
-		int datum_npoint_round(Pointer npoint, Pointer size);
+		Pointer datum_npoint_round(Pointer npoint, Pointer size);
 
 		Pointer tnpointinst_tgeompointinst(Pointer inst);
 
@@ -7181,7 +7711,7 @@ public class GeneratedFunctions {
 
 		void tnpointseq_expand_stbox(Pointer seq, Pointer inst);
 
-		int datum_npoint_distance(Pointer np1, Pointer np2);
+		Pointer datum_npoint_distance(Pointer np1, Pointer np2);
 
 		Pointer npoint_parse(Pointer str, boolean end);
 
@@ -7245,7 +7775,7 @@ public class GeneratedFunctions {
 
 		Pointer meos_pc_point_deserialize(Pointer serpt, Pointer schema);
 
-		int meos_pc_patch_serialized_size(Pointer patch);
+		long meos_pc_patch_serialized_size(Pointer patch);
 
 		Pointer meos_pc_patch_serialize(Pointer patch_in, Pointer userdata);
 
@@ -7299,21 +7829,21 @@ public class GeneratedFunctions {
 
 		Pointer pose_parse(Pointer str, boolean end);
 
-		int datum_pose_point(Pointer pose);
+		Pointer datum_pose_point(Pointer pose);
 
-		int datum_pose_rotation(Pointer pose);
+		Pointer datum_pose_rotation(Pointer pose);
 
-		int datum_pose_yaw(Pointer pose);
+		Pointer datum_pose_yaw(Pointer pose);
 
-		int datum_pose_pitch(Pointer pose);
+		Pointer datum_pose_pitch(Pointer pose);
 
-		int datum_pose_roll(Pointer pose);
+		Pointer datum_pose_roll(Pointer pose);
 
-		int datum_pose_apply_geo(Pointer pose, Pointer body);
+		Pointer datum_pose_apply_geo(Pointer pose, Pointer body);
 
-		int datum_pose_round(Pointer pose, Pointer size);
+		Pointer datum_pose_round(Pointer pose, Pointer size);
 
-		int pose_distance(Pointer pose1, Pointer pose2);
+		Pointer pose_distance(Pointer pose1, Pointer pose2);
 
 		boolean pose_set_stbox(Pointer pose, Pointer box);
 
@@ -7351,7 +7881,7 @@ public class GeneratedFunctions {
 
 		int date_in(String str);
 
-		String date_out(int d);
+		String date_out(int date);
 
 		int interval_cmp(Pointer interv1, Pointer interv2);
 
@@ -7361,15 +7891,15 @@ public class GeneratedFunctions {
 
 		Pointer time_in(String str, int typmod);
 
-		String time_out(Pointer t);
+		String time_out(Pointer time);
 
 		long timestamp_in(String str, int typmod);
 
-		String timestamp_out(long t);
+		String timestamp_out(long ts);
 
 		long timestamptz_in(String str, int typmod);
 
-		String timestamptz_out(long t);
+		String timestamptz_out(long tstz);
 
 		boolean ensure_has_geom(short flags);
 
@@ -7391,13 +7921,13 @@ public class GeneratedFunctions {
 
 		Pointer geo_tposeseqset_to_trgeo(Pointer gs, Pointer ss);
 
-		Pointer geom_apply_pose(Pointer gs, Pointer pose);
-
 		boolean trgeo_value_at_timestamptz(Pointer temp, long t, boolean strict, Pointer result);
+
+		Pointer trgeometry_restrict_value(Pointer temp, Pointer value, boolean atfunc);
 
 		Pointer trgeoinst_geom_p(Pointer inst);
 
-		int trgeoinst_pose_varsize(Pointer inst);
+		long trgeoinst_pose_varsize(Pointer inst);
 
 		void trgeoinst_set_pose(Pointer inst);
 
@@ -7451,7 +7981,7 @@ public class GeneratedFunctions {
 
 		Pointer trgeoseq_geom_p(Pointer seq);
 
-		int trgeoseq_pose_varsize(Pointer seq);
+		long trgeoseq_pose_varsize(Pointer seq);
 
 		void trgeoseq_set_pose(Pointer seq);
 
@@ -7501,12 +8031,6 @@ public class GeneratedFunctions {
 
 		void trgeoinstarr_compute_bbox(Pointer geom, Pointer instants, int count, int interp, Pointer box);
 
-		Pointer trgeo_stboxes(Pointer temp, Pointer count);
-
-		Pointer trgeo_split_n_stboxes(Pointer temp, int box_count, Pointer count);
-
-		Pointer trgeo_split_each_n_stboxes(Pointer temp, int elems_per_box, Pointer count);
-
 		boolean ensure_span_isof_type(Pointer s, int spantype);
 
 		boolean ensure_span_isof_basetype(Pointer s, int basetype);
@@ -7525,9 +8049,9 @@ public class GeneratedFunctions {
 
 		int span_upper_cmp(Pointer s1, Pointer s2);
 
-		int span_decr_bound(Pointer upper, int basetype);
+		Pointer span_decr_bound(Pointer upper, int basetype);
 
-		int span_incr_bound(Pointer upper, int basetype);
+		Pointer span_incr_bound(Pointer upper, int basetype);
 
 		Pointer spanarr_normalize(Pointer spans, int count, boolean sort, Pointer newcount);
 
@@ -7571,6 +8095,8 @@ public class GeneratedFunctions {
 
 		void lwgeom_apply_pose(Pointer pose, Pointer geom);
 
+		Pointer geom_apply_pose(Pointer gs, Pointer pose);
+
 		double geom_radius(Pointer gs);
 
 		int v_clip_tpoly_point(Pointer poly, Pointer point, Pointer pose, Pointer poly_feature, Pointer dist);
@@ -7609,43 +8135,7 @@ public class GeneratedFunctions {
 
 		int eafunc_temporal_temporal(Pointer temp1, Pointer temp2, Pointer lfinfo);
 
-		int int4_in(String str);
-
-		String int4_out(int val);
-
-		long int8_in(String str);
-
-		String int8_out(long val);
-
-		int float8_in(String num, String type_name, String orig_string);
-
-		int pg_dsin(int arg1);
-
-		int pg_dcos(int arg1);
-
-		int pg_datan(int arg1);
-
-		int pg_datan2(int arg1, int arg2);
-
-		Pointer interval_negate(Pointer interval);
-
-		Pointer pg_interval_justify_hours(Pointer span);
-
-		int hash_bytes_uint32(int k);
-
-		int pg_hashint8(long val);
-
-		int pg_hashfloat8(int key);
-
-		long hash_bytes_uint32_extended(int k, long seed);
-
-		long pg_hashint8extended(long val, long seed);
-
-		long pg_hashfloat8extended(int key, long seed);
-
-		int pg_hashtext(Pointer key);
-
-		long pg_hashtextextended(Pointer key, long seed);
+		Pointer lfunc_set(Pointer set, Pointer lfinfo);
 
 		String set_out_fn(Pointer s, int maxdd, Pointer value_out);
 
@@ -7673,6 +8163,38 @@ public class GeneratedFunctions {
 
 		boolean span_index_recheck(int strategy);
 
+		int span_lower_qsort_cmp(Pointer a, Pointer b);
+
+		int span_upper_qsort_cmp(Pointer a, Pointer b);
+
+		byte getQuadrant2D(Pointer centroid, Pointer query);
+
+		boolean overlap2D(Pointer nodebox, Pointer query);
+
+		boolean contain2D(Pointer nodebox, Pointer query);
+
+		boolean left2D(Pointer nodebox, Pointer query);
+
+		boolean overLeft2D(Pointer nodebox, Pointer query);
+
+		boolean right2D(Pointer nodebox, Pointer query);
+
+		boolean overRight2D(Pointer nodebox, Pointer query);
+
+		boolean adjacent2D(Pointer nodebox, Pointer query);
+
+		double distance_span_nodespan(Pointer query, Pointer nodebox);
+
+		boolean span_spgist_get_span(Pointer value, int type, Pointer result);
+
+		void spannode_init(Pointer nodebox, int spantype, int basetype);
+
+		Pointer spannode_copy(Pointer orig);
+
+		void spannode_quadtree_next(Pointer nodebox, Pointer centroid, byte quadrant, Pointer next_nodespan);
+
+		void spannode_kdtree_next(Pointer nodebox, Pointer centroid, byte node, int level, Pointer next_nodespan);
+
 		boolean ensure_spanset_isof_type(Pointer ss, int spansettype);
 
 		boolean ensure_same_spanset_type(Pointer ss1, Pointer ss2);
@@ -7685,9 +8207,9 @@ public class GeneratedFunctions {
 
 		boolean spanset_find_value(Pointer ss, Pointer v, Pointer loc);
 
-		int datum_and(Pointer l, Pointer r);
+		Pointer datum_and(Pointer l, Pointer r);
 
-		int datum_or(Pointer l, Pointer r);
+		Pointer datum_or(Pointer l, Pointer r);
 
 		Pointer boolop_tbool_bool(Pointer temp, Pointer b, Pointer func, boolean invert);
 
@@ -7711,33 +8233,77 @@ public class GeneratedFunctions {
 
 		boolean tbox_index_recheck(int strategy);
 
-		int datum_min_int32(Pointer l, Pointer r);
+		void tboxnode_init(Pointer centroid, Pointer nodebox);
 
-		int datum_max_int32(Pointer l, Pointer r);
+		Pointer tboxnode_copy(Pointer box);
 
-		int datum_min_int64(Pointer l, Pointer r);
+		byte getQuadrant4D(Pointer centroid, Pointer inBox);
 
-		int datum_max_int64(Pointer l, Pointer r);
+		void tboxnode_quadtree_next(Pointer nodebox, Pointer centroid, byte quadrant, Pointer next_nodebox);
 
-		int datum_min_float8(Pointer l, Pointer r);
+		void tboxnode_kdtree_next(Pointer nodebox, Pointer centroid, byte node, int level, Pointer next_nodebox);
 
-		int datum_max_float8(Pointer l, Pointer r);
+		boolean overlap4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_int32(Pointer l, Pointer r);
+		boolean contain4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_int64(Pointer l, Pointer r);
+		boolean left4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_float8(Pointer l, Pointer r);
+		boolean overLeft4D(Pointer nodebox, Pointer query);
 
-		int datum_min_text(Pointer l, Pointer r);
+		boolean right4D(Pointer nodebox, Pointer query);
 
-		int datum_max_text(Pointer l, Pointer r);
+		boolean overRight4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_double2(Pointer l, Pointer r);
+		boolean before4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_double3(Pointer l, Pointer r);
+		boolean overBefore4D(Pointer nodebox, Pointer query);
 
-		int datum_sum_double4(Pointer l, Pointer r);
+		boolean after4D(Pointer nodebox, Pointer query);
+
+		boolean overAfter4D(Pointer nodebox, Pointer query);
+
+		double distance_tbox_nodebox(Pointer query, Pointer nodebox);
+
+		void tnumber_spgist_get_tbox(Pointer value, int type, Pointer result);
+
+		int tbox_xmin_cmp(Pointer box1, Pointer box2);
+
+		int tbox_xmax_cmp(Pointer box1, Pointer box2);
+
+		int tbox_tmin_cmp(Pointer box1, Pointer box2);
+
+		int tbox_tmax_cmp(Pointer box1, Pointer box2);
+
+		int tbox_level_cmp(Pointer centroid, Pointer query, int level);
+
+		Pointer datum_min_int32(Pointer l, Pointer r);
+
+		Pointer datum_max_int32(Pointer l, Pointer r);
+
+		Pointer datum_min_int64(Pointer l, Pointer r);
+
+		Pointer datum_max_int64(Pointer l, Pointer r);
+
+		Pointer datum_min_float8(Pointer l, Pointer r);
+
+		Pointer datum_max_float8(Pointer l, Pointer r);
+
+		Pointer datum_sum_int32(Pointer l, Pointer r);
+
+		Pointer datum_sum_int64(Pointer l, Pointer r);
+
+		Pointer datum_sum_float8(Pointer l, Pointer r);
+
+		Pointer datum_min_text(Pointer l, Pointer r);
+
+		Pointer datum_max_text(Pointer l, Pointer r);
+
+		Pointer datum_sum_double2(Pointer l, Pointer r);
+
+		Pointer datum_sum_double3(Pointer l, Pointer r);
+
+		Pointer datum_sum_double4(Pointer l, Pointer r);
 
 		int temporal_skiplist_common(Pointer list, Pointer values, int count, Pointer lower, Pointer upper, Pointer update);
 
@@ -7775,7 +8341,7 @@ public class GeneratedFunctions {
 
 		Pointer temporal_similarity_path(Pointer temp1, Pointer temp2, Pointer count, int simfunc);
 
-		int temporal_bbox_size(int tempype);
+		long temporal_bbox_size(int tempype);
 
 		void tinstarr_set_bbox(Pointer instants, int count, boolean lower_inc, boolean upper_inc, int interp, Pointer bbox);
 
@@ -7887,7 +8453,7 @@ public class GeneratedFunctions {
 
 		long timestamptz_bin_start(long timestamp, long tunits, long torigin);
 
-		int datum_bin(Pointer value, Pointer size, Pointer offset, int basetype);
+		Pointer datum_bin(Pointer value, Pointer size, Pointer offset, int basetype);
 
 		Pointer tnumber_value_time_tile_init(Pointer temp, Pointer vsize, Pointer duration, Pointer vorigin, long torigin, Pointer ntiles);
 
@@ -7919,7 +8485,39 @@ public class GeneratedFunctions {
 
 		boolean intersection_tinstant_tinstant(Pointer inst1, Pointer inst2, Pointer inter1, Pointer inter2);
 
-		int tfloat_arithop_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, long lower, long upper, Pointer t1, Pointer t2);
+		void _mulmat(Pointer a, Pointer b, Pointer c, int arows, int acols, int bcols);
+
+		void _mulvec(Pointer a, Pointer x, Pointer y, int m, int n);
+
+		void _transpose(Pointer a, Pointer at, int m, int n);
+
+		void _addmat(Pointer a, Pointer b, Pointer c, int m, int n);
+
+		void _negate(Pointer a, int m, int n);
+
+		void _addeye(Pointer a, int n);
+
+		int _choldc1(Pointer a, Pointer p, int n);
+
+		int _choldcsl(Pointer A, Pointer a, Pointer p, int n);
+
+		int _cholsl(Pointer A, Pointer a, Pointer p, int n);
+
+		void _addvec(Pointer a, Pointer b, Pointer c, int n);
+
+		void _sub(Pointer a, Pointer b, Pointer c, int n);
+
+		int invert(Pointer a, Pointer ainv);
+
+		void ekf_initialize(Pointer ekf, float pdiag);
+
+		void ekf_predict(Pointer ekf, float fx, float F, float Q);
+
+		void ekf_update_step3(Pointer ekf, float GH);
+
+		int ekf_update(Pointer ekf, float z, float hx, float H, float R);
+
+		int tfloat_arithop_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param);
 
 		Pointer arithop_tnumber_number(Pointer temp, Pointer value, int oper, Pointer func, boolean invert);
 
@@ -7959,7 +8557,7 @@ public class GeneratedFunctions {
 
 		int tsegment_intersection(Pointer start1, Pointer end1, Pointer start2, Pointer end2, int temptype, long lower, long upper, Pointer t1, Pointer t2);
 
-		int tsegment_value_at_timestamptz(Pointer start, Pointer end, int temptype, long lower, long upper, long t);
+		Pointer tsegment_value_at_timestamptz(Pointer start, Pointer end, int temptype, long lower, long upper, long t);
 
 		boolean intersection_tdiscseq_tdiscseq(Pointer seq1, Pointer seq2, Pointer inter1, Pointer inter2);
 
@@ -8019,13 +8617,13 @@ public class GeneratedFunctions {
 
 		String tsequenceset_to_string(Pointer ss, int maxdd, Pointer value_out);
 
-		int datum_textcat(Pointer l, Pointer r);
+		Pointer datum_textcat(Pointer l, Pointer r);
 
-		int datum_lower(Pointer value);
+		Pointer datum_lower(Pointer value);
 
-		int datum_upper(Pointer value);
+		Pointer datum_upper(Pointer value);
 
-		int datum_initcap(Pointer value);
+		Pointer datum_initcap(Pointer value);
 
 		Pointer textfunc_ttext(Pointer temp, int func);
 
@@ -8037,9 +8635,9 @@ public class GeneratedFunctions {
 
 		String datum_as_hexwkb(Pointer value, int type, byte variant, Pointer size);
 
-		int type_from_wkb(Pointer wkb, long size, int type);
+		Pointer type_from_wkb(Pointer wkb, long size, int type);
 
-		int type_from_hexwkb(String hexwkb, long size, int type);
+		Pointer type_from_hexwkb(String hexwkb, long size, int type);
 
 		boolean ensure_end_input(Pointer str, String type);
 
@@ -8095,13 +8693,15 @@ public class GeneratedFunctions {
 
 		Pointer temporal_parse(Pointer str, int temptype);
 
-		int datum_copy(Pointer value, int typid);
+		Pointer datum_copy(Pointer value, int typid);
 
 		double datum_double(Pointer d, int type);
 
-		int double_datum(double d, int type);
+		Pointer double_datum(double d, int type);
 
 		Pointer bstring2bytea(Pointer wkb, long size);
+
+		double meos_strtod(String str, Pointer endptr);
 
 		boolean basetype_in(String str, int type, boolean end, Pointer result);
 
@@ -8109,7 +8709,11 @@ public class GeneratedFunctions {
 
 		void pfree_array(Pointer array, int count);
 
-		String stringarr_to_string(Pointer strings, int count, long outlen, String prefix, String open, String close, boolean quotes, boolean spaces);
+		boolean string_escape(String str, int quotes, Pointer result);
+
+		long string_unescape(String str, Pointer result);
+
+		String stringarr_to_string(Pointer strings, int count, String prefix, String open, String close, int quotes, boolean spaces);
 
 		void datumarr_sort(Pointer values, int count, int basetype);
 
@@ -8127,13 +8731,13 @@ public class GeneratedFunctions {
 
 		int tinstarr_remove_duplicates(Pointer instants, int count);
 
-		int datum_add(Pointer l, Pointer r, int type);
+		Pointer datum_add(Pointer l, Pointer r, int type);
 
-		int datum_sub(Pointer l, Pointer r, int type);
+		Pointer datum_sub(Pointer l, Pointer r, int type);
 
-		int datum_mult(Pointer l, Pointer r, int type);
+		Pointer datum_mul(Pointer l, Pointer r, int type);
 
-		int datum_div(Pointer l, Pointer r, int type);
+		Pointer datum_div(Pointer l, Pointer r, int type);
 
 		int datum_cmp(Pointer l, Pointer r, int type);
 
@@ -8149,17 +8753,17 @@ public class GeneratedFunctions {
 
 		boolean datum_ge(Pointer l, Pointer r, int type);
 
-		int datum2_eq(Pointer l, Pointer r, int type);
+		Pointer datum2_eq(Pointer l, Pointer r, int type);
 
-		int datum2_ne(Pointer l, Pointer r, int type);
+		Pointer datum2_ne(Pointer l, Pointer r, int type);
 
-		int datum2_lt(Pointer l, Pointer r, int type);
+		Pointer datum2_lt(Pointer l, Pointer r, int type);
 
-		int datum2_le(Pointer l, Pointer r, int type);
+		Pointer datum2_le(Pointer l, Pointer r, int type);
 
-		int datum2_gt(Pointer l, Pointer r, int type);
+		Pointer datum2_gt(Pointer l, Pointer r, int type);
 
-		int datum2_ge(Pointer l, Pointer r, int type);
+		Pointer datum2_ge(Pointer l, Pointer r, int type);
 
 		double hypot3d(double x, double y, double z);
 
@@ -8190,6 +8794,40 @@ public class GeneratedFunctions {
 	}
 
 
+
+	@SuppressWarnings("unused")
+	public static void meos_error(int errlevel, int errcode, String format) {
+		_meos_a.meos_error(errlevel, errcode, format);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static int meos_errno() {
+		var _result = _meos_a.meos_errno();
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int meos_errno_set(int err) {
+		var _result = _meos_a.meos_errno_set(err);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int meos_errno_restore(int err) {
+		var _result = _meos_a.meos_errno_restore(err);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int meos_errno_reset() {
+		var _result = _meos_a.meos_errno_reset();
+		MeosErrorHandler.checkError();
+		return _result;
+	}
 
 	@SuppressWarnings("unused")
 	public static Pointer meos_array_create(int elem_size) {
@@ -8337,37 +8975,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void meos_error(int errlevel, int errcode, String format) {
-		_meos_a.meos_error(errlevel, errcode, format);
+	public static void meos_initialize_error_handler(error_handler_fn err_handler) {
+		_meos_a.meos_initialize_error_handler(err_handler);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static int meos_errno() {
-		var _result = _meos_a.meos_errno();
+	public static void meos_initialize_noexit_error_handler() {
+		_meos_a.meos_initialize_noexit_error_handler();
 		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int meos_errno_set(int err) {
-		var _result = _meos_a.meos_errno_set(err);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int meos_errno_restore(int err) {
-		var _result = _meos_a.meos_errno_restore(err);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int meos_errno_reset() {
-		var _result = _meos_a.meos_errno_reset();
-		MeosErrorHandler.checkError();
-		return _result;
 	}
 
 	@SuppressWarnings("unused")
@@ -8377,14 +8993,20 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void meos_initialize_error_handler(error_handler_fn err_handler) {
-		_meos_a.meos_initialize_error_handler(err_handler);
+	public static void meos_initialize_collation() {
+		_meos_a.meos_initialize_collation();
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void meos_finalize_timezone() {
 		_meos_a.meos_finalize_timezone();
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void meos_finalize_collation() {
+		_meos_a.meos_finalize_collation();
 		MeosErrorHandler.checkError();
 	}
 
@@ -8453,309 +9075,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int add_date_int(int d, int days) {
-		var _result = _meos_a.add_date_int(d, days);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer add_interval_interval(Pointer interv1, Pointer interv2) {
-		var _result = _meos_a.add_interval_interval(interv1, interv2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static OffsetDateTime add_timestamptz_interval(OffsetDateTime t, Pointer interv) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.add_timestamptz_interval(t_new, interv);
-		MeosErrorHandler.checkError();
-		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static boolean bool_in(String str) {
-		var _result = _meos_a.bool_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String bool_out(boolean b) {
-		var _result = _meos_a.bool_out(b);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer cstring2text(String str) {
-		var _result = _meos_a.cstring2text(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static LocalDateTime date_to_timestamp(int dateVal) {
-		var _result = _meos_a.date_to_timestamp(dateVal);
-		MeosErrorHandler.checkError();
-		return java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(_result), java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static OffsetDateTime date_to_timestamptz(int d) {
-		var _result = _meos_a.date_to_timestamptz(d);
-		MeosErrorHandler.checkError();
-		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static double float_exp(double d) {
-		var _result = _meos_a.float_exp(d);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double float_ln(double d) {
-		var _result = _meos_a.float_ln(d);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double float_log10(double d) {
-		var _result = _meos_a.float_log10(d);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String float8_out(double d, int maxdd) {
-		var _result = _meos_a.float8_out(d, maxdd);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double float_round(double d, int maxdd) {
-		var _result = _meos_a.float_round(d, maxdd);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int int32_cmp(int l, int r) {
-		var _result = _meos_a.int32_cmp(l, r);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int int64_cmp(long l, long r) {
-		var _result = _meos_a.int64_cmp(l, r);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs) {
-		var _result = _meos_a.interval_make(years, months, weeks, days, hours, mins, secs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int minus_date_date(int d1, int d2) {
-		var _result = _meos_a.minus_date_date(d1, d2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int minus_date_int(int d, int days) {
-		var _result = _meos_a.minus_date_int(d, days);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static OffsetDateTime minus_timestamptz_interval(OffsetDateTime t, Pointer interv) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.minus_timestamptz_interval(t_new, interv);
-		MeosErrorHandler.checkError();
-		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer minus_timestamptz_timestamptz(OffsetDateTime t1, OffsetDateTime t2) {
-		var t1_new = t1.toEpochSecond();
-		var t2_new = t2.toEpochSecond();
-		var _result = _meos_a.minus_timestamptz_timestamptz(t1_new, t2_new);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer mul_interval_double(Pointer interv, double factor) {
-		var _result = _meos_a.mul_interval_double(interv, factor);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_date_in(String str) {
-		var _result = _meos_a.pg_date_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String pg_date_out(int d) {
-		var _result = _meos_a.pg_date_out(d);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_interval_cmp(Pointer interv1, Pointer interv2) {
-		var _result = _meos_a.pg_interval_cmp(interv1, interv2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer pg_interval_in(String str, int typmod) {
-		var _result = _meos_a.pg_interval_in(str, typmod);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String pg_interval_out(Pointer interv) {
-		var _result = _meos_a.pg_interval_out(interv);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static LocalDateTime pg_timestamp_in(String str, int typmod) {
-		var _result = _meos_a.pg_timestamp_in(str, typmod);
-		MeosErrorHandler.checkError();
-		return java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(_result), java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static String pg_timestamp_out(LocalDateTime t) {
-		var t_new = t.toInstant(java.time.ZoneOffset.UTC).getEpochSecond();
-		var _result = _meos_a.pg_timestamp_out(t_new);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static OffsetDateTime pg_timestamptz_in(String str, int typmod) {
-		var _result = _meos_a.pg_timestamptz_in(str, typmod);
-		MeosErrorHandler.checkError();
-		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static String pg_timestamptz_out(OffsetDateTime t) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.pg_timestamptz_out(t_new);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String text2cstring(Pointer txt) {
-		var _result = _meos_a.text2cstring(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int text_cmp(Pointer txt1, Pointer txt2) {
-		var _result = _meos_a.text_cmp(txt1, txt2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer text_copy(Pointer txt) {
-		var _result = _meos_a.text_copy(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer text_in(String str) {
-		var _result = _meos_a.text_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer text_initcap(Pointer txt) {
-		var _result = _meos_a.text_initcap(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer text_lower(Pointer txt) {
-		var _result = _meos_a.text_lower(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String text_out(Pointer txt) {
-		var _result = _meos_a.text_out(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer text_upper(Pointer txt) {
-		var _result = _meos_a.text_upper(txt);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer textcat_text_text(Pointer txt1, Pointer txt2) {
-		var _result = _meos_a.textcat_text_text(txt1, txt2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static OffsetDateTime timestamptz_shift(OffsetDateTime t, Pointer interv) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.timestamptz_shift(t_new, interv);
-		MeosErrorHandler.checkError();
-		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
-	}
-
-	@SuppressWarnings("unused")
-	public static int timestamp_to_date(LocalDateTime t) {
-		var t_new = t.toInstant(java.time.ZoneOffset.UTC).getEpochSecond();
-		var _result = _meos_a.timestamp_to_date(t_new);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int timestamptz_to_date(OffsetDateTime t) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.timestamptz_to_date(t_new);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer bigintset_in(String str) {
 		var _result = _meos_a.bigintset_in(str);
 		MeosErrorHandler.checkError();
@@ -8770,8 +9089,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer bigintspan_expand(Pointer s, long value) {
-		var _result = _meos_a.bigintspan_expand(s, value);
+	public static Pointer bigintspan_expand(Pointer sp, long value) {
+		var _result = _meos_a.bigintspan_expand(sp, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8784,8 +9103,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String bigintspan_out(Pointer s) {
-		var _result = _meos_a.bigintspan_out(s);
+	public static String bigintspan_out(Pointer sp) {
+		var _result = _meos_a.bigintspan_out(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8826,8 +9145,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String datespan_out(Pointer s) {
-		var _result = _meos_a.datespan_out(s);
+	public static String datespan_out(Pointer sp) {
+		var _result = _meos_a.datespan_out(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8861,8 +9180,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_expand(Pointer s, double value) {
-		var _result = _meos_a.floatspan_expand(s, value);
+	public static Pointer floatspan_expand(Pointer sp, double value) {
+		var _result = _meos_a.floatspan_expand(sp, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8875,8 +9194,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String floatspan_out(Pointer s, int maxdd) {
-		var _result = _meos_a.floatspan_out(s, maxdd);
+	public static String floatspan_out(Pointer sp, int maxdd) {
+		var _result = _meos_a.floatspan_out(sp, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8910,8 +9229,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intspan_expand(Pointer s, int value) {
-		var _result = _meos_a.intspan_expand(s, value);
+	public static Pointer intspan_expand(Pointer sp, int value) {
+		var _result = _meos_a.intspan_expand(sp, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8924,8 +9243,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String intspan_out(Pointer s) {
-		var _result = _meos_a.intspan_out(s);
+	public static String intspan_out(Pointer sp) {
+		var _result = _meos_a.intspan_out(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -8977,19 +9296,19 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String span_as_hexwkb(Pointer s, byte variant) {
+	public static String span_as_hexwkb(Pointer sp, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_a.span_as_hexwkb(s, variant, size_out);
+		var _result = _meos_a.span_as_hexwkb(sp, variant, size_out);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_as_wkb(Pointer s, byte variant) {
+	public static Pointer span_as_wkb(Pointer sp, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_a.span_as_wkb(s, variant, size_out);
+		var _result = _meos_a.span_as_wkb(sp, variant, size_out);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9076,8 +9395,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String tstzspan_out(Pointer s) {
-		var _result = _meos_a.tstzspan_out(s);
+	public static String tstzspan_out(Pointer sp) {
+		var _result = _meos_a.tstzspan_out(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9160,8 +9479,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_copy(Pointer s) {
-		var _result = _meos_a.span_copy(s);
+	public static Pointer span_copy(Pointer sp) {
+		var _result = _meos_a.span_copy(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9267,8 +9586,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer datespan_to_tstzspan(Pointer s) {
-		var _result = _meos_a.datespan_to_tstzspan(s);
+	public static Pointer datespan_to_tstzspan(Pointer sp) {
+		var _result = _meos_a.datespan_to_tstzspan(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9393,8 +9712,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_to_spanset(Pointer s) {
-		var _result = _meos_a.span_to_spanset(s);
+	public static Pointer span_to_spanset(Pointer sp) {
+		var _result = _meos_a.span_to_spanset(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9438,8 +9757,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_to_datespan(Pointer s) {
-		var _result = _meos_a.tstzspan_to_datespan(s);
+	public static Pointer tstzspan_to_datespan(Pointer sp) {
+		var _result = _meos_a.tstzspan_to_datespan(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9476,8 +9795,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer bigintset_values(Pointer s) {
-		var _result = _meos_a.bigintset_values(s);
+	public static Pointer bigintset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.bigintset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9549,8 +9868,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer dateset_values(Pointer s) {
-		var _result = _meos_a.dateset_values(s);
+	public static Pointer dateset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.dateset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9646,8 +9965,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatset_values(Pointer s) {
-		var _result = _meos_a.floatset_values(s);
+	public static Pointer floatset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.floatset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9719,8 +10038,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intset_values(Pointer s) {
-		var _result = _meos_a.intset_values(s);
+	public static Pointer intset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.intset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9775,7 +10094,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int set_hash_extended(Pointer s, int seed) {
+	public static long set_hash_extended(Pointer s, long seed) {
 		var _result = _meos_a.set_hash_extended(s, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -9789,29 +10108,29 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int span_hash(Pointer s) {
-		var _result = _meos_a.span_hash(s);
+	public static int span_hash(Pointer sp) {
+		var _result = _meos_a.span_hash(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int span_hash_extended(Pointer s, int seed) {
-		var _result = _meos_a.span_hash_extended(s, seed);
+	public static long span_hash_extended(Pointer sp, long seed) {
+		var _result = _meos_a.span_hash_extended(sp, seed);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_lower_inc(Pointer s) {
-		var _result = _meos_a.span_lower_inc(s);
+	public static boolean span_lower_inc(Pointer sp) {
+		var _result = _meos_a.span_lower_inc(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_upper_inc(Pointer s) {
-		var _result = _meos_a.span_upper_inc(s);
+	public static boolean span_upper_inc(Pointer sp) {
+		var _result = _meos_a.span_upper_inc(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9831,7 +10150,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int spanset_hash_extended(Pointer ss, int seed) {
+	public static long spanset_hash_extended(Pointer ss, long seed) {
 		var _result = _meos_a.spanset_hash_extended(ss, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -9866,8 +10185,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer spanset_spanarr(Pointer ss) {
-		var _result = _meos_a.spanset_spanarr(ss);
+	public static Pointer spanset_spanarr(Pointer ss, Pointer count) {
+		var _result = _meos_a.spanset_spanarr(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9912,8 +10231,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer textset_values(Pointer s) {
-		var _result = _meos_a.textset_values(s);
+	public static Pointer textset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.textset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9943,8 +10262,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzset_values(Pointer s) {
-		var _result = _meos_a.tstzset_values(s);
+	public static Pointer tstzset_values(Pointer s, Pointer count) {
+		var _result = _meos_a.tstzset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10037,8 +10356,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer bigintspan_shift_scale(Pointer s, long shift, long width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.bigintspan_shift_scale(s, shift, width, hasshift, haswidth);
+	public static Pointer bigintspan_shift_scale(Pointer sp, long shift, long width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.bigintspan_shift_scale(sp, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10058,8 +10377,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer datespan_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.datespan_shift_scale(s, shift, width, hasshift, haswidth);
+	public static Pointer datespan_shift_scale(Pointer sp, int shift, int width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.datespan_shift_scale(sp, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10107,43 +10426,43 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_ceil(Pointer s) {
-		var _result = _meos_a.floatspan_ceil(s);
+	public static Pointer floatspan_ceil(Pointer sp) {
+		var _result = _meos_a.floatspan_ceil(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_degrees(Pointer s, boolean normalize) {
-		var _result = _meos_a.floatspan_degrees(s, normalize);
+	public static Pointer floatspan_degrees(Pointer sp, boolean normalize) {
+		var _result = _meos_a.floatspan_degrees(sp, normalize);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_floor(Pointer s) {
-		var _result = _meos_a.floatspan_floor(s);
+	public static Pointer floatspan_floor(Pointer sp) {
+		var _result = _meos_a.floatspan_floor(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_radians(Pointer s) {
-		var _result = _meos_a.floatspan_radians(s);
+	public static Pointer floatspan_radians(Pointer sp) {
+		var _result = _meos_a.floatspan_radians(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_round(Pointer s, int maxdd) {
-		var _result = _meos_a.floatspan_round(s, maxdd);
+	public static Pointer floatspan_round(Pointer sp, int maxdd) {
+		var _result = _meos_a.floatspan_round(sp, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_shift_scale(Pointer s, double shift, double width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.floatspan_shift_scale(s, shift, width, hasshift, haswidth);
+	public static Pointer floatspan_shift_scale(Pointer sp, double shift, double width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.floatspan_shift_scale(sp, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10198,8 +10517,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intspan_shift_scale(Pointer s, int shift, int width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.intspan_shift_scale(s, shift, width, hasshift, haswidth);
+	public static Pointer intspan_shift_scale(Pointer sp, int shift, int width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.intspan_shift_scale(sp, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10212,8 +10531,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_expand(Pointer s, Pointer interv) {
-		var _result = _meos_a.tstzspan_expand(s, interv);
+	public static Pointer tstzspan_expand(Pointer sp, Pointer interv) {
+		var _result = _meos_a.tstzspan_expand(sp, interv);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10285,16 +10604,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_shift_scale(Pointer s, Pointer shift, Pointer duration) {
-		var _result = _meos_a.tstzspan_shift_scale(s, shift, duration);
+	public static Pointer tstzspan_shift_scale(Pointer sp, Pointer shift, Pointer duration) {
+		var _result = _meos_a.tstzspan_shift_scale(sp, shift, duration);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_tprecision(Pointer s, Pointer duration, OffsetDateTime torigin) {
+	public static Pointer tstzspan_tprecision(Pointer sp, Pointer duration, OffsetDateTime torigin) {
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_a.tstzspan_tprecision(s, duration, torigin_new);
+		var _result = _meos_a.tstzspan_tprecision(sp, duration, torigin_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10364,50 +10683,50 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int span_cmp(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_cmp(s1, s2);
+	public static int span_cmp(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_cmp(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_eq(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_eq(s1, s2);
+	public static boolean span_eq(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_eq(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_ge(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_ge(s1, s2);
+	public static boolean span_ge(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_ge(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_gt(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_gt(s1, s2);
+	public static boolean span_gt(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_gt(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_le(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_le(s1, s2);
+	public static boolean span_le(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_le(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_lt(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_lt(s1, s2);
+	public static boolean span_lt(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_lt(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean span_ne(Pointer s1, Pointer s2) {
-		var _result = _meos_a.span_ne(s1, s2);
+	public static boolean span_ne(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.span_ne(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10462,8 +10781,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer set_spans(Pointer s) {
-		var _result = _meos_a.set_spans(s);
+	public static Pointer set_spans(Pointer s, Pointer count) {
+		var _result = _meos_a.set_spans(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10483,8 +10802,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer spanset_spans(Pointer ss) {
-		var _result = _meos_a.spanset_spans(ss);
+	public static Pointer spanset_spans(Pointer ss, Pointer count) {
+		var _result = _meos_a.spanset_spans(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10504,51 +10823,51 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.adjacent_span_bigint(s, i);
+	public static boolean adjacent_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.adjacent_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_date(Pointer s, int d) {
-		var _result = _meos_a.adjacent_span_date(s, d);
+	public static boolean adjacent_span_date(Pointer sp, int d) {
+		var _result = _meos_a.adjacent_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_float(Pointer s, double d) {
-		var _result = _meos_a.adjacent_span_float(s, d);
+	public static boolean adjacent_span_float(Pointer sp, double d) {
+		var _result = _meos_a.adjacent_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_int(Pointer s, int i) {
-		var _result = _meos_a.adjacent_span_int(s, i);
+	public static boolean adjacent_span_int(Pointer sp, int i) {
+		var _result = _meos_a.adjacent_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.adjacent_span_span(s1, s2);
+	public static boolean adjacent_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.adjacent_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.adjacent_span_spanset(s, ss);
+	public static boolean adjacent_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.adjacent_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean adjacent_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.adjacent_span_timestamptz(s, t_new);
+		var _result = _meos_a.adjacent_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10590,8 +10909,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.adjacent_spanset_span(ss, s);
+	public static boolean adjacent_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.adjacent_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10611,8 +10930,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.contained_bigint_span(i, s);
+	public static boolean contained_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.contained_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10632,8 +10951,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_date_span(int d, Pointer s) {
-		var _result = _meos_a.contained_date_span(d, s);
+	public static boolean contained_date_span(int d, Pointer sp) {
+		var _result = _meos_a.contained_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10653,8 +10972,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_float_span(double d, Pointer s) {
-		var _result = _meos_a.contained_float_span(d, s);
+	public static boolean contained_float_span(double d, Pointer sp) {
+		var _result = _meos_a.contained_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10674,8 +10993,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_int_span(int i, Pointer s) {
-		var _result = _meos_a.contained_int_span(i, s);
+	public static boolean contained_int_span(int i, Pointer sp) {
+		var _result = _meos_a.contained_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10695,22 +11014,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.contained_span_span(s1, s2);
+	public static boolean contained_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.contained_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.contained_span_spanset(s, ss);
+	public static boolean contained_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.contained_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.contained_spanset_span(ss, s);
+	public static boolean contained_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.contained_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10738,9 +11057,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static boolean contained_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.contained_timestamptz_span(t_new, s);
+		var _result = _meos_a.contained_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10804,51 +11123,51 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.contains_span_bigint(s, i);
+	public static boolean contains_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.contains_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_date(Pointer s, int d) {
-		var _result = _meos_a.contains_span_date(s, d);
+	public static boolean contains_span_date(Pointer sp, int d) {
+		var _result = _meos_a.contains_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_float(Pointer s, double d) {
-		var _result = _meos_a.contains_span_float(s, d);
+	public static boolean contains_span_float(Pointer sp, double d) {
+		var _result = _meos_a.contains_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_int(Pointer s, int i) {
-		var _result = _meos_a.contains_span_int(s, i);
+	public static boolean contains_span_int(Pointer sp, int i) {
+		var _result = _meos_a.contains_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.contains_span_span(s1, s2);
+	public static boolean contains_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.contains_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.contains_span_spanset(s, ss);
+	public static boolean contains_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.contains_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean contains_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.contains_span_timestamptz(s, t_new);
+		var _result = _meos_a.contains_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10882,8 +11201,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.contains_spanset_span(ss, s);
+	public static boolean contains_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.contains_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10911,22 +11230,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.overlaps_span_span(s1, s2);
+	public static boolean overlaps_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.overlaps_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.overlaps_span_spanset(s, ss);
+	public static boolean overlaps_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.overlaps_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.overlaps_spanset_span(ss, s);
+	public static boolean overlaps_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.overlaps_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10946,8 +11265,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_date_span(int d, Pointer s) {
-		var _result = _meos_a.after_date_span(d, s);
+	public static boolean after_date_span(int d, Pointer sp) {
+		var _result = _meos_a.after_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -10975,16 +11294,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_span_date(Pointer s, int d) {
-		var _result = _meos_a.after_span_date(s, d);
+	public static boolean after_span_date(Pointer sp, int d) {
+		var _result = _meos_a.after_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean after_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.after_span_timestamptz(s, t_new);
+		var _result = _meos_a.after_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11013,9 +11332,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static boolean after_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.after_timestamptz_span(t_new, s);
+		var _result = _meos_a.after_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11036,8 +11355,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_date_span(int d, Pointer s) {
-		var _result = _meos_a.before_date_span(d, s);
+	public static boolean before_date_span(int d, Pointer sp) {
+		var _result = _meos_a.before_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11065,16 +11384,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_span_date(Pointer s, int d) {
-		var _result = _meos_a.before_span_date(s, d);
+	public static boolean before_span_date(Pointer sp, int d) {
+		var _result = _meos_a.before_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean before_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.before_span_timestamptz(s, t_new);
+		var _result = _meos_a.before_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11103,9 +11422,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static boolean before_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.before_timestamptz_span(t_new, s);
+		var _result = _meos_a.before_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11126,8 +11445,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.left_bigint_span(i, s);
+	public static boolean left_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.left_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11147,8 +11466,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_float_span(double d, Pointer s) {
-		var _result = _meos_a.left_float_span(d, s);
+	public static boolean left_float_span(double d, Pointer sp) {
+		var _result = _meos_a.left_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11168,8 +11487,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_int_span(int i, Pointer s) {
-		var _result = _meos_a.left_int_span(i, s);
+	public static boolean left_int_span(int i, Pointer sp) {
+		var _result = _meos_a.left_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11217,36 +11536,36 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.left_span_bigint(s, i);
+	public static boolean left_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.left_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_span_float(Pointer s, double d) {
-		var _result = _meos_a.left_span_float(s, d);
+	public static boolean left_span_float(Pointer sp, double d) {
+		var _result = _meos_a.left_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_span_int(Pointer s, int i) {
-		var _result = _meos_a.left_span_int(s, i);
+	public static boolean left_span_int(Pointer sp, int i) {
+		var _result = _meos_a.left_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.left_span_span(s1, s2);
+	public static boolean left_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.left_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.left_span_spanset(s, ss);
+	public static boolean left_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.left_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11273,8 +11592,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.left_spanset_span(ss, s);
+	public static boolean left_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.left_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11301,8 +11620,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_date_span(int d, Pointer s) {
-		var _result = _meos_a.overafter_date_span(d, s);
+	public static boolean overafter_date_span(int d, Pointer sp) {
+		var _result = _meos_a.overafter_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11330,16 +11649,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_span_date(Pointer s, int d) {
-		var _result = _meos_a.overafter_span_date(s, d);
+	public static boolean overafter_span_date(Pointer sp, int d) {
+		var _result = _meos_a.overafter_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean overafter_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.overafter_span_timestamptz(s, t_new);
+		var _result = _meos_a.overafter_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11368,9 +11687,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static boolean overafter_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.overafter_timestamptz_span(t_new, s);
+		var _result = _meos_a.overafter_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11391,8 +11710,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_date_span(int d, Pointer s) {
-		var _result = _meos_a.overbefore_date_span(d, s);
+	public static boolean overbefore_date_span(int d, Pointer sp) {
+		var _result = _meos_a.overbefore_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11420,16 +11739,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_span_date(Pointer s, int d) {
-		var _result = _meos_a.overbefore_span_date(s, d);
+	public static boolean overbefore_span_date(Pointer sp, int d) {
+		var _result = _meos_a.overbefore_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static boolean overbefore_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.overbefore_span_timestamptz(s, t_new);
+		var _result = _meos_a.overbefore_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11458,9 +11777,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static boolean overbefore_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.overbefore_timestamptz_span(t_new, s);
+		var _result = _meos_a.overbefore_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11481,8 +11800,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.overleft_bigint_span(i, s);
+	public static boolean overleft_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.overleft_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11502,8 +11821,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_float_span(double d, Pointer s) {
-		var _result = _meos_a.overleft_float_span(d, s);
+	public static boolean overleft_float_span(double d, Pointer sp) {
+		var _result = _meos_a.overleft_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11523,8 +11842,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_int_span(int i, Pointer s) {
-		var _result = _meos_a.overleft_int_span(i, s);
+	public static boolean overleft_int_span(int i, Pointer sp) {
+		var _result = _meos_a.overleft_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11572,36 +11891,36 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.overleft_span_bigint(s, i);
+	public static boolean overleft_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.overleft_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_span_float(Pointer s, double d) {
-		var _result = _meos_a.overleft_span_float(s, d);
+	public static boolean overleft_span_float(Pointer sp, double d) {
+		var _result = _meos_a.overleft_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_span_int(Pointer s, int i) {
-		var _result = _meos_a.overleft_span_int(s, i);
+	public static boolean overleft_span_int(Pointer sp, int i) {
+		var _result = _meos_a.overleft_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.overleft_span_span(s1, s2);
+	public static boolean overleft_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.overleft_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.overleft_span_spanset(s, ss);
+	public static boolean overleft_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.overleft_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11628,8 +11947,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.overleft_spanset_span(ss, s);
+	public static boolean overleft_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.overleft_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11656,8 +11975,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.overright_bigint_span(i, s);
+	public static boolean overright_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.overright_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11677,8 +11996,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_float_span(double d, Pointer s) {
-		var _result = _meos_a.overright_float_span(d, s);
+	public static boolean overright_float_span(double d, Pointer sp) {
+		var _result = _meos_a.overright_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11698,8 +12017,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_int_span(int i, Pointer s) {
-		var _result = _meos_a.overright_int_span(i, s);
+	public static boolean overright_int_span(int i, Pointer sp) {
+		var _result = _meos_a.overright_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11747,36 +12066,36 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.overright_span_bigint(s, i);
+	public static boolean overright_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.overright_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_span_float(Pointer s, double d) {
-		var _result = _meos_a.overright_span_float(s, d);
+	public static boolean overright_span_float(Pointer sp, double d) {
+		var _result = _meos_a.overright_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_span_int(Pointer s, int i) {
-		var _result = _meos_a.overright_span_int(s, i);
+	public static boolean overright_span_int(Pointer sp, int i) {
+		var _result = _meos_a.overright_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.overright_span_span(s1, s2);
+	public static boolean overright_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.overright_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.overright_span_spanset(s, ss);
+	public static boolean overright_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.overright_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11803,8 +12122,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.overright_spanset_span(ss, s);
+	public static boolean overright_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.overright_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11831,8 +12150,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.right_bigint_span(i, s);
+	public static boolean right_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.right_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11852,8 +12171,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_float_span(double d, Pointer s) {
-		var _result = _meos_a.right_float_span(d, s);
+	public static boolean right_float_span(double d, Pointer sp) {
+		var _result = _meos_a.right_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11873,8 +12192,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_int_span(int i, Pointer s) {
-		var _result = _meos_a.right_int_span(i, s);
+	public static boolean right_int_span(int i, Pointer sp) {
+		var _result = _meos_a.right_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11922,36 +12241,36 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.right_span_bigint(s, i);
+	public static boolean right_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.right_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_span_float(Pointer s, double d) {
-		var _result = _meos_a.right_span_float(s, d);
+	public static boolean right_span_float(Pointer sp, double d) {
+		var _result = _meos_a.right_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_span_int(Pointer s, int i) {
-		var _result = _meos_a.right_span_int(s, i);
+	public static boolean right_span_int(Pointer sp, int i) {
+		var _result = _meos_a.right_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.right_span_span(s1, s2);
+	public static boolean right_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.right_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.right_span_spanset(s, ss);
+	public static boolean right_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.right_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11978,8 +12297,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.right_spanset_span(ss, s);
+	public static boolean right_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.right_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12077,51 +12396,51 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.intersection_span_bigint(s, i);
+	public static Pointer intersection_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.intersection_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_date(Pointer s, int d) {
-		var _result = _meos_a.intersection_span_date(s, d);
+	public static Pointer intersection_span_date(Pointer sp, int d) {
+		var _result = _meos_a.intersection_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_float(Pointer s, double d) {
-		var _result = _meos_a.intersection_span_float(s, d);
+	public static Pointer intersection_span_float(Pointer sp, double d) {
+		var _result = _meos_a.intersection_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_int(Pointer s, int i) {
-		var _result = _meos_a.intersection_span_int(s, i);
+	public static Pointer intersection_span_int(Pointer sp, int i) {
+		var _result = _meos_a.intersection_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.intersection_span_span(s1, s2);
+	public static Pointer intersection_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.intersection_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.intersection_span_spanset(s, ss);
+	public static Pointer intersection_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.intersection_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static Pointer intersection_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.intersection_span_timestamptz(s, t_new);
+		var _result = _meos_a.intersection_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12155,8 +12474,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intersection_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.intersection_spanset_span(ss, s);
+	public static Pointer intersection_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.intersection_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12199,8 +12518,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_bigint_span(long i, Pointer s) {
-		var _result = _meos_a.minus_bigint_span(i, s);
+	public static Pointer minus_bigint_span(long i, Pointer sp) {
+		var _result = _meos_a.minus_bigint_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12220,8 +12539,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_date_span(int d, Pointer s) {
-		var _result = _meos_a.minus_date_span(d, s);
+	public static Pointer minus_date_span(int d, Pointer sp) {
+		var _result = _meos_a.minus_date_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12241,8 +12560,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_float_span(double d, Pointer s) {
-		var _result = _meos_a.minus_float_span(d, s);
+	public static Pointer minus_float_span(double d, Pointer sp) {
+		var _result = _meos_a.minus_float_span(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12262,8 +12581,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_int_span(int i, Pointer s) {
-		var _result = _meos_a.minus_int_span(i, s);
+	public static Pointer minus_int_span(int i, Pointer sp) {
+		var _result = _meos_a.minus_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12326,51 +12645,51 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.minus_span_bigint(s, i);
+	public static Pointer minus_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.minus_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_date(Pointer s, int d) {
-		var _result = _meos_a.minus_span_date(s, d);
+	public static Pointer minus_span_date(Pointer sp, int d) {
+		var _result = _meos_a.minus_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_float(Pointer s, double d) {
-		var _result = _meos_a.minus_span_float(s, d);
+	public static Pointer minus_span_float(Pointer sp, double d) {
+		var _result = _meos_a.minus_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_int(Pointer s, int i) {
-		var _result = _meos_a.minus_span_int(s, i);
+	public static Pointer minus_span_int(Pointer sp, int i) {
+		var _result = _meos_a.minus_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_a.minus_span_span(s1, s2);
+	public static Pointer minus_span_span(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.minus_span_span(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_spanset(Pointer s, Pointer ss) {
-		var _result = _meos_a.minus_span_spanset(s, ss);
+	public static Pointer minus_span_spanset(Pointer sp, Pointer ss) {
+		var _result = _meos_a.minus_span_spanset(sp, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static Pointer minus_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.minus_span_timestamptz(s, t_new);
+		var _result = _meos_a.minus_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12404,8 +12723,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.minus_spanset_span(ss, s);
+	public static Pointer minus_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.minus_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12441,9 +12760,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer minus_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static Pointer minus_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.minus_timestamptz_span(t_new, s);
+		var _result = _meos_a.minus_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12464,8 +12783,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_bigint_span(Pointer s, long i) {
-		var _result = _meos_a.union_bigint_span(s, i);
+	public static Pointer union_bigint_span(Pointer sp, long i) {
+		var _result = _meos_a.union_bigint_span(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12485,8 +12804,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_date_span(Pointer s, int d) {
-		var _result = _meos_a.union_date_span(s, d);
+	public static Pointer union_date_span(Pointer sp, int d) {
+		var _result = _meos_a.union_date_span(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12506,8 +12825,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_float_span(Pointer s, double d) {
-		var _result = _meos_a.union_float_span(s, d);
+	public static Pointer union_float_span(Pointer sp, double d) {
+		var _result = _meos_a.union_float_span(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12527,8 +12846,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_int_span(int i, Pointer s) {
-		var _result = _meos_a.union_int_span(i, s);
+	public static Pointer union_int_span(int i, Pointer sp) {
+		var _result = _meos_a.union_int_span(i, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12626,6 +12945,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer super_union_span_span(Pointer s1, Pointer s2, boolean strict) {
+		var _result = _meos_a.super_union_span_span(s1, s2, strict);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer union_span_spanset(Pointer s, Pointer ss) {
 		var _result = _meos_a.union_span_spanset(s, ss);
 		MeosErrorHandler.checkError();
@@ -12669,8 +12995,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_a.union_spanset_span(ss, s);
+	public static Pointer union_spanset_span(Pointer ss, Pointer sp) {
+		var _result = _meos_a.union_spanset_span(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12706,9 +13032,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer union_timestamptz_span(OffsetDateTime t, Pointer s) {
+	public static Pointer union_timestamptz_span(OffsetDateTime t, Pointer sp) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.union_timestamptz_span(t_new, s);
+		var _result = _meos_a.union_timestamptz_span(t_new, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12729,15 +13055,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static long distance_bigintspan_bigintspan(Pointer s1, Pointer s2) {
-		var _result = _meos_a.distance_bigintspan_bigintspan(s1, s2);
+	public static long distance_bigintspan_bigintspan(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.distance_bigintspan_bigintspan(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static long distance_bigintspanset_bigintspan(Pointer ss, Pointer s) {
-		var _result = _meos_a.distance_bigintspanset_bigintspan(ss, s);
+	public static long distance_bigintspanset_bigintspan(Pointer ss, Pointer sp) {
+		var _result = _meos_a.distance_bigintspanset_bigintspan(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12757,15 +13083,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_datespan_datespan(Pointer s1, Pointer s2) {
-		var _result = _meos_a.distance_datespan_datespan(s1, s2);
+	public static int distance_datespan_datespan(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.distance_datespan_datespan(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_datespanset_datespan(Pointer ss, Pointer s) {
-		var _result = _meos_a.distance_datespanset_datespan(ss, s);
+	public static int distance_datespanset_datespan(Pointer ss, Pointer sp) {
+		var _result = _meos_a.distance_datespanset_datespan(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12785,15 +13111,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_floatspan_floatspan(Pointer s1, Pointer s2) {
-		var _result = _meos_a.distance_floatspan_floatspan(s1, s2);
+	public static double distance_floatspan_floatspan(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.distance_floatspan_floatspan(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_floatspanset_floatspan(Pointer ss, Pointer s) {
-		var _result = _meos_a.distance_floatspanset_floatspan(ss, s);
+	public static double distance_floatspanset_floatspan(Pointer ss, Pointer sp) {
+		var _result = _meos_a.distance_floatspanset_floatspan(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12813,15 +13139,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_intspan_intspan(Pointer s1, Pointer s2) {
-		var _result = _meos_a.distance_intspan_intspan(s1, s2);
+	public static int distance_intspan_intspan(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.distance_intspan_intspan(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_intspanset_intspan(Pointer ss, Pointer s) {
-		var _result = _meos_a.distance_intspanset_intspan(ss, s);
+	public static int distance_intspanset_intspan(Pointer ss, Pointer sp) {
+		var _result = _meos_a.distance_intspanset_intspan(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12870,37 +13196,37 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static long distance_span_bigint(Pointer s, long i) {
-		var _result = _meos_a.distance_span_bigint(s, i);
+	public static long distance_span_bigint(Pointer sp, long i) {
+		var _result = _meos_a.distance_span_bigint(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_span_date(Pointer s, int d) {
-		var _result = _meos_a.distance_span_date(s, d);
+	public static int distance_span_date(Pointer sp, int d) {
+		var _result = _meos_a.distance_span_date(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_span_float(Pointer s, double d) {
-		var _result = _meos_a.distance_span_float(s, d);
+	public static double distance_span_float(Pointer sp, double d) {
+		var _result = _meos_a.distance_span_float(sp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_span_int(Pointer s, int i) {
-		var _result = _meos_a.distance_span_int(s, i);
+	public static int distance_span_int(Pointer sp, int i) {
+		var _result = _meos_a.distance_span_int(sp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_span_timestamptz(Pointer s, OffsetDateTime t) {
+	public static double distance_span_timestamptz(Pointer sp, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.distance_span_timestamptz(s, t_new);
+		var _result = _meos_a.distance_span_timestamptz(sp, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12949,15 +13275,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_tstzspan_tstzspan(Pointer s1, Pointer s2) {
-		var _result = _meos_a.distance_tstzspan_tstzspan(s1, s2);
+	public static double distance_tstzspan_tstzspan(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.distance_tstzspan_tstzspan(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double distance_tstzspanset_tstzspan(Pointer ss, Pointer s) {
-		var _result = _meos_a.distance_tstzspanset_tstzspan(ss, s);
+	public static double distance_tstzspanset_tstzspan(Pointer ss, Pointer sp) {
+		var _result = _meos_a.distance_tstzspanset_tstzspan(ss, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13047,15 +13373,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_extent_transfn(Pointer state, Pointer s) {
-		var _result = _meos_a.span_extent_transfn(state, s);
+	public static Pointer span_extent_transfn(Pointer state, Pointer sp) {
+		var _result = _meos_a.span_extent_transfn(state, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_union_transfn(Pointer state, Pointer s) {
-		var _result = _meos_a.span_union_transfn(state, s);
+	public static Pointer span_union_transfn(Pointer state, Pointer sp) {
+		var _result = _meos_a.span_union_transfn(state, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13112,8 +13438,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer bigintspan_bins(Pointer s, long vsize, long vorigin, Pointer count) {
-		var _result = _meos_a.bigintspan_bins(s, vsize, vorigin, count);
+	public static Pointer bigintspan_bins(Pointer sp, long vsize, long vorigin, Pointer count) {
+		var _result = _meos_a.bigintspan_bins(sp, vsize, vorigin, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13133,8 +13459,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer datespan_bins(Pointer s, Pointer duration, int torigin, Pointer count) {
-		var _result = _meos_a.datespan_bins(s, duration, torigin, count);
+	public static Pointer datespan_bins(Pointer sp, Pointer duration, int torigin, Pointer count) {
+		var _result = _meos_a.datespan_bins(sp, duration, torigin, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13154,8 +13480,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer floatspan_bins(Pointer s, double vsize, double vorigin, Pointer count) {
-		var _result = _meos_a.floatspan_bins(s, vsize, vorigin, count);
+	public static Pointer floatspan_bins(Pointer sp, double vsize, double vorigin, Pointer count) {
+		var _result = _meos_a.floatspan_bins(sp, vsize, vorigin, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13175,8 +13501,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer intspan_bins(Pointer s, int vsize, int vorigin, Pointer count) {
-		var _result = _meos_a.intspan_bins(s, vsize, vorigin, count);
+	public static Pointer intspan_bins(Pointer sp, int vsize, int vorigin, Pointer count) {
+		var _result = _meos_a.intspan_bins(sp, vsize, vorigin, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13198,9 +13524,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_bins(Pointer s, Pointer duration, OffsetDateTime origin, Pointer count) {
+	public static Pointer tstzspan_bins(Pointer sp, Pointer duration, OffsetDateTime origin, Pointer count) {
 		var origin_new = origin.toEpochSecond();
-		var _result = _meos_a.tstzspan_bins(s, duration, origin_new, count);
+		var _result = _meos_a.tstzspan_bins(sp, duration, origin_new, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13266,8 +13592,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer float_tstzspan_to_tbox(double d, Pointer s) {
-		var _result = _meos_a.float_tstzspan_to_tbox(d, s);
+	public static Pointer float_tstzspan_to_tbox(double d, Pointer sp) {
+		var _result = _meos_a.float_tstzspan_to_tbox(d, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13281,6 +13607,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer bigint_timestamptz_to_tbox(long i, OffsetDateTime t) {
+		var t_new = t.toEpochSecond();
+		var _result = _meos_a.bigint_timestamptz_to_tbox(i, t_new);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer int_tstzspan_to_tbox(int i, Pointer s) {
 		var _result = _meos_a.int_tstzspan_to_tbox(i, s);
 		MeosErrorHandler.checkError();
@@ -13288,8 +13622,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer numspan_tstzspan_to_tbox(Pointer span, Pointer s) {
-		var _result = _meos_a.numspan_tstzspan_to_tbox(span, s);
+	public static Pointer bigint_tstzspan_to_tbox(long i, Pointer s) {
+		var _result = _meos_a.bigint_tstzspan_to_tbox(i, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer numspan_tstzspan_to_tbox(Pointer s, Pointer p) {
+		var _result = _meos_a.numspan_tstzspan_to_tbox(s, p);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13310,8 +13651,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tbox_make(Pointer s, Pointer p) {
-		var _result = _meos_a.tbox_make(s, p);
+	public static Pointer tbox_make(Pointer sp1, Pointer sp2) {
+		var _result = _meos_a.tbox_make(sp1, sp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13331,6 +13672,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer bigint_to_tbox(long i) {
+		var _result = _meos_a.bigint_to_tbox(i);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer set_to_tbox(Pointer s) {
 		var _result = _meos_a.set_to_tbox(s);
 		MeosErrorHandler.checkError();
@@ -13338,8 +13686,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer span_to_tbox(Pointer s) {
-		var _result = _meos_a.span_to_tbox(s);
+	public static Pointer span_to_tbox(Pointer sp) {
+		var _result = _meos_a.span_to_tbox(sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13395,7 +13743,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tbox_hash_extended(Pointer box, int seed) {
+	public static long tbox_hash_extended(Pointer box, long seed) {
 		var _result = _meos_a.tbox_hash_extended(box, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -13526,11 +13874,31 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tboxbigint_xmax(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_a.tboxbigint_xmax(box, result);
+		MeosErrorHandler.checkError();
+		return out ? result : null;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tboxint_xmin(Pointer box) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		out = _meos_a.tboxint_xmin(box, result);
+		MeosErrorHandler.checkError();
+		return out ? result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tboxbigint_xmin(Pointer box) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_a.tboxbigint_xmin(box, result);
 		MeosErrorHandler.checkError();
 		return out ? result : null;
 	}
@@ -13564,6 +13932,20 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tfloatbox_shift_scale(Pointer box, double shift, double width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.tfloatbox_shift_scale(box, shift, width, hasshift, haswidth);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tintbox_shift_scale(Pointer box, int shift, int width, boolean hasshift, boolean haswidth) {
+		var _result = _meos_a.tintbox_shift_scale(box, shift, width, hasshift, haswidth);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tbox_shift_scale_time(Pointer box, Pointer shift, Pointer duration) {
 		var _result = _meos_a.tbox_shift_scale_time(box, shift, duration);
 		MeosErrorHandler.checkError();
@@ -13578,22 +13960,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tfloatbox_shift_scale(Pointer box, double shift, double width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.tfloatbox_shift_scale(box, shift, width, hasshift, haswidth);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer tintbox_expand(Pointer box, int i) {
 		var _result = _meos_a.tintbox_expand(box, i);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer tintbox_shift_scale(Pointer box, int shift, int width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_a.tintbox_shift_scale(box, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13834,6 +14202,132 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static boolean meos_temporal_to_arrow(Pointer temp, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_temporal_to_arrow(temp, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_temporal_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_temporal_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_temporal_arrow_roundtrip(Pointer temp) {
+		var _result = _meos_a.meos_temporal_arrow_roundtrip(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean meos_set_to_arrow(Pointer s, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_set_to_arrow(s, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_set_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_set_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_set_arrow_roundtrip(Pointer s) {
+		var _result = _meos_a.meos_set_arrow_roundtrip(s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean meos_span_to_arrow(Pointer s, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_span_to_arrow(s, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_span_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_span_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_span_arrow_roundtrip(Pointer s) {
+		var _result = _meos_a.meos_span_arrow_roundtrip(s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean meos_spanset_to_arrow(Pointer ss, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_spanset_to_arrow(ss, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_spanset_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_spanset_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_spanset_arrow_roundtrip(Pointer ss) {
+		var _result = _meos_a.meos_spanset_arrow_roundtrip(ss);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean meos_tbox_to_arrow(Pointer box, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_tbox_to_arrow(box, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_tbox_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_tbox_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_tbox_arrow_roundtrip(Pointer box) {
+		var _result = _meos_a.meos_tbox_arrow_roundtrip(box);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean meos_stbox_to_arrow(Pointer box, Pointer out_schema, Pointer out_array) {
+		var _result = _meos_a.meos_stbox_to_arrow(box, out_schema, out_array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_stbox_from_arrow(Pointer schema, Pointer array) {
+		var _result = _meos_a.meos_stbox_from_arrow(schema, array);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer meos_stbox_arrow_roundtrip(Pointer box) {
+		var _result = _meos_a.meos_stbox_arrow_roundtrip(box);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tfloat_from_mfjson(String str) {
 		var _result = _meos_a.tfloat_from_mfjson(str);
 		MeosErrorHandler.checkError();
@@ -13955,8 +14449,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tboolseq_from_base_tstzspan(boolean b, Pointer s) {
-		var _result = _meos_a.tboolseq_from_base_tstzspan(b, s);
+	public static Pointer tboolseq_from_base_tstzspan(boolean b, Pointer sp) {
+		var _result = _meos_a.tboolseq_from_base_tstzspan(b, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -13998,8 +14492,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tfloatseq_from_base_tstzspan(double d, Pointer s, int interp) {
-		var _result = _meos_a.tfloatseq_from_base_tstzspan(d, s, interp);
+	public static Pointer tfloatseq_from_base_tstzspan(double d, Pointer sp, int interp) {
+		var _result = _meos_a.tfloatseq_from_base_tstzspan(d, sp, interp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14091,8 +14585,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer ttextseq_from_base_tstzspan(Pointer txt, Pointer s) {
-		var _result = _meos_a.ttextseq_from_base_tstzspan(txt, s);
+	public static Pointer ttextseq_from_base_tstzspan(Pointer txt, Pointer sp) {
+		var _result = _meos_a.ttextseq_from_base_tstzspan(txt, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14147,15 +14641,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tint_to_tbigint(Pointer temp) {
-		var _result = _meos_a.tint_to_tbigint(temp);
+	public static Pointer tint_to_tfloat(Pointer temp) {
+		var _result = _meos_a.tint_to_tfloat(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tint_to_tfloat(Pointer temp) {
-		var _result = _meos_a.tint_to_tfloat(temp);
+	public static Pointer tint_to_tbigint(Pointer temp) {
+		var _result = _meos_a.tint_to_tbigint(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14203,14 +14697,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tbigint_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_a.tbigint_value_at_timestamptz(temp, t_new, strict, value);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer tbigint_value_n(Pointer temp, long n) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
@@ -14242,11 +14728,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tbool_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tbool_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Byte.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.tbool_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_a.tbool_value_at_timestamptz(temp, t_new, strict, result);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14311,6 +14800,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer temporal_instants(Pointer temp, Pointer count) {
 		var _result = _meos_a.temporal_instants(temp, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer temporal_instants_p(Pointer temp, Pointer count) {
+		var _result = _meos_a.temporal_instants_p(temp, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14428,6 +14924,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static String temporal_basetype_name(Pointer temp) {
+		var _result = _meos_a.temporal_basetype_name(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer temporal_time(Pointer temp) {
 		var _result = _meos_a.temporal_time(temp);
 		MeosErrorHandler.checkError();
@@ -14454,13 +14957,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static boolean temporal_upper_inc(Pointer temp) {
 		var _result = _meos_a.temporal_upper_inc(temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double tfloat_avg_value(Pointer temp) {
-		var _result = _meos_a.tfloat_avg_value(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14494,11 +14990,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tfloat_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tfloat_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Double.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.tfloat_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_a.tfloat_value_at_timestamptz(temp, t_new, strict, result);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14547,11 +15046,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tint_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tint_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Integer.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.tint_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_a.tint_value_at_timestamptz(temp, t_new, strict, result);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14628,11 +15130,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean ttext_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer ttext_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_a.ttext_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_a.ttext_value_at_timestamptz(temp, t_new, strict, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -14844,8 +15350,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_delete_tstzspan(Pointer temp, Pointer s, boolean connect) {
-		var _result = _meos_a.temporal_delete_tstzspan(temp, s, connect);
+	public static Pointer temporal_delete_tstzspan(Pointer temp, Pointer sp, boolean connect) {
+		var _result = _meos_a.temporal_delete_tstzspan(temp, sp, connect);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14881,20 +15387,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer temporal_update(Pointer temp1, Pointer temp2, boolean connect) {
 		var _result = _meos_a.temporal_update(temp1, temp2, connect);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer tbigint_at_value(Pointer temp, long i) {
-		var _result = _meos_a.tbigint_at_value(temp, i);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer tbigint_minus_value(Pointer temp, long i) {
-		var _result = _meos_a.tbigint_minus_value(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -14951,8 +15443,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_at_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_a.temporal_at_tstzspan(temp, s);
+	public static Pointer temporal_at_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_a.temporal_at_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -15009,8 +15501,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_minus_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_a.temporal_minus_tstzspan(temp, s);
+	public static Pointer temporal_minus_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_a.temporal_minus_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -15058,8 +15550,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tnumber_at_span(Pointer temp, Pointer span) {
-		var _result = _meos_a.tnumber_at_span(temp, span);
+	public static Pointer tnumber_at_span(Pointer temp, Pointer sp) {
+		var _result = _meos_a.tnumber_at_span(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -15079,8 +15571,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tnumber_minus_span(Pointer temp, Pointer span) {
-		var _result = _meos_a.tnumber_minus_span(temp, span);
+	public static Pointer tnumber_minus_span(Pointer temp, Pointer sp) {
+		var _result = _meos_a.tnumber_minus_span(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -15478,6 +15970,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static int always_lt_tbigint_bigint(Pointer temp, long i) {
+		var _result = _meos_a.always_lt_tbigint_bigint(temp, i);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static int always_lt_ttext_text(Pointer temp, Pointer txt) {
 		var _result = _meos_a.always_lt_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
@@ -15486,651 +15985,644 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static int always_ne_bool_tbool(boolean b, Pointer temp) {
-		var _result = _meos_b.always_ne_bool_tbool(b, temp);
+		var _result = _meos_a.always_ne_bool_tbool(b, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.always_ne_float_tfloat(d, temp);
+		var _result = _meos_a.always_ne_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.always_ne_int_tint(i, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int always_lt_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.always_lt_tbigint_bigint(temp, i);
+		var _result = _meos_a.always_ne_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.always_ne_bigint_tbigint(i, temp);
+		var _result = _meos_a.always_ne_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_tbool_bool(Pointer temp, boolean b) {
-		var _result = _meos_b.always_ne_tbool_bool(temp, b);
+		var _result = _meos_a.always_ne_tbool_bool(temp, b);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.always_ne_tbigint_bigint(temp, i);
+		var _result = _meos_a.always_ne_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.always_ne_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.always_ne_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.always_ne_text_ttext(txt, temp);
+		var _result = _meos_a.always_ne_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.always_ne_tfloat_float(temp, d);
+		var _result = _meos_a.always_ne_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.always_ne_tint_int(temp, i);
+		var _result = _meos_a.always_ne_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int always_ne_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.always_ne_ttext_text(temp, txt);
+		var _result = _meos_a.always_ne_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_eq_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_eq_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_bool_tbool(boolean b, Pointer temp) {
-		var _result = _meos_b.ever_eq_bool_tbool(b, temp);
+		var _result = _meos_a.ever_eq_bool_tbool(b, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_eq_float_tfloat(d, temp);
+		var _result = _meos_a.ever_eq_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_eq_int_tint(i, temp);
+		var _result = _meos_a.ever_eq_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_eq_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_eq_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_tbool_bool(Pointer temp, boolean b) {
-		var _result = _meos_b.ever_eq_tbool_bool(temp, b);
+		var _result = _meos_a.ever_eq_tbool_bool(temp, b);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_eq_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_eq_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_eq_text_ttext(txt, temp);
+		var _result = _meos_a.ever_eq_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_eq_tfloat_float(temp, d);
+		var _result = _meos_a.ever_eq_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_eq_tint_int(temp, i);
+		var _result = _meos_a.ever_eq_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_eq_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_eq_ttext_text(temp, txt);
+		var _result = _meos_a.ever_eq_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_ge_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_ge_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_ge_float_tfloat(d, temp);
+		var _result = _meos_a.ever_ge_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_ge_int_tint(i, temp);
+		var _result = _meos_a.ever_ge_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_ge_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_ge_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_ge_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_ge_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_ge_text_ttext(txt, temp);
+		var _result = _meos_a.ever_ge_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_ge_tfloat_float(temp, d);
+		var _result = _meos_a.ever_ge_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_ge_tint_int(temp, i);
+		var _result = _meos_a.ever_ge_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ge_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_ge_ttext_text(temp, txt);
+		var _result = _meos_a.ever_ge_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_gt_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_gt_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_gt_float_tfloat(d, temp);
+		var _result = _meos_a.ever_gt_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_gt_int_tint(i, temp);
+		var _result = _meos_a.ever_gt_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_gt_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_gt_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_gt_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_gt_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_gt_text_ttext(txt, temp);
+		var _result = _meos_a.ever_gt_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_gt_tfloat_float(temp, d);
+		var _result = _meos_a.ever_gt_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_gt_tint_int(temp, i);
+		var _result = _meos_a.ever_gt_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_gt_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_gt_ttext_text(temp, txt);
+		var _result = _meos_a.ever_gt_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_le_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_le_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_le_float_tfloat(d, temp);
+		var _result = _meos_a.ever_le_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_le_int_tint(i, temp);
+		var _result = _meos_a.ever_le_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_le_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_le_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_le_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_le_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_le_text_ttext(txt, temp);
+		var _result = _meos_a.ever_le_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_le_tfloat_float(temp, d);
+		var _result = _meos_a.ever_le_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_le_tint_int(temp, i);
+		var _result = _meos_a.ever_le_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_le_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_le_ttext_text(temp, txt);
+		var _result = _meos_a.ever_le_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_lt_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_lt_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_lt_float_tfloat(d, temp);
+		var _result = _meos_a.ever_lt_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_lt_int_tint(i, temp);
+		var _result = _meos_a.ever_lt_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_lt_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_lt_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_lt_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_lt_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_lt_text_ttext(txt, temp);
+		var _result = _meos_a.ever_lt_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_lt_tfloat_float(temp, d);
+		var _result = _meos_a.ever_lt_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_lt_tint_int(temp, i);
+		var _result = _meos_a.ever_lt_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_lt_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_lt_ttext_text(temp, txt);
+		var _result = _meos_a.ever_lt_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_bigint_tbigint(long i, Pointer temp) {
-		var _result = _meos_b.ever_ne_bigint_tbigint(i, temp);
+		var _result = _meos_a.ever_ne_bigint_tbigint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_bool_tbool(boolean b, Pointer temp) {
-		var _result = _meos_b.ever_ne_bool_tbool(b, temp);
+		var _result = _meos_a.ever_ne_bool_tbool(b, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.ever_ne_float_tfloat(d, temp);
+		var _result = _meos_a.ever_ne_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.ever_ne_int_tint(i, temp);
+		var _result = _meos_a.ever_ne_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_tbigint_bigint(Pointer temp, long i) {
-		var _result = _meos_b.ever_ne_tbigint_bigint(temp, i);
+		var _result = _meos_a.ever_ne_tbigint_bigint(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_tbool_bool(Pointer temp, boolean b) {
-		var _result = _meos_b.ever_ne_tbool_bool(temp, b);
+		var _result = _meos_a.ever_ne_tbool_bool(temp, b);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.ever_ne_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.ever_ne_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.ever_ne_text_ttext(txt, temp);
+		var _result = _meos_a.ever_ne_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.ever_ne_tfloat_float(temp, d);
+		var _result = _meos_a.ever_ne_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.ever_ne_tint_int(temp, i);
+		var _result = _meos_a.ever_ne_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int ever_ne_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.ever_ne_ttext_text(temp, txt);
+		var _result = _meos_a.ever_ne_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_bool_tbool(boolean b, Pointer temp) {
-		var _result = _meos_b.teq_bool_tbool(b, temp);
+		var _result = _meos_a.teq_bool_tbool(b, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.teq_float_tfloat(d, temp);
+		var _result = _meos_a.teq_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.teq_int_tint(i, temp);
+		var _result = _meos_a.teq_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_tbool_bool(Pointer temp, boolean b) {
-		var _result = _meos_b.teq_tbool_bool(temp, b);
+		var _result = _meos_a.teq_tbool_bool(temp, b);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.teq_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.teq_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.teq_text_ttext(txt, temp);
+		var _result = _meos_a.teq_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.teq_tfloat_float(temp, d);
+		var _result = _meos_a.teq_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.teq_tint_int(temp, i);
+		var _result = _meos_a.teq_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer teq_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.teq_ttext_text(temp, txt);
+		var _result = _meos_a.teq_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.tge_float_tfloat(d, temp);
+		var _result = _meos_a.tge_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.tge_int_tint(i, temp);
+		var _result = _meos_a.tge_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.tge_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.tge_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.tge_text_ttext(txt, temp);
+		var _result = _meos_a.tge_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.tge_tfloat_float(temp, d);
+		var _result = _meos_a.tge_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.tge_tint_int(temp, i);
+		var _result = _meos_a.tge_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tge_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.tge_ttext_text(temp, txt);
+		var _result = _meos_a.tge_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.tgt_float_tfloat(d, temp);
+		var _result = _meos_a.tgt_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.tgt_int_tint(i, temp);
+		var _result = _meos_a.tgt_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.tgt_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.tgt_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.tgt_text_ttext(txt, temp);
+		var _result = _meos_a.tgt_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_tfloat_float(Pointer temp, double d) {
-		var _result = _meos_b.tgt_tfloat_float(temp, d);
+		var _result = _meos_a.tgt_tfloat_float(temp, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_tint_int(Pointer temp, int i) {
-		var _result = _meos_b.tgt_tint_int(temp, i);
+		var _result = _meos_a.tgt_tint_int(temp, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgt_ttext_text(Pointer temp, Pointer txt) {
-		var _result = _meos_b.tgt_ttext_text(temp, txt);
+		var _result = _meos_a.tgt_ttext_text(temp, txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16339,8 +16831,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.adjacent_numspan_tnumber(s, temp);
+	public static boolean adjacent_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.adjacent_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16360,15 +16852,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.adjacent_temporal_tstzspan(temp, s);
+	public static boolean adjacent_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.adjacent_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.adjacent_tnumber_numspan(temp, s);
+	public static boolean adjacent_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.adjacent_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16388,15 +16880,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean adjacent_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.adjacent_tstzspan_temporal(s, temp);
+	public static boolean adjacent_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.adjacent_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.contained_numspan_tnumber(s, temp);
+	public static boolean contained_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.contained_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16416,15 +16908,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.contained_temporal_tstzspan(temp, s);
+	public static boolean contained_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.contained_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.contained_tnumber_numspan(temp, s);
+	public static boolean contained_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.contained_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16444,15 +16936,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contained_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.contained_tstzspan_temporal(s, temp);
+	public static boolean contained_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.contained_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.contains_numspan_tnumber(s, temp);
+	public static boolean contains_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.contains_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16465,8 +16957,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.contains_temporal_tstzspan(temp, s);
+	public static boolean contains_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.contains_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16479,8 +16971,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.contains_tnumber_numspan(temp, s);
+	public static boolean contains_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.contains_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16500,15 +16992,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean contains_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.contains_tstzspan_temporal(s, temp);
+	public static boolean contains_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.contains_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.overlaps_numspan_tnumber(s, temp);
+	public static boolean overlaps_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overlaps_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16528,15 +17020,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overlaps_temporal_tstzspan(temp, s);
+	public static boolean overlaps_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overlaps_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overlaps_tnumber_numspan(temp, s);
+	public static boolean overlaps_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overlaps_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16556,15 +17048,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overlaps_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.overlaps_tstzspan_temporal(s, temp);
+	public static boolean overlaps_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overlaps_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean same_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.same_numspan_tnumber(s, temp);
+	public static boolean same_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.same_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16584,15 +17076,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean same_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.same_temporal_tstzspan(temp, s);
+	public static boolean same_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.same_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean same_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.same_tnumber_numspan(temp, s);
+	public static boolean same_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.same_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16612,8 +17104,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean same_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.same_tstzspan_temporal(s, temp);
+	public static boolean same_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.same_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16626,8 +17118,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.after_temporal_tstzspan(temp, s);
+	public static boolean after_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.after_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16654,8 +17146,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean after_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.after_tstzspan_temporal(s, temp);
+	public static boolean after_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.after_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16668,8 +17160,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.before_temporal_tstzspan(temp, s);
+	public static boolean before_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.before_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16696,8 +17188,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean before_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.before_tstzspan_temporal(s, temp);
+	public static boolean before_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.before_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16710,15 +17202,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.left_numspan_tnumber(s, temp);
+	public static boolean left_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.left_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean left_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.left_tnumber_numspan(temp, s);
+	public static boolean left_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.left_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16745,8 +17237,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overafter_temporal_tstzspan(temp, s);
+	public static boolean overafter_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overafter_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16773,8 +17265,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overafter_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.overafter_tstzspan_temporal(s, temp);
+	public static boolean overafter_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overafter_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16787,8 +17279,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_temporal_tstzspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overbefore_temporal_tstzspan(temp, s);
+	public static boolean overbefore_temporal_tstzspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overbefore_temporal_tstzspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16815,15 +17307,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overbefore_tstzspan_temporal(Pointer s, Pointer temp) {
-		var _result = _meos_b.overbefore_tstzspan_temporal(s, temp);
+	public static boolean overbefore_tstzspan_temporal(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overbefore_tstzspan_temporal(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.overleft_numspan_tnumber(s, temp);
+	public static boolean overleft_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overleft_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16836,8 +17328,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overleft_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overleft_tnumber_numspan(temp, s);
+	public static boolean overleft_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overleft_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16857,8 +17349,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.overright_numspan_tnumber(s, temp);
+	public static boolean overright_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.overright_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16871,8 +17363,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean overright_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.overright_tnumber_numspan(temp, s);
+	public static boolean overright_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.overright_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16892,8 +17384,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_numspan_tnumber(Pointer s, Pointer temp) {
-		var _result = _meos_b.right_numspan_tnumber(s, temp);
+	public static boolean right_numspan_tnumber(Pointer sp, Pointer temp) {
+		var _result = _meos_b.right_numspan_tnumber(sp, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16906,8 +17398,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean right_tnumber_numspan(Pointer temp, Pointer s) {
-		var _result = _meos_b.right_tnumber_numspan(temp, s);
+	public static boolean right_tnumber_numspan(Pointer temp, Pointer sp) {
+		var _result = _meos_b.right_tnumber_numspan(temp, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17081,50 +17573,50 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_bigint_tbigint(long i, Pointer tnumber) {
-		var _result = _meos_b.mult_bigint_tbigint(i, tnumber);
+	public static Pointer mul_bigint_tbigint(long i, Pointer tnumber) {
+		var _result = _meos_b.mul_bigint_tbigint(i, tnumber);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_float_tfloat(double d, Pointer tnumber) {
-		var _result = _meos_b.mult_float_tfloat(d, tnumber);
+	public static Pointer mul_float_tfloat(double d, Pointer tnumber) {
+		var _result = _meos_b.mul_float_tfloat(d, tnumber);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_int_tint(int i, Pointer tnumber) {
-		var _result = _meos_b.mult_int_tint(i, tnumber);
+	public static Pointer mul_int_tint(int i, Pointer tnumber) {
+		var _result = _meos_b.mul_int_tint(i, tnumber);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tbigint_bigint(Pointer tnumber, long i) {
-		var _result = _meos_b.mult_tbigint_bigint(tnumber, i);
+	public static Pointer mul_tbigint_bigint(Pointer tnumber, long i) {
+		var _result = _meos_b.mul_tbigint_bigint(tnumber, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tfloat_float(Pointer tnumber, double d) {
-		var _result = _meos_b.mult_tfloat_float(tnumber, d);
+	public static Pointer mul_tfloat_float(Pointer tnumber, double d) {
+		var _result = _meos_b.mul_tfloat_float(tnumber, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tint_int(Pointer tnumber, int i) {
-		var _result = _meos_b.mult_tint_int(tnumber, i);
+	public static Pointer mul_tint_int(Pointer tnumber, int i) {
+		var _result = _meos_b.mul_tint_int(tnumber, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		var _result = _meos_b.mult_tnumber_tnumber(tnumber1, tnumber2);
+	public static Pointer mul_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
+		var _result = _meos_b.mul_tnumber_tnumber(tnumber1, tnumber2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17368,8 +17860,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tbool_tand_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tbool_tand_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tbool_tor_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.tbool_tor_transfn(state, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbool_tor_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tbool_tor_combinefn(state1, state2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17410,8 +17916,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer temporal_tcount_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.temporal_tcount_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tfloat_tmax_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.tfloat_tmax_transfn(state, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tmax_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tfloat_tmax_combinefn(state1, state2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17424,8 +17944,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tfloat_tmin_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tfloat_tmin_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tfloat_tsum_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.tfloat_tsum_transfn(state, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tsum_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tfloat_tsum_combinefn(state1, state2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17467,6 +18001,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tint_tmax_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tint_tmax_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tint_tmin_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.tint_tmin_transfn(state, temp);
 		MeosErrorHandler.checkError();
@@ -17474,8 +18015,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tint_tmin_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tint_tmin_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tint_tsum_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.tint_tsum_transfn(state, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tint_tsum_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tint_tsum_combinefn(state1, state2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17523,6 +18078,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tnumber_tavg_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.tnumber_tavg_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tnumber_wavg_transfn(Pointer state, Pointer temp, Pointer interv) {
 		var _result = _meos_b.tnumber_wavg_transfn(state, temp, interv);
 		MeosErrorHandler.checkError();
@@ -17537,8 +18099,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tstzspan_tcount_transfn(Pointer state, Pointer s) {
-		var _result = _meos_b.tstzspan_tcount_transfn(state, s);
+	public static Pointer tstzspan_tcount_transfn(Pointer state, Pointer sp) {
+		var _result = _meos_b.tstzspan_tcount_transfn(state, sp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17558,6 +18120,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer ttext_tmax_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.ttext_tmax_combinefn(state1, state2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer ttext_tmin_transfn(Pointer state, Pointer temp) {
 		var _result = _meos_b.ttext_tmin_transfn(state, temp);
 		MeosErrorHandler.checkError();
@@ -17565,15 +18134,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_simplify_dp(Pointer temp, double eps_dist, boolean synchronize) {
-		var _result = _meos_b.temporal_simplify_dp(temp, eps_dist, synchronize);
+	public static Pointer ttext_tmin_combinefn(Pointer state1, Pointer state2) {
+		var _result = _meos_b.ttext_tmin_combinefn(state1, state2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_simplify_max_dist(Pointer temp, double eps_dist, boolean synchronize) {
-		var _result = _meos_b.temporal_simplify_max_dist(temp, eps_dist, synchronize);
+	public static Pointer temporal_simplify_dp(Pointer temp, double dist, boolean synchronize) {
+		var _result = _meos_b.temporal_simplify_dp(temp, dist, synchronize);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer temporal_simplify_max_dist(Pointer temp, double dist, boolean synchronize) {
+		var _result = _meos_b.temporal_simplify_max_dist(temp, dist, synchronize);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17644,6 +18220,27 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static double temporal_average_hausdorff_distance(Pointer temp1, Pointer temp2) {
+		var _result = _meos_b.temporal_average_hausdorff_distance(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double temporal_lcss_distance(Pointer temp1, Pointer temp2, double epsilon) {
+		var _result = _meos_b.temporal_lcss_distance(temp1, temp2, epsilon);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer temporal_ext_kalman_filter(Pointer temp, double gate, double q, double variance, boolean to_drop) {
+		var _result = _meos_b.temporal_ext_kalman_filter(temp, gate, q, variance, to_drop);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer temporal_time_bins(Pointer temp, Pointer duration, OffsetDateTime origin, Pointer count) {
 		var origin_new = origin.toEpochSecond();
 		var _result = _meos_b.temporal_time_bins(temp, duration, origin_new, count);
@@ -17652,9 +18249,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_time_split(Pointer temp, Pointer duration, OffsetDateTime torigin, Pointer time_bins, Pointer count) {
+	public static Pointer temporal_time_split(Pointer temp, Pointer duration, OffsetDateTime torigin) {
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.temporal_time_split(temp, duration, torigin_new, time_bins, count);
+		var _result = _meos_b.temporal_time_split(temp, duration, torigin_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17682,8 +18279,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_value_split(Pointer temp, double size, double origin, Pointer bins, Pointer count) {
-		var _result = _meos_b.tfloat_value_split(temp, size, origin, bins, count);
+	public static Pointer tfloat_value_split(Pointer temp, double size, double origin) {
+		var _result = _meos_b.tfloat_value_split(temp, size, origin);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17697,9 +18294,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, OffsetDateTime torigin, Pointer value_bins, Pointer time_bins, Pointer count) {
+	public static Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, OffsetDateTime torigin) {
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tfloat_value_time_split(temp, vsize, duration, vorigin, torigin_new, value_bins, time_bins, count);
+		var _result = _meos_b.tfloat_value_time_split(temp, vsize, duration, vorigin, torigin_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17750,8 +18347,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tint_value_split(Pointer temp, int vsize, int vorigin, Pointer bins, Pointer count) {
-		var _result = _meos_b.tint_value_split(temp, vsize, vorigin, bins, count);
+	public static Pointer tint_value_split(Pointer temp, int vsize, int vorigin) {
+		var _result = _meos_b.tint_value_split(temp, vsize, vorigin);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17765,9 +18362,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, OffsetDateTime torigin, Pointer value_bins, Pointer time_bins, Pointer count) {
+	public static Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, OffsetDateTime torigin) {
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tint_value_time_split(temp, size, duration, vorigin, torigin_new, value_bins, time_bins, count);
+		var _result = _meos_b.tint_value_time_split(temp, size, duration, vorigin, torigin_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17791,6 +18388,41 @@ public class GeneratedFunctions {
 	public static Pointer tintbox_value_time_tiles(Pointer box, int xsize, Pointer duration, int xorigin, OffsetDateTime torigin, Pointer count) {
 		var torigin_new = torigin.toEpochSecond();
 		var _result = _meos_b.tintbox_value_time_tiles(box, xsize, duration, xorigin, torigin_new, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer box3d_from_gbox(Pointer box) {
+		var _result = _meos_b.box3d_from_gbox(box);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer box3d_make(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int srid) {
+		var _result = _meos_b.box3d_make(xmin, xmax, ymin, ymax, zmin, zmax, srid);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String box3d_out(Pointer box, int maxdd) {
+		var _result = _meos_b.box3d_out(box, maxdd);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
+		var _result = _meos_b.gbox_make(hasz, xmin, xmax, ymin, ymax, zmin, zmax);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String gbox_out(Pointer box, int maxdd) {
+		var _result = _meos_b.gbox_out(box, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17859,13 +18491,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geog_from_binary(String wkb_bytea) {
-		var _result = _meos_b.geog_from_binary(wkb_bytea);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer geog_from_hexewkb(String wkt) {
 		var _result = _meos_b.geog_from_hexewkb(wkt);
 		MeosErrorHandler.checkError();
@@ -17894,36 +18519,22 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer box3d_make(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int srid) {
-		var _result = _meos_b.box3d_make(xmin, xmax, ymin, ymax, zmin, zmax, srid);
+	public static Pointer box3d_in(String str) {
+		var _result = _meos_b.box3d_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String box3d_out(Pointer box, int maxdd) {
-		var _result = _meos_b.box3d_out(box, maxdd);
+	public static Pointer gbox_in(String str) {
+		var _result = _meos_b.gbox_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
-		var _result = _meos_b.gbox_make(hasz, xmin, xmax, ymin, ymax, zmin, zmax);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String gbox_out(Pointer box, int maxdd) {
-		var _result = _meos_b.gbox_out(box, maxdd);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer geo_copy(Pointer g) {
-		var _result = _meos_b.geo_copy(g);
+	public static Pointer geo_copy(Pointer gs) {
+		var _result = _meos_b.geo_copy(gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17971,8 +18582,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean geo_is_empty(Pointer g) {
-		var _result = _meos_b.geo_is_empty(g);
+	public static boolean geo_is_empty(Pointer gs) {
+		var _result = _meos_b.geo_is_empty(gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17992,29 +18603,29 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double geog_area(Pointer g, boolean use_spheroid) {
-		var _result = _meos_b.geog_area(g, use_spheroid);
+	public static double geog_area(Pointer gs, boolean use_spheroid) {
+		var _result = _meos_b.geog_area(gs, use_spheroid);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geog_centroid(Pointer g, boolean use_spheroid) {
-		var _result = _meos_b.geog_centroid(g, use_spheroid);
+	public static Pointer geog_centroid(Pointer gs, boolean use_spheroid) {
+		var _result = _meos_b.geog_centroid(gs, use_spheroid);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double geog_length(Pointer g, boolean use_spheroid) {
-		var _result = _meos_b.geog_length(g, use_spheroid);
+	public static double geog_length(Pointer gs, boolean use_spheroid) {
+		var _result = _meos_b.geog_length(gs, use_spheroid);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double geog_perimeter(Pointer g, boolean use_spheroid) {
-		var _result = _meos_b.geog_perimeter(g, use_spheroid);
+	public static double geog_perimeter(Pointer gs, boolean use_spheroid) {
+		var _result = _meos_b.geog_perimeter(gs, use_spheroid);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -18205,8 +18816,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geom_min_bounding_radius(Pointer geom, Pointer radius) {
-		var _result = _meos_b.geom_min_bounding_radius(geom, radius);
+	public static Pointer geom_min_bounding_radius(Pointer geom) {
+		var _result = _meos_b.geom_min_bounding_radius(geom);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -18401,6 +19012,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static String spatialset_out(Pointer s, int maxdd) {
+		var _result = _meos_b.spatialset_out(s, maxdd);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static String spatialset_as_text(Pointer set, int maxdd) {
 		var _result = _meos_b.spatialset_as_text(set, maxdd);
 		MeosErrorHandler.checkError();
@@ -18454,8 +19072,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geoset_values(Pointer s) {
-		var _result = _meos_b.geoset_values(s);
+	public static Pointer geoset_values(Pointer s, Pointer count) {
+		var _result = _meos_b.geoset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -19146,6 +19764,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static String tspatial_out(Pointer temp, int maxdd) {
+		var _result = _meos_b.tspatial_out(temp, maxdd);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tgeogpoint_from_mfjson(String str) {
 		var _result = _meos_b.tgeogpoint_from_mfjson(str);
 		MeosErrorHandler.checkError();
@@ -19211,13 +19836,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static String tspatial_as_text(Pointer temp, int maxdd) {
 		var _result = _meos_b.tspatial_as_text(temp, maxdd);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String tspatial_out(Pointer temp, int maxdd) {
-		var _result = _meos_b.tspatial_out(temp, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -19365,8 +19983,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom, Pointer gsarr, Pointer timesarr, Pointer count) {
-		var _result = _meos_b.tpoint_as_mvtgeom(temp, bounds, extent, buffer, clip_geom, gsarr, timesarr, count);
+	public static Pointer tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom) {
+		var _result = _meos_b.tpoint_as_mvtgeom(temp, bounds, extent, buffer, clip_geom);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -19449,11 +20067,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tgeo_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tgeo_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_b.tgeo_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_b.tgeo_value_at_timestamptz(temp, t_new, strict, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -20697,6 +21319,41 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static double mindistance_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2) {
+		var _result = _meos_b.mindistance_tgeoarr_tgeoarr(arr1, count1, arr2, count2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double mindistance_tgeo_tgeo(Pointer temp1, Pointer temp2, double threshold) {
+		var _result = _meos_b.mindistance_tgeo_tgeo(temp1, temp2, threshold);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer edwithin_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, double dist, Pointer count) {
+		var _result = _meos_b.edwithin_tgeoarr_tgeoarr(arr1, count1, arr2, count2, dist, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tdwithin_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, double dist, Pointer count, Pointer periods) {
+		var _result = _meos_b.tdwithin_tgeoarr_tgeoarr(arr1, count1, arr2, count2, dist, count, periods);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer adisjoint_tgeoarr_tgeoarr(Pointer arr1, int count1, Pointer arr2, int count2, Pointer count) {
+		var _result = _meos_b.adisjoint_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tpoint_tcentroid_finalfn(Pointer state) {
 		var _result = _meos_b.tpoint_tcentroid_finalfn(state);
 		MeosErrorHandler.checkError();
@@ -20766,23 +21423,23 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer count) {
-		var _result = _meos_b.tgeo_space_split(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc, space_bins, count);
+	public static Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc) {
+		var _result = _meos_b.tgeo_space_split(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer time_bins, Pointer count) {
+	public static Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, boolean bitmatrix, boolean border_inc) {
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc, space_bins, time_bins, count);
+		var _result = _meos_b.tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k) {
-		var _result = _meos_b.geo_cluster_kmeans(geoms, ngeoms, k);
+	public static Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k, Pointer count) {
+		var _result = _meos_b.geo_cluster_kmeans(geoms, ngeoms, k, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -20804,6 +21461,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer geo_cluster_within(Pointer geoms, int ngeoms, double tolerance, Pointer count) {
 		var _result = _meos_b.geo_cluster_within(geoms, ngeoms, tolerance, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer geo_wlof(Pointer geoms, int ngeoms, int k, double epsilon, Pointer newcount, Pointer clusters) {
+		var _result = _meos_b.geo_wlof(geoms, ngeoms, k, epsilon, newcount, clusters);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -21179,8 +21843,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer cbufferset_values(Pointer s) {
-		var _result = _meos_b.cbufferset_values(s);
+	public static Pointer cbufferset_values(Pointer s, Pointer count) {
+		var _result = _meos_b.cbufferset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -21327,6 +21991,20 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer tcbuffer_traversed_area(Pointer temp, boolean unary_union) {
+		var _result = _meos_b.tcbuffer_traversed_area(temp, unary_union);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tcbuffer_convex_hull(Pointer temp) {
+		var _result = _meos_b.tcbuffer_convex_hull(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tcbuffer_start_value(Pointer temp) {
 		var _result = _meos_b.tcbuffer_start_value(temp);
 		MeosErrorHandler.checkError();
@@ -21334,18 +22012,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tcbuffer_trav_area(Pointer temp, boolean merge_union) {
-		var _result = _meos_b.tcbuffer_trav_area(temp, merge_union);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static boolean tcbuffer_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tcbuffer_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_b.tcbuffer_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_b.tcbuffer_value_at_timestamptz(temp, t_new, strict, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -21703,6 +22378,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static int acovers_tcbuffer_tcbuffer(Pointer temp1, Pointer temp2) {
+		var _result = _meos_b.acovers_tcbuffer_tcbuffer(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static int adisjoint_tcbuffer_geo(Pointer temp, Pointer gs) {
 		var _result = _meos_b.adisjoint_tcbuffer_geo(temp, gs);
 		MeosErrorHandler.checkError();
@@ -21810,6 +22492,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static int ecovers_cbuffer_tcbuffer(Pointer cb, Pointer temp) {
 		var _result = _meos_b.ecovers_cbuffer_tcbuffer(cb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ecovers_geo_tcbuffer(Pointer gs, Pointer temp) {
+		var _result = _meos_b.ecovers_geo_tcbuffer(gs, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -22172,7 +22861,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String cbuffer_wkt_out(int value, int maxdd, boolean extended) {
+	public static String cbuffer_wkt_out(Pointer value, int maxdd, boolean extended) {
 		var _result = _meos_b.cbuffer_wkt_out(value, maxdd, extended);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -22186,7 +22875,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_round(int buffer, long size) {
+	public static Pointer datum_cbuffer_round(Pointer buffer, Pointer size) {
 		var _result = _meos_b.datum_cbuffer_round(buffer, size);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -22207,7 +22896,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_distance(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_distance(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_distance(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -22265,42 +22954,42 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_contains(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_contains(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_contains(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_covers(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_covers(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_covers(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_disjoint(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_disjoint(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_disjoint(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_intersects(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_intersects(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_intersects(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_dwithin(int cb1, int cb2, int dist) {
+	public static Pointer datum_cbuffer_dwithin(Pointer cb1, Pointer cb2, Pointer dist) {
 		var _result = _meos_b.datum_cbuffer_dwithin(cb1, cb2, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_cbuffer_touches(int cb1, int cb2) {
+	public static Pointer datum_cbuffer_touches(Pointer cb1, Pointer cb2) {
 		var _result = _meos_b.datum_cbuffer_touches(cb1, cb2);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -22358,6 +23047,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static int interptype_from_string(String interp_str) {
 		var _result = _meos_b.interptype_from_string(interp_str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int meos_typeof_hexwkb(String hexwkb) {
+		var _result = _meos_b.meos_typeof_hexwkb(hexwkb);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -22657,8 +23353,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean temptype_continuous(int type) {
-		var _result = _meos_b.temptype_continuous(type);
+	public static boolean temptype_supports_linear(int type) {
+		var _result = _meos_b.temptype_supports_linear(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -22700,373 +23396,373 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static boolean tnumber_type(int type) {
-		var _result = _meos_c.tnumber_type(type);
+		var _result = _meos_b.tnumber_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tnumber_type(int type) {
-		var _result = _meos_c.ensure_tnumber_type(type);
+		var _result = _meos_b.ensure_tnumber_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tnumber_basetype(int type) {
-		var _result = _meos_c.ensure_tnumber_basetype(type);
+		var _result = _meos_b.ensure_tnumber_basetype(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tnumber_spantype(int type) {
-		var _result = _meos_c.tnumber_spantype(type);
+		var _result = _meos_b.tnumber_spantype(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean spatial_basetype(int type) {
-		var _result = _meos_c.spatial_basetype(type);
+		var _result = _meos_b.spatial_basetype(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tspatial_type(int type) {
-		var _result = _meos_c.tspatial_type(type);
+		var _result = _meos_b.tspatial_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tspatial_type(int type) {
-		var _result = _meos_c.ensure_tspatial_type(type);
+		var _result = _meos_b.ensure_tspatial_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tpoint_type(int type) {
-		var _result = _meos_c.tpoint_type(type);
+		var _result = _meos_b.tpoint_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tpoint_type(int type) {
-		var _result = _meos_c.ensure_tpoint_type(type);
+		var _result = _meos_b.ensure_tpoint_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tgeo_type(int type) {
-		var _result = _meos_c.tgeo_type(type);
+		var _result = _meos_b.tgeo_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tgeo_type(int type) {
-		var _result = _meos_c.ensure_tgeo_type(type);
+		var _result = _meos_b.ensure_tgeo_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tgeo_type_all(int type) {
-		var _result = _meos_c.tgeo_type_all(type);
+		var _result = _meos_b.tgeo_type_all(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tgeo_type_all(int type) {
-		var _result = _meos_c.ensure_tgeo_type_all(type);
+		var _result = _meos_b.ensure_tgeo_type_all(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tgeometry_type(int type) {
-		var _result = _meos_c.tgeometry_type(type);
+		var _result = _meos_b.tgeometry_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tgeometry_type(int type) {
-		var _result = _meos_c.ensure_tgeometry_type(type);
+		var _result = _meos_b.ensure_tgeometry_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tgeodetic_type(int type) {
-		var _result = _meos_c.tgeodetic_type(type);
+		var _result = _meos_b.tgeodetic_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tgeodetic_type(int type) {
-		var _result = _meos_c.ensure_tgeodetic_type(type);
+		var _result = _meos_b.ensure_tgeodetic_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ensure_tnumber_tpoint_type(int type) {
-		var _result = _meos_c.ensure_tnumber_tpoint_type(type);
+		var _result = _meos_b.ensure_tnumber_tpoint_type(type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer gsl_get_generation_rng() {
-		var _result = _meos_c.gsl_get_generation_rng();
+		var _result = _meos_b.gsl_get_generation_rng();
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer gsl_get_aggregation_rng() {
-		var _result = _meos_c.gsl_get_aggregation_rng();
+		var _result = _meos_b.gsl_get_aggregation_rng();
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_ceil(Pointer d) {
-		var _result = _meos_c.datum_ceil(d);
+	public static Pointer datum_ceil(Pointer d) {
+		var _result = _meos_b.datum_ceil(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_degrees(Pointer d, Pointer normalize) {
-		var _result = _meos_c.datum_degrees(d, normalize);
+	public static Pointer datum_degrees(Pointer d, Pointer normalize) {
+		var _result = _meos_b.datum_degrees(d, normalize);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_float_round(Pointer value, Pointer size) {
-		var _result = _meos_c.datum_float_round(value, size);
+	public static Pointer datum_float_round(Pointer value, Pointer size) {
+		var _result = _meos_b.datum_float_round(value, size);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_floor(Pointer d) {
-		var _result = _meos_c.datum_floor(d);
+	public static Pointer datum_floor(Pointer d) {
+		var _result = _meos_b.datum_floor(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int datum_hash(Pointer d, int basetype) {
-		var _result = _meos_c.datum_hash(d, basetype);
+		var _result = _meos_b.datum_hash(d, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int datum_hash_extended(Pointer d, int basetype, int seed) {
-		var _result = _meos_c.datum_hash_extended(d, basetype, seed);
+		var _result = _meos_b.datum_hash_extended(d, basetype, seed);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_radians(Pointer d) {
-		var _result = _meos_c.datum_radians(d);
+	public static Pointer datum_radians(Pointer d) {
+		var _result = _meos_b.datum_radians(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void floatspan_round_set(Pointer s, int maxdd, Pointer result) {
-		_meos_c.floatspan_round_set(s, maxdd, result);
+		_meos_b.floatspan_round_set(s, maxdd, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_in(String str, int basetype) {
-		var _result = _meos_c.set_in(str, basetype);
+		var _result = _meos_b.set_in(str, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String set_out(Pointer s, int maxdd) {
-		var _result = _meos_c.set_out(s, maxdd);
+		var _result = _meos_b.set_out(s, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer span_in(String str, int spantype) {
-		var _result = _meos_c.span_in(str, spantype);
+		var _result = _meos_b.span_in(str, spantype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String span_out(Pointer s, int maxdd) {
-		var _result = _meos_c.span_out(s, maxdd);
+		var _result = _meos_b.span_out(s, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_in(String str, int spantype) {
-		var _result = _meos_c.spanset_in(str, spantype);
+		var _result = _meos_b.spanset_in(str, spantype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String spanset_out(Pointer ss, int maxdd) {
-		var _result = _meos_c.spanset_out(ss, maxdd);
+		var _result = _meos_b.spanset_out(ss, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_make(Pointer values, int count, int basetype, boolean order) {
-		var _result = _meos_c.set_make(values, count, basetype, order);
+		var _result = _meos_b.set_make(values, count, basetype, order);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_make_exp(Pointer values, int count, int maxcount, int basetype, boolean order) {
-		var _result = _meos_c.set_make_exp(values, count, maxcount, basetype, order);
+		var _result = _meos_b.set_make_exp(values, count, maxcount, basetype, order);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_make_free(Pointer values, int count, int basetype, boolean order) {
-		var _result = _meos_c.set_make_free(values, count, basetype, order);
+		var _result = _meos_b.set_make_free(values, count, basetype, order);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer span_make(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype) {
-		var _result = _meos_c.span_make(lower, upper, lower_inc, upper_inc, basetype);
+		var _result = _meos_b.span_make(lower, upper, lower_inc, upper_inc, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static void span_set(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype, int spantype, Pointer s) {
-		_meos_c.span_set(lower, upper, lower_inc, upper_inc, basetype, spantype, s);
+	public static void span_set(Pointer lower, Pointer upper, boolean lower_inc, boolean upper_inc, int basetype, int spantype, Pointer result) {
+		_meos_b.span_set(lower, upper, lower_inc, upper_inc, basetype, spantype, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_make_exp(Pointer spans, int count, int maxcount, boolean normalize, boolean order) {
-		var _result = _meos_c.spanset_make_exp(spans, count, maxcount, normalize, order);
+		var _result = _meos_b.spanset_make_exp(spans, count, maxcount, normalize, order);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_make_free(Pointer spans, int count, boolean normalize, boolean order) {
-		var _result = _meos_c.spanset_make_free(spans, count, normalize, order);
+		var _result = _meos_b.spanset_make_free(spans, count, normalize, order);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_span(Pointer s) {
-		var _result = _meos_c.set_span(s);
+		var _result = _meos_b.set_span(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_spanset(Pointer s) {
-		var _result = _meos_c.set_spanset(s);
+		var _result = _meos_b.set_spanset(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static void value_set_span(Pointer value, int basetype, Pointer s) {
-		_meos_c.value_set_span(value, basetype, s);
+	public static void value_set_span(Pointer value, int basetype, Pointer result) {
+		_meos_b.value_set_span(value, basetype, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer value_set(Pointer d, int basetype) {
-		var _result = _meos_c.value_set(d, basetype);
+		var _result = _meos_b.value_set(d, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer value_span(Pointer d, int basetype) {
-		var _result = _meos_c.value_span(d, basetype);
+		var _result = _meos_b.value_span(d, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer value_spanset(Pointer d, int basetype) {
-		var _result = _meos_c.value_spanset(d, basetype);
+		var _result = _meos_b.value_spanset(d, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int numspan_width(Pointer s) {
-		var _result = _meos_c.numspan_width(s);
+	public static Pointer numspan_width(Pointer s) {
+		var _result = _meos_b.numspan_width(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int numspanset_width(Pointer ss, boolean boundspan) {
-		var _result = _meos_c.numspanset_width(ss, boundspan);
+	public static Pointer numspanset_width(Pointer ss, boolean boundspan) {
+		var _result = _meos_b.numspanset_width(ss, boundspan);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int set_end_value(Pointer s) {
-		var _result = _meos_c.set_end_value(s);
+	public static Pointer set_end_value(Pointer s) {
+		var _result = _meos_b.set_end_value(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int set_mem_size(Pointer s) {
-		var _result = _meos_c.set_mem_size(s);
+		var _result = _meos_b.set_mem_size(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void set_set_subspan(Pointer s, int minidx, int maxidx, Pointer result) {
-		_meos_c.set_set_subspan(s, minidx, maxidx, result);
+		_meos_b.set_set_subspan(s, minidx, maxidx, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void set_set_span(Pointer s, Pointer result) {
-		_meos_c.set_set_span(s, result);
+		_meos_b.set_set_span(s, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static int set_start_value(Pointer s) {
-		var _result = _meos_c.set_start_value(s);
+	public static Pointer set_start_value(Pointer s) {
+		var _result = _meos_b.set_start_value(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -23076,447 +23772,447 @@ public class GeneratedFunctions {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
-		out = _meos_c.set_value_n(s, n, result);
+		out = _meos_b.set_value_n(s, n, result);
 		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
 		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer set_vals(Pointer s) {
-		var _result = _meos_c.set_vals(s);
+	public static Pointer set_vals(Pointer s, Pointer count) {
+		var _result = _meos_b.set_vals(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer set_values(Pointer s) {
-		var _result = _meos_c.set_values(s);
+	public static Pointer set_values(Pointer s, Pointer count) {
+		var _result = _meos_b.set_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int spanset_lower(Pointer ss) {
-		var _result = _meos_c.spanset_lower(ss);
+	public static Pointer spanset_lower(Pointer ss) {
+		var _result = _meos_b.spanset_lower(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int spanset_mem_size(Pointer ss) {
-		var _result = _meos_c.spanset_mem_size(ss);
+		var _result = _meos_b.spanset_mem_size(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer spanset_sps(Pointer ss) {
-		var _result = _meos_c.spanset_sps(ss);
+	public static Pointer spanset_sps(Pointer ss, Pointer count) {
+		var _result = _meos_b.spanset_sps(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int spanset_upper(Pointer ss) {
-		var _result = _meos_c.spanset_upper(ss);
+	public static Pointer spanset_upper(Pointer ss) {
+		var _result = _meos_b.spanset_upper(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void bigintspan_set_floatspan(Pointer s1, Pointer s2) {
-		_meos_c.bigintspan_set_floatspan(s1, s2);
+		_meos_b.bigintspan_set_floatspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void bigintspan_set_intspan(Pointer s1, Pointer s2) {
-		_meos_c.bigintspan_set_intspan(s1, s2);
+		_meos_b.bigintspan_set_intspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void datespan_set_tstzspan(Pointer s1, Pointer s2) {
-		_meos_c.datespan_set_tstzspan(s1, s2);
+		_meos_b.datespan_set_tstzspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void floatspan_set_bigintspan(Pointer s1, Pointer s2) {
-		_meos_c.floatspan_set_bigintspan(s1, s2);
+		_meos_b.floatspan_set_bigintspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void floatspan_set_intspan(Pointer s1, Pointer s2) {
-		_meos_c.floatspan_set_intspan(s1, s2);
+		_meos_b.floatspan_set_intspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void intspan_set_bigintspan(Pointer s1, Pointer s2) {
-		_meos_c.intspan_set_bigintspan(s1, s2);
+		_meos_b.intspan_set_bigintspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static void intspan_set_floatspan(Pointer s1, Pointer s2) {
-		_meos_c.intspan_set_floatspan(s1, s2);
+		_meos_b.intspan_set_floatspan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer numset_shift_scale(Pointer s, Pointer shift, Pointer width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_c.numset_shift_scale(s, shift, width, hasshift, haswidth);
+		var _result = _meos_b.numset_shift_scale(s, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer numspan_expand(Pointer s, Pointer value) {
-		var _result = _meos_c.numspan_expand(s, value);
+		var _result = _meos_b.numspan_expand(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer numspan_shift_scale(Pointer s, Pointer shift, Pointer width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_c.numspan_shift_scale(s, shift, width, hasshift, haswidth);
+		var _result = _meos_b.numspan_shift_scale(s, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer numspanset_shift_scale(Pointer ss, Pointer shift, Pointer width, boolean hasshift, boolean haswidth) {
-		var _result = _meos_c.numspanset_shift_scale(ss, shift, width, hasshift, haswidth);
+		var _result = _meos_b.numspanset_shift_scale(ss, shift, width, hasshift, haswidth);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_compact(Pointer s) {
-		var _result = _meos_c.set_compact(s);
+		var _result = _meos_b.set_compact(s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void span_expand(Pointer s1, Pointer s2) {
-		_meos_c.span_expand(s1, s2);
+		_meos_b.span_expand(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_compact(Pointer ss) {
-		var _result = _meos_c.spanset_compact(ss);
+		var _result = _meos_b.spanset_compact(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tbox_expand_value(Pointer box, Pointer value, int basetyp) {
-		var _result = _meos_c.tbox_expand_value(box, value, basetyp);
+		var _result = _meos_b.tbox_expand_value(box, value, basetyp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer textcat_textset_text_common(Pointer s, Pointer txt, boolean invert) {
-		var _result = _meos_c.textcat_textset_text_common(s, txt, invert);
+		var _result = _meos_b.textcat_textset_text_common(s, txt, invert);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void tstzspan_set_datespan(Pointer s1, Pointer s2) {
-		_meos_c.tstzspan_set_datespan(s1, s2);
+		_meos_b.tstzspan_set_datespan(s1, s2);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean adjacent_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.adjacent_span_value(s, value);
+		var _result = _meos_b.adjacent_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean adjacent_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.adjacent_spanset_value(ss, value);
+		var _result = _meos_b.adjacent_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean adjacent_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.adjacent_value_spanset(value, ss);
+		var _result = _meos_b.adjacent_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contained_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.contained_value_set(value, s);
+		var _result = _meos_b.contained_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contained_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.contained_value_span(value, s);
+		var _result = _meos_b.contained_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contained_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.contained_value_spanset(value, ss);
+		var _result = _meos_b.contained_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contains_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.contains_set_value(s, value);
+		var _result = _meos_b.contains_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contains_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.contains_span_value(s, value);
+		var _result = _meos_b.contains_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean contains_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.contains_spanset_value(ss, value);
+		var _result = _meos_b.contains_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean ovadj_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_c.ovadj_span_span(s1, s2);
+		var _result = _meos_b.ovadj_span_span(s1, s2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.left_set_value(s, value);
+		var _result = _meos_b.left_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.left_span_value(s, value);
+		var _result = _meos_b.left_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.left_spanset_value(ss, value);
+		var _result = _meos_b.left_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.left_value_set(value, s);
+		var _result = _meos_b.left_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.left_value_span(value, s);
+		var _result = _meos_b.left_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean left_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.left_value_spanset(value, ss);
+		var _result = _meos_b.left_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean lfnadj_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_c.lfnadj_span_span(s1, s2);
+		var _result = _meos_b.lfnadj_span_span(s1, s2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.overleft_set_value(s, value);
+		var _result = _meos_b.overleft_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.overleft_span_value(s, value);
+		var _result = _meos_b.overleft_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.overleft_spanset_value(ss, value);
+		var _result = _meos_b.overleft_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.overleft_value_set(value, s);
+		var _result = _meos_b.overleft_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.overleft_value_span(value, s);
+		var _result = _meos_b.overleft_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overleft_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.overleft_value_spanset(value, ss);
+		var _result = _meos_b.overleft_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.overright_set_value(s, value);
+		var _result = _meos_b.overright_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.overright_span_value(s, value);
+		var _result = _meos_b.overright_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.overright_spanset_value(ss, value);
+		var _result = _meos_b.overright_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.overright_value_set(value, s);
+		var _result = _meos_b.overright_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.overright_value_span(value, s);
+		var _result = _meos_b.overright_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean overright_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.overright_value_spanset(value, ss);
+		var _result = _meos_b.overright_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.right_value_set(value, s);
+		var _result = _meos_b.right_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.right_set_value(s, value);
+		var _result = _meos_b.right_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.right_value_span(value, s);
+		var _result = _meos_b.right_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.right_value_spanset(value, ss);
+		var _result = _meos_b.right_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.right_span_value(s, value);
+		var _result = _meos_b.right_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean right_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.right_spanset_value(ss, value);
+		var _result = _meos_b.right_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean bbox_type(int bboxtype) {
-		var _result = _meos_c.bbox_type(bboxtype);
+		var _result = _meos_b.bbox_type(bboxtype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int bbox_get_size(int bboxtype) {
-		var _result = _meos_c.bbox_get_size(bboxtype);
+	public static long bbox_get_size(int bboxtype) {
+		var _result = _meos_b.bbox_get_size(bboxtype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int bbox_max_dims(int bboxtype) {
-		var _result = _meos_c.bbox_max_dims(bboxtype);
+		var _result = _meos_b.bbox_max_dims(bboxtype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean temporal_bbox_eq(Pointer box1, Pointer box2, int temptype) {
-		var _result = _meos_c.temporal_bbox_eq(box1, box2, temptype);
+		var _result = _meos_b.temporal_bbox_eq(box1, box2, temptype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int temporal_bbox_cmp(Pointer box1, Pointer box2, int temptype) {
-		var _result = _meos_c.temporal_bbox_cmp(box1, box2, temptype);
+		var _result = _meos_b.temporal_bbox_cmp(box1, box2, temptype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void bbox_union_span_span(Pointer s1, Pointer s2, Pointer result) {
-		_meos_c.bbox_union_span_span(s1, s2, result);
+		_meos_b.bbox_union_span_span(s1, s2, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -23525,7 +24221,7 @@ public class GeneratedFunctions {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
-		out = _meos_c.inter_span_span(s1, s2, result);
+		out = _meos_b.inter_span_span(s1, s2, result);
 		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
 		return out ? new_result : null;
@@ -23533,195 +24229,188 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.intersection_set_value(s, value);
+		var _result = _meos_b.intersection_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.intersection_span_value(s, value);
+		var _result = _meos_b.intersection_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.intersection_spanset_value(ss, value);
+		var _result = _meos_b.intersection_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.intersection_value_set(value, s);
+		var _result = _meos_b.intersection_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.intersection_value_span(value, s);
+		var _result = _meos_b.intersection_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer intersection_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.intersection_value_spanset(value, ss);
+		var _result = _meos_b.intersection_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int mi_span_span(Pointer s1, Pointer s2, Pointer result) {
-		var _result = _meos_c.mi_span_span(s1, s2, result);
+		var _result = _meos_b.mi_span_span(s1, s2, result);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.minus_set_value(s, value);
+		var _result = _meos_b.minus_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.minus_span_value(s, value);
+		var _result = _meos_b.minus_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.minus_spanset_value(ss, value);
+		var _result = _meos_b.minus_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.minus_value_set(value, s);
+		var _result = _meos_b.minus_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.minus_value_span(value, s);
+		var _result = _meos_b.minus_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer minus_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.minus_value_spanset(value, ss);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer super_union_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_c.super_union_span_span(s1, s2);
+		var _result = _meos_b.minus_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.union_set_value(s, value);
+		var _result = _meos_b.union_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.union_span_value(s, value);
+		var _result = _meos_b.union_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.union_spanset_value(ss, value);
+		var _result = _meos_b.union_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_value_set(Pointer value, Pointer s) {
-		var _result = _meos_c.union_value_set(value, s);
+		var _result = _meos_b.union_value_set(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_value_span(Pointer value, Pointer s) {
-		var _result = _meos_c.union_value_span(value, s);
+		var _result = _meos_b.union_value_span(value, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer union_value_spanset(Pointer value, Pointer ss) {
-		var _result = _meos_c.union_value_spanset(value, ss);
+		var _result = _meos_b.union_value_spanset(value, ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_set_set(Pointer s1, Pointer s2) {
-		var _result = _meos_c.distance_set_set(s1, s2);
+	public static Pointer distance_set_set(Pointer s1, Pointer s2) {
+		var _result = _meos_b.distance_set_set(s1, s2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_set_value(Pointer s, Pointer value) {
-		var _result = _meos_c.distance_set_value(s, value);
+	public static Pointer distance_set_value(Pointer s, Pointer value) {
+		var _result = _meos_b.distance_set_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_span_span(Pointer s1, Pointer s2) {
+	public static Pointer distance_span_span(Pointer s1, Pointer s2) {
 		var _result = _meos_c.distance_span_span(s1, s2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_span_value(Pointer s, Pointer value) {
+	public static Pointer distance_span_value(Pointer s, Pointer value) {
 		var _result = _meos_c.distance_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_spanset_span(Pointer ss, Pointer s) {
+	public static Pointer distance_spanset_span(Pointer ss, Pointer s) {
 		var _result = _meos_c.distance_spanset_span(ss, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_spanset_spanset(Pointer ss1, Pointer ss2) {
+	public static Pointer distance_spanset_spanset(Pointer ss1, Pointer ss2) {
 		var _result = _meos_c.distance_spanset_spanset(ss1, ss2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_spanset_value(Pointer ss, Pointer value) {
+	public static Pointer distance_spanset_value(Pointer ss, Pointer value) {
 		var _result = _meos_c.distance_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int distance_value_value(Pointer l, Pointer r, int basetype) {
+	public static Pointer distance_value_value(Pointer l, Pointer r, int basetype) {
 		var _result = _meos_c.distance_value_value(l, r, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -23757,26 +24446,26 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tbox_set(Pointer s, Pointer p, Pointer box) {
-		_meos_c.tbox_set(s, p, box);
+	public static void tbox_set(Pointer s, Pointer p, Pointer result) {
+		_meos_c.tbox_set(s, p, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void float_set_tbox(double d, Pointer box) {
-		_meos_c.float_set_tbox(d, box);
+	public static void float_set_tbox(double d, Pointer result) {
+		_meos_c.float_set_tbox(d, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void int_set_tbox(int i, Pointer box) {
-		_meos_c.int_set_tbox(i, box);
+	public static void int_set_tbox(int i, Pointer result) {
+		_meos_c.int_set_tbox(i, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void number_set_tbox(Pointer d, int basetype, Pointer box) {
-		_meos_c.number_set_tbox(d, basetype, box);
+	public static void number_set_tbox(Pointer d, int basetype, Pointer result) {
+		_meos_c.number_set_tbox(d, basetype, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -23788,33 +24477,33 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void numset_set_tbox(Pointer s, Pointer box) {
-		_meos_c.numset_set_tbox(s, box);
+	public static void numset_set_tbox(Pointer s, Pointer result) {
+		_meos_c.numset_set_tbox(s, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void numspan_set_tbox(Pointer span, Pointer box) {
-		_meos_c.numspan_set_tbox(span, box);
+	public static void numspan_set_tbox(Pointer span, Pointer result) {
+		_meos_c.numspan_set_tbox(span, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void timestamptz_set_tbox(OffsetDateTime t, Pointer box) {
+	public static void timestamptz_set_tbox(OffsetDateTime t, Pointer result) {
 		var t_new = t.toEpochSecond();
-		_meos_c.timestamptz_set_tbox(t_new, box);
+		_meos_c.timestamptz_set_tbox(t_new, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tstzset_set_tbox(Pointer s, Pointer box) {
-		_meos_c.tstzset_set_tbox(s, box);
+	public static void tstzset_set_tbox(Pointer s, Pointer result) {
+		_meos_c.tstzset_set_tbox(s, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tstzspan_set_tbox(Pointer s, Pointer box) {
-		_meos_c.tstzspan_set_tbox(s, box);
+	public static void tstzspan_set_tbox(Pointer s, Pointer result) {
+		_meos_c.tstzspan_set_tbox(s, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -23964,6 +24653,41 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static String tinstant_out(Pointer inst, int maxdd) {
 		var _result = _meos_c.tinstant_out(inst, maxdd);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbigintinst_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tbigintinst_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbigintinst_in(String str) {
+		var _result = _meos_c.tbigintinst_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbigintseq_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tbigintseq_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbigintseqset_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tbigintseqset_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tbigintseqset_in(String str) {
+		var _result = _meos_c.tbigintseqset_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -24216,50 +24940,50 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void temporal_set_tstzspan(Pointer temp, Pointer s) {
-		_meos_c.temporal_set_tstzspan(temp, s);
+	public static void temporal_set_tstzspan(Pointer temp, Pointer result) {
+		_meos_c.temporal_set_tstzspan(temp, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tinstant_set_tstzspan(Pointer inst, Pointer s) {
-		_meos_c.tinstant_set_tstzspan(inst, s);
+	public static void tinstant_set_tstzspan(Pointer inst, Pointer result) {
+		_meos_c.tinstant_set_tstzspan(inst, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tnumber_set_tbox(Pointer temp, Pointer box) {
-		_meos_c.tnumber_set_tbox(temp, box);
+	public static void tnumber_set_tbox(Pointer temp, Pointer result) {
+		_meos_c.tnumber_set_tbox(temp, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tnumberinst_set_tbox(Pointer inst, Pointer box) {
-		_meos_c.tnumberinst_set_tbox(inst, box);
+	public static void tnumberinst_set_tbox(Pointer inst, Pointer result) {
+		_meos_c.tnumberinst_set_tbox(inst, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tnumberseq_set_tbox(Pointer seq, Pointer box) {
-		_meos_c.tnumberseq_set_tbox(seq, box);
+	public static void tnumberseq_set_tbox(Pointer seq, Pointer result) {
+		_meos_c.tnumberseq_set_tbox(seq, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tnumberseqset_set_tbox(Pointer ss, Pointer box) {
-		_meos_c.tnumberseqset_set_tbox(ss, box);
+	public static void tnumberseqset_set_tbox(Pointer ss, Pointer result) {
+		_meos_c.tnumberseqset_set_tbox(ss, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tsequence_set_tstzspan(Pointer seq, Pointer s) {
-		_meos_c.tsequence_set_tstzspan(seq, s);
+	public static void tsequence_set_tstzspan(Pointer seq, Pointer result) {
+		_meos_c.tsequence_set_tstzspan(seq, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tsequenceset_set_tstzspan(Pointer ss, Pointer s) {
-		_meos_c.tsequenceset_set_tstzspan(ss, s);
+	public static void tsequenceset_set_tstzspan(Pointer ss, Pointer result) {
+		_meos_c.tsequenceset_set_tstzspan(ss, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -24271,7 +24995,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_end_value(Pointer temp) {
+	public static Pointer temporal_end_value(Pointer temp) {
 		var _result = _meos_c.temporal_end_value(temp);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24299,14 +25023,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_max_value(Pointer temp) {
+	public static Pointer temporal_max_value(Pointer temp) {
 		var _result = _meos_c.temporal_max_value(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_mem_size(Pointer temp) {
+	public static long temporal_mem_size(Pointer temp) {
 		var _result = _meos_c.temporal_mem_size(temp);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24320,7 +25044,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_min_value(Pointer temp) {
+	public static Pointer temporal_min_value(Pointer temp) {
 		var _result = _meos_c.temporal_min_value(temp);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24334,8 +25058,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void temporal_set_bbox(Pointer temp, Pointer box) {
-		_meos_c.temporal_set_bbox(temp, box);
+	public static void temporal_set_bbox(Pointer temp, Pointer result) {
+		_meos_c.temporal_set_bbox(temp, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -24347,7 +25071,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_start_value(Pointer temp) {
+	public static Pointer temporal_start_value(Pointer temp) {
 		var _result = _meos_c.temporal_start_value(temp);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24393,8 +25117,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tinstant_set_bbox(Pointer inst, Pointer box) {
-		_meos_c.tinstant_set_bbox(inst, box);
+	public static void tinstant_set_bbox(Pointer inst, Pointer result) {
+		_meos_c.tinstant_set_bbox(inst, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -24413,14 +25137,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tinstant_value_p(Pointer inst) {
+	public static Pointer tinstant_value_p(Pointer inst) {
 		var _result = _meos_c.tinstant_value_p(inst);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int tinstant_value(Pointer inst) {
+	public static Pointer tinstant_value(Pointer inst) {
 		var _result = _meos_c.tinstant_value(inst);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24446,8 +25170,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tnumber_set_span(Pointer temp, Pointer span) {
-		_meos_c.tnumber_set_span(temp, span);
+	public static void tnumber_set_span(Pointer temp, Pointer result) {
+		_meos_c.tnumber_set_span(temp, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -24508,8 +25232,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tsequence_insts_p(Pointer seq) {
-		var _result = _meos_c.tsequence_insts_p(seq);
+	public static Pointer tsequence_insts_p(Pointer seq, Pointer count) {
+		var _result = _meos_c.tsequence_insts_p(seq, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -24522,7 +25246,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tsequence_max_val(Pointer seq) {
+	public static Pointer tsequence_max_val(Pointer seq) {
 		var _result = _meos_c.tsequence_max_val(seq);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24536,7 +25260,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tsequence_min_val(Pointer seq) {
+	public static Pointer tsequence_min_val(Pointer seq) {
 		var _result = _meos_c.tsequence_min_val(seq);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24625,8 +25349,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tsequenceset_insts_p(Pointer ss) {
-		var _result = _meos_c.tsequenceset_insts_p(ss);
+	public static Pointer tsequenceset_insts_p(Pointer ss, Pointer count) {
+		var _result = _meos_c.tsequenceset_insts_p(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -24639,7 +25363,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tsequenceset_max_val(Pointer ss) {
+	public static Pointer tsequenceset_max_val(Pointer ss) {
 		var _result = _meos_c.tsequenceset_max_val(ss);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24653,7 +25377,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tsequenceset_min_val(Pointer ss) {
+	public static Pointer tsequenceset_min_val(Pointer ss) {
 		var _result = _meos_c.tsequenceset_min_val(ss);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24681,8 +25405,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tsequenceset_sequences_p(Pointer ss) {
-		var _result = _meos_c.tsequenceset_sequences_p(ss);
+	public static Pointer tsequenceset_sequences_p(Pointer ss, Pointer count) {
+		var _result = _meos_c.tsequenceset_sequences_p(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -25083,8 +25807,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tsequence_set_bbox(Pointer seq, Pointer box) {
-		_meos_c.tsequence_set_bbox(seq, box);
+	public static void tsequence_set_bbox(Pointer seq, Pointer result) {
+		_meos_c.tsequence_set_bbox(seq, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -25095,8 +25819,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tsequenceset_set_bbox(Pointer ss, Pointer box) {
-		_meos_c.tsequenceset_set_bbox(ss, box);
+	public static void tsequenceset_set_bbox(Pointer ss, Pointer result) {
+		_meos_c.tsequenceset_set_bbox(ss, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -25622,6 +26346,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static double tnumberinst_distance(Pointer inst1, Pointer inst2) {
+		var _result = _meos_c.tnumberinst_distance(inst1, inst2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer tnumberseq_abs(Pointer seq) {
 		var _result = _meos_c.tnumberseq_abs(seq);
 		MeosErrorHandler.checkError();
@@ -25701,13 +26432,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer tdistance_tnumber_number(Pointer temp, Pointer value) {
 		var _result = _meos_c.tdistance_tnumber_number(temp, value);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double tnumberinst_distance(Pointer inst1, Pointer inst2) {
-		var _result = _meos_c.tnumberinst_distance(inst1, inst2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -25858,8 +26582,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin, Pointer bins, Pointer count) {
-		var _result = _meos_c.tnumber_value_split(temp, vsize, vorigin, bins, count);
+	public static Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin) {
+		var _result = _meos_c.tnumber_value_split(temp, vsize, vorigin);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26340,10 +27064,17 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tcbuffersegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist, OffsetDateTime lower, OffsetDateTime upper, Pointer t1, Pointer t2) {
+	public static int tcbuffersegm_tdwithin_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist, OffsetDateTime lower, OffsetDateTime upper, Pointer t1, Pointer t2) {
 		var lower_new = lower.toEpochSecond();
 		var upper_new = upper.toEpochSecond();
-		var _result = _meos_c.tcbuffersegm_distance_turnpt(start1, end1, start2, end2, dist, lower_new, upper_new, t1, t2);
+		var _result = _meos_c.tcbuffersegm_tdwithin_turnpt(start1, end1, start2, end2, dist, lower_new, upper_new, t1, t2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tcbuffersegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer dist) {
+		var _result = _meos_c.tcbuffersegm_distance_turnpt(start1, end1, start2, end2, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26362,18 +27093,16 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean cbuffer_timestamptz_set_stbox(Pointer cb, OffsetDateTime t, Pointer box) {
+	public static void cbuffer_timestamptz_set_stbox(Pointer cb, OffsetDateTime t, Pointer box) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_c.cbuffer_timestamptz_set_stbox(cb, t_new, box);
+		_meos_c.cbuffer_timestamptz_set_stbox(cb, t_new, box);
 		MeosErrorHandler.checkError();
-		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean cbuffer_tstzspan_set_stbox(Pointer cb, Pointer s, Pointer box) {
-		var _result = _meos_c.cbuffer_tstzspan_set_stbox(cb, s, box);
+	public static void cbuffer_tstzspan_set_stbox(Pointer cb, Pointer s, Pointer box) {
+		_meos_c.cbuffer_tstzspan_set_stbox(cb, s, box);
 		MeosErrorHandler.checkError();
-		return _result;
 	}
 
 	@SuppressWarnings("unused")
@@ -26395,29 +27124,29 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tcbufferinst_trav_area(Pointer inst) {
-		var _result = _meos_c.tcbufferinst_trav_area(inst);
+	public static Pointer tcbufferinst_traversed_area(Pointer inst) {
+		var _result = _meos_c.tcbufferinst_traversed_area(inst);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tcbufferseq_trav_area(Pointer seq) {
-		var _result = _meos_c.tcbufferseq_trav_area(seq);
+	public static Pointer tcbufferseq_traversed_area(Pointer seq, boolean unary_union) {
+		var _result = _meos_c.tcbufferseq_traversed_area(seq, unary_union);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tcbufferseqset_trav_area(Pointer ss) {
-		var _result = _meos_c.tcbufferseqset_trav_area(ss);
+	public static Pointer tcbufferseqset_traversed_area(Pointer ss, boolean unary_union) {
+		var _result = _meos_c.tcbufferseqset_traversed_area(ss, unary_union);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tcbuffersegm_trav_area(Pointer inst1, Pointer inst2) {
-		var _result = _meos_c.tcbuffersegm_trav_area(inst1, inst2);
+	public static Pointer tcbuffersegm_traversed_area(Pointer inst1, Pointer inst2) {
+		var _result = _meos_c.tcbuffersegm_traversed_area(inst1, inst2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26626,6 +27355,27 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer clipper2_clip_poly_poly(Pointer subj, Pointer clip, int op) {
+		var _result = _meos_c.clipper2_clip_poly_poly(subj, clip, op);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer clipper2_traj_poly_periods(Pointer seq, Pointer gs, Pointer out_count) {
+		var _result = _meos_c.clipper2_traj_poly_periods(seq, gs, out_count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer clip_poly_poly(Pointer subj, Pointer clip, int operation) {
+		var _result = _meos_c.clip_poly_poly(subj, clip, operation);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static int lwproj_lookup(int srid_from, int srid_to, Pointer pj) {
 		var _result = _meos_c.lwproj_lookup(srid_from, srid_to, pj);
 		MeosErrorHandler.checkError();
@@ -26667,8 +27417,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer postgis_valid_typmod(Pointer gs, int typmod) {
-		var _result = _meos_c.postgis_valid_typmod(gs, typmod);
+	public static Pointer meos_postgis_valid_typmod(Pointer gs, int typmod) {
+		var _result = _meos_c.meos_postgis_valid_typmod(gs, typmod);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26695,15 +27445,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer POSTGIS2GEOS(Pointer pglwgeom) {
-		var _result = _meos_c.POSTGIS2GEOS(pglwgeom);
+	public static Pointer MEOS_POSTGIS2GEOS(Pointer pglwgeom) {
+		var _result = _meos_c.MEOS_POSTGIS2GEOS(pglwgeom);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer GEOS2POSTGIS(Pointer geom, String want3d) {
-		var _result = _meos_c.GEOS2POSTGIS(geom, want3d);
+	public static Pointer MEOS_GEOS2POSTGIS(Pointer geom, String want3d) {
+		var _result = _meos_c.MEOS_GEOS2POSTGIS(geom, want3d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26759,6 +27509,191 @@ public class GeneratedFunctions {
 		var _result = _meos_c.stbox_index_recheck(strategy);
 		MeosErrorHandler.checkError();
 		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer stboxnode_copy(Pointer box) {
+		var _result = _meos_c.stboxnode_copy(box);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int getQuadrant8D(Pointer centroid, Pointer inBox) {
+		var _result = _meos_c.getQuadrant8D(centroid, inBox);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void stboxnode_init(Pointer centroid, Pointer nodebox) {
+		_meos_c.stboxnode_init(centroid, nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void stboxnode_quadtree_next(Pointer nodebox, Pointer centroid, int quadrant, Pointer next_nodebox) {
+		_meos_c.stboxnode_quadtree_next(nodebox, centroid, quadrant, next_nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void stboxnode_kdtree_next(Pointer nodebox, Pointer centroid, int node, int level, Pointer next_nodebox) {
+		_meos_c.stboxnode_kdtree_next(nodebox, centroid, node, level, next_nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overlap8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overlap8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overlapKD(Pointer nodebox, Pointer query, int level) {
+		var _result = _meos_c.overlapKD(nodebox, query, level);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean contain8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.contain8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean containKD(Pointer nodebox, Pointer query, int level) {
+		var _result = _meos_c.containKD(nodebox, query, level);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean left8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.left8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overLeft8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overLeft8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean right8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.right8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overRight8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overRight8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean below8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.below8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overBelow8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overBelow8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean above8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.above8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overAbove8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overAbove8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean front8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.front8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overFront8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overFront8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean back8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.back8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overBack8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overBack8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean before8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.before8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overBefore8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overBefore8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean after8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.after8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overAfter8D(Pointer nodebox, Pointer query) {
+		var _result = _meos_c.overAfter8D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double distance_stbox_nodebox(Pointer query, Pointer nodebox) {
+		var _result = _meos_c.distance_stbox_nodebox(query, nodebox);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void tspatial_spgist_get_stbox(Pointer value, int type, Pointer result) {
+		_meos_c.tspatial_spgist_get_stbox(value, type, result);
+		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
@@ -26845,19 +27780,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tgeompointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, OffsetDateTime lower, OffsetDateTime upper, Pointer t1, Pointer t2) {
-		var lower_new = lower.toEpochSecond();
-		var upper_new = upper.toEpochSecond();
-		var _result = _meos_c.tgeompointsegm_distance_turnpt(start1, end1, start2, end2, param, lower_new, upper_new, t1, t2);
+	public static int tgeompointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param) {
+		var _result = _meos_c.tgeompointsegm_distance_turnpt(start1, end1, start2, end2, param);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int tgeogpointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, OffsetDateTime lower, OffsetDateTime upper, Pointer t1, Pointer t2) {
-		var lower_new = lower.toEpochSecond();
-		var upper_new = upper.toEpochSecond();
-		var _result = _meos_c.tgeogpointsegm_distance_turnpt(start1, end1, start2, end2, param, lower_new, upper_new, t1, t2);
+	public static int tgeogpointsegm_distance_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param) {
+		var _result = _meos_c.tgeogpointsegm_distance_turnpt(start1, end1, start2, end2, param);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -26925,42 +27856,42 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_point_eq(Pointer point1, Pointer point2) {
+	public static Pointer datum2_point_eq(Pointer point1, Pointer point2) {
 		var _result = _meos_c.datum2_point_eq(point1, point2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_point_ne(Pointer point1, Pointer point2) {
+	public static Pointer datum2_point_ne(Pointer point1, Pointer point2) {
 		var _result = _meos_c.datum2_point_ne(point1, point2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_point_same(Pointer point1, Pointer point2) {
+	public static Pointer datum2_point_same(Pointer point1, Pointer point2) {
 		var _result = _meos_c.datum2_point_same(point1, point2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_point_nsame(Pointer point1, Pointer point2) {
+	public static Pointer datum2_point_nsame(Pointer point1, Pointer point2) {
 		var _result = _meos_c.datum2_point_nsame(point1, point2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_geom_centroid(Pointer geo) {
+	public static Pointer datum2_geom_centroid(Pointer geo) {
 		var _result = _meos_c.datum2_geom_centroid(geo);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_geog_centroid(Pointer geo) {
+	public static Pointer datum2_geog_centroid(Pointer geo) {
 		var _result = _meos_c.datum2_geog_centroid(geo);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -26995,35 +27926,35 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_distance2d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_distance2d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_distance2d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_distance3d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_distance3d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_distance3d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geog_distance(Pointer geog1, Pointer geog2) {
+	public static Pointer datum_geog_distance(Pointer geog1, Pointer geog2) {
 		var _result = _meos_c.datum_geog_distance(geog1, geog2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pt_distance2d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_pt_distance2d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_pt_distance2d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pt_distance3d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_pt_distance3d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_pt_distance3d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -27372,7 +28303,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int pointsegm_interpolate(Pointer start, Pointer end, Pointer ratio) {
+	public static Pointer pointsegm_interpolate(Pointer start, Pointer end, Pointer ratio) {
 		var _result = _meos_c.pointsegm_interpolate(start, end, ratio);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -27446,91 +28377,91 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_contains(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_contains(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_contains(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_covers(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_covers(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_covers(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_disjoint2d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_disjoint2d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_disjoint2d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_disjoint3d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_disjoint3d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_disjoint3d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geog_disjoint(Pointer geog1, Pointer geog2) {
+	public static Pointer datum_geog_disjoint(Pointer geog1, Pointer geog2) {
 		var _result = _meos_c.datum_geog_disjoint(geog1, geog2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_intersects2d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_intersects2d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_intersects2d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_intersects3d(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_intersects3d(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_intersects3d(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geog_intersects(Pointer geog1, Pointer geog2) {
+	public static Pointer datum_geog_intersects(Pointer geog1, Pointer geog2) {
 		var _result = _meos_c.datum_geog_intersects(geog1, geog2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_touches(Pointer geom1, Pointer geom2) {
+	public static Pointer datum_geom_touches(Pointer geom1, Pointer geom2) {
 		var _result = _meos_c.datum_geom_touches(geom1, geom2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_dwithin2d(Pointer geom1, Pointer geom2, Pointer dist) {
+	public static Pointer datum_geom_dwithin2d(Pointer geom1, Pointer geom2, Pointer dist) {
 		var _result = _meos_c.datum_geom_dwithin2d(geom1, geom2, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_dwithin3d(Pointer geom1, Pointer geom2, Pointer dist) {
+	public static Pointer datum_geom_dwithin3d(Pointer geom1, Pointer geom2, Pointer dist) {
 		var _result = _meos_c.datum_geom_dwithin3d(geom1, geom2, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geog_dwithin(Pointer geog1, Pointer geog2, Pointer dist) {
+	public static Pointer datum_geog_dwithin(Pointer geog1, Pointer geog2, Pointer dist) {
 		var _result = _meos_c.datum_geog_dwithin(geog1, geog2, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geom_relate_pattern(Pointer geog1, Pointer geog2, Pointer p) {
+	public static Pointer datum_geom_relate_pattern(Pointer geog1, Pointer geog2, Pointer p) {
 		var _result = _meos_c.datum_geom_relate_pattern(geog1, geog2, p);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -27816,9 +28747,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void stbox_tile_state_set(double x, double y, double z, OffsetDateTime t, double xsize, double ysize, double zsize, long tunits, boolean hasx, boolean hasz, boolean hast, boolean geodetic, int srid, Pointer result) {
+	public static void stbox_tile_state_set(double x, double y, double z, OffsetDateTime t, double xsize, double ysize, double zsize, long tunits, boolean hasx, boolean hasz, boolean hast, int srid, Pointer result) {
 		var t_new = t.toEpochSecond();
-		_meos_c.stbox_tile_state_set(x, y, z, t_new, xsize, ysize, zsize, tunits, hasx, hasz, hast, geodetic, srid, result);
+		_meos_c.stbox_tile_state_set(x, y, z, t_new, xsize, ysize, zsize, tunits, hasx, hasz, hast, srid, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -28317,14 +29248,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_h3index_eq(Pointer d1, Pointer d2, int type) {
+	public static Pointer datum2_h3index_eq(Pointer d1, Pointer d2, int type) {
 		var _result = _meos_c.datum2_h3index_eq(d1, d2, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_h3index_ne(Pointer d1, Pointer d2, int type) {
+	public static Pointer datum2_h3index_ne(Pointer d1, Pointer d2, int type) {
 		var _result = _meos_c.datum2_h3index_ne(d1, d2, type);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -28461,218 +29392,1822 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_get_resolution(Pointer d) {
+	public static Pointer datum_h3_get_resolution(Pointer d) {
 		var _result = _meos_c.datum_h3_get_resolution(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_get_base_cell_number(Pointer d) {
+	public static Pointer datum_h3_get_base_cell_number(Pointer d) {
 		var _result = _meos_c.datum_h3_get_base_cell_number(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_is_valid_cell(Pointer d) {
+	public static Pointer datum_h3_is_valid_cell(Pointer d) {
 		var _result = _meos_c.datum_h3_is_valid_cell(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_is_res_class_iii(Pointer d) {
+	public static Pointer datum_h3_is_res_class_iii(Pointer d) {
 		var _result = _meos_c.datum_h3_is_res_class_iii(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_is_pentagon(Pointer d) {
+	public static Pointer datum_h3_is_pentagon(Pointer d) {
 		var _result = _meos_c.datum_h3_is_pentagon(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_parent(Pointer cell_d, Pointer res_d) {
+	public static Pointer datum_h3_cell_to_parent(Pointer cell_d, Pointer res_d) {
 		var _result = _meos_c.datum_h3_cell_to_parent(cell_d, res_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_parent_next(Pointer cell_d) {
+	public static Pointer datum_h3_cell_to_parent_next(Pointer cell_d) {
 		var _result = _meos_c.datum_h3_cell_to_parent_next(cell_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_center_child(Pointer cell_d, Pointer res_d) {
+	public static Pointer datum_h3_cell_to_center_child(Pointer cell_d, Pointer res_d) {
 		var _result = _meos_c.datum_h3_cell_to_center_child(cell_d, res_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_center_child_next(Pointer cell_d) {
+	public static Pointer datum_h3_cell_to_center_child_next(Pointer cell_d) {
 		var _result = _meos_c.datum_h3_cell_to_center_child_next(cell_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_child_pos(Pointer cell_d, Pointer parent_res_d) {
+	public static Pointer datum_h3_cell_to_child_pos(Pointer cell_d, Pointer parent_res_d) {
 		var _result = _meos_c.datum_h3_cell_to_child_pos(cell_d, parent_res_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_child_pos_to_cell(Pointer pos_d, Pointer parent_d, Pointer child_res_d) {
+	public static Pointer datum_h3_child_pos_to_cell(Pointer pos_d, Pointer parent_d, Pointer child_res_d) {
 		var _result = _meos_c.datum_h3_child_pos_to_cell(pos_d, parent_d, child_res_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_are_neighbor_cells(Pointer origin_d, Pointer dest_d) {
+	public static Pointer datum_h3_are_neighbor_cells(Pointer origin_d, Pointer dest_d) {
 		var _result = _meos_c.datum_h3_are_neighbor_cells(origin_d, dest_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cells_to_directed_edge(Pointer origin_d, Pointer dest_d) {
+	public static Pointer datum_h3_cells_to_directed_edge(Pointer origin_d, Pointer dest_d) {
 		var _result = _meos_c.datum_h3_cells_to_directed_edge(origin_d, dest_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_is_valid_directed_edge(Pointer d) {
+	public static Pointer datum_h3_is_valid_directed_edge(Pointer d) {
 		var _result = _meos_c.datum_h3_is_valid_directed_edge(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_get_directed_edge_origin(Pointer d) {
+	public static Pointer datum_h3_get_directed_edge_origin(Pointer d) {
 		var _result = _meos_c.datum_h3_get_directed_edge_origin(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_get_directed_edge_destination(Pointer d) {
+	public static Pointer datum_h3_get_directed_edge_destination(Pointer d) {
 		var _result = _meos_c.datum_h3_get_directed_edge_destination(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_directed_edge_to_boundary(Pointer d) {
+	public static Pointer datum_h3_directed_edge_to_boundary(Pointer d) {
 		var _result = _meos_c.datum_h3_directed_edge_to_boundary(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_vertex(Pointer cell_d, Pointer vnum_d) {
+	public static Pointer datum_h3_cell_to_vertex(Pointer cell_d, Pointer vnum_d) {
 		var _result = _meos_c.datum_h3_cell_to_vertex(cell_d, vnum_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_vertex_to_latlng(Pointer d) {
+	public static Pointer datum_h3_vertex_to_latlng(Pointer d) {
 		var _result = _meos_c.datum_h3_vertex_to_latlng(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_is_valid_vertex(Pointer d) {
+	public static Pointer datum_h3_is_valid_vertex(Pointer d) {
 		var _result = _meos_c.datum_h3_is_valid_vertex(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_grid_distance(Pointer origin_d, Pointer dest_d) {
+	public static Pointer datum_h3_grid_distance(Pointer origin_d, Pointer dest_d) {
 		var _result = _meos_c.datum_h3_grid_distance(origin_d, dest_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_local_ij(Pointer origin_d, Pointer cell_d) {
+	public static Pointer datum_h3_cell_to_local_ij(Pointer origin_d, Pointer cell_d) {
 		var _result = _meos_c.datum_h3_cell_to_local_ij(origin_d, cell_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_local_ij_to_cell(Pointer origin_d, Pointer coord_d) {
+	public static Pointer datum_h3_local_ij_to_cell(Pointer origin_d, Pointer coord_d) {
 		var _result = _meos_c.datum_h3_local_ij_to_cell(origin_d, coord_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_latlng_to_cell(Pointer point_d, Pointer res_d) {
+	public static Pointer datum_h3_latlng_to_cell(Pointer point_d, Pointer res_d) {
 		var _result = _meos_c.datum_h3_latlng_to_cell(point_d, res_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_latlng(Pointer d) {
+	public static Pointer datum_h3_cell_to_latlng(Pointer d) {
 		var _result = _meos_c.datum_h3_cell_to_latlng(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_to_boundary(Pointer d) {
+	public static Pointer datum_h3_cell_to_boundary(Pointer d) {
 		var _result = _meos_c.datum_h3_cell_to_boundary(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_cell_area(Pointer cell_d, Pointer unit_d) {
+	public static Pointer datum_h3_cell_area(Pointer cell_d, Pointer unit_d) {
 		var _result = _meos_c.datum_h3_cell_area(cell_d, unit_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_edge_length(Pointer edge_d, Pointer unit_d) {
+	public static Pointer datum_h3_edge_length(Pointer edge_d, Pointer unit_d) {
 		var _result = _meos_c.datum_h3_edge_length(edge_d, unit_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_h3_great_circle_distance(Pointer a_d, Pointer b_d, Pointer unit_d) {
+	public static Pointer datum_h3_great_circle_distance(Pointer a_d, Pointer b_d, Pointer unit_d) {
 		var _result = _meos_c.datum_h3_great_circle_distance(a_d, b_d, unit_d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static long h3index_in(String str) {
-		var _result = _meos_c.h3index_in(str);
+	public static Pointer json_in(String str) {
+		var _result = _meos_c.json_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String h3index_out(long cell) {
-		var _result = _meos_c.h3index_out(cell);
+	public static String json_out(Pointer js) {
+		var _result = _meos_c.json_out(js);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_from_text(Pointer txt, boolean unique_keys) {
+		var _result = _meos_c.jsonb_from_text(txt, unique_keys);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_in(String str) {
+		var _result = _meos_c.jsonb_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String jsonb_out(Pointer jb) {
+		var _result = _meos_c.jsonb_out(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_make(Pointer keys_vals, int count) {
+		var _result = _meos_c.json_make(keys_vals, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_make_two_arg(Pointer keys, Pointer values, int count) {
+		var _result = _meos_c.json_make_two_arg(keys, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_copy(Pointer jb) {
+		var _result = _meos_c.jsonb_copy(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_make(Pointer keys_vals, int count) {
+		var _result = _meos_c.jsonb_make(keys_vals, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_make_two_arg(Pointer keys, Pointer values, int count) {
+		var _result = _meos_c.jsonb_make_two_arg(keys, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_to_bool(Pointer jb) {
+		var _result = _meos_c.jsonb_to_bool(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String jsonb_to_cstring(Pointer jb) {
+		var _result = _meos_c.jsonb_to_cstring(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_to_float4(Pointer jb) {
+		var _result = _meos_c.jsonb_to_float4(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_to_float8(Pointer jb) {
+		var _result = _meos_c.jsonb_to_float8(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static short jsonb_to_int16(Pointer jb) {
+		var _result = _meos_c.jsonb_to_int16(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_to_int32(Pointer jb) {
+		var _result = _meos_c.jsonb_to_int32(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static long jsonb_to_int64(Pointer jb) {
+		var _result = _meos_c.jsonb_to_int64(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_to_numeric(Pointer jb) {
+		var _result = _meos_c.jsonb_to_numeric(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_to_text(Pointer jb) {
+		var _result = _meos_c.jsonb_to_text(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_array_element(Pointer js, int element) {
+		var _result = _meos_c.json_array_element(js, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_array_element_text(Pointer js, int element) {
+		var _result = _meos_c.json_array_element_text(js, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_array_elements(Pointer js, Pointer count) {
+		var _result = _meos_c.json_array_elements(js, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_array_elements_text(Pointer js, Pointer count) {
+		var _result = _meos_c.json_array_elements_text(js, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int json_array_length(Pointer js) {
+		var _result = _meos_c.json_array_length(js);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_each(Pointer js, Pointer values, Pointer count) {
+		var _result = _meos_c.json_each(js, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_each_text(Pointer js, Pointer values, Pointer count) {
+		var _result = _meos_c.json_each_text(js, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_extract_path(Pointer js, Pointer path_elems, int path_len) {
+		var _result = _meos_c.json_extract_path(js, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_extract_path_text(Pointer js, Pointer path_elems, int path_len) {
+		var _result = _meos_c.json_extract_path_text(js, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_object_field(Pointer js, Pointer key) {
+		var _result = _meos_c.json_object_field(js, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_object_field_text(Pointer js, Pointer key) {
+		var _result = _meos_c.json_object_field_text(js, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_object_keys(Pointer js, Pointer count) {
+		var _result = _meos_c.json_object_keys(js, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_typeof(Pointer js) {
+		var _result = _meos_c.json_typeof(js);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_array_element(Pointer jb, int element) {
+		var _result = _meos_c.jsonb_array_element(jb, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_array_element_text(Pointer jb, int element) {
+		var _result = _meos_c.jsonb_array_element_text(jb, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_array_elements(Pointer jb, Pointer count) {
+		var _result = _meos_c.jsonb_array_elements(jb, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_array_elements_text(Pointer jb, Pointer count) {
+		var _result = _meos_c.jsonb_array_elements_text(jb, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_array_length(Pointer jb) {
+		var _result = _meos_c.jsonb_array_length(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_contained(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_contained(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_contains(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_contains(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_each(Pointer jb, Pointer values, Pointer count) {
+		var _result = _meos_c.jsonb_each(jb, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_each_text(Pointer jb, Pointer values, Pointer count) {
+		var _result = _meos_c.jsonb_each_text(jb, values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_exists(Pointer jb, Pointer key) {
+		var _result = _meos_c.jsonb_exists(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_exists_array(Pointer jb, Pointer keys_elems, int keys_len, boolean any) {
+		var _result = _meos_c.jsonb_exists_array(jb, keys_elems, keys_len, any);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_extract_path(Pointer jb, Pointer path_elems, int path_len) {
+		var _result = _meos_c.jsonb_extract_path(jb, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_extract_path_text(Pointer jb, Pointer path_elems, int path_len) {
+		var _result = _meos_c.jsonb_extract_path_text(jb, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_hash(Pointer jb) {
+		var _result = _meos_c.jsonb_hash(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_hash_extended(Pointer jb, int seed) {
+		var _result = _meos_c.jsonb_hash_extended(jb, seed);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_object_field(Pointer jb, Pointer key) {
+		var _result = _meos_c.jsonb_object_field(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_object_field_text(Pointer jb, Pointer key) {
+		var _result = _meos_c.jsonb_object_field_text(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_object_keys(Pointer jb, Pointer count) {
+		var _result = _meos_c.jsonb_object_keys(jb, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer json_strip_nulls(Pointer js, boolean strip_in_arrays) {
+		var _result = _meos_c.json_strip_nulls(js, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_concat(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_concat(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_delete(Pointer jb, Pointer key) {
+		var _result = _meos_c.jsonb_delete(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_delete_array(Pointer jb, Pointer keys_elems, int keys_len) {
+		var _result = _meos_c.jsonb_delete_array(jb, keys_elems, keys_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_delete_index(Pointer jb, int idx) {
+		var _result = _meos_c.jsonb_delete_index(jb, idx);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_delete_path(Pointer jb, Pointer path_elems, int path_len) {
+		var _result = _meos_c.jsonb_delete_path(jb, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_insert(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean after) {
+		var _result = _meos_c.jsonb_insert(jb, path_elems, path_len, newjb, after);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_pretty(Pointer jb) {
+		var _result = _meos_c.jsonb_pretty(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_set(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean create) {
+		var _result = _meos_c.jsonb_set(jb, path_elems, path_len, newjb, create);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_set_lax(Pointer jb, Pointer path_elems, int path_len, Pointer newjb, boolean create, Pointer handle_null) {
+		var _result = _meos_c.jsonb_set_lax(jb, path_elems, path_len, newjb, create, handle_null);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_strip_nulls(Pointer jb, boolean strip_in_arrays) {
+		var _result = _meos_c.jsonb_strip_nulls(jb, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_cmp(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_cmp(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_eq(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_eq(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_ge(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_ge(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_gt(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_gt(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_le(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_le(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_lt(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_lt(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_ne(Pointer jb1, Pointer jb2) {
+		var _result = _meos_c.jsonb_ne(jb1, jb2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int jsonb_path_exists(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonb_path_exists(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean jsonb_path_match(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonb_path_match(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_path_query_all(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonb_path_query_all(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_path_query_array(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonb_path_query_array(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_path_query_first(Pointer jb, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonb_path_query_first(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonpath_in(String str) {
+		var _result = _meos_c.jsonpath_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonpath_copy(Pointer jp) {
+		var _result = _meos_c.jsonpath_copy(jp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String jsonpath_out(Pointer jp) {
+		var _result = _meos_c.jsonpath_out(jp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_in(String str) {
+		var _result = _meos_c.jsonbset_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String jsonbset_out(Pointer s, int maxdd) {
+		var _result = _meos_c.jsonbset_out(s, maxdd);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_make(Pointer values, int count) {
+		var _result = _meos_c.jsonbset_make(values, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_to_set(Pointer jb) {
+		var _result = _meos_c.jsonb_to_set(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_end_value(Pointer s) {
+		var _result = _meos_c.jsonbset_end_value(s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_start_value(Pointer s) {
+		var _result = _meos_c.jsonbset_start_value(s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_value_n(Pointer s, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_c.jsonbset_value_n(s, n, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_values(Pointer s) {
+		var _result = _meos_c.jsonbset_values(s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer concat_jsonbset_jsonb(Pointer s, Pointer jb, boolean invert) {
+		var _result = _meos_c.concat_jsonbset_jsonb(s, jb, invert);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_array_length(Pointer set) {
+		var _result = _meos_c.jsonbset_array_length(set);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_object_field(Pointer set, Pointer key, boolean astext, int null_handle) {
+		var _result = _meos_c.jsonbset_object_field(set, key, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_array_element(Pointer set, int idx, boolean astext, int null_handle) {
+		var _result = _meos_c.jsonbset_array_element(set, idx, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_delete_index(Pointer set, int idx) {
+		var _result = _meos_c.jsonbset_delete_index(set, idx);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_delete(Pointer set, Pointer key) {
+		var _result = _meos_c.jsonbset_delete(set, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_delete_array(Pointer set, Pointer keys, int count) {
+		var _result = _meos_c.jsonbset_delete_array(set, keys, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_exists(Pointer set, Pointer key) {
+		var _result = _meos_c.jsonbset_exists(set, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_exists_array(Pointer set, Pointer keys, int count, boolean any) {
+		var _result = _meos_c.jsonbset_exists_array(set, keys, count, any);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_set(Pointer set, Pointer keys, int count, Pointer newjb, boolean create, Pointer null_handle, boolean lax) {
+		var _result = _meos_c.jsonbset_set(set, keys, count, newjb, create, null_handle, lax);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_to_alphanumset(Pointer set, String key, int settype, int null_handle) {
+		var _result = _meos_c.jsonbset_to_alphanumset(set, key, settype, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_to_intset(Pointer set, String key, int null_handle) {
+		var _result = _meos_c.jsonbset_to_intset(set, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_to_floatset(Pointer set, String key, int null_handle) {
+		var _result = _meos_c.jsonbset_to_floatset(set, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_to_textset_key(Pointer set, String key, int null_handle) {
+		var _result = _meos_c.jsonbset_to_textset_key(set, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_strip_nulls(Pointer set, boolean strip_in_arrays) {
+		var _result = _meos_c.jsonbset_strip_nulls(set, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_pretty(Pointer set) {
+		var _result = _meos_c.jsonbset_pretty(set);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_delete_path(Pointer set, Pointer path_elems, int path_len) {
+		var _result = _meos_c.jsonbset_delete_path(set, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_extract_path(Pointer set, Pointer path_elems, int path_len, boolean astext, int null_handle) {
+		var _result = _meos_c.jsonbset_extract_path(set, path_elems, path_len, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_insert(Pointer set, Pointer path_elems, int path_len, Pointer newjb, boolean after) {
+		var _result = _meos_c.jsonbset_insert(set, path_elems, path_len, newjb, after);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_path_exists(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonbset_path_exists(set, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_path_match(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonbset_path_match(set, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_path_query_array(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonbset_path_query_array(set, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbset_path_query_first(Pointer set, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.jsonbset_path_query_first(set, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean contained_jsonb_set(Pointer jb, Pointer s) {
+		var _result = _meos_c.contained_jsonb_set(jb, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean contains_set_jsonb(Pointer s, Pointer jb) {
+		var _result = _meos_c.contains_set_jsonb(s, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer intersection_jsonb_set(Pointer jb, Pointer s) {
+		var _result = _meos_c.intersection_jsonb_set(jb, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer intersection_set_jsonb(Pointer s, Pointer jb) {
+		var _result = _meos_c.intersection_set_jsonb(s, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonb_union_transfn(Pointer state, Pointer jb) {
+		var _result = _meos_c.jsonb_union_transfn(state, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer minus_jsonb_set(Pointer jb, Pointer s) {
+		var _result = _meos_c.minus_jsonb_set(jb, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer minus_set_jsonb(Pointer s, Pointer jb) {
+		var _result = _meos_c.minus_set_jsonb(s, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer union_jsonb_set(Pointer jb, Pointer s) {
+		var _result = _meos_c.union_jsonb_set(jb, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer union_set_jsonb(Pointer s, Pointer jb) {
+		var _result = _meos_c.union_set_jsonb(s, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_from_mfjson(String str) {
+		var _result = _meos_c.tjsonb_from_mfjson(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_in(String str) {
+		var _result = _meos_c.tjsonb_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String tjsonb_out(Pointer temp) {
+		var _result = _meos_c.tjsonb_out(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbinst_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tjsonbinst_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbinst_in(String str) {
+		var _result = _meos_c.tjsonbinst_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseq_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tjsonbseq_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseq_in(String str, int interp) {
+		var _result = _meos_c.tjsonbseq_in(str, interp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseqset_from_mfjson(Pointer mfjson) {
+		var _result = _meos_c.tjsonbseqset_from_mfjson(mfjson);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseqset_in(String str) {
+		var _result = _meos_c.tjsonbseqset_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_from_base_temp(Pointer jsonb, Pointer temp) {
+		var _result = _meos_c.tjsonb_from_base_temp(jsonb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbinst_make(Pointer jsonb, OffsetDateTime t) {
+		var t_new = t.toEpochSecond();
+		var _result = _meos_c.tjsonbinst_make(jsonb, t_new);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseq_from_base_tstzset(Pointer jsonb, Pointer s) {
+		var _result = _meos_c.tjsonbseq_from_base_tstzset(jsonb, s);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseq_from_base_tstzspan(Pointer jsonb, Pointer sp) {
+		var _result = _meos_c.tjsonbseq_from_base_tstzspan(jsonb, sp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonbseqset_from_base_tstzspanset(Pointer jsonb, Pointer ss) {
+		var _result = _meos_c.tjsonbseqset_from_base_tstzspanset(jsonb, ss);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_ttext(Pointer temp) {
+		var _result = _meos_c.tjsonb_to_ttext(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer ttext_to_tjsonb(Pointer temp) {
+		var _result = _meos_c.ttext_to_tjsonb(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_end_value(Pointer temp) {
+		var _result = _meos_c.tjsonb_end_value(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_start_value(Pointer temp) {
+		var _result = _meos_c.tjsonb_start_value(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean tjsonb_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+		var t_new = t.toEpochSecond();
+		var _result = _meos_c.tjsonb_value_at_timestamptz(temp, t_new, strict, value);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_value_n(Pointer temp, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_c.tjsonb_value_n(temp, n, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_values(Pointer temp, Pointer count) {
+		var _result = _meos_c.tjsonb_values(temp, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer concat_tjsonb_jsonb(Pointer temp, Pointer jb, boolean invert) {
+		var _result = _meos_c.concat_tjsonb_jsonb(temp, jb, invert);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer concat_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.concat_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer contains_tjsonb_jsonb(Pointer temp, Pointer jb, boolean invert) {
+		var _result = _meos_c.contains_tjsonb_jsonb(temp, jb, invert);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer contains_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.contains_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int null_handle_type_from_string(String str) {
+		var _result = _meos_c.null_handle_type_from_string(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjson_array_element(Pointer temp, int idx, int null_handle) {
+		var _result = _meos_c.tjson_array_element(temp, idx, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjson_array_length(Pointer temp) {
+		var _result = _meos_c.tjson_array_length(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjson_extract_path(Pointer temp, Pointer path_elems, int path_len, int null_handle) {
+		var _result = _meos_c.tjson_extract_path(temp, path_elems, path_len, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjson_object_field(Pointer temp, Pointer key, boolean astext, int null_handle) {
+		var _result = _meos_c.tjson_object_field(temp, key, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjson_strip_nulls(Pointer temp, boolean strip_in_arrays) {
+		var _result = _meos_c.tjson_strip_nulls(temp, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_array_element(Pointer temp, int idx, boolean astext, int null_handle) {
+		var _result = _meos_c.tjsonb_array_element(temp, idx, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_array_length(Pointer temp) {
+		var _result = _meos_c.tjsonb_array_length(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_delete(Pointer temp, Pointer key) {
+		var _result = _meos_c.tjsonb_delete(temp, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_delete_array(Pointer temp, Pointer keys, int count) {
+		var _result = _meos_c.tjsonb_delete_array(temp, keys, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_delete_index(Pointer temp, int idx) {
+		var _result = _meos_c.tjsonb_delete_index(temp, idx);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_delete_path(Pointer temp, Pointer path_elems, int path_len) {
+		var _result = _meos_c.tjsonb_delete_path(temp, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_exists(Pointer temp, Pointer key) {
+		var _result = _meos_c.tjsonb_exists(temp, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_exists_array(Pointer temp, Pointer keys, int count, boolean any) {
+		var _result = _meos_c.tjsonb_exists_array(temp, keys, count, any);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_extract_path(Pointer temp, Pointer path_elems, int path_len, boolean astext, int null_handle) {
+		var _result = _meos_c.tjsonb_extract_path(temp, path_elems, path_len, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_insert(Pointer temp, Pointer keys, int count, Pointer newjb, boolean after) {
+		var _result = _meos_c.tjsonb_insert(temp, keys, count, newjb, after);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_object_field(Pointer temp, Pointer key, boolean astext, int null_handle) {
+		var _result = _meos_c.tjsonb_object_field(temp, key, astext, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_path_exists(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.tjsonb_path_exists(temp, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_path_match(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.tjsonb_path_match(temp, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_path_query_array(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.tjsonb_path_query_array(temp, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_path_query_first(Pointer temp, Pointer jp, Pointer vars, boolean silent, boolean tz) {
+		var _result = _meos_c.tjsonb_path_query_first(temp, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_pretty(Pointer temp) {
+		var _result = _meos_c.tjsonb_pretty(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_set(Pointer temp, Pointer keys, int count, Pointer newjb, boolean create, Pointer handle_null, boolean lax) {
+		var _result = _meos_c.tjsonb_set(temp, keys, count, newjb, create, handle_null, lax);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_strip_nulls(Pointer temp, boolean strip_in_arrays) {
+		var _result = _meos_c.tjsonb_strip_nulls(temp, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_tbool(Pointer temp, String key, int null_handle) {
+		var _result = _meos_c.tjsonb_to_tbool(temp, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_tfloat(Pointer temp, String key, int interp, int null_handle) {
+		var _result = _meos_c.tjsonb_to_tfloat(temp, key, interp, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_tint(Pointer temp, String key, int null_handle) {
+		var _result = _meos_c.tjsonb_to_tint(temp, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_ttext_key(Pointer temp, String key, int null_handle) {
+		var _result = _meos_c.tjsonb_to_ttext_key(temp, key, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_at_value(Pointer temp, Pointer jsb) {
+		var _result = _meos_c.tjsonb_at_value(temp, jsb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_minus_value(Pointer temp, Pointer jsb) {
+		var _result = _meos_c.tjsonb_minus_value(temp, jsb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_eq_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.always_eq_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_eq_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.always_eq_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_eq_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.always_eq_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_ne_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.always_ne_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_ne_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.always_ne_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int always_ne_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.always_ne_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_eq_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.ever_eq_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_eq_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.ever_eq_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_eq_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.ever_eq_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_ne_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.ever_ne_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_ne_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.ever_ne_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int ever_ne_tjsonb_tjsonb(Pointer temp1, Pointer temp2) {
+		var _result = _meos_c.ever_ne_tjsonb_tjsonb(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer teq_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.teq_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer teq_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.teq_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tne_jsonb_tjsonb(Pointer jb, Pointer temp) {
+		var _result = _meos_c.tne_jsonb_tjsonb(jb, temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tne_tjsonb_jsonb(Pointer temp, Pointer jb) {
+		var _result = _meos_c.tne_tjsonb_jsonb(temp, jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer setPath(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int op_type) {
+		var _result = _meos_c.setPath(it, path_elems, path_nulls, path_len, st, level, newval, op_type);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void setPathObject(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int npairs, int op_type) {
+		_meos_c.setPathObject(it, path_elems, path_nulls, path_len, st, level, newval, npairs, op_type);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void setPathArray(Pointer it, Pointer path_elems, Pointer path_nulls, int path_len, Pointer st, int level, Pointer newval, int nelems, int op_type) {
+		_meos_c.setPathArray(it, path_elems, path_nulls, path_len, st, level, newval, nelems, op_type);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_concat(Pointer l, Pointer r) {
+		var _result = _meos_c.datum_jsonb_concat(l, r);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_contained(Pointer l, Pointer r) {
+		var _result = _meos_c.datum_jsonb_contained(l, r);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_contains(Pointer l, Pointer r) {
+		var _result = _meos_c.datum_jsonb_contains(l, r);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_delete(Pointer jb, Pointer key) {
+		var _result = _meos_c.datum_jsonb_delete(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_delete_array(Pointer jb, Pointer array, Pointer count) {
+		var _result = _meos_c.datum_jsonb_delete_array(jb, array, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_delete_index(Pointer jb, Pointer idx) {
+		var _result = _meos_c.datum_jsonb_delete_index(jb, idx);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_array_element(Pointer txt, Pointer element) {
+		var _result = _meos_c.datum_json_array_element(txt, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_array_element(Pointer jb, Pointer element) {
+		var _result = _meos_c.datum_jsonb_array_element(jb, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_array_element_text(Pointer txt, Pointer element) {
+		var _result = _meos_c.datum_json_array_element_text(txt, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_array_element_text(Pointer jb, Pointer element) {
+		var _result = _meos_c.datum_jsonb_array_element_text(jb, element);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_exists(Pointer l, Pointer r) {
+		var _result = _meos_c.datum_jsonb_exists(l, r);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_exists_array(Pointer value, Pointer array, Pointer count, Pointer any) {
+		var _result = _meos_c.datum_jsonb_exists_array(value, array, count, any);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_array_length(Pointer txt) {
+		var _result = _meos_c.datum_json_array_length(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_array_length(Pointer txt) {
+		var _result = _meos_c.datum_jsonb_array_length(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_object_field(Pointer txt, Pointer key) {
+		var _result = _meos_c.datum_json_object_field(txt, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_object_field(Pointer jb, Pointer key) {
+		var _result = _meos_c.datum_jsonb_object_field(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_object_field_text(Pointer txt, Pointer key) {
+		var _result = _meos_c.datum_json_object_field_text(txt, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_object_field_text(Pointer jb, Pointer key) {
+		var _result = _meos_c.datum_jsonb_object_field_text(jb, key);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_strip_nulls(Pointer txt, Pointer strip_in_arrays) {
+		var _result = _meos_c.datum_json_strip_nulls(txt, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_strip_nulls(Pointer jb, Pointer strip_in_arrays) {
+		var _result = _meos_c.datum_jsonb_strip_nulls(jb, strip_in_arrays);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_pretty(Pointer jb) {
+		var _result = _meos_c.datum_jsonb_pretty(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_extract_path(Pointer txt, Pointer path_elems, Pointer path_len) {
+		var _result = _meos_c.datum_json_extract_path(txt, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_extract_path(Pointer jb, Pointer path_elems, Pointer path_len) {
+		var _result = _meos_c.datum_jsonb_extract_path(jb, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_json_extract_path_text(Pointer txt, Pointer path_elems, Pointer path_len) {
+		var _result = _meos_c.datum_json_extract_path_text(txt, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_extract_path_text(Pointer jb, Pointer path_elems, Pointer path_len) {
+		var _result = _meos_c.datum_jsonb_extract_path_text(jb, path_elems, path_len);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_set(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer create) {
+		var _result = _meos_c.datum_jsonb_set(jb, keys, count, newjb, create);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_set_lax(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer create, Pointer null_handle) {
+		var _result = _meos_c.datum_jsonb_set_lax(jb, keys, count, newjb, create, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_delete_path(Pointer jb, Pointer keys, Pointer count) {
+		var _result = _meos_c.datum_jsonb_delete_path(jb, keys, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_insert(Pointer jb, Pointer keys, Pointer count, Pointer newjb, Pointer after) {
+		var _result = _meos_c.datum_jsonb_insert(jb, keys, count, newjb, after);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_path_exists(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz) {
+		var _result = _meos_c.datum_jsonb_path_exists(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_path_match(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz) {
+		var _result = _meos_c.datum_jsonb_path_match(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_path_query_array(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz) {
+		var _result = _meos_c.datum_jsonb_path_query_array(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_path_query_first(Pointer jb, Pointer jp, Pointer vars, Pointer silent, Pointer tz) {
+		var _result = _meos_c.datum_jsonb_path_query_first(jb, jp, vars, silent, tz);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_to_text(Pointer jb) {
+		var _result = _meos_c.datum_jsonb_to_text(jb);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_text_to_jsonb(Pointer txt) {
+		var _result = _meos_c.datum_text_to_jsonb(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_jsonb_to_alphanum(Pointer jb, Pointer key, Pointer temptype, Pointer null_handle) {
+		var _result = _meos_c.datum_jsonb_to_alphanum(jb, key, temptype, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tjsonb_to_talphanum(Pointer temp, String key, int resbasetype, int interp, int null_handle) {
+		var _result = _meos_c.tjsonb_to_talphanum(temp, key, resbasetype, interp, null_handle);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbfunc_jsonbset(Pointer s, int func, int intype, int restype) {
+		var _result = _meos_c.jsonbfunc_jsonbset(s, func, intype, restype);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbfunc_jsonbset_jsonb(Pointer s, Pointer jb, Pointer func, boolean invert) {
+		var _result = _meos_c.jsonbfunc_jsonbset_jsonb(s, jb, func, invert);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer jsonbfunc_jsonbset_text(Pointer s, Pointer txt, Pointer func) {
+		var _result = _meos_c.jsonbfunc_jsonbset_text(s, txt, func);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -29037,8 +31572,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int ever_eq_anyof_h3indexset_th3index(Pointer cells, Pointer th3idx) {
-		var _result = _meos_c.ever_eq_anyof_h3indexset_th3index(cells, th3idx);
+	public static int ever_eq_h3indexset_th3index(Pointer cells, Pointer th3idx) {
+		var _result = _meos_c.ever_eq_h3indexset_th3index(cells, th3idx);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -29156,7 +31691,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_geo_round(Pointer value, Pointer size) {
+	public static Pointer geos_get_context() {
+		var _result = _meos_c.geos_get_context();
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_geo_round(Pointer value, Pointer size) {
 		var _result = _meos_c.datum_geo_round(value, size);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -29170,8 +31712,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void stbox_set(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer s, Pointer box) {
-		_meos_c.stbox_set(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, s, box);
+	public static void stbox_set(boolean hasx, boolean hasz, boolean geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, Pointer s, Pointer result) {
+		_meos_c.stbox_set(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, s, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -29182,58 +31724,66 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean geo_set_stbox(Pointer gs, Pointer box) {
-		var _result = _meos_c.geo_set_stbox(gs, box);
+	public static Pointer geo_set_stbox(Pointer gs) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_c.geo_set_stbox(gs, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
-	public static void geoarr_set_stbox(Pointer values, int count, Pointer box) {
-		_meos_c.geoarr_set_stbox(values, count, box);
-		MeosErrorHandler.checkError();
-	}
-
-	@SuppressWarnings("unused")
-	public static boolean spatial_set_stbox(Pointer d, int basetype, Pointer box) {
-		var _result = _meos_c.spatial_set_stbox(d, basetype, box);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static void spatialset_set_stbox(Pointer set, Pointer box) {
-		_meos_c.spatialset_set_stbox(set, box);
+	public static void geoarr_set_stbox(Pointer values, int count, Pointer result) {
+		_meos_c.geoarr_set_stbox(values, count, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void stbox_set_box3d(Pointer box, Pointer box3d) {
-		_meos_c.stbox_set_box3d(box, box3d);
+	public static Pointer spatial_set_stbox(Pointer d, int basetype) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_c.spatial_set_stbox(d, basetype, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static void spatialset_set_stbox(Pointer set, Pointer result) {
+		_meos_c.spatialset_set_stbox(set, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void stbox_set_gbox(Pointer box, Pointer gbox) {
-		_meos_c.stbox_set_gbox(box, gbox);
+	public static void stbox_set_box3d(Pointer box, Pointer result) {
+		_meos_c.stbox_set_box3d(box, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tstzset_set_stbox(Pointer s, Pointer box) {
-		_meos_c.tstzset_set_stbox(s, box);
+	public static void stbox_set_gbox(Pointer box, Pointer result) {
+		_meos_c.stbox_set_gbox(box, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tstzspan_set_stbox(Pointer s, Pointer box) {
-		_meos_c.tstzspan_set_stbox(s, box);
+	public static void tstzset_set_stbox(Pointer s, Pointer result) {
+		_meos_c.tstzset_set_stbox(s, result);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
-	public static void tstzspanset_set_stbox(Pointer s, Pointer box) {
-		_meos_c.tstzspanset_set_stbox(s, box);
+	public static void tstzspan_set_stbox(Pointer s, Pointer result) {
+		_meos_c.tstzspan_set_stbox(s, result);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void tstzspanset_set_stbox(Pointer s, Pointer result) {
+		_meos_c.tstzspanset_set_stbox(s, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -29423,8 +31973,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static void tspatial_set_stbox(Pointer temp, Pointer box) {
-		_meos_c.tspatial_set_stbox(temp, box);
+	public static void tspatial_set_stbox(Pointer temp, Pointer result) {
+		_meos_c.tspatial_set_stbox(temp, result);
 		MeosErrorHandler.checkError();
 	}
 
@@ -29519,186 +32069,186 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static int tspatialinst_srid(Pointer inst) {
-		var _result = _meos_c.tspatialinst_srid(inst);
+		var _result = _meos_d.tspatialinst_srid(inst);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_azimuth(Pointer seq) {
-		var _result = _meos_c.tpointseq_azimuth(seq);
+		var _result = _meos_d.tpointseq_azimuth(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_cumulative_length(Pointer seq, double prevlength) {
-		var _result = _meos_c.tpointseq_cumulative_length(seq, prevlength);
+		var _result = _meos_d.tpointseq_cumulative_length(seq, prevlength);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tpointseq_is_simple(Pointer seq) {
-		var _result = _meos_c.tpointseq_is_simple(seq);
+		var _result = _meos_d.tpointseq_is_simple(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static double tpointseq_length(Pointer seq) {
-		var _result = _meos_c.tpointseq_length(seq);
+		var _result = _meos_d.tpointseq_length(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_linear_trajectory(Pointer seq, boolean unary_union) {
-		var _result = _meos_c.tpointseq_linear_trajectory(seq, unary_union);
+		var _result = _meos_d.tpointseq_linear_trajectory(seq, unary_union);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseq_stboxes(Pointer seq, Pointer count) {
-		var _result = _meos_c.tgeoseq_stboxes(seq, count);
+		var _result = _meos_d.tgeoseq_stboxes(seq, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseq_split_n_stboxes(Pointer seq, int max_count, Pointer count) {
-		var _result = _meos_c.tgeoseq_split_n_stboxes(seq, max_count, count);
+		var _result = _meos_d.tgeoseq_split_n_stboxes(seq, max_count, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_azimuth(Pointer ss) {
-		var _result = _meos_c.tpointseqset_azimuth(ss);
+		var _result = _meos_d.tpointseqset_azimuth(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_cumulative_length(Pointer ss) {
-		var _result = _meos_c.tpointseqset_cumulative_length(ss);
+		var _result = _meos_d.tpointseqset_cumulative_length(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean tpointseqset_is_simple(Pointer ss) {
-		var _result = _meos_c.tpointseqset_is_simple(ss);
+		var _result = _meos_d.tpointseqset_is_simple(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static double tpointseqset_length(Pointer ss) {
-		var _result = _meos_c.tpointseqset_length(ss);
+		var _result = _meos_d.tpointseqset_length(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseqset_stboxes(Pointer ss, Pointer count) {
-		var _result = _meos_c.tgeoseqset_stboxes(ss, count);
+		var _result = _meos_d.tgeoseqset_stboxes(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseqset_split_n_stboxes(Pointer ss, int max_count, Pointer count) {
-		var _result = _meos_c.tgeoseqset_split_n_stboxes(ss, max_count, count);
+		var _result = _meos_d.tgeoseqset_split_n_stboxes(ss, max_count, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeominst_tgeoginst(Pointer inst, boolean oper) {
-		var _result = _meos_c.tgeominst_tgeoginst(inst, oper);
+		var _result = _meos_d.tgeominst_tgeoginst(inst, oper);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeomseq_tgeogseq(Pointer seq, boolean oper) {
-		var _result = _meos_c.tgeomseq_tgeogseq(seq, oper);
+		var _result = _meos_d.tgeomseq_tgeogseq(seq, oper);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeomseqset_tgeogseqset(Pointer ss, boolean oper) {
-		var _result = _meos_c.tgeomseqset_tgeogseqset(ss, oper);
+		var _result = _meos_d.tgeomseqset_tgeogseqset(ss, oper);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeom_tgeog(Pointer temp, boolean oper) {
-		var _result = _meos_c.tgeom_tgeog(temp, oper);
+		var _result = _meos_d.tgeom_tgeog(temp, oper);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeo_tpoint(Pointer temp, boolean oper) {
-		var _result = _meos_c.tgeo_tpoint(temp, oper);
+		var _result = _meos_d.tgeo_tpoint(temp, oper);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void tspatialinst_set_srid(Pointer inst, int srid) {
-		_meos_c.tspatialinst_set_srid(inst, srid);
+		_meos_d.tspatialinst_set_srid(inst, srid);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_make_simple(Pointer seq, Pointer count) {
-		var _result = _meos_c.tpointseq_make_simple(seq, count);
+		var _result = _meos_d.tpointseq_make_simple(seq, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void tspatialseq_set_srid(Pointer seq, int srid) {
-		_meos_c.tspatialseq_set_srid(seq, srid);
+		_meos_d.tspatialseq_set_srid(seq, srid);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_make_simple(Pointer ss, Pointer count) {
-		var _result = _meos_c.tpointseqset_make_simple(ss, count);
+		var _result = _meos_d.tpointseqset_make_simple(ss, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static void tspatialseqset_set_srid(Pointer ss, int srid) {
-		_meos_c.tspatialseqset_set_srid(ss, srid);
+		_meos_d.tspatialseqset_set_srid(ss, srid);
 		MeosErrorHandler.checkError();
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_twcentroid(Pointer seq) {
-		var _result = _meos_c.tpointseq_twcentroid(seq);
+		var _result = _meos_d.tpointseq_twcentroid(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_twcentroid(Pointer ss) {
-		var _result = _meos_c.tpointseqset_twcentroid(ss);
+		var _result = _meos_d.tpointseqset_twcentroid(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String npoint_as_ewkt(Pointer np, int maxdd) {
-		var _result = _meos_c.npoint_as_ewkt(np, maxdd);
+		var _result = _meos_d.npoint_as_ewkt(np, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -29707,14 +32257,14 @@ public class GeneratedFunctions {
 	public static String npoint_as_hexwkb(Pointer np, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_c.npoint_as_hexwkb(np, variant, size_out);
+		var _result = _meos_d.npoint_as_hexwkb(np, variant, size_out);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String npoint_as_text(Pointer np, int maxdd) {
-		var _result = _meos_c.npoint_as_text(np, maxdd);
+		var _result = _meos_d.npoint_as_text(np, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -29723,126 +32273,126 @@ public class GeneratedFunctions {
 	public static Pointer npoint_as_wkb(Pointer np, byte variant) {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES);
-		var _result = _meos_c.npoint_as_wkb(np, variant, size_out);
+		var _result = _meos_d.npoint_as_wkb(np, variant, size_out);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_from_hexwkb(String hexwkb) {
-		var _result = _meos_c.npoint_from_hexwkb(hexwkb);
+		var _result = _meos_d.npoint_from_hexwkb(hexwkb);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_from_wkb(Pointer wkb, long size) {
-		var _result = _meos_c.npoint_from_wkb(wkb, size);
+		var _result = _meos_d.npoint_from_wkb(wkb, size);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_in(String str) {
-		var _result = _meos_c.npoint_in(str);
+		var _result = _meos_d.npoint_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String npoint_out(Pointer np, int maxdd) {
-		var _result = _meos_c.npoint_out(np, maxdd);
+		var _result = _meos_d.npoint_out(np, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer nsegment_in(String str) {
-		var _result = _meos_c.nsegment_in(str);
+		var _result = _meos_d.nsegment_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static String nsegment_out(Pointer ns, int maxdd) {
-		var _result = _meos_c.nsegment_out(ns, maxdd);
+		var _result = _meos_d.nsegment_out(ns, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_make(long rid, double pos) {
-		var _result = _meos_c.npoint_make(rid, pos);
+		var _result = _meos_d.npoint_make(rid, pos);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer nsegment_make(long rid, double pos1, double pos2) {
-		var _result = _meos_c.nsegment_make(rid, pos1, pos2);
+		var _result = _meos_d.nsegment_make(rid, pos1, pos2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer geompoint_to_npoint(Pointer gs) {
-		var _result = _meos_c.geompoint_to_npoint(gs);
+		var _result = _meos_d.geompoint_to_npoint(gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer geom_to_nsegment(Pointer gs) {
-		var _result = _meos_c.geom_to_nsegment(gs);
+		var _result = _meos_d.geom_to_nsegment(gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_to_geompoint(Pointer np) {
-		var _result = _meos_c.npoint_to_geompoint(np);
+		var _result = _meos_d.npoint_to_geompoint(np);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_to_nsegment(Pointer np) {
-		var _result = _meos_c.npoint_to_nsegment(np);
+		var _result = _meos_d.npoint_to_nsegment(np);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer npoint_to_stbox(Pointer np) {
-		var _result = _meos_c.npoint_to_stbox(np);
+		var _result = _meos_d.npoint_to_stbox(np);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer nsegment_to_geom(Pointer ns) {
-		var _result = _meos_c.nsegment_to_geom(ns);
+		var _result = _meos_d.nsegment_to_geom(ns);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer nsegment_to_stbox(Pointer np) {
-		var _result = _meos_c.nsegment_to_stbox(np);
+	public static Pointer nsegment_to_stbox(Pointer ns) {
+		var _result = _meos_d.nsegment_to_stbox(ns);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int npoint_hash(Pointer np) {
-		var _result = _meos_c.npoint_hash(np);
+		var _result = _meos_d.npoint_hash(np);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static int npoint_hash_extended(Pointer np, int seed) {
-		var _result = _meos_c.npoint_hash_extended(np, seed);
+		var _result = _meos_d.npoint_hash_extended(np, seed);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -30119,8 +32669,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer npointset_values(Pointer s) {
-		var _result = _meos_d.npointset_values(s);
+	public static Pointer npointset_values(Pointer s, Pointer count) {
+		var _result = _meos_d.npointset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -30323,11 +32873,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tnpoint_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tnpoint_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_d.tnpoint_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_d.tnpoint_value_at_timestamptz(temp, t_new, strict, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -30419,8 +32973,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tdistance_tnpoint_point(Pointer temp, Pointer gs) {
-		var _result = _meos_d.tdistance_tnpoint_point(temp, gs);
+	public static Pointer tdistance_tnpoint_geo(Pointer temp, Pointer gs) {
+		var _result = _meos_d.tdistance_tnpoint_geo(temp, gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -31713,8 +34267,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer pose_orientation(Pointer pose) {
-		var _result = _meos_d.pose_orientation(pose);
+	public static Pointer pose_orientation(Pointer pose, Pointer count) {
+		var _result = _meos_d.pose_orientation(pose, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -31955,8 +34509,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer poseset_values(Pointer s) {
-		var _result = _meos_d.poseset_values(s);
+	public static Pointer poseset_values(Pointer s, Pointer count) {
+		var _result = _meos_d.poseset_values(s, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32159,11 +34713,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tpose_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict, Pointer value) {
+	public static Pointer tpose_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		var t_new = t.toEpochSecond();
-		var _result = _meos_d.tpose_value_at_timestamptz(temp, t_new, strict, value);
+		out = _meos_d.tpose_value_at_timestamptz(temp, t_new, strict, result);
+		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
-		return _result;
+		return out ? new_result : null;
 	}
 
 	@SuppressWarnings("unused")
@@ -32234,8 +34792,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer tdistance_tpose_point(Pointer temp, Pointer gs) {
-		var _result = _meos_d.tdistance_tpose_point(temp, gs);
+	public static Pointer tdistance_tpose_geo(Pointer temp, Pointer gs) {
+		var _result = _meos_d.tdistance_tpose_geo(temp, gs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32430,20 +34988,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer trgeometry_in(String str) {
-		var _result = _meos_d.trgeometry_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeometry_from_mfjson(String mfjson) {
-		var _result = _meos_d.trgeometry_from_mfjson(mfjson);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static String trgeometry_out(Pointer temp) {
 		var _result = _meos_d.trgeometry_out(temp);
 		MeosErrorHandler.checkError();
@@ -32451,9 +34995,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer trgeometryinst_make(Pointer geom, Pointer pose, OffsetDateTime t) {
+	public static Pointer trgeoinst_make(Pointer geom, Pointer pose, OffsetDateTime t) {
 		var t_new = t.toEpochSecond();
-		var _result = _meos_d.trgeometryinst_make(geom, pose, t_new);
+		var _result = _meos_d.trgeoinst_make(geom, pose, t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32624,6 +35168,105 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer trgeometry_space_boxes(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer count) {
+		var _result = _meos_d.trgeometry_space_boxes(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_space_time_boxes(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, boolean bitmatrix, boolean border_inc, Pointer count) {
+		var torigin_new = torigin.toEpochSecond();
+		var _result = _meos_d.trgeometry_space_time_boxes(temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_stboxes(Pointer temp, Pointer count) {
+		var _result = _meos_d.trgeometry_stboxes(temp, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_split_n_stboxes(Pointer temp, int box_count, Pointer count) {
+		var _result = _meos_d.trgeometry_split_n_stboxes(temp, box_count, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_split_each_n_stboxes(Pointer temp, int elem_count, Pointer count) {
+		var _result = _meos_d.trgeometry_split_each_n_stboxes(temp, elem_count, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double trgeometry_hausdorff_distance(Pointer temp1, Pointer temp2) {
+		var _result = _meos_d.trgeometry_hausdorff_distance(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double trgeometry_frechet_distance(Pointer temp1, Pointer temp2) {
+		var _result = _meos_d.trgeometry_frechet_distance(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double trgeometry_dyntimewarp_distance(Pointer temp1, Pointer temp2) {
+		var _result = _meos_d.trgeometry_dyntimewarp_distance(temp1, temp2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_frechet_path(Pointer temp1, Pointer temp2, Pointer count) {
+		var _result = _meos_d.trgeometry_frechet_path(temp1, temp2, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_dyntimewarp_path(Pointer temp1, Pointer temp2, Pointer count) {
+		var _result = _meos_d.trgeometry_dyntimewarp_path(temp1, temp2, count);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double trgeometry_length(Pointer temp) {
+		var _result = _meos_d.trgeometry_length(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_cumulative_length(Pointer temp) {
+		var _result = _meos_d.trgeometry_cumulative_length(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_speed(Pointer temp) {
+		var _result = _meos_d.trgeometry_speed(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer trgeometry_twcentroid(Pointer temp) {
+		var _result = _meos_d.trgeometry_twcentroid(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer trgeometry_append_tinstant(Pointer temp, Pointer inst, int interp, double maxdist, Pointer maxt, boolean expand) {
 		var _result = _meos_d.trgeometry_append_tinstant(temp, inst, interp, maxdist, maxt, expand);
 		MeosErrorHandler.checkError();
@@ -32699,13 +35342,6 @@ public class GeneratedFunctions {
 	public static Pointer trgeometry_before_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
 		var t_new = t.toEpochSecond();
 		var _result = _meos_d.trgeometry_before_timestamptz(temp, t_new, strict);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeometry_restrict_value(Pointer temp, Pointer value, boolean atfunc) {
-		var _result = _meos_d.trgeometry_restrict_value(temp, value, atfunc);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32873,41 +35509,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double trgeometry_hausdorff_distance(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.trgeometry_hausdorff_distance(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double trgeometry_frechet_distance(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.trgeometry_frechet_distance(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static double trgeometry_dyntimewarp_distance(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.trgeometry_dyntimewarp_distance(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeometry_frechet_path(Pointer temp1, Pointer temp2, Pointer count) {
-		var _result = _meos_d.trgeometry_frechet_path(temp1, temp2, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeometry_dyntimewarp_path(Pointer temp1, Pointer temp2, Pointer count) {
-		var _result = _meos_d.trgeometry_dyntimewarp_path(temp1, temp2, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static int always_eq_geo_trgeometry(Pointer gs, Pointer temp) {
 		var _result = _meos_d.always_eq_geo_trgeometry(gs, temp);
 		MeosErrorHandler.checkError();
@@ -33034,34 +35635,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int econtains_trgeo_geo(Pointer temp, Pointer gs) {
-		var _result = _meos_d.econtains_trgeo_geo(temp, gs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int acontains_trgeo_geo(Pointer temp, Pointer gs) {
-		var _result = _meos_d.acontains_trgeo_geo(temp, gs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int econtains_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.econtains_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int acontains_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.acontains_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static int ecovers_geo_trgeo(Pointer gs, Pointer temp) {
 		var _result = _meos_d.ecovers_geo_trgeo(gs, temp);
 		MeosErrorHandler.checkError();
@@ -33090,34 +35663,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int ecovers_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.ecovers_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int acovers_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.acovers_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int edisjoint_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.edisjoint_geo_trgeo(gs, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int adisjoint_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.adisjoint_geo_trgeo(gs, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static int edisjoint_trgeo_geo(Pointer temp, Pointer gs) {
 		var _result = _meos_d.edisjoint_trgeo_geo(temp, gs);
 		MeosErrorHandler.checkError();
@@ -33127,20 +35672,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static int adisjoint_trgeo_geo(Pointer temp, Pointer gs) {
 		var _result = _meos_d.adisjoint_trgeo_geo(temp, gs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int eintersects_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.eintersects_geo_trgeo(gs, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int aintersects_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.aintersects_geo_trgeo(gs, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -33160,20 +35691,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int etouches_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.etouches_geo_trgeo(gs, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int atouches_geo_trgeo(Pointer gs, Pointer temp) {
-		var _result = _meos_d.atouches_geo_trgeo(gs, temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static int etouches_trgeo_geo(Pointer temp, Pointer gs) {
 		var _result = _meos_d.etouches_trgeo_geo(temp, gs);
 		MeosErrorHandler.checkError();
@@ -33183,34 +35700,6 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static int atouches_trgeo_geo(Pointer temp, Pointer gs) {
 		var _result = _meos_d.atouches_trgeo_geo(temp, gs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int etouches_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.etouches_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int atouches_trgeo_trgeo(Pointer temp1, Pointer temp2) {
-		var _result = _meos_d.atouches_trgeo_trgeo(temp1, temp2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int edwithin_geo_trgeo(Pointer gs, Pointer temp, double dist) {
-		var _result = _meos_d.edwithin_geo_trgeo(gs, temp, dist);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int adwithin_geo_trgeo(Pointer gs, Pointer temp, double dist) {
-		var _result = _meos_d.adwithin_geo_trgeo(gs, temp, dist);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -33398,7 +35887,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_npoint_round(Pointer npoint, Pointer size) {
+	public static Pointer datum_npoint_round(Pointer npoint, Pointer size) {
 		var _result = _meos_d.datum_npoint_round(npoint, size);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -33591,7 +36080,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_npoint_distance(Pointer np1, Pointer np2) {
+	public static Pointer datum_npoint_distance(Pointer np1, Pointer np2) {
 		var _result = _meos_d.datum_npoint_distance(np1, np2);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -33815,7 +36304,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int meos_pc_patch_serialized_size(Pointer patch) {
+	public static long meos_pc_patch_serialized_size(Pointer patch) {
 		var _result = _meos_d.meos_pc_patch_serialized_size(patch);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -33999,56 +36488,56 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_point(Pointer pose) {
+	public static Pointer datum_pose_point(Pointer pose) {
 		var _result = _meos_d.datum_pose_point(pose);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_rotation(Pointer pose) {
+	public static Pointer datum_pose_rotation(Pointer pose) {
 		var _result = _meos_d.datum_pose_rotation(pose);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_yaw(Pointer pose) {
+	public static Pointer datum_pose_yaw(Pointer pose) {
 		var _result = _meos_d.datum_pose_yaw(pose);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_pitch(Pointer pose) {
+	public static Pointer datum_pose_pitch(Pointer pose) {
 		var _result = _meos_d.datum_pose_pitch(pose);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_roll(Pointer pose) {
+	public static Pointer datum_pose_roll(Pointer pose) {
 		var _result = _meos_d.datum_pose_roll(pose);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_apply_geo(Pointer pose, Pointer body) {
+	public static Pointer datum_pose_apply_geo(Pointer pose, Pointer body) {
 		var _result = _meos_d.datum_pose_apply_geo(pose, body);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_pose_round(Pointer pose, Pointer size) {
+	public static Pointer datum_pose_round(Pointer pose, Pointer size) {
 		var _result = _meos_d.datum_pose_round(pose, size);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int pose_distance(Pointer pose1, Pointer pose2) {
+	public static Pointer pose_distance(Pointer pose1, Pointer pose2) {
 		var _result = _meos_d.pose_distance(pose1, pose2);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -34182,8 +36671,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String date_out(int d) {
-		var _result = _meos_d.date_out(d);
+	public static String date_out(int date) {
+		var _result = _meos_d.date_out(date);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -34217,8 +36706,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String time_out(Pointer t) {
-		var _result = _meos_d.time_out(t);
+	public static String time_out(Pointer time) {
+		var _result = _meos_d.time_out(time);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -34231,9 +36720,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String timestamp_out(LocalDateTime t) {
-		var t_new = t.toInstant(java.time.ZoneOffset.UTC).getEpochSecond();
-		var _result = _meos_d.timestamp_out(t_new);
+	public static String timestamp_out(LocalDateTime ts) {
+		var ts_new = ts.toInstant(java.time.ZoneOffset.UTC).getEpochSecond();
+		var _result = _meos_d.timestamp_out(ts_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -34246,9 +36735,9 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String timestamptz_out(OffsetDateTime t) {
-		var t_new = t.toEpochSecond();
-		var _result = _meos_d.timestamptz_out(t_new);
+	public static String timestamptz_out(OffsetDateTime tstz) {
+		var tstz_new = tstz.toEpochSecond();
+		var _result = _meos_d.timestamptz_out(tstz_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -34324,13 +36813,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer geom_apply_pose(Pointer gs, Pointer pose) {
-		var _result = _meos_d.geom_apply_pose(gs, pose);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer trgeo_value_at_timestamptz(Pointer temp, OffsetDateTime t, boolean strict) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
@@ -34343,6 +36825,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer trgeometry_restrict_value(Pointer temp, Pointer value, boolean atfunc) {
+		var _result = _meos_d.trgeometry_restrict_value(temp, value, atfunc);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer trgeoinst_geom_p(Pointer inst) {
 		var _result = _meos_d.trgeoinst_geom_p(inst);
 		MeosErrorHandler.checkError();
@@ -34350,7 +36839,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int trgeoinst_pose_varsize(Pointer inst) {
+	public static long trgeoinst_pose_varsize(Pointer inst) {
 		var _result = _meos_d.trgeoinst_pose_varsize(inst);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -34539,7 +37028,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int trgeoseq_pose_varsize(Pointer seq) {
+	public static long trgeoseq_pose_varsize(Pointer seq) {
 		var _result = _meos_d.trgeoseq_pose_varsize(seq);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -34709,27 +37198,6 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer trgeo_stboxes(Pointer temp, Pointer count) {
-		var _result = _meos_d.trgeo_stboxes(temp, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeo_split_n_stboxes(Pointer temp, int box_count, Pointer count) {
-		var _result = _meos_d.trgeo_split_n_stboxes(temp, box_count, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer trgeo_split_each_n_stboxes(Pointer temp, int elems_per_box, Pointer count) {
-		var _result = _meos_d.trgeo_split_each_n_stboxes(temp, elems_per_box, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static boolean ensure_span_isof_type(Pointer s, int spantype) {
 		var _result = _meos_d.ensure_span_isof_type(s, spantype);
 		MeosErrorHandler.checkError();
@@ -34792,14 +37260,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int span_decr_bound(Pointer upper, int basetype) {
+	public static Pointer span_decr_bound(Pointer upper, int basetype) {
 		var _result = _meos_d.span_decr_bound(upper, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int span_incr_bound(Pointer upper, int basetype) {
+	public static Pointer span_incr_bound(Pointer upper, int basetype) {
 		var _result = _meos_d.span_incr_bound(upper, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -34947,6 +37415,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer geom_apply_pose(Pointer gs, Pointer pose) {
+		var _result = _meos_d.geom_apply_pose(gs, pose);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static double geom_radius(Pointer gs) {
 		var _result = _meos_d.geom_radius(gs);
 		MeosErrorHandler.checkError();
@@ -35079,134 +37554,8 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int int4_in(String str) {
-		var _result = _meos_d.int4_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String int4_out(int val) {
-		var _result = _meos_d.int4_out(val);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static long int8_in(String str) {
-		var _result = _meos_d.int8_in(str);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static String int8_out(long val) {
-		var _result = _meos_d.int8_out(val);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int float8_in(String num, String type_name, String orig_string) {
-		var _result = _meos_d.float8_in(num, type_name, orig_string);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_dsin(int arg1) {
-		var _result = _meos_d.pg_dsin(arg1);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_dcos(int arg1) {
-		var _result = _meos_d.pg_dcos(arg1);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_datan(int arg1) {
-		var _result = _meos_d.pg_datan(arg1);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_datan2(int arg1, int arg2) {
-		var _result = _meos_d.pg_datan2(arg1, arg2);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer interval_negate(Pointer interval) {
-		var _result = _meos_d.interval_negate(interval);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer pg_interval_justify_hours(Pointer span) {
-		var _result = _meos_d.pg_interval_justify_hours(span);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int hash_bytes_uint32(int k) {
-		var _result = _meos_d.hash_bytes_uint32(k);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_hashint8(long val) {
-		var _result = _meos_d.pg_hashint8(val);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_hashfloat8(int key) {
-		var _result = _meos_d.pg_hashfloat8(key);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static long hash_bytes_uint32_extended(int k, long seed) {
-		var _result = _meos_d.hash_bytes_uint32_extended(k, seed);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static long pg_hashint8extended(long val, long seed) {
-		var _result = _meos_d.pg_hashint8extended(val, seed);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static long pg_hashfloat8extended(int key, long seed) {
-		var _result = _meos_d.pg_hashfloat8extended(key, seed);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static int pg_hashtext(Pointer key) {
-		var _result = _meos_d.pg_hashtext(key);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static long pg_hashtextextended(Pointer key, long seed) {
-		var _result = _meos_d.pg_hashtextextended(key, seed);
+	public static Pointer lfunc_set(Pointer set, Pointer lfinfo) {
+		var _result = _meos_d.lfunc_set(set, lfinfo);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -35301,6 +37650,119 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static int span_lower_qsort_cmp(Pointer a, Pointer b) {
+		var _result = _meos_d.span_lower_qsort_cmp(a, b);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int span_upper_qsort_cmp(Pointer a, Pointer b) {
+		var _result = _meos_d.span_upper_qsort_cmp(a, b);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static byte getQuadrant2D(Pointer centroid, Pointer query) {
+		var _result = _meos_d.getQuadrant2D(centroid, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overlap2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overlap2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean contain2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.contain2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean left2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.left2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overLeft2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overLeft2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean right2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.right2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overRight2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overRight2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean adjacent2D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.adjacent2D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double distance_span_nodespan(Pointer query, Pointer nodebox) {
+		var _result = _meos_d.distance_span_nodespan(query, nodebox);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer span_spgist_get_span(Pointer value, int type) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_d.span_spgist_get_span(value, type, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static void spannode_init(Pointer nodebox, int spantype, int basetype) {
+		_meos_d.spannode_init(nodebox, spantype, basetype);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer spannode_copy(Pointer orig) {
+		var _result = _meos_d.spannode_copy(orig);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void spannode_quadtree_next(Pointer nodebox, Pointer centroid, byte quadrant, Pointer next_nodespan) {
+		_meos_d.spannode_quadtree_next(nodebox, centroid, quadrant, next_nodespan);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void spannode_kdtree_next(Pointer nodebox, Pointer centroid, byte node, int level, Pointer next_nodespan) {
+		_meos_d.spannode_kdtree_next(nodebox, centroid, node, level, next_nodespan);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
 	public static boolean ensure_spanset_isof_type(Pointer ss, int spansettype) {
 		var _result = _meos_d.ensure_spanset_isof_type(ss, spansettype);
 		MeosErrorHandler.checkError();
@@ -35343,14 +37805,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_and(Pointer l, Pointer r) {
+	public static Pointer datum_and(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_and(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_or(Pointer l, Pointer r) {
+	public static Pointer datum_or(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_or(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -35434,98 +37896,248 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_min_int32(Pointer l, Pointer r) {
+	public static void tboxnode_init(Pointer centroid, Pointer nodebox) {
+		_meos_d.tboxnode_init(centroid, nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tboxnode_copy(Pointer box) {
+		var _result = _meos_d.tboxnode_copy(box);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static byte getQuadrant4D(Pointer centroid, Pointer inBox) {
+		var _result = _meos_d.getQuadrant4D(centroid, inBox);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void tboxnode_quadtree_next(Pointer nodebox, Pointer centroid, byte quadrant, Pointer next_nodebox) {
+		_meos_d.tboxnode_quadtree_next(nodebox, centroid, quadrant, next_nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void tboxnode_kdtree_next(Pointer nodebox, Pointer centroid, byte node, int level, Pointer next_nodebox) {
+		_meos_d.tboxnode_kdtree_next(nodebox, centroid, node, level, next_nodebox);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overlap4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overlap4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean contain4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.contain4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean left4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.left4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overLeft4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overLeft4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean right4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.right4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overRight4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overRight4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean before4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.before4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overBefore4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overBefore4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean after4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.after4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static boolean overAfter4D(Pointer nodebox, Pointer query) {
+		var _result = _meos_d.overAfter4D(nodebox, query);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double distance_tbox_nodebox(Pointer query, Pointer nodebox) {
+		var _result = _meos_d.distance_tbox_nodebox(query, nodebox);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void tnumber_spgist_get_tbox(Pointer value, int type, Pointer result) {
+		_meos_d.tnumber_spgist_get_tbox(value, type, result);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static int tbox_xmin_cmp(Pointer box1, Pointer box2) {
+		var _result = _meos_d.tbox_xmin_cmp(box1, box2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tbox_xmax_cmp(Pointer box1, Pointer box2) {
+		var _result = _meos_d.tbox_xmax_cmp(box1, box2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tbox_tmin_cmp(Pointer box1, Pointer box2) {
+		var _result = _meos_d.tbox_tmin_cmp(box1, box2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tbox_tmax_cmp(Pointer box1, Pointer box2) {
+		var _result = _meos_d.tbox_tmax_cmp(box1, box2);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tbox_level_cmp(Pointer centroid, Pointer query, int level) {
+		var _result = _meos_d.tbox_level_cmp(centroid, query, level);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer datum_min_int32(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_min_int32(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_max_int32(Pointer l, Pointer r) {
+	public static Pointer datum_max_int32(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_max_int32(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_min_int64(Pointer l, Pointer r) {
+	public static Pointer datum_min_int64(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_min_int64(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_max_int64(Pointer l, Pointer r) {
+	public static Pointer datum_max_int64(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_max_int64(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_min_float8(Pointer l, Pointer r) {
+	public static Pointer datum_min_float8(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_min_float8(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_max_float8(Pointer l, Pointer r) {
+	public static Pointer datum_max_float8(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_max_float8(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_int32(Pointer l, Pointer r) {
+	public static Pointer datum_sum_int32(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_int32(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_int64(Pointer l, Pointer r) {
+	public static Pointer datum_sum_int64(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_int64(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_float8(Pointer l, Pointer r) {
+	public static Pointer datum_sum_float8(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_float8(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_min_text(Pointer l, Pointer r) {
+	public static Pointer datum_min_text(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_min_text(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_max_text(Pointer l, Pointer r) {
+	public static Pointer datum_max_text(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_max_text(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_double2(Pointer l, Pointer r) {
+	public static Pointer datum_sum_double2(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_double2(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_double3(Pointer l, Pointer r) {
+	public static Pointer datum_sum_double3(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_double3(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sum_double4(Pointer l, Pointer r) {
+	public static Pointer datum_sum_double4(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_sum_double4(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -35658,7 +38270,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int temporal_bbox_size(int tempype) {
+	public static long temporal_bbox_size(int tempype) {
 		var _result = _meos_d.temporal_bbox_size(tempype);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36061,7 +38673,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_bin(Pointer value, Pointer size, Pointer offset, int basetype) {
+	public static Pointer datum_bin(Pointer value, Pointer size, Pointer offset, int basetype) {
 		var _result = _meos_d.datum_bin(value, size, offset, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36174,10 +38786,109 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tfloat_arithop_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param, OffsetDateTime lower, OffsetDateTime upper, Pointer t1, Pointer t2) {
-		var lower_new = lower.toEpochSecond();
-		var upper_new = upper.toEpochSecond();
-		var _result = _meos_d.tfloat_arithop_turnpt(start1, end1, start2, end2, param, lower_new, upper_new, t1, t2);
+	public static void _mulmat(Pointer a, Pointer b, Pointer c, int arows, int acols, int bcols) {
+		_meos_d._mulmat(a, b, c, arows, acols, bcols);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _mulvec(Pointer a, Pointer x, Pointer y, int m, int n) {
+		_meos_d._mulvec(a, x, y, m, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _transpose(Pointer a, Pointer at, int m, int n) {
+		_meos_d._transpose(a, at, m, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _addmat(Pointer a, Pointer b, Pointer c, int m, int n) {
+		_meos_d._addmat(a, b, c, m, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _negate(Pointer a, int m, int n) {
+		_meos_d._negate(a, m, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _addeye(Pointer a, int n) {
+		_meos_d._addeye(a, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static int _choldc1(Pointer a, Pointer p, int n) {
+		var _result = _meos_d._choldc1(a, p, n);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int _choldcsl(Pointer A, Pointer a, Pointer p, int n) {
+		var _result = _meos_d._choldcsl(A, a, p, n);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int _cholsl(Pointer A, Pointer a, Pointer p, int n) {
+		var _result = _meos_d._cholsl(A, a, p, n);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void _addvec(Pointer a, Pointer b, Pointer c, int n) {
+		_meos_d._addvec(a, b, c, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void _sub(Pointer a, Pointer b, Pointer c, int n) {
+		_meos_d._sub(a, b, c, n);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static int invert(Pointer a, Pointer ainv) {
+		var _result = _meos_d.invert(a, ainv);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static void ekf_initialize(Pointer ekf, float pdiag) {
+		_meos_d.ekf_initialize(ekf, pdiag);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void ekf_predict(Pointer ekf, float fx, float F, float Q) {
+		_meos_d.ekf_predict(ekf, fx, F, Q);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static void ekf_update_step3(Pointer ekf, float GH) {
+		_meos_d.ekf_update_step3(ekf, GH);
+		MeosErrorHandler.checkError();
+	}
+
+	@SuppressWarnings("unused")
+	public static int ekf_update(Pointer ekf, float z, float hx, float H, float R) {
+		var _result = _meos_d.ekf_update(ekf, z, hx, H, R);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int tfloat_arithop_turnpt(Pointer start1, Pointer end1, Pointer start2, Pointer end2, Pointer param) {
+		var _result = _meos_d.tfloat_arithop_turnpt(start1, end1, start2, end2, param);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -36329,7 +39040,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int tsegment_value_at_timestamptz(Pointer start, Pointer end, int temptype, OffsetDateTime lower, OffsetDateTime upper, OffsetDateTime t) {
+	public static Pointer tsegment_value_at_timestamptz(Pointer start, Pointer end, int temptype, OffsetDateTime lower, OffsetDateTime upper, OffsetDateTime t) {
 		var lower_new = lower.toEpochSecond();
 		var upper_new = upper.toEpochSecond();
 		var t_new = t.toEpochSecond();
@@ -36541,28 +39252,28 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_textcat(Pointer l, Pointer r) {
+	public static Pointer datum_textcat(Pointer l, Pointer r) {
 		var _result = _meos_d.datum_textcat(l, r);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_lower(Pointer value) {
+	public static Pointer datum_lower(Pointer value) {
 		var _result = _meos_d.datum_lower(value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_upper(Pointer value) {
+	public static Pointer datum_upper(Pointer value) {
 		var _result = _meos_d.datum_upper(value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_initcap(Pointer value) {
+	public static Pointer datum_initcap(Pointer value) {
 		var _result = _meos_d.datum_initcap(value);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36606,14 +39317,14 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int type_from_wkb(Pointer wkb, long size, int type) {
+	public static Pointer type_from_wkb(Pointer wkb, long size, int type) {
 		var _result = _meos_d.type_from_wkb(wkb, size, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int type_from_hexwkb(String hexwkb, long size, int type) {
+	public static Pointer type_from_hexwkb(String hexwkb, long size, int type) {
 		var _result = _meos_d.type_from_hexwkb(hexwkb, size, type);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36819,7 +39530,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_copy(Pointer value, int typid) {
+	public static Pointer datum_copy(Pointer value, int typid) {
 		var _result = _meos_d.datum_copy(value, typid);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36833,7 +39544,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int double_datum(double d, int type) {
+	public static Pointer double_datum(double d, int type) {
 		var _result = _meos_d.double_datum(d, type);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36842,6 +39553,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer bstring2bytea(Pointer wkb, long size) {
 		var _result = _meos_d.bstring2bytea(wkb, size);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double meos_strtod(String str, Pointer endptr) {
+		var _result = _meos_d.meos_strtod(str, endptr);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -36871,8 +39589,26 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static String stringarr_to_string(Pointer strings, int count, long outlen, String prefix, String open, String close, boolean quotes, boolean spaces) {
-		var _result = _meos_d.stringarr_to_string(strings, count, outlen, prefix, open, close, quotes, spaces);
+	public static Pointer string_escape(String str, int quotes) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_d.string_escape(str, quotes, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static long string_unescape(String str, Pointer result) {
+		var _result = _meos_d.string_unescape(str, result);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String stringarr_to_string(Pointer strings, int count, String prefix, String open, String close, int quotes, boolean spaces) {
+		var _result = _meos_d.stringarr_to_string(strings, count, prefix, open, close, quotes, spaces);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -36929,28 +39665,28 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_add(Pointer l, Pointer r, int type) {
+	public static Pointer datum_add(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum_add(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_sub(Pointer l, Pointer r, int type) {
+	public static Pointer datum_sub(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum_sub(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_mult(Pointer l, Pointer r, int type) {
-		var _result = _meos_d.datum_mult(l, r, type);
+	public static Pointer datum_mul(Pointer l, Pointer r, int type) {
+		var _result = _meos_d.datum_mul(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_div(Pointer l, Pointer r, int type) {
+	public static Pointer datum_div(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum_div(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -37006,42 +39742,42 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_eq(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_eq(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_eq(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_ne(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_ne(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_ne(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_lt(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_lt(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_lt(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_le(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_le(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_le(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_gt(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_gt(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_gt(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum2_ge(Pointer l, Pointer r, int type) {
+	public static Pointer datum2_ge(Pointer l, Pointer r, int type) {
 		var _result = _meos_d.datum2_ge(l, r, type);
 		MeosErrorHandler.checkError();
 		return _result;
