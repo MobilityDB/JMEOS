@@ -1,6 +1,6 @@
 package types.basic.tfloat;
 
-import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TSequence;
 import types.temporal.TemporalType;
@@ -39,7 +39,7 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 	 */
 	public TFloatSeq(String value){
 		super(value);
-		this.inner = functions.tfloat_in(value);
+		this.inner = GeneratedFunctions.tfloat_in(value);
 	}
 
 
@@ -66,7 +66,7 @@ public class TFloatSeq extends TSequence<Float> implements TFloat {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tfloat_in(str);
+		return GeneratedFunctions.tfloat_in(str);
 	}
 
 	@Override

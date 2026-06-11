@@ -1,6 +1,6 @@
 package types.basic.tint;
 
-import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
@@ -36,14 +36,14 @@ public class TIntInst extends TInstant<Integer> implements TInt{
 	 */
 	public TIntInst(String value) {
 		super(value);
-		this.inner = functions.tint_in(value);
+		this.inner = GeneratedFunctions.tint_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tint_in(str);
+		return GeneratedFunctions.tint_in(str);
 	}
 
 	@Override

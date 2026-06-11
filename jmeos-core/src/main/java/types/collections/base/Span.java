@@ -1,7 +1,7 @@
 package types.collections.base;
 
 import jnr.ffi.Pointer;
-import functions.functions;
+import functions.GeneratedFunctions;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -80,7 +80,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public T copy(Class<T> span) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
     {
-        Pointer spanPointer = functions.span_copy(this._inner);
+        Pointer spanPointer = GeneratedFunctions.span_copy(this._inner);
         return span.getConstructor(Pointer.class).newInstance(spanPointer);
     }
 
@@ -89,7 +89,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return Pointer type
      */
     public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.span_from_wkb(wkb, size);
+        Pointer spanPointer = GeneratedFunctions.span_from_wkb(wkb, size);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -100,10 +100,10 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
 //    public static T from_hexwkb(String hexwkb)
 //    {
-//        return functions.span_from_hexwkb(hexwkb);
+//        return GeneratedFunctions.span_from_hexwkb(hexwkb);
 //    }
     public static <T> T from_hexwkb(String hexwkb, Class<T> spanType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.span_from_hexwkb(hexwkb);
+        Pointer spanPointer = GeneratedFunctions.span_from_hexwkb(hexwkb);
         Constructor<T> constructor = spanType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -113,7 +113,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return Pointer type
      */
     public Pointer as_wkb() {
-        return functions.span_as_wkb(this._inner, (byte) 4);
+        return GeneratedFunctions.span_as_wkb(this._inner, (byte) 4);
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return String type
      */
     public String as_hexwkb() {
-        String[] result= new String[]{functions.span_as_hexwkb(this._inner, (byte) -1)};
+        String[] result= new String[]{GeneratedFunctions.span_as_hexwkb(this._inner, (byte) -1)};
 //        System.out.println(result[0]);
         return result[0];
     }
@@ -131,12 +131,12 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return String type
      */
 //    public T to_spanset(Class<T> spansettype) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-//        Pointer spanPointer = functions.span_to_spanset(this._inner);
+//        Pointer spanPointer = GeneratedFunctions.span_to_spanset(this._inner);
 //        return spansettype.getConstructor(Pointer.class).newInstance(spanPointer);
 //    }
 
     public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.span_to_spanset(this._inner);
+        Pointer spanPointer = GeneratedFunctions.span_to_spanset(this._inner);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -149,7 +149,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return True if the lower bound of the period is inclusive and False otherwise
      */
     public boolean lower_inc(){
-        return functions.span_lower_inc(this._inner);
+        return GeneratedFunctions.span_lower_inc(this._inner);
     }
 
 
@@ -161,7 +161,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return True if the upper bound of the period is inclusive and False otherwise
      */
     public boolean upper_inc(){
-        return functions.span_upper_inc(this._inner);
+        return GeneratedFunctions.span_upper_inc(this._inner);
     }
 
 
@@ -173,7 +173,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return Returns a {@link Float} representing the duration of the period in seconds
      */
     public float width(){
-        return (float) functions.floatspan_width(this._inner);
+        return (float) GeneratedFunctions.floatspan_width(this._inner);
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * @return A new {@link Integer} instance
      */
     public long hash(){
-        return functions.span_hash(this._inner);
+        return GeneratedFunctions.span_hash(this._inner);
     }
 
 
@@ -207,9 +207,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_adjacent(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.adjacent_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.adjacent_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
+            return GeneratedFunctions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -233,9 +233,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_contained_in(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.contained_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.contained_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.contained_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.contained_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -262,9 +262,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean contains(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.contains_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.contains_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.contains_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.contains_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -288,9 +288,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean overlaps(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.overlaps_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.overlaps_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overlaps_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
+            return GeneratedFunctions.overlaps_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -300,9 +300,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     public boolean is_same(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.span_eq(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.span_eq(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.span_eq(this._inner,functions.spanset_span(((SpanSet<?>) other).get_inner()));
+            return GeneratedFunctions.span_eq(this._inner,GeneratedFunctions.spanset_span(((SpanSet<?>) other).get_inner()));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -328,9 +328,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_left(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.left_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.left_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.left_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.left_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -354,9 +354,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_over_or_left(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.overleft_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.overleft_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overleft_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.overleft_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -380,9 +380,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_right(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.right_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.right_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.right_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.right_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -411,9 +411,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean is_over_or_right(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.overright_span_span(this._inner, ((Span<?>) other)._inner);
+            return GeneratedFunctions.overright_span_span(this._inner, ((Span<?>) other)._inner);
         } else if (other instanceof SpanSet<?>) {
-            return functions.overright_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
+            return GeneratedFunctions.overright_span_spanset(this._inner, ((SpanSet<?>) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -441,9 +441,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
 //    public float distance(Base other) throws Exception {
 //        if (other instanceof Span<?>){
-//            return (float) functions.distance_floatspan_floatspan(this._inner, ((Span<?>) other)._inner);
+//            return (float) GeneratedFunctions.distance_floatspan_floatspan(this._inner, ((Span<?>) other)._inner);
 //        } else if (other instanceof SpanSet<?>) {
-//            return (float) functions.distance_floatspanset_floatspan(((SpanSet<?>) other).get_inner(),this._inner);
+//            return (float) GeneratedFunctions.distance_floatspanset_floatspan(((SpanSet<?>) other).get_inner(),this._inner);
 //        }
 //        else {
 //            throw new Exception("Operation not supported with this type");
@@ -475,9 +475,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     private Base intersection(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_span_span(this._inner, ((Span<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.intersection_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.intersection_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -491,7 +491,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     protected Base minus(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_span_span(this._inner, ((Span<?>) other).get_inner()));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.minus_span_span(this._inner, ((Span<?>) other).get_inner()));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -513,9 +513,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     protected Base union(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_span_span(this._inner, ((Span<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.union_span_span(this._inner, ((Span<?>) other)._inner));
         } else if (other instanceof SpanSet<?>) {
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.union_spanset_span(((SpanSet<?>) other).get_inner(),this._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -543,7 +543,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean eq(Base other){
         if (other instanceof Span<?>){
-            return functions.span_eq(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_eq(this._inner,((Span<?>) other)._inner);
         }
         else {
             return false;
@@ -563,7 +563,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean notEquals(Base other){
         if (other instanceof Span<?>){
-            return functions.span_ne(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_ne(this._inner,((Span<?>) other)._inner);
         }
         else {
             return true;
@@ -585,7 +585,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean lessThan(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.span_lt(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_lt(this._inner,((Span<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -607,7 +607,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean lessThanOrEqual(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.span_le(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_le(this._inner,((Span<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -629,7 +629,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean greaterThan(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.span_gt(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_gt(this._inner,((Span<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -650,7 +650,7 @@ public abstract class Span<T extends Object> implements Collection, Base{
      */
     public boolean greaterThanOrEqual(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.span_ge(this._inner,((Span<?>) other)._inner);
+            return GeneratedFunctions.span_ge(this._inner,((Span<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");

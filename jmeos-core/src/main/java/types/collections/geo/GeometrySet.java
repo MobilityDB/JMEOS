@@ -1,5 +1,5 @@
 package types.collections.geo;
-import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 
 /**
@@ -31,7 +31,7 @@ public class GeometrySet extends GeoSet{
      */
     public GeometrySet(String str){
         super(str);
-        this._inner = functions.geomset_in(str);
+        this._inner = GeneratedFunctions.geomset_in(str);
     }
 
     public String getType(){return type;}
@@ -43,7 +43,7 @@ public class GeometrySet extends GeoSet{
 
     @Override
     public Pointer createStringInner(String str){
-        return functions.geomset_in(str);
+        return GeneratedFunctions.geomset_in(str);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package types.basic.tfloat;
 
-import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
@@ -36,14 +36,14 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	 */
 	public TFloatInst(String value) {
 		super(value);
-		this.inner = functions.tfloat_in(value);
+		this.inner = GeneratedFunctions.tfloat_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tfloat_in(str);
+		return GeneratedFunctions.tfloat_in(str);
 	}
 
 	@Override

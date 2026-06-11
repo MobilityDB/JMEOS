@@ -2,7 +2,7 @@ package types.collections.number;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.Span;
-import functions.functions;
+import functions.GeneratedFunctions;
 
 /**
  * Class for representing sets of contiguous float values between a lower and
@@ -36,37 +36,37 @@ public class FloatSpan extends Span<Float> implements Number{
 
     public FloatSpan(String str){
         super(str);
-        this._inner = functions.floatspan_in(str);
+        this._inner = GeneratedFunctions.floatspan_in(str);
     }
 
 
     public FloatSpan(float lower, float upper, boolean lower_inc, boolean upper_inc){
         super(lower,upper,lower_inc,upper_inc);
-        _inner = functions.floatspan_make((double) lower, (double) upper,lower_inc,upper_inc);
+        _inner = GeneratedFunctions.floatspan_make((double) lower, (double) upper,lower_inc,upper_inc);
     }
 
     public FloatSpan(float lower, String upper, boolean lower_inc, boolean upper_inc){
         super(lower,upper,lower_inc,upper_inc);
         double new_upper = Double.parseDouble(upper);
-        _inner = functions.floatspan_make(lower,new_upper,lower_inc,upper_inc);
+        _inner = GeneratedFunctions.floatspan_make(lower,new_upper,lower_inc,upper_inc);
     }
 
     public FloatSpan(String lower, String upper, boolean lower_inc, boolean upper_inc){
         super(lower,upper,lower_inc,upper_inc);
         double new_upper = Double.parseDouble(upper);
         double new_lower = Double.parseDouble(lower);
-        _inner = functions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
+        _inner = GeneratedFunctions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
     }
 
     public FloatSpan(String lower, float upper, boolean lower_inc, boolean upper_inc){
         super(lower,upper,lower_inc,upper_inc);
         double new_lower = Double.parseDouble(lower);
-        _inner = functions.floatspan_make(new_lower,(double) upper,lower_inc,upper_inc);
+        _inner = GeneratedFunctions.floatspan_make(new_lower,(double) upper,lower_inc,upper_inc);
     }
 
     public FloatSpan(float lower, float upper){
         super(lower,upper,true,false);
-        _inner = functions.floatspan_make((double) lower,(double) upper,true,false);
+        _inner = GeneratedFunctions.floatspan_make((double) lower,(double) upper,true,false);
     }
 
 
@@ -74,7 +74,7 @@ public class FloatSpan extends Span<Float> implements Number{
 
     @Override
     public Pointer createStringInner(String str){
-        return functions.floatspan_in(str);
+        return GeneratedFunctions.floatspan_in(str);
     }
 
     @Override
@@ -85,27 +85,27 @@ public class FloatSpan extends Span<Float> implements Number{
 
     @Override
     public Pointer createIntInt(java.lang.Number lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
-        return functions.floatspan_make(lower.floatValue(),upper.floatValue(),lower_inc,upper_inc);
+        return GeneratedFunctions.floatspan_make(lower.floatValue(),upper.floatValue(),lower_inc,upper_inc);
     }
     @Override
     public Pointer createIntStr(java.lang.Number lower, String upper, boolean lower_inc, boolean upper_inc){
         double new_upper = Double.parseDouble(upper);
-        return functions.floatspan_make(lower.floatValue(),new_upper,lower_inc,upper_inc);
+        return GeneratedFunctions.floatspan_make(lower.floatValue(),new_upper,lower_inc,upper_inc);
     }
     @Override
     public Pointer createStrStr(String lower, String upper, boolean lower_inc, boolean upper_inc){
         double new_upper = Double.parseDouble(upper);
         double new_lower = Double.parseDouble(lower);
-        return functions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
+        return GeneratedFunctions.floatspan_make(new_lower,new_upper,lower_inc,upper_inc);
     }
     @Override
     public Pointer createStrInt(String lower, java.lang.Number upper, boolean lower_inc, boolean upper_inc){
         int new_lower = Integer.parseInt(lower);
-        return functions.floatspan_make(new_lower,upper.floatValue(),lower_inc,upper_inc);
+        return GeneratedFunctions.floatspan_make(new_lower,upper.floatValue(),lower_inc,upper_inc);
     }
     @Override
     public Pointer createIntIntNb(java.lang.Number lower, java.lang.Number upper){
-        return functions.floatspan_make(lower.floatValue(),upper.floatValue(),true,false);
+        return GeneratedFunctions.floatspan_make(lower.floatValue(),upper.floatValue(),true,false);
     }
 
 
@@ -124,7 +124,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return A new {@link String} instance
      */
     public String toString(int max_decimals){
-        return functions.floatspan_out(this._inner, max_decimals);
+        return GeneratedFunctions.floatspan_out(this._inner, max_decimals);
     }
 
 
@@ -143,7 +143,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return A new {@link FloatSpanSet} instance
      */
     public FloatSpanSet to_spanset(){
-        return new FloatSpanSet(functions.span_to_spanset(this._inner));
+        return new FloatSpanSet(GeneratedFunctions.span_to_spanset(this._inner));
     }
 
 
@@ -158,7 +158,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return A new {@link IntSpan} instance
      */
     public IntSpan to_intspan(){
-        return new IntSpan(functions.floatspan_to_intspan(this._inner));
+        return new IntSpan(GeneratedFunctions.floatspan_to_intspan(this._inner));
     }
 
 
@@ -182,7 +182,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return The lower bound of the span as a {@link Float}
      */
     public Float lower(){
-        return (float) functions.floatspan_lower(this._inner);
+        return (float) GeneratedFunctions.floatspan_lower(this._inner);
     }
 
 
@@ -198,7 +198,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return The lower bound of the span as a {@link Float}
      */
     public Float upper(){
-        return (float) functions.floatspan_upper(this._inner);
+        return (float) GeneratedFunctions.floatspan_upper(this._inner);
     }
 
 
@@ -213,7 +213,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return Returns a "float" representing the width of the span
      */
     public float width(){
-        return (float) functions.floatspan_width(this._inner);
+        return (float) GeneratedFunctions.floatspan_width(this._inner);
     }
 
 
@@ -268,7 +268,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return a new {@link FloatSpan} instance
      */
     public FloatSpan shift_scale(int delta, int width){
-        return new FloatSpan(functions.floatspan_shift_scale(this._inner,delta,width,delta != 0, width != 0));
+        return new FloatSpan(GeneratedFunctions.floatspan_shift_scale(this._inner,delta,width,delta != 0, width != 0));
     }
 
 
@@ -291,7 +291,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_adjacent(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.adjacent_span_float(this._inner, (float) other);
+            return GeneratedFunctions.adjacent_span_float(this._inner, (float) other);
         }
         else {
             return super.is_adjacent((Base) other);
@@ -314,7 +314,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean contains(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.contains_span_float(this._inner, (float) other);
+            return GeneratedFunctions.contains_span_float(this._inner, (float) other);
         }
         else {
             return super.contains((Base) other);
@@ -337,7 +337,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_same(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.span_eq(this._inner, functions.float_to_span((float)other));
+            return GeneratedFunctions.span_eq(this._inner, GeneratedFunctions.float_to_span((float)other));
         }
         else {
             return super.is_same((Base) other);
@@ -364,7 +364,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_left(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.left_span_float(this._inner, (float) other);
+            return GeneratedFunctions.left_span_float(this._inner, (float) other);
         }
         else {
             return super.is_left((Base) other);
@@ -389,7 +389,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_over_or_left(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.overleft_span_float(this._inner, (float) other);
+            return GeneratedFunctions.overleft_span_float(this._inner, (float) other);
         }
         else {
             return super.is_over_or_left((Base) other);
@@ -413,7 +413,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_right(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.right_span_float(this._inner, (float) other);
+            return GeneratedFunctions.right_span_float(this._inner, (float) other);
         }
         else {
             return super.is_right((Base) other);
@@ -438,7 +438,7 @@ public class FloatSpan extends Span<Float> implements Number{
      */
     public boolean is_over_or_right(Object other) throws Exception {
         if ((other instanceof Integer) || (other instanceof Float)){
-            return functions.overright_span_float(this._inner, (float) other);
+            return GeneratedFunctions.overright_span_float(this._inner, (float) other);
         }
         else {
             return super.is_over_or_right((Base) other);
@@ -465,16 +465,16 @@ public class FloatSpan extends Span<Float> implements Number{
     public Float distance(Object other) throws Exception {
         float answer= 0;
         if ((other instanceof Integer) || (other instanceof Float)){
-            answer= (float) functions.distance_span_float(this._inner, (float) other);
+            answer= (float) GeneratedFunctions.distance_span_float(this._inner, (float) other);
         }
         else if ((other instanceof FloatSet)){
-            answer= (float) functions.distance_floatset_floatset(this._inner, ((FloatSet) other).get_inner());
+            answer= (float) GeneratedFunctions.distance_floatset_floatset(this._inner, ((FloatSet) other).get_inner());
         }
         else if ((other instanceof FloatSpanSet)){
-            answer= (float) functions.distance_floatspanset_floatspan(this._inner, ((FloatSpanSet) other).get_inner());
+            answer= (float) GeneratedFunctions.distance_floatspanset_floatspan(this._inner, ((FloatSpanSet) other).get_inner());
         }
         else if ((other instanceof FloatSpan)){
-            answer= (float) functions.distance_floatspan_floatspan(this._inner, ((FloatSpan) other)._inner);
+            answer= (float) GeneratedFunctions.distance_floatspan_floatspan(this._inner, ((FloatSpan) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with " + other + " type");
@@ -500,16 +500,16 @@ public class FloatSpan extends Span<Float> implements Number{
     public FloatSpan intersection(Object other) throws Exception {
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            result= functions.intersection_span_float(this._inner, (float) other);
+            result= GeneratedFunctions.intersection_span_float(this._inner, (float) other);
         }
         else if (other instanceof FloatSpan){
-            result= functions.intersection_span_span(this._inner, ((FloatSpan) other)._inner);
+            result= GeneratedFunctions.intersection_span_span(this._inner, ((FloatSpan) other)._inner);
         }
         else if (other instanceof FloatSpanSet){
-            result= functions.intersection_spanset_span(this._inner, ((FloatSpanSet) other).get_inner());
+            result= GeneratedFunctions.intersection_spanset_span(this._inner, ((FloatSpanSet) other).get_inner());
         }
         else if ((other instanceof FloatSet)){
-            result= functions.intersection_set_set(this._inner, ((FloatSet) other).get_inner());
+            result= GeneratedFunctions.intersection_set_set(this._inner, ((FloatSet) other).get_inner());
         }
         else {
             throw new Exception("Operation not supported with " + other + " type");
@@ -532,13 +532,13 @@ public class FloatSpan extends Span<Float> implements Number{
     public FloatSpanSet minus(Object other){
         Pointer result = null;
         if ((other instanceof Integer) || (other instanceof Float)){
-            result = functions.minus_span_float(this._inner, (double)other);
+            result = GeneratedFunctions.minus_span_float(this._inner, (double)other);
         }
         else if (other instanceof FloatSpan) {
-            result = functions.minus_span_span(this._inner,((FloatSpan) other).get_inner());
+            result = GeneratedFunctions.minus_span_span(this._inner,((FloatSpan) other).get_inner());
         }
         else if (other instanceof FloatSpanSet) {
-            result = functions.minus_spanset_span(((FloatSpanSet) other).get_inner(), this._inner);
+            result = GeneratedFunctions.minus_spanset_span(((FloatSpanSet) other).get_inner(), this._inner);
         }
         else {
             //result = super.minus(other);
@@ -563,13 +563,13 @@ public class FloatSpan extends Span<Float> implements Number{
     public FloatSpanSet union(Object other) throws Exception {
         Pointer result = null;
         if (other instanceof Integer || other instanceof Double || other instanceof Float){
-            result = functions.union_span_float(this._inner, (double) other);
+            result = GeneratedFunctions.union_span_float(this._inner, (double) other);
         }
         else if (other instanceof FloatSpan) {
-            result = functions.union_span_span(this._inner,((FloatSpan) other).get_inner());
+            result = GeneratedFunctions.union_span_span(this._inner,((FloatSpan) other).get_inner());
         }
         else if (other instanceof FloatSpanSet) {
-            result = functions.union_spanset_span(((FloatSpanSet) other).get_inner(), this._inner);
+            result = GeneratedFunctions.union_spanset_span(((FloatSpanSet) other).get_inner(), this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
