@@ -80645,6 +80645,36 @@
       ]
     },
     {
+      "name": "cstring_to_text",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "text *",
+        "canonical": "struct varlena *"
+      },
+      "params": [
+        {
+          "name": "str",
+          "cType": "const char *",
+          "canonical": "const char *"
+        }
+      ]
+    },
+    {
+      "name": "text_to_cstring",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "char *",
+        "canonical": "char *"
+      },
+      "params": [
+        {
+          "name": "txt",
+          "cType": "const text *",
+          "canonical": "const struct varlena *"
+        }
+      ]
+    },
+    {
       "name": "date_in",
       "file": "postgres_ext_defs.in.h",
       "returnType": {
@@ -80711,6 +80741,51 @@
           "name": "typmod",
           "cType": "int32",
           "canonical": "int"
+        }
+      ]
+    },
+    {
+      "name": "interval_make",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "Interval *",
+        "canonical": "Interval *"
+      },
+      "params": [
+        {
+          "name": "years",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "months",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "weeks",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "days",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "hours",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "mins",
+          "cType": "int32",
+          "canonical": "int"
+        },
+        {
+          "name": "secs",
+          "cType": "double",
+          "canonical": "double"
         }
       ]
     },

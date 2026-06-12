@@ -2201,11 +2201,11 @@ public class GeneratedFunctions {
 
 		Pointer tgt_ttext_text(Pointer temp, Pointer txt);
 
+		Pointer tle_float_tfloat(double d, Pointer temp);
+
 	}
 
 	public interface MeosLibraryPartB {
-
-		Pointer tle_float_tfloat(double d, Pointer temp);
 
 		Pointer tle_int_tint(int i, Pointer temp);
 
@@ -4391,13 +4391,13 @@ public class GeneratedFunctions {
 
 		Pointer distance_set_value(Pointer s, Pointer value);
 
-	}
-
-	public interface MeosLibraryPartC {
-
 		Pointer distance_span_span(Pointer s1, Pointer s2);
 
 		Pointer distance_span_value(Pointer s, Pointer value);
+
+	}
+
+	public interface MeosLibraryPartC {
 
 		Pointer distance_spanset_span(Pointer ss, Pointer s);
 
@@ -6581,15 +6581,15 @@ public class GeneratedFunctions {
 
 		boolean spatial_set_srid(Pointer d, int basetype, int srid);
 
-	}
-
-	public interface MeosLibraryPartD {
-
 		int tspatialinst_srid(Pointer inst);
 
 		Pointer tpointseq_azimuth(Pointer seq);
 
 		Pointer tpointseq_cumulative_length(Pointer seq, double prevlength);
+
+	}
+
+	public interface MeosLibraryPartD {
 
 		boolean tpointseq_is_simple(Pointer seq);
 
@@ -7879,6 +7879,10 @@ public class GeneratedFunctions {
 
 		int geo_get_srid(Pointer g);
 
+		Pointer cstring_to_text(String str);
+
+		String text_to_cstring(Pointer txt);
+
 		int date_in(String str);
 
 		String date_out(int date);
@@ -7886,6 +7890,8 @@ public class GeneratedFunctions {
 		int interval_cmp(Pointer interv1, Pointer interv2);
 
 		Pointer interval_in(String str, int typmod);
+
+		Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs);
 
 		String interval_out(Pointer interv);
 
@@ -16629,7 +16635,7 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tle_float_tfloat(double d, Pointer temp) {
-		var _result = _meos_b.tle_float_tfloat(d, temp);
+		var _result = _meos_a.tle_float_tfloat(d, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -24376,14 +24382,14 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_span_span(Pointer s1, Pointer s2) {
-		var _result = _meos_c.distance_span_span(s1, s2);
+		var _result = _meos_b.distance_span_span(s1, s2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_span_value(Pointer s, Pointer value) {
-		var _result = _meos_c.distance_span_value(s, value);
+		var _result = _meos_b.distance_span_value(s, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32069,21 +32075,21 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static int tspatialinst_srid(Pointer inst) {
-		var _result = _meos_d.tspatialinst_srid(inst);
+		var _result = _meos_c.tspatialinst_srid(inst);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_azimuth(Pointer seq) {
-		var _result = _meos_d.tpointseq_azimuth(seq);
+		var _result = _meos_c.tpointseq_azimuth(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_cumulative_length(Pointer seq, double prevlength) {
-		var _result = _meos_d.tpointseq_cumulative_length(seq, prevlength);
+		var _result = _meos_c.tpointseq_cumulative_length(seq, prevlength);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -36664,6 +36670,20 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer cstring_to_text(String str) {
+		var _result = _meos_d.cstring_to_text(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String text_to_cstring(Pointer txt) {
+		var _result = _meos_d.text_to_cstring(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static int date_in(String str) {
 		var _result = _meos_d.date_in(str);
 		MeosErrorHandler.checkError();
@@ -36687,6 +36707,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer interval_in(String str, int typmod) {
 		var _result = _meos_d.interval_in(str, typmod);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs) {
+		var _result = _meos_d.interval_make(years, months, weeks, days, hours, mins, secs);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
