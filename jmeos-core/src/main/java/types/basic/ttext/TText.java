@@ -283,12 +283,13 @@ public interface TText {
     */
 
     default String value_at_timestamp(LocalDateTime ts){
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer textPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);
-        boolean result= GeneratedFunctions.ttext_value_at_timestamptz(this.getTextInner(), ConversionUtils.datetimeToTimestampTz(ts), true, textPointer);
-        return GeneratedFunctions.text_to_cstring(textPointer.getPointer(Long.BYTES));
+        // The generated facade returns the text* value directly (or null).
+        Pointer valuePointer = GeneratedFunctions.ttext_value_at_timestamptz(
+                this.getTextInner(), ConversionUtils.datetimeToTimestampTz(ts), true);
+        if (valuePointer == null) {
+            throw new IllegalArgumentException("this has no value at the given timestamp");
+        }
+        return GeneratedFunctions.text_to_cstring(valuePointer);
     }
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
