@@ -23,7 +23,7 @@ import types.collections.time.tstzspanset;
 import functions.*;
 import types.temporal.Temporal;
 import utils.ConversionUtils;
-import functions.functions;
+import functions.GeneratedFunctions;
 import javax.naming.OperationNotSupportedException;
 
 
@@ -73,16 +73,16 @@ public class STBox implements Box {
 	public STBox _get_box(Object other, boolean allow_space_only, boolean allow_time_only){
 		STBox other_box=null;
 		if(allow_space_only && other instanceof Geometry){
-			other_box = new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
+			other_box = new STBox(GeneratedFunctions.geo_to_stbox(ConversionUtils.geo_to_gserialized((Geometry) other, this.geodetic())));
 		} else if (other instanceof TPoint) {
-			other_box = new STBox(functions.tspatial_to_stbox(((TPoint)other).getPointInner()));
+			other_box = new STBox(GeneratedFunctions.tspatial_to_stbox(((TPoint)other).getPointInner()));
 		} else if (allow_time_only) {
 			switch (other) {
 				case STBox st -> other_box = new STBox(st.get_inner());
-				case tstzset p -> other_box = new STBox(functions.tstzset_to_stbox(p.get_inner()));
-				case tstzspan ps -> other_box = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
-				case Temporal t -> other_box = new STBox(functions.tstzset_to_stbox(functions.temporal_to_tstzspan(t.getInner())));
-				case tstzspanset ts -> other_box = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
+				case tstzset p -> other_box = new STBox(GeneratedFunctions.tstzset_to_stbox(p.get_inner()));
+				case tstzspan ps -> other_box = new STBox(GeneratedFunctions.tstzspan_to_stbox(ps.get_inner()));
+				case Temporal t -> other_box = new STBox(GeneratedFunctions.tstzset_to_stbox(GeneratedFunctions.temporal_to_tstzspan(t.getInner())));
+				case tstzspanset ts -> other_box = new STBox(GeneratedFunctions.tstzspanset_to_stbox(ts.get_inner()));
 				default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 			}
 		}
@@ -117,7 +117,7 @@ public class STBox implements Box {
 	 */
 
 	public STBox(final String value){
-		this._inner = functions.stbox_in(value);
+		this._inner = GeneratedFunctions.stbox_in(value);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class STBox implements Box {
 			tstzspan = new tstzspan(tmin, tmax, tmin_inc, tmax_inc).get_inner();
 		}
 
-		this._inner = functions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, tstzspan);
+		this._inner = GeneratedFunctions.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, tstzspan);
 	}
 
 
@@ -196,7 +196,7 @@ public class STBox implements Box {
 	 * @return a STBox instance
 	 */
 	public STBox copy() {
-		return new STBox(functions.stbox_copy(this._inner));
+		return new STBox(GeneratedFunctions.stbox_copy(this._inner));
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 */
 	public static STBox from_hexwkb(String hexwkb) {
-		Pointer result = functions.stbox_from_hexwkb(hexwkb);
+		Pointer result = GeneratedFunctions.stbox_from_hexwkb(hexwkb);
 		return new STBox(result);
 	}
 
@@ -224,12 +224,12 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 */
 	public static STBox from_geometry(Geometry geom, boolean geodetic) {
-		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
+		return new STBox(GeneratedFunctions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
 
 	public static STBox from_geometry(Geometry geom) {
 		boolean geodetic = false;
-		return new STBox(functions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
+		return new STBox(GeneratedFunctions.geo_to_stbox(ConversionUtils.geo_to_gserialized(geom,geodetic)));
 	}
 
 
@@ -249,9 +249,9 @@ public class STBox implements Box {
 	public static STBox from_time(Time other) {
 		STBox returnValue;
 		switch (other){
-			case tstzset p -> returnValue = new STBox(functions.tstzset_to_stbox(p.get_inner()));
-			case tstzspan ps -> returnValue = new STBox(functions.tstzspan_to_stbox(ps.get_inner()));
-			case tstzspanset ts -> returnValue = new STBox(functions.tstzspanset_to_stbox(ts.get_inner()));
+			case tstzset p -> returnValue = new STBox(GeneratedFunctions.tstzset_to_stbox(p.get_inner()));
+			case tstzspan ps -> returnValue = new STBox(GeneratedFunctions.tstzspan_to_stbox(ps.get_inner()));
+			case tstzspanset ts -> returnValue = new STBox(GeneratedFunctions.tstzspanset_to_stbox(ts.get_inner()));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -259,8 +259,8 @@ public class STBox implements Box {
 	
 	/*
 	public STBox from_expanding_bounding_box_geom(Geometry value, float expansion) {
-		Pointer gs = functions.gserialized_in(value.toString(), -1);
-		Pointer result = functions.geo_expand_spatial(gs, expansion);
+		Pointer gs = GeneratedFunctions.geom_in(value.toString(), -1);
+		Pointer result = GeneratedFunctions.stbox_expand_space(GeneratedFunctions.geo_to_stbox(gs), expansion);
 		return new STBox(result);
 	}
 
@@ -303,7 +303,7 @@ public class STBox implements Box {
 	 */
 	public static STBox from_geometry_datetime(Geometry geometry, LocalDateTime datetime, boolean geodetic){
         Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
-        Pointer result = functions.geo_timestamptz_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
+        Pointer result = GeneratedFunctions.geo_timestamptz_to_stbox(gs,ConversionUtils.datetimeToTimestampTz(datetime));
         return new STBox(result);
     }
 
@@ -323,7 +323,7 @@ public class STBox implements Box {
 	 */
     public static STBox from_geometry_tstzspan(Geometry geometry, tstzset tstzset, boolean geodetic){
 		Pointer gs = ConversionUtils.geo_to_gserialized(geometry,geodetic);
-        Pointer result = functions.geo_tstzspan_to_stbox(gs,tstzset.get_inner());
+        Pointer result = GeneratedFunctions.geo_tstzspan_to_stbox(gs,tstzset.get_inner());
         return new STBox(result);
     }
 
@@ -339,7 +339,7 @@ public class STBox implements Box {
 	 * @return A new {@link STBox} instance.
 	 */
     public static STBox from_tpoint(TPoint temporal){
-        return new STBox(functions.tspatial_to_stbox(temporal.getPointInner()));
+        return new STBox(GeneratedFunctions.tspatial_to_stbox(temporal.getPointInner()));
     }
 
 
@@ -354,7 +354,7 @@ public class STBox implements Box {
 	 * @return a String instance
 	 */
 	public String toString(int max_decimals){
-		return functions.stbox_out(this._inner,max_decimals);
+		return GeneratedFunctions.stbox_out(this._inner,max_decimals);
 	}
 
 
@@ -370,7 +370,7 @@ public class STBox implements Box {
 	 * @return a new tstzset instance
 	 */
     public tstzset to_tstzspan() {
-        Pointer result = functions.stbox_to_tstzspan(this._inner);
+        Pointer result = GeneratedFunctions.stbox_to_tstzspan(this._inner);
         return new tstzset(result);
     }
 
@@ -387,7 +387,7 @@ public class STBox implements Box {
 	 * @throws ParseException
 	 */
 	public Geometry to_geometry(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_geometry(functions.stbox_to_geo(this._inner),precision);
+		return ConversionUtils.gserialized_to_shapely_geometry(GeneratedFunctions.stbox_to_geo(this._inner),precision);
 	}
 
 
@@ -401,7 +401,7 @@ public class STBox implements Box {
 	 * @return True if "this" has a spatial dimension, False otherwise.
 	 */
 	public boolean has_xy() {
-		return functions.stbox_hasx(this._inner);
+		return GeneratedFunctions.stbox_hasx(this._inner);
 	}
 
 
@@ -413,7 +413,7 @@ public class STBox implements Box {
 	 * @return True if "this" has a Z dimension, False otherwise.
 	 */
 	public boolean has_z() {
-		return functions.stbox_hasz(this._inner);
+		return GeneratedFunctions.stbox_hasz(this._inner);
 	}
 
 
@@ -425,7 +425,7 @@ public class STBox implements Box {
 	 * @return True if "this" has a time dimension, False otherwise.
 	 */
 	public boolean has_t() {
-		return functions.stbox_hast(this._inner);
+		return GeneratedFunctions.stbox_hast(this._inner);
 	}
 
 	/**
@@ -436,7 +436,7 @@ public class STBox implements Box {
 	 * @return True if "this" is geodetic, False otherwise.
 	 */
 	public boolean geodetic() {
-		return functions.stbox_isgeodetic(this._inner);
+		return GeneratedFunctions.stbox_isgeodetic(this._inner);
 	}
 
 
@@ -449,7 +449,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the minimum X coordinate of "this".
 	 */
     public float xmin(){
-		return (float) functions.stbox_xmin(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_xmin(this._inner).getDouble(0);
     }
 
 	/**
@@ -461,7 +461,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the minimum Y coordinate of "this".
 	 */
     public float ymin(){
-		return (float) functions.stbox_ymin(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_ymin(this._inner).getDouble(0);
     }
 
 	/**
@@ -473,7 +473,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the minimum Z coordinate of "this".
 	 */
     public float zmin(){
-		return (float) functions.stbox_zmin(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_zmin(this._inner).getDouble(0);
     }
 
 	/**
@@ -485,7 +485,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the minimum T coordinate of "this".
 	 */
     public float tmin(){
-		return (float) functions.stbox_tmin(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_tmin(this._inner).getDouble(0);
     }
 
 	/**
@@ -497,7 +497,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the maximum X coordinate of "this".
 	 */
     public float xmax(){
-		return (float) functions.stbox_xmax(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_xmax(this._inner).getDouble(0);
     }
 
 	/**
@@ -509,7 +509,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the maximum Y coordinate of "this".
 	 */
     public float ymax(){
-		return (float) functions.stbox_ymax(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_ymax(this._inner).getDouble(0);
     }
 
 	/**
@@ -521,7 +521,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the maximum Z coordinate of "this".
 	 */
     public float zmax(){
-		return (float) functions.stbox_zmax(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_zmax(this._inner).getDouble(0);
     }
 
 	/**
@@ -533,7 +533,7 @@ public class STBox implements Box {
 	 * @return A {@link Float} with the maximum T coordinate of "this".
 	 */
     public float tmax(){
-		return (float) functions.stbox_tmax(this._inner).getDouble(0);
+		return (float) GeneratedFunctions.stbox_tmax(this._inner).getDouble(0);
     }
 
 	public boolean get_tmin_inc(){
@@ -575,7 +575,7 @@ public class STBox implements Box {
 	 * @return an Integer with the SRID of "this"
 	 */
 	public int srid(){
-		return functions.stbox_srid(this._inner);
+		return GeneratedFunctions.stbox_srid(this._inner);
 	}
 
 
@@ -588,7 +588,7 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 */
 	public STBox set_srid(int value) {
-		return new STBox(functions.stbox_set_srid(this._inner,value));
+		return new STBox(GeneratedFunctions.stbox_set_srid(this._inner,value));
 	}
 	
 
@@ -605,7 +605,7 @@ public class STBox implements Box {
 	 * @return A new {@link STBox} instance.
 	 */
 	public STBox get_space(){
-		return new STBox(functions.stbox_get_space(this._inner));
+		return new STBox(GeneratedFunctions.stbox_get_space(this._inner));
 	}
 
 
@@ -627,8 +627,8 @@ public class STBox implements Box {
 	 * @return A new {@link STBox} instance.
 	 */
 	public STBox expand_stbox(STBox stbox, STBox other) {
-		Pointer result = functions.stbox_copy(this._inner);
-//		functions.stbox_expand_space(other._inner, result);
+		Pointer result = GeneratedFunctions.stbox_copy(this._inner);
+//		GeneratedFunctions.stbox_expand_space(other._inner, result);
 		return new STBox(result);
 	}
 
@@ -652,7 +652,7 @@ public class STBox implements Box {
 	public STBox expand_numerical(Number value) {
 		STBox result = null;
 		if(value instanceof Integer || value instanceof Float){
-			result = new STBox(functions.stbox_expand_space(this.get_inner(), (double) value.floatValue()));
+			result = new STBox(GeneratedFunctions.stbox_expand_space(this.get_inner(), (double) value.floatValue()));
 		}
 		return result;
 	}
@@ -668,8 +668,8 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 */
 	public STBox round(int maxdd) {
-		Pointer new_inner = functions.stbox_copy(this._inner);
-		functions.stbox_round(new_inner,maxdd);
+		Pointer new_inner = GeneratedFunctions.stbox_copy(this._inner);
+		GeneratedFunctions.stbox_round(new_inner,maxdd);
 		return new STBox(new_inner);
 	}
 
@@ -691,7 +691,7 @@ public class STBox implements Box {
 	 * @return a new STBox instance
 	 */
 	public STBox union(STBox other, boolean strict) {
-		return new STBox(functions.union_stbox_stbox(this._inner, other._inner, strict));
+		return new STBox(GeneratedFunctions.union_stbox_stbox(this._inner, other._inner, strict));
 	}
 
 
@@ -718,7 +718,7 @@ public class STBox implements Box {
 	 * @return a new STBox instance if the instersection is not empty, `None` otherwise.
 	 */
 	public STBox intersection(STBox other) {
-		return new STBox(functions.intersection_stbox_stbox(this._inner,other.get_inner()));
+		return new STBox(GeneratedFunctions.intersection_stbox_stbox(this._inner,other.get_inner()));
 	}
 
 
@@ -754,7 +754,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" and "other" are adjacent, "false" otherwise.
 	 */
 	public boolean is_adjacent(TemporalObject other) {
-		return functions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
+		return GeneratedFunctions.adjacent_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
 	/**
@@ -767,7 +767,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is contained in "other", "false" otherwise.
 	 */
 	public boolean is_contained_in(TemporalObject other) {
-		return functions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
+		return GeneratedFunctions.contained_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
 	/**
@@ -782,7 +782,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" contains "other", "false otherwise.
 	 */
 	public boolean contains(TemporalObject other) {
-		return functions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
+		return GeneratedFunctions.contains_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
 	/**
@@ -795,7 +795,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" overlaps "other", "false" otherwise.
 	 */
 	public boolean overlaps(TemporalObject other)  {
-		return functions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
+		return GeneratedFunctions.overlaps_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
 	/**
@@ -808,7 +808,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is the same as "other", "false" otherwise.
 	 */
 	public boolean is_same(TemporalObject other) {
-		return functions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
+		return GeneratedFunctions.same_stbox_stbox(this._inner,this._get_box(other,true,true).get_inner());
 	}
 
 	/**
@@ -821,7 +821,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly to the left of "other", "false" otherwise.
 	 */
 	public boolean is_left(TemporalObject other) {
-		return functions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.left_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 	/**
@@ -834,7 +834,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is to the left of "other", "false" otherwise.
 	 */
 	public boolean is_over_or_left(TemporalObject other) {
-		return functions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overleft_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 	/**
@@ -847,7 +847,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly to the right of "other", "false" otherwise.
 	 */
 	public boolean is_right(TemporalObject other) {
-		return functions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.right_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 	/**
@@ -861,7 +861,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is to the right of "other", "false" otherwise.
 	 */
 	public boolean is_over_or_right(TemporalObject other) {
-		return functions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overright_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 	/**
@@ -874,7 +874,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly below of "other", "false" otherwise.
 	 */
 	public boolean is_below(TemporalObject other) {
-		return functions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.below_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -889,7 +889,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is below "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_below(TemporalObject other) {
-		return functions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overbelow_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -903,7 +903,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly above of "other", "false" otherwise.
 	 */
 	public boolean is_above(TemporalObject other) {
-		return functions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.above_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -918,7 +918,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is above "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_above(TemporalObject other) {
-		return functions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overabove_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -932,7 +932,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly in front of "other", "false" otherwise.
 	 */
 	public boolean is_front(TemporalObject other) {
-		return functions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.front_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -947,7 +947,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is in front of "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_front(TemporalObject other) {
-		return functions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overfront_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -961,7 +961,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is strictly behind of "other", "false" otherwise.
 	 */
 	public boolean is_behind(TemporalObject other) {
-		return functions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.back_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -976,7 +976,7 @@ public class STBox implements Box {
 	 * @return "true" if "this" is behind of "other" allowing for overlap, "false" otherwise.
 	 */
 	public boolean is_over_or_behind(TemporalObject other) {
-		return functions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
+		return GeneratedFunctions.overback_stbox_stbox(this._inner,this._get_box(other).get_inner());
 	}
 
 
@@ -1058,7 +1058,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_geom(Geometry other) {
-		return (float) functions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()));
+		return (float) GeneratedFunctions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()));
 	}
 
 
@@ -1076,7 +1076,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_stbox(STBox other) {
-		return (float) functions.nad_stbox_stbox(this._inner, other._inner);
+		return (float) GeneratedFunctions.nad_stbox_stbox(this._inner, other._inner);
 	}
 
 
@@ -1094,7 +1094,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_tpoint(TPoint other) {
-		return (float) functions.nad_tgeo_stbox(this._inner, other.getPointInner());
+		return (float) GeneratedFunctions.nad_tgeo_stbox(this._inner, other.getPointInner());
 	}
 
 
@@ -1112,7 +1112,7 @@ public class STBox implements Box {
 	 */
 	public boolean eq(Box other) {
 		boolean result;
-		result = other instanceof STBox && functions.stbox_eq(this._inner, ((STBox) other).get_inner());
+		result = other instanceof STBox && GeneratedFunctions.stbox_eq(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 
@@ -1128,7 +1128,7 @@ public class STBox implements Box {
 	 */
 	public boolean notEquals(Box other) {
 		boolean result;
-		result = !(other instanceof STBox) || functions.stbox_ne(this._inner, ((STBox) other).get_inner());
+		result = !(other instanceof STBox) || GeneratedFunctions.stbox_ne(this._inner, ((STBox) other).get_inner());
 		return result;
 	}
 
@@ -1144,7 +1144,7 @@ public class STBox implements Box {
 	 */
 	public boolean lessThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
-			return functions.stbox_lt(this._inner,((STBox) other).get_inner());
+			return GeneratedFunctions.stbox_lt(this._inner,((STBox) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -1164,7 +1164,7 @@ public class STBox implements Box {
 	 */
 	public boolean lessThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
-			return functions.stbox_le(this._inner,((STBox) other).get_inner());
+			return GeneratedFunctions.stbox_le(this._inner,((STBox) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -1184,7 +1184,7 @@ public class STBox implements Box {
 	 */
 	public boolean greaterThan(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
-			return functions.stbox_gt(this._inner,((STBox) other).get_inner());
+			return GeneratedFunctions.stbox_gt(this._inner,((STBox) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -1203,7 +1203,7 @@ public class STBox implements Box {
 	 */
 	public boolean greaterThanOrEqual(Box other) throws OperationNotSupportedException {
 		if (other instanceof STBox){
-			return functions.stbox_ge(this._inner,((STBox) other).get_inner());
+			return GeneratedFunctions.stbox_ge(this._inner,((STBox) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -1213,9 +1213,9 @@ public class STBox implements Box {
 	@Override
 	public tstzspan to_period(){
 		error_handler_fn errorHandler = new error_handler();
-		functions.meos_initialize_timezone("UTC");
-		functions.meos_initialize_error_handler(errorHandler);
-		return new tstzspan(functions.stbox_to_tstzspan(this._inner));
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+		return new tstzspan(GeneratedFunctions.stbox_to_tstzspan(this._inner));
 	}
 
 	/* ------------------------- Splitting ----------------------------------- */
@@ -1244,7 +1244,7 @@ public class STBox implements Box {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer);
+		Pointer resPointer= GeneratedFunctions.stbox_quad_split(this.get_inner(), intPointer);
 		int count= intPointer.getInt(Integer.BYTES);
 		List<STBox> stBoxList= new ArrayList<>();
 		for(int i=0;i<count;i++){
@@ -1290,7 +1290,7 @@ public class STBox implements Box {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer); // Populate boxes and count
+		Pointer resPointer= GeneratedFunctions.stbox_quad_split(this.get_inner(), intPointer); // Populate boxes and count
 		List<STBox> boxes= new ArrayList<>();
 		for(int i=0;i<8;i++){
 			STBox stBox= new STBox(resPointer.getPointer(i*Long.BYTES));
@@ -1355,7 +1355,7 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(duration instanceof String){
-//				dt= functions.pg_interval_in(duration.toString(), -1);
+//				dt= GeneratedFunctions.pg_interval_in(duration.toString(), -1);
 //			}
 //			else dt = null;
 //		}
@@ -1366,11 +1366,11 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(start instanceof String){
-//				st= functions.pg_timestamptz_in(start.toString(), -1);
+//				st= GeneratedFunctions.pg_timestamptz_in(start.toString(), -1);
 //			}
 //			else{
 //				if(this.has_t()){
-//					st= functions.pg_timestamptz_in("2000-01-03", -1);
+//					st= GeneratedFunctions.pg_timestamptz_in("2000-01-03", -1);
 //				}
 //				else{
 //					st= null;
@@ -1384,10 +1384,10 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(this.geodetic()){
-//				gs= functions.pgis_geography_in("Point(0 0 0)", -1);
+//				gs= GeneratedFunctions.geog_in("Point(0 0 0)", -1);
 //			}
 //			else{
-//				gs= functions.pgis_geometry_in("Point (0 0 0)", -1);
+//				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 //			}
 //		}
 //
@@ -1395,7 +1395,7 @@ public class STBox implements Box {
 //		Runtime runtime = Runtime.getSystemRuntime();
 //		// Allocate memory for an integer (4 bytes) but do not set a value
 //		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-//		Pointer resPointer= functions.stbox_space_time_tiles(this.get_inner(), sz, sz, sz, dt, gs, st);
+//		Pointer resPointer= GeneratedFunctions.stbox_space_time_tiles(this.get_inner(), sz, sz, sz, dt, gs, st);
 //		int count= intPointer.getInt(Integer.BYTES);
 //		List<STBox> stBoxes= new ArrayList<>();
 //		for(int i=0;i<count;i++){
