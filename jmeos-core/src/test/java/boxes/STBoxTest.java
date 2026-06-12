@@ -1,5 +1,6 @@
 package boxes;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +35,7 @@ public class STBoxTest {
     public STBoxTest() throws SQLException {
 		functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		stbx = new STBox("STBOX X((1, 1),(2, 2))");
 		stbz = new STBox("STBOX Z((1, 1, 1),(2, 2, 2))");
 		stbt = new STBox("STBOX T([2019-09-01,2019-09-02])");
@@ -44,6 +46,7 @@ public class STBoxTest {
 	static Stream<Arguments> STBox_sources() throws SQLException {
 		functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new STBox("STBOX X((1, 1),(2, 2))"), "STBOX X((1, 1),(2, 2))" ),
 				Arguments.of(new STBox("STBOX Z((1, 1, 1),(2, 2, 2))"), "STBOX Z((1, 1, 1),(2, 2, 2))" ),
@@ -113,6 +116,7 @@ public class STBoxTest {
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		STBox stb = new STBox(str);
 		assertTrue(stb.eq(box));
 	}
@@ -123,6 +127,7 @@ public class STBoxTest {
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		STBox stb = box.copy();
 		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());

@@ -356,6 +356,7 @@ public class TBox implements Box {
 		error_handler_fn errorHandler = new error_handler();
 		GeneratedFunctions.meos_initialize_timezone("UTC");
 		GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_collation();
 		return new tstzspan(GeneratedFunctions.tbox_to_tstzspan(this._inner));
 	}
 

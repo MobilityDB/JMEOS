@@ -1,5 +1,6 @@
 package functions;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import utils.TestLogger;
@@ -30,6 +31,7 @@ class MeosErrorHandlerTest {
     static void initMeos() {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_collation();
     }
 
     /*

@@ -1,5 +1,6 @@
 package basic;
 
+import functions.GeneratedFunctions;
 import functions.functions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +35,7 @@ public class TTextTest {
     static Stream<Arguments> TText_string_constructor() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("AAA@2019-09-01", "TTextInst", TInterpolation.NONE, "\"AAA\"@2019-09-01 00:00:00+00"),
                 Arguments.of("{AAA@2019-09-01, BBB@2019-09-02}", "TTextSeq", TInterpolation.DISCRETE, "{\"AAA\"@2019-09-01 00:00:00+00, \"BBB\"@2019-09-02 00:00:00+00}"),
@@ -45,6 +47,7 @@ public class TTextTest {
     static Stream<Arguments> TText_base_time_constructor() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TTextSeq", TInterpolation.DISCRETE),
                 Arguments.of(new tstzspan("[2019-09-01, 2019-09-02]"), "TTextSeqSet", TInterpolation.STEPWISE),
@@ -56,6 +59,7 @@ public class TTextTest {
     static Stream<Arguments> TText_copy_constructor() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", TInterpolation.NONE),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", TInterpolation.DISCRETE),
@@ -68,6 +72,7 @@ public class TTextTest {
     static Stream<Arguments> TText_string() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", "\"AAA\"@2019-09-01 00:00:00+00"),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq","{\"AAA\"@2019-09-01 00:00:00+00, \"BBB\"@2019-09-02 00:00:00+00}"),
@@ -80,6 +85,7 @@ public class TTextTest {
     static Stream<Arguments> TText_bounding() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst",new tstzspan("[2019-09-01, 2019-09-01]")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new tstzspan("[2019-09-01, 2019-09-02]")),
@@ -92,6 +98,7 @@ public class TTextTest {
     static Stream<Arguments> TText_interp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", TInterpolation.NONE),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", TInterpolation.DISCRETE),
@@ -103,6 +110,7 @@ public class TTextTest {
     static Stream<Arguments> TText_start() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", "AAA"),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", "AAA"),
@@ -115,6 +123,7 @@ public class TTextTest {
     static Stream<Arguments> TText_end() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", "AAA"),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", "BBB"),
@@ -127,6 +136,7 @@ public class TTextTest {
     static Stream<Arguments> TText_time() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new tstzspanset("{[2019-09-01, 2019-09-01], [2019-09-02, 2019-09-02]}")),
@@ -139,6 +149,7 @@ public class TTextTest {
     static Stream<Arguments> TText_numinst() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 1),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", 2),
@@ -152,6 +163,7 @@ public class TTextTest {
     static Stream<Arguments> TText_startinst() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new TTextInst("AAA@2019-09-01")),
@@ -164,6 +176,7 @@ public class TTextTest {
     static Stream<Arguments> TText_endinst() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new TTextInst("BBB@2019-09-02")),
@@ -177,6 +190,7 @@ public class TTextTest {
     static Stream<Arguments> TText_mininst() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new TTextInst("AAA@2019-09-01")),
@@ -189,6 +203,7 @@ public class TTextTest {
     static Stream<Arguments> TText_maxinst() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq", new TTextInst("BBB@2019-09-02")),
@@ -200,6 +215,7 @@ public class TTextTest {
     static Stream<Arguments> TText_instn() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 0, new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",1, new TTextInst("BBB@2019-09-02")),
@@ -212,6 +228,7 @@ public class TTextTest {
     static Stream<Arguments> TText_numtmstp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 1),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",2),
@@ -224,6 +241,7 @@ public class TTextTest {
     static Stream<Arguments> TText_starttmstp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -235,6 +253,7 @@ public class TTextTest {
     static Stream<Arguments> TText_endtmstp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",LocalDateTime.of(2019, 9, 2, 0, 0,0)),
@@ -247,6 +266,7 @@ public class TTextTest {
     static Stream<Arguments> TText_hash() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 1893808825),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",1223816819),
@@ -259,6 +279,7 @@ public class TTextTest {
     static Stream<Arguments> TText_toinstant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"),new TTextInst("AAA@2019-09-01")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01}"), new TTextInst("AAA@2019-09-01")),
@@ -271,6 +292,7 @@ public class TTextTest {
     static Stream<Arguments> TText_tosequence() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), TInterpolation.STEPWISE, new TTextSeq("[AAA@2019-09-01]")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), TInterpolation.DISCRETE,  new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}")),
@@ -283,6 +305,7 @@ public class TTextTest {
     static Stream<Arguments> TText_tosequenceset() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), TInterpolation.STEPWISE, new TTextSeqSet("{[AAA@2019-09-01]}")),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), TInterpolation.STEPWISE,  new TTextSeqSet("{[AAA@2019-09-01], [BBB@2019-09-02]}"))
@@ -296,6 +319,7 @@ public class TTextTest {
     static Stream<Arguments> TText_insert() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), new TTextSeq("{AAA@2019-09-03}"), new TTextSeq("{AAA@2019-09-01, AAA@2019-09-03}"), "TTextInst"),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), new TTextSeq("{AAA@2019-09-03}"), new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02, AAA@2019-09-03}"), "TTextSeq"),
@@ -308,6 +332,7 @@ public class TTextTest {
     static Stream<Arguments> TText_update() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), new TTextInst("BBB@2019-09-01"), new TTextInst("BBB@2019-09-01"), "TTextInst" ),
                 Arguments.of(new TTextSeq("[AAA@2019-09-01, BBB@2019-09-02]"), new TTextInst("BBB@2019-09-01"), new TTextSeqSet("{[BBB@2019-09-01], (AAA@2019-09-01, BBB@2019-09-02]}"), "TTextSeq"),
@@ -320,6 +345,7 @@ public class TTextTest {
     static Stream<Arguments> TText_appendseq() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), new TTextSeq("{AAA@2019-09-03}"),  new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02, AAA@2019-09-03}"), "TTextSeq"),
                 Arguments.of(new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05]}"), new TTextSeq("[AAA@2019-09-06]"), new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05],[AAA@2019-09-06]}"), "TTextSeqSet")
@@ -347,6 +373,7 @@ public class TTextTest {
     public void testFromStringConstructor(String value, String type, TInterpolation interp, String repr) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             TTextInst tb = new TTextInst(value);
             assertTrue(tb instanceof TTextInst);
@@ -371,6 +398,7 @@ public class TTextTest {
     public void testFromBaseTimeConstructor(Time base, String type, TInterpolation interp) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             TTextInst tb = (TTextInst) TText.from_base_time("AAA", base);
             assertTrue(tb instanceof TTextInst);
@@ -394,6 +422,7 @@ public class TTextTest {
     public void testCopyConstructor(Temporal base, String type, TInterpolation interp) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             TTextInst tb = (TTextInst) base.copy();
             assertEquals(tb.to_string(),(((TTextInst) base).to_string()));
@@ -413,6 +442,7 @@ public class TTextTest {
     public void testString(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             TTextInst tb = (TTextInst) base.copy();
             assertEquals(tb.to_string(),expected);
@@ -431,6 +461,7 @@ public class TTextTest {
     public void testBoundingBox(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.bounding_box().toString(),expected.toString());
     }
 
@@ -441,6 +472,7 @@ public class TTextTest {
     public void testInterpolation(Temporal base, String type, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.interpolation(),expected);
     }
 
@@ -450,6 +482,7 @@ public class TTextTest {
     public void testStartValues(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TText) base).start_value() ,expected);
     }
 
@@ -459,6 +492,7 @@ public class TTextTest {
     public void testEndValues(Temporal base, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TText) base).end_value() ,expected);
     }
 
@@ -468,6 +502,7 @@ public class TTextTest {
     public void testTime(Temporal base, String type, tstzspanset expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.time().toString() ,expected.toString());
     }
 
@@ -477,6 +512,7 @@ public class TTextTest {
     public void testtstzspan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.period().toString() ,expected.toString());
     }
 
@@ -486,6 +522,7 @@ public class TTextTest {
     public void testSpan(Temporal base, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.timespan().toString(),expected.toString());
     }
 
@@ -494,6 +531,7 @@ public class TTextTest {
     public void testNumInst(Temporal base, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.num_instants(),expected);
     }
 
@@ -503,6 +541,7 @@ public class TTextTest {
     public void testStartInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TTextInst)base.start_instant()).to_string(),expected.to_string());
     }
 
@@ -512,6 +551,7 @@ public class TTextTest {
     public void testEndInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TTextInst)base.end_instant()).to_string(),expected.to_string());
     }
 
@@ -521,6 +561,7 @@ public class TTextTest {
     public void testMinInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TTextInst)base.min_instant()).to_string(),expected.to_string());
     }
 
@@ -530,6 +571,7 @@ public class TTextTest {
     public void testMaxInst(Temporal base, String type, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TTextInst)base.max_instant()).to_string(),expected.to_string());
     }
 
@@ -539,6 +581,7 @@ public class TTextTest {
     public void testInstN(Temporal base, String type, int n, TTextInst expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TTextInst)base.instant_n(n)).to_string(),expected.to_string());
     }
 
@@ -548,6 +591,7 @@ public class TTextTest {
     public void testNumtmstmp(Temporal base, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.num_timestamps(),expected);
     }
 
@@ -557,6 +601,7 @@ public class TTextTest {
     public void testStarttmstmp(Temporal base, String type, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.start_timestamp(),expected);
     }
 
@@ -566,6 +611,7 @@ public class TTextTest {
     public void testEndtmstmp(Temporal base, String type, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.end_timestamp(),expected);
     }
 
@@ -575,6 +621,7 @@ public class TTextTest {
     public void testHash(Temporal base, String type, long expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.hash(),expected);
     }
 
@@ -584,6 +631,7 @@ public class TTextTest {
     public void testToInstant(Temporal base, TTextInst type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_instant();
         assertTrue(tmp instanceof TTextInst);
         assertEquals(((TTextInst) tmp).to_string(), type.to_string());
@@ -595,6 +643,7 @@ public class TTextTest {
     public void testToSequence(Temporal base, TInterpolation interp, TTextSeq type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_sequence(interp);
         assertTrue(tmp instanceof TTextSeq);
         assertEquals(((TTextSeq) tmp).to_string(), type.to_string());
@@ -607,6 +656,7 @@ public class TTextTest {
     public void testToSequenceSet(Temporal base, TInterpolation interp, TTextSeqSet type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_sequenceset(interp);
         assertTrue(tmp instanceof TTextSeqSet);
         assertEquals(((TTextSeqSet) tmp).to_string(), type.to_string());
@@ -619,6 +669,7 @@ public class TTextTest {
     public void testInsert(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             assertEquals(((TTextInst)base.insert(base2)).to_string(), ((TTextSeq) tseq).to_string());
         } else if (type == "TTextSeq") {
@@ -634,6 +685,7 @@ public class TTextTest {
     public void testUpdate(Temporal base, Temporal base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextInst") {
             assertEquals(((TTextInst)base.update(base2)).to_string(), ((TTextInst) tseq).to_string());
         } else if (type == "TTextSeq") {
@@ -650,6 +702,7 @@ public class TTextTest {
     public void testAppendSeq(Temporal base, TSequence base2, Temporal tseq, String type) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         if (type == "TTextSeq") {
             assertEquals(((TTextSeq)base.append_sequence(base2)).to_string(), ((TTextSeq) tseq).to_string());
         } else if (type == "TTextSeqSet") {

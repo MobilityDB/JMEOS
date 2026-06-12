@@ -1,5 +1,6 @@
 package temporal;
 
+import functions.GeneratedFunctions;
 import functions.functions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -26,6 +27,7 @@ public class InterpolationTest {
     Stream<Arguments> TInterp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("discrete", TInterpolation.DISCRETE),
                 Arguments.of("linear", TInterpolation.LINEAR),
@@ -40,6 +42,7 @@ public class InterpolationTest {
     public void testFromString(String base, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(TInterpolation.fromString(base),expected);
     }
 }

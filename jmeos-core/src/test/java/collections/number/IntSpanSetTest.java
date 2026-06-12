@@ -1,5 +1,6 @@
 package collections.number;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ public class IntSpanSetTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("(7, 10)", 8, 10, true, false),
                 Arguments.of("[7, 10]", 7, 11, true, false)
@@ -38,6 +40,7 @@ public class IntSpanSetTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("7", "10", 7, 10),
                 Arguments.of(7, 10, 7, 10),
@@ -49,6 +52,7 @@ public class IntSpanSetTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(true,true),
                 Arguments.of(true,false),

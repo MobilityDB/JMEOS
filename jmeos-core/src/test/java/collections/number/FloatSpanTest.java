@@ -1,5 +1,6 @@
 package collections.number;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ public class FloatSpanTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("(2.5, 5.21)", 2.5f, 5.21f, false, false),
                 Arguments.of("[2.5, 5.21]", 2.5f, 5.21f, true, true)
@@ -35,6 +37,7 @@ public class FloatSpanTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("2.5", "5.21", 2.5f, 5.21f),
                 Arguments.of(2.5f, 5.21f, 2.5f, 5.21f),
@@ -46,6 +49,7 @@ public class FloatSpanTest {
         error_handler_fn errorHandler = new error_handler();
         functions.meos_initialize_timezone("UTC");
         functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(true,true),
                 Arguments.of(true,false),

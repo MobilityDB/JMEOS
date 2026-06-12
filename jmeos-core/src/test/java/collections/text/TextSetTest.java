@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import types.collections.text.TextSet;
 import static org.junit.jupiter.api.Assertions.*;
 import functions.functions;
+import functions.GeneratedFunctions;
 import utils.TestLogger;
 
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.StringJoiner;
 
 @ExtendWith(TestLogger.class)
 public class TextSetTest {
+    // Text comparison (varstr_cmp) needs the MEOS collation initialized; do it at
+    // class load, before the TextSet instance fields below are constructed.
+    static {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_collation();
+    }
     public TextSet tset = new TextSet("{A, BB, ccc}");
     public TextSet other = new TextSet("{2020-01-02 00:00:00+0, 2020-03-31 00:00:00+0}");
     public TextSet other2 = new TextSet("{2020-05-02 00:00:00+0, 2020-08-28 00:00:00+0}");
