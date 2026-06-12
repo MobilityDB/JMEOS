@@ -24,6 +24,16 @@ public class FunctionsGenerator {
     // These are mapped to int in Java (JNR-FFI represents C enums as int).
     private final Set<String> enumNames = new HashSet<>();
 
+    // Struct names → SysV-AMD64 size in bytes, from the JSON "structs" section.
+    // Used to detect functions that return a struct BY VALUE.  On the SysV /
+    // AArch64 ABIs a by-value struct larger than 16 bytes is returned via memory
+    // (the "sret" convention): the caller allocates the struct and passes a hidden
+    // pointer as an implicit FIRST argument; the callee fills it and returns it in
+    // the return register.  jnr-ffi cannot bind a by-value struct return mapped to
+    // a bare Pointer (it mis-reads the return register), so for these we model the
+    // sret pointer explicitly — see generateAllInterfaces / generateStaticMethod.
+    private final Map<String, Integer> structSizes = new HashMap<>();
+
     // DateADT      → typedef int32_t  → Java int
     // Timestamp    → typedef int64_t  → Java long  (no timezone)
     // TimestampTz  → typedef int64_t  → Java long  (with timezone)
@@ -157,6 +167,10 @@ public class FunctionsGenerator {
         collectEnumNames(root);
         System.out.println("Enums collected: " + enumNames);
 
+        // 1b. Collect struct layouts so by-value struct returns can be bound
+        //     via the sret calling convention (see structSizes).
+        collectStructs(root);
+
         // 2. Parse all functions
         JsonNode functionsNode = root.get("functions");
         if (functionsNode == null || !functionsNode.isArray()) {
@@ -210,6 +224,69 @@ public class FunctionsGenerator {
         }
     }
 
+    /**
+     * Collects struct layouts from the JSON "structs" section and records each
+     * struct's SysV-AMD64 size.  Structs larger than 16 bytes are returned via
+     * memory (sret) when used as a by-value return type; that is the only fact
+     * the generator needs (see structSizes / parseFunctionDef).
+     */
+    private void collectStructs(JsonNode root) {
+        JsonNode structs = root.get("structs");
+        if (structs == null || !structs.isArray()) {
+            return;
+        }
+        List<String> registerReturned = new ArrayList<>();
+        for (JsonNode s : structs) {
+            JsonNode nameNode = s.get("name");
+            JsonNode fields   = s.get("fields");
+            if (nameNode == null || fields == null || !fields.isArray()) {
+                continue;
+            }
+            int off = 0, maxAlign = 1;
+            for (JsonNode f : fields) {
+                JsonNode ct = f.get("cType");
+                int sz = (ct == null) ? 8 : cFieldSize(ct.asText());
+                off = ((off + sz - 1) / sz) * sz; // align field to its own size
+                off += sz;
+                maxAlign = Math.max(maxAlign, sz);
+            }
+            int size = ((off + maxAlign - 1) / maxAlign) * maxAlign;
+            String nm = nameNode.asText();
+            structSizes.put(nm, size);
+            if (size <= 16) {
+                registerReturned.add(nm + "(" + size + "B)");
+            }
+        }
+        System.out.println("Structs collected: " + structSizes.size());
+        // No silent caps: a by-value return of a <=16B struct is register-returned
+        // (not sret) and is NOT handled by the sret path below.  Log it so the gap
+        // is visible rather than silently mis-bound.
+        if (!registerReturned.isEmpty()) {
+            System.out.println("NOTE: register-returned structs (<=16B, NOT sret-bound): "
+                    + registerReturned);
+        }
+    }
+
+    /** SysV-AMD64 size of a single C field type (pointers and 8-byte scalars = 8). */
+    private int cFieldSize(String cType) {
+        String t = cType.replace("const ", "").trim();
+        if (t.endsWith("*")) {
+            return 8;
+        }
+        return switch (t) {
+            case "double", "float8", "long", "int64", "int64_t", "uint64",
+                 "uint64_t", "size_t", "uintptr_t", "Datum",
+                 "Timestamp", "TimestampTz"           -> 8;
+            case "int", "int32", "int32_t", "uint32",
+                 "uint32_t", "float", "DateADT"       -> 4;
+            case "short", "int16", "int16_t",
+                 "uint16", "uint16_t"                 -> 2;
+            case "bool", "char", "int8", "int8_t",
+                 "uint8", "uint8_t"                   -> 1;
+            default                                   -> 8; // nested struct/pointer: conservative
+        };
+    }
+
     private FunctionDef parseFunctionDef(JsonNode fn) {
         String name = fn.get("name").asText();
 
@@ -251,7 +328,16 @@ public class FunctionsGenerator {
             }
         }
 
-        return new FunctionDef(name, retJava, retCType, params);
+        // By-value struct return: if the return C type names a struct larger than
+        // 16 bytes, it is returned via memory (sret) and must be bound with an
+        // explicit hidden first pointer argument (see generateStaticMethod).
+        int sretStructSize = 0;
+        Integer sz = structSizes.get(retCType.replace("struct ", "").trim());
+        if (sz != null && sz > 16) {
+            sretStructSize = sz;
+        }
+
+        return new FunctionDef(name, retJava, retCType, params, sretStructSize);
     }
 
     // -------------------------------------------------------------------------
@@ -533,10 +619,17 @@ public class FunctionsGenerator {
             sb.append("\tpublic interface MeosLibraryPart").append(letters[p]).append(" {\n\n");
             for (int i = start; i < end; i++) {
                 FunctionDef fn = functions.get(i);
+                String ifaceParams = buildInterfaceParamList(fn.params);
+                // sret return: the struct pointer is a hidden FIRST argument.
+                if (fn.sretStructSize > 0) {
+                    ifaceParams = ifaceParams.isEmpty()
+                            ? "Pointer _sret"
+                            : "Pointer _sret, " + ifaceParams;
+                }
                 sb.append("\t\t")
                         .append(fn.returnType).append(" ")
                         .append(fn.name).append("(")
-                        .append(buildInterfaceParamList(fn.params))
+                        .append(ifaceParams)
                         .append(");\n\n");
             }
             sb.append("\t}\n\n");
@@ -611,6 +704,12 @@ public class FunctionsGenerator {
                 OUTPUT_RESULT_PARAMS.contains(p.name)
                         && p.javaType().equals("Pointer"));
 
+        // sret pattern: the function returns a >16B struct by value.  The wrapper
+        // allocates the struct buffer internally, passes it as the hidden first
+        // argument, and returns the filled buffer.  Callers read the struct fields
+        // off the returned Pointer (.getPointer(0), .getInt(offset), …).
+        boolean isSretStruct = fn.sretStructSize > 0;
+
         // Resolve the ResultStrategy from the C type of the result param.
         // Determines allocation size, read expression, and wrapper return type.
         // Previously hardcoded to Pointer/Long.BYTES/getPointer(0), which caused
@@ -667,7 +766,7 @@ public class FunctionsGenerator {
 
         // --- Internal allocations ---
         // Determine if we need a Runtime (needed for any Memory.allocateDirect call).
-        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult;
+        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult || isSretStruct;
 
         if (isBoolResultPattern) {
             // Emit the "boolean out" sentinel variable first,
@@ -685,6 +784,12 @@ public class FunctionsGenerator {
         if (hasInternalResult) {
             sb.append("\t\tPointer result = Memory.allocateDirect(runtime, ")
                     .append(resultStrategy.allocExpr()).append(");\n");
+        }
+
+        // Allocate the hidden sret struct buffer.
+        if (isSretStruct) {
+            sb.append("\t\tPointer _sret = Memory.allocateDirect(runtime, ")
+                    .append(fn.sretStructSize).append(");\n");
         }
 
         // Allocate hidden size_out pointer(s).
@@ -710,6 +815,9 @@ public class FunctionsGenerator {
         // --- Build argument list for the interface call ---
         // Hidden params (size_out, result) are still forwarded by their local name.
         StringJoiner args = new StringJoiner(", ");
+        if (isSretStruct) {
+            args.add("_sret"); // hidden sret buffer is the first native argument
+        }
         for (ParamDef p : fn.params) {
             if (OUTPUT_SIZE_PARAMS.contains(p.name)
                     || (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
@@ -744,6 +852,12 @@ public class FunctionsGenerator {
                 sb.append("\t\tMeosErrorHandler.checkError();\n");
                 sb.append("\t\treturn out ? result : null;\n");
             }
+        } else if (isSretStruct) {
+            // The native function fills _sret and also returns it in the return
+            // register; we keep our own buffer (known size) and return that.
+            sb.append("\t\t").append(call).append("\n");
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\treturn _sret;\n");
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
@@ -800,7 +914,10 @@ public class FunctionsGenerator {
 
     // retCType field so generateStaticMethod can decide the
     // wrapper return type independently of the interface return type.
-    private record FunctionDef(String name, String returnType, String retCType, List<ParamDef> params) {}
+    // sretStructSize > 0 marks a by-value struct return bound via the sret
+    // convention (hidden first pointer arg of that many bytes); 0 otherwise.
+    private record FunctionDef(String name, String returnType, String retCType,
+                               List<ParamDef> params, int sretStructSize) {}
 
     // Added cType field so each param's original C type is
     // available when generating conversion code in the static wrapper.
