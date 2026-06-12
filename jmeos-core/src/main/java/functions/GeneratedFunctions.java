@@ -2667,7 +2667,7 @@ public class GeneratedFunctions {
 
 		Pointer temporal_time_bins(Pointer temp, Pointer duration, long origin, Pointer count);
 
-		Pointer temporal_time_split(Pointer temp, Pointer duration, long torigin);
+		Pointer temporal_time_split(Pointer _sret, Pointer temp, Pointer duration, long torigin);
 
 		Pointer tfloat_time_boxes(Pointer temp, Pointer duration, long torigin, Pointer count);
 
@@ -2675,11 +2675,11 @@ public class GeneratedFunctions {
 
 		Pointer tfloat_value_boxes(Pointer temp, double vsize, double vorigin, Pointer count);
 
-		Pointer tfloat_value_split(Pointer temp, double size, double origin);
+		Pointer tfloat_value_split(Pointer _sret, Pointer temp, double size, double origin);
 
 		Pointer tfloat_value_time_boxes(Pointer temp, double vsize, Pointer duration, double vorigin, long torigin, Pointer count);
 
-		Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, long torigin);
+		Pointer tfloat_value_time_split(Pointer _sret, Pointer temp, double vsize, Pointer duration, double vorigin, long torigin);
 
 		Pointer tfloatbox_time_tiles(Pointer box, Pointer duration, long torigin, Pointer count);
 
@@ -2693,11 +2693,11 @@ public class GeneratedFunctions {
 
 		Pointer tint_value_boxes(Pointer temp, int vsize, int vorigin, Pointer count);
 
-		Pointer tint_value_split(Pointer temp, int vsize, int vorigin);
+		Pointer tint_value_split(Pointer _sret, Pointer temp, int vsize, int vorigin);
 
 		Pointer tint_value_time_boxes(Pointer temp, int vsize, Pointer duration, int vorigin, long torigin, Pointer count);
 
-		Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, long torigin);
+		Pointer tint_value_time_split(Pointer _sret, Pointer temp, long size, Pointer duration, int vorigin, long torigin);
 
 		Pointer tintbox_time_tiles(Pointer box, Pointer duration, long torigin, Pointer count);
 
@@ -3147,7 +3147,7 @@ public class GeneratedFunctions {
 
 		Pointer tgeompoint_to_tgeometry(Pointer temp);
 
-		Pointer tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom);
+		Pointer tpoint_as_mvtgeom(Pointer _sret, Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom);
 
 		boolean tpoint_tfloat_to_geomeas(Pointer tpoint, Pointer measure, boolean segmentize, Pointer result);
 
@@ -3551,9 +3551,9 @@ public class GeneratedFunctions {
 
 		Pointer stbox_time_tiles(Pointer bounds, Pointer duration, long torigin, boolean border_inc, Pointer count);
 
-		Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc);
+		Pointer tgeo_space_split(Pointer _sret, Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc);
 
-		Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc);
+		Pointer tgeo_space_time_split(Pointer _sret, Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc);
 
 		Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k, Pointer count);
 
@@ -5019,7 +5019,7 @@ public class GeneratedFunctions {
 
 		Pointer tnumber_value_time_boxes(Pointer temp, Pointer vsize, Pointer duration, Pointer vorigin, long torigin, Pointer count);
 
-		Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin);
+		Pointer tnumber_value_split(Pointer _sret, Pointer temp, Pointer vsize, Pointer vorigin);
 
 		Pointer tbox_get_value_time_tile(Pointer value, long t, Pointer vsize, Pointer duration, Pointer vorigin, long torigin, int basetype, int spantype);
 
@@ -18256,10 +18256,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer temporal_time_split(Pointer temp, Pointer duration, OffsetDateTime torigin) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.temporal_time_split(temp, duration, torigin_new);
+		_meos_b.temporal_time_split(_sret, temp, duration, torigin_new);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -18286,9 +18288,11 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tfloat_value_split(Pointer temp, double size, double origin) {
-		var _result = _meos_b.tfloat_value_split(temp, size, origin);
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
+		_meos_b.tfloat_value_split(_sret, temp, size, origin);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -18301,10 +18305,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tfloat_value_time_split(Pointer temp, double vsize, Pointer duration, double vorigin, OffsetDateTime torigin) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 32);
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tfloat_value_time_split(temp, vsize, duration, vorigin, torigin_new);
+		_meos_b.tfloat_value_time_split(_sret, temp, vsize, duration, vorigin, torigin_new);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -18354,9 +18360,11 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tint_value_split(Pointer temp, int vsize, int vorigin) {
-		var _result = _meos_b.tint_value_split(temp, vsize, vorigin);
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
+		_meos_b.tint_value_split(_sret, temp, vsize, vorigin);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -18369,10 +18377,12 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tint_value_time_split(Pointer temp, long size, Pointer duration, int vorigin, OffsetDateTime torigin) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 32);
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tint_value_time_split(temp, size, duration, vorigin, torigin_new);
+		_meos_b.tint_value_time_split(_sret, temp, size, duration, vorigin, torigin_new);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -19990,9 +20000,11 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom) {
-		var _result = _meos_b.tpoint_as_mvtgeom(temp, bounds, extent, buffer, clip_geom);
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
+		_meos_b.tpoint_as_mvtgeom(_sret, temp, bounds, extent, buffer, clip_geom);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -21430,17 +21442,21 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc) {
-		var _result = _meos_b.tgeo_space_split(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc);
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
+		_meos_b.tgeo_space_split(_sret, temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, boolean bitmatrix, boolean border_inc) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 32);
 		var torigin_new = torigin.toEpochSecond();
-		var _result = _meos_b.tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc);
+		_meos_b.tgeo_space_time_split(_sret, temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
@@ -26589,9 +26605,11 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tnumber_value_split(Pointer temp, Pointer vsize, Pointer vorigin) {
-		var _result = _meos_c.tnumber_value_split(temp, vsize, vorigin);
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer _sret = Memory.allocateDirect(runtime, 24);
+		_meos_c.tnumber_value_split(_sret, temp, vsize, vorigin);
 		MeosErrorHandler.checkError();
-		return _result;
+		return _sret;
 	}
 
 	@SuppressWarnings("unused")
