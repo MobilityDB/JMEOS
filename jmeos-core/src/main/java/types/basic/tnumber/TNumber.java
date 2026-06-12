@@ -10,7 +10,6 @@ import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tint.TInt;
 import types.boxes.TBox;
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.collections.number.*;
 import types.collections.time.Time;
@@ -54,7 +53,7 @@ public interface TNumber {
      * @return The bounding box of "this".
      */
     default TBox bounding_tbox() throws SQLException {
-        return new TBox(functions.tnumber_to_tbox(getNumberInner()));
+        return new TBox(GeneratedFunctions.tnumber_to_tbox(getNumberInner()));
     }
 
 
@@ -67,7 +66,7 @@ public interface TNumber {
      * @return The integral of "this".
      */
     default float integral(){
-        return (float) functions.tnumber_integral(getNumberInner());
+        return (float) GeneratedFunctions.tnumber_integral(getNumberInner());
     }
 
     /**
@@ -80,7 +79,7 @@ public interface TNumber {
      * @return The time weighted average of "this".
      */
     default float time_weighted_average(){
-        return (float) functions.tnumber_twavg(getNumberInner());
+        return (float) GeneratedFunctions.tnumber_twavg(getNumberInner());
     }
 
     /* ------------------------- Transformations ---------------------------------- */
@@ -98,10 +97,10 @@ public interface TNumber {
     default TNumber shift_value(Object delta) throws Exception {
         Pointer shifted= null;
         if(this instanceof TInt){
-            shifted= functions.tint_shift_value(this.getNumberInner(), (int) delta);
+            shifted= GeneratedFunctions.tint_shift_value(this.getNumberInner(), (int) delta);
         }
         else if (this instanceof TFloat){
-            shifted= functions.tfloat_shift_value(this.getNumberInner(), (double) delta);
+            shifted= GeneratedFunctions.tfloat_shift_value(this.getNumberInner(), (double) delta);
         }
         else{
             throw new Exception("Operation not supported for this object");
@@ -122,10 +121,10 @@ public interface TNumber {
     default TNumber scale_value(Object width) throws Exception {
         Pointer scaled= null;
         if(this instanceof TInt){
-            scaled= functions.tint_scale_value(this.getNumberInner(), (int) width);
+            scaled= GeneratedFunctions.tint_scale_value(this.getNumberInner(), (int) width);
         }
         else if (this instanceof TFloat){
-            scaled= functions.tfloat_scale_value(this.getNumberInner(), (double) width);
+            scaled= GeneratedFunctions.tfloat_scale_value(this.getNumberInner(), (double) width);
         }
         else{
             throw new Exception("Operation not supported for this object");
@@ -147,10 +146,10 @@ public interface TNumber {
     default TNumber shift_scale_value(Object shift, Object width) throws Exception {
         Pointer scaled= null;
         if(this instanceof TInt && shift!=null && width!=null){
-            scaled= functions.tint_shift_scale_value(this.getNumberInner(), (int) shift, (int) width);
+            scaled= GeneratedFunctions.tint_shift_scale_value(this.getNumberInner(), (int) shift, (int) width);
         }
         else if (this instanceof TFloat && shift!=null && width!=null){
-            scaled= functions.tfloat_shift_scale_value(this.getNumberInner(), (double) shift, (double) width);
+            scaled= GeneratedFunctions.tfloat_shift_scale_value(this.getNumberInner(), (double) shift, (double) width);
         }
         else{
             throw new Exception("Operation not supported for this object");
@@ -187,22 +186,22 @@ public interface TNumber {
      */
     default TNumber at(Object other) throws OperationNotSupportedException {
         if (other instanceof IntSet){
-            return (TNumber) Factory.create_temporal(functions.temporal_at_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.temporal_at_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSet) {
-            return (TNumber) Factory.create_temporal(functions.temporal_at_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.temporal_at_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());
         }
          else if (other instanceof IntSpan){
-            return (TNumber) Factory.create_temporal(functions.tnumber_at_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_at_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSpan) {
-            return (TNumber) Factory.create_temporal(functions.tnumber_at_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_at_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());
         }
         else if (other instanceof IntSpanSet){
-            return (TNumber) Factory.create_temporal(functions.tnumber_at_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_at_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSpanSet) {
-            return (TNumber) Factory.create_temporal(functions.tnumber_at_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_at_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());
         }
         else if (other instanceof TBox){
-            return (TNumber) Factory.create_temporal(functions.tnumber_at_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_at_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -233,22 +232,22 @@ public interface TNumber {
      */
     default TNumber minus(Object other) throws OperationNotSupportedException {
         if (other instanceof IntSet){
-            return (TNumber) Factory.create_temporal(functions.temporal_minus_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.temporal_minus_values(getNumberInner(),((IntSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSet) {
-            return (TNumber) Factory.create_temporal(functions.temporal_minus_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.temporal_minus_values(getNumberInner(),((FloatSet) other).get_inner()),getCustomType(),getTemporalType());
         }
         else if (other instanceof IntSpan){
-            return (TNumber) Factory.create_temporal(functions.tnumber_minus_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_minus_span(getNumberInner(),((IntSpan) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSpan) {
-            return (TNumber) Factory.create_temporal(functions.tnumber_minus_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_minus_span(getNumberInner(),((FloatSpan) other).get_inner()),getCustomType(),getTemporalType());
         }
         else if (other instanceof IntSpanSet){
-            return (TNumber) Factory.create_temporal(functions.tnumber_minus_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_minus_spanset(getNumberInner(),((IntSpanSet) other).get_inner()),getCustomType(),getTemporalType());
         } else if (other instanceof FloatSpanSet) {
-            return (TNumber) Factory.create_temporal(functions.tnumber_minus_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_minus_spanset(getNumberInner(),((FloatSpanSet) other).get_inner()),getCustomType(),getTemporalType());
         }
         else if (other instanceof TBox){
-            return (TNumber) Factory.create_temporal(functions.tnumber_minus_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_minus_tbox(getNumberInner(),((TBox) other).get_inner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -345,11 +344,11 @@ public interface TNumber {
      */
     default TNumber add(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.add_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.add_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.add_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.add_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.add_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.add_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -373,9 +372,9 @@ public interface TNumber {
      */
     default TNumber radd(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.add_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.add_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.add_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.add_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -401,11 +400,11 @@ public interface TNumber {
      */
     default TNumber sub(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.sub_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.sub_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.sub_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.sub_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.sub_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.sub_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -429,9 +428,9 @@ public interface TNumber {
      */
     default TNumber rsub(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.sub_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.sub_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.sub_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.sub_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -516,11 +515,11 @@ public interface TNumber {
      */
     default TNumber div(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.div_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.div_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.div_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.div_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.div_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.div_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -547,9 +546,9 @@ public interface TNumber {
      */
     default TNumber rdiv(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.div_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.div_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.div_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.div_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -701,7 +700,7 @@ public interface TNumber {
      * @return A new {@link TNumber} instance.
      */
     default TNumber abs(){
-        return (TNumber) Factory.create_temporal(functions.tnumber_abs(getNumberInner()),getCustomType(),getTemporalType());
+        return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_abs(getNumberInner()),getCustomType(),getTemporalType());
     }
 
     /**
@@ -714,7 +713,7 @@ public interface TNumber {
      * @return A new {@link TNumber} instance.
      */
     default TNumber delta_value(){
-        return (TNumber) Factory.create_temporal(functions.tnumber_delta_value(getNumberInner()),getCustomType(),getTemporalType());
+        return (TNumber) Factory.create_temporal(GeneratedFunctions.tnumber_delta_value(getNumberInner()),getCustomType(),getTemporalType());
     }
 
 
@@ -738,11 +737,11 @@ public interface TNumber {
      */
     default TFloat distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
-            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tfloat_float(getNumberInner(),(float)((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((other instanceof Float)) {
-            return (TFloat) Factory.create_temporal(functions.tdistance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TFloat) Factory.create_temporal(functions.tdistance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -767,13 +766,13 @@ public interface TNumber {
      */
     default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
         if ( (other instanceof Integer)){
-            return (float) functions.nad_tfloat_float(getNumberInner(),(float)((Integer) other).intValue());
+            return (float) GeneratedFunctions.nad_tfloat_float(getNumberInner(),(float)((Integer) other).intValue());
         } else if ((other instanceof Float)) {
-            return (float) functions.nad_tfloat_float(getNumberInner(),((Float) other).floatValue());
+            return (float) GeneratedFunctions.nad_tfloat_float(getNumberInner(),((Float) other).floatValue());
         } else if (other instanceof TNumber) {
-            return (float) functions.nad_tfloat_tfloat(getNumberInner(),((TNumber) other).getNumberInner());
+            return (float) GeneratedFunctions.nad_tfloat_tfloat(getNumberInner(),((TNumber) other).getNumberInner());
         } else if (other instanceof TBox) {
-            return (float) functions.nad_tfloat_tfloat(getNumberInner(),((TBox) other).get_inner());
+            return (float) GeneratedFunctions.nad_tfloat_tfloat(getNumberInner(),((TBox) other).get_inner());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -797,7 +796,7 @@ public interface TNumber {
 */
 //    private Pointer createEmptyPointerArray(Runtime runtime) {
 //        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
-//        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), *Long.BYTES); // Adjust size as needed
+//        Pointer listPointer = Memory.allocate(runtime, *Long.BYTES); // Adjust size as needed
 //        return listPointer;
 //    }
 
