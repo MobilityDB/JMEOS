@@ -1,6 +1,6 @@
 package temporal;
 
-import functions.functions;
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,8 +24,9 @@ public class InterpolationTest {
     error_handler_fn errorHandler = new error_handler();
 
     Stream<Arguments> TInterp() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("discrete", TInterpolation.DISCRETE),
                 Arguments.of("linear", TInterpolation.LINEAR),
@@ -38,8 +39,9 @@ public class InterpolationTest {
     @ParameterizedTest(name = "base={0}, expected={1}")
     @MethodSource("TInterp")
     public void testFromString(String base, TInterpolation expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertEquals(TInterpolation.fromString(base),expected);
     }
 }

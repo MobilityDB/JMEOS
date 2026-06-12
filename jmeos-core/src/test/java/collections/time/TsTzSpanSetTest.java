@@ -1,11 +1,11 @@
 package collections.time;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import functions.functions;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -41,8 +41,9 @@ class TsTzSpanSetTest {
 	static error_handler_fn errorHandler= new error_handler();
 	
 	private static Stream<Arguments> temporals_adjacent() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -56,8 +57,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_iscontained() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -71,8 +73,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_contains() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -86,8 +89,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_overlaps() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -101,8 +105,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_same() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -116,8 +121,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_before() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
@@ -131,8 +137,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_after() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -146,8 +153,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_overbefore() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true),
@@ -161,8 +169,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> temporals_overafter() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), false),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), false),
@@ -176,8 +185,9 @@ class TsTzSpanSetTest {
 
 
 	private static Stream<Arguments> intersection() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspan("(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0)"), true),
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true)
@@ -185,8 +195,9 @@ class TsTzSpanSetTest {
 	}
 
 	private static Stream<Arguments> other() {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		return Stream.of(
 				Arguments.of(new tstzspanset("{(2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0), (2021-01-01 00:00:00+0, 2021-01-31 00:00:00+0)}"), true)
 		);
@@ -201,16 +212,18 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testStringConstructor(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		System.out.println(pset.toString());
 		assert_tstzspanset_equality(this.pset,null);
 	}
 
 	@Test
 	public void testtstzspansetListConstructor(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		List<tstzspan> lst = new ArrayList<tstzspan>();
 		lst.add(new tstzspan("[2019-09-01, 2019-09-02]"));
 		lst.add(new tstzspan("[2019-09-03, 2019-09-04]"));
@@ -222,8 +235,9 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testCopyConstructor(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		tstzspanset new_pset = new tstzspanset(pset.copy());
 		assertEquals(this.pset.toString(),new_pset.toString());
 	}
@@ -231,24 +245,27 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testTotstzset(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.to_period().toString(), new tstzspan("[2019-09-01, 2019-09-04]").toString());
 	}
 
 
 	@Test
 	public void testNumTimestamps(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.num_timestamps(),4);
 		assertEquals(this.pset2.num_timestamps(),3);
 	}
 
 	@Test
 	public void testStartTimestamps(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.start_timestamp(), LocalDateTime.of(2019,9,1,0,0,0));
 		assertEquals(this.pset2.start_timestamp(),LocalDateTime.of(2019,9,1,0,0,0));
 	}
@@ -256,8 +273,9 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testEndTimestamps(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.end_timestamp(),LocalDateTime.of(2019,9,4,0,0,0));
 		assertEquals(this.pset2.end_timestamp(),LocalDateTime.of(2019,9,4,0,0,0));
 	}
@@ -265,8 +283,9 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testNumtstzsets(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.num_periods(),2);
 		assertEquals(this.pset2.num_periods(),2);
 	}
@@ -274,16 +293,18 @@ class TsTzSpanSetTest {
 
 	@Test
 	public void testStarttstzset(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.start_period().toString(),new tstzspan("[2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]").toString());
 	}
 
 
 	@Test
 	public void testEndtstzset(){
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.end_period().toString(),new tstzspan("[2019-09-03 00:00:00+00, 2019-09-04 00:00:00+00]").toString());
 	}
 
@@ -291,8 +312,8 @@ class TsTzSpanSetTest {
 
 //	@Test
 //	public void testHash(){
-//		functions.meos_initialize_timezone("UTC");
-//        functions.meos_initialize_error_handler(errorHandler);
+//		GeneratedFunctions.meos_initialize_timezone("UTC");
+//        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
 //		assertEquals(this.pset.hash(),552347465);
 //	}
 
@@ -300,16 +321,18 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_adjacent")
 	public void testAdjacency(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_adjacent(other), expected);
 	}
 
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_iscontained")
 	public void testIsContainedIn(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_contained_in(other), expected);
 
 	}
@@ -318,8 +341,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_contains")
 	public void testContains(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.contains(other), expected);
 
 	}
@@ -328,8 +352,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overlaps")
 	public void testOverlaps(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.overlaps(other), expected);
 	}
 
@@ -337,8 +362,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_same")
 	public void testIsSame(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_same(other), expected);
 	}
 
@@ -347,8 +373,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_before")
 	public void testIsBefore(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_before(other), expected);
 	}
 
@@ -357,8 +384,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_after")
 	public void testIsAfter(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_after(other), expected);
 	}
 
@@ -366,8 +394,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overbefore")
 	public void testIsOverOrBefore(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_over_or_before(other), expected);
 
 	}
@@ -376,8 +405,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("temporals_overafter")
 	public void testIsOverOrAfter(TemporalObject other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertEquals(this.pset.is_over_or_after(other), expected);
 
 	}
@@ -387,24 +417,27 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testIntersection(Time other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		this.pset.intersection(other);
 	}
 
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testMinus(Time other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		this.pset.minus(other);
 	}
 
 	@ParameterizedTest(name="other={0}, expected={1}")
 	@MethodSource("intersection")
 	public void testUnion(Time other, boolean expected) throws Exception {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		this.pset.union(other);
 	}
 
@@ -412,8 +445,9 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testEqual(Time t) throws SQLException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
         assertNotEquals(this.pset, t);
 	}
 
@@ -421,40 +455,45 @@ class TsTzSpanSetTest {
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testNotEqual(Time t) throws SQLException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertTrue(this.pset.notEquals(t));
 	}
 
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testLessThan(Time t) throws SQLException, OperationNotSupportedException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertTrue(this.pset.lessThan(t));
 	}
 
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testLessThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertTrue(this.pset.lessThanOrEqual(t));
 	}
 
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testGreaterThan(Time t) throws SQLException, OperationNotSupportedException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertTrue(this.pset.greaterThan(t));
 	}
 
 	@ParameterizedTest(name="t={0}")
 	@MethodSource("other")
 	public void testGreaterThanOrEqual(Time t) throws SQLException, OperationNotSupportedException {
-		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_collation();
 		assertFalse(this.pset.greaterThanOrEqual(t));
 	}
 

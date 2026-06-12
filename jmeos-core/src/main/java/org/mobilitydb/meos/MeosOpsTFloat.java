@@ -317,7 +317,9 @@ public final class MeosOpsTFloat {
             throw new UnsupportedOperationException(
                 "tfloat_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tfloat_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        Pointer ptr = GeneratedFunctions.tfloat_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putDouble(0, ptr.getDouble(0));
+        return ptr != null;
     }
 
     /**

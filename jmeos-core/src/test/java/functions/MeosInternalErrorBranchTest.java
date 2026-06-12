@@ -1,5 +1,6 @@
 package functions;
 
+import functions.GeneratedFunctions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import types.basic.tfloat.TFloatInst;
@@ -38,8 +39,9 @@ class MeosInternalErrorBranchTest {
 
     @BeforeAll
     static void initMeos() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_collation();
     }
 
     @BeforeEach
@@ -597,7 +599,7 @@ class MeosInternalErrorBranchTest {
             void divByZero_throwsExpectedType() {
                 TFloatInst sog = new TFloatInst("12.5@2024-06-01 08:00:00+00");
                 Exception ex = assertThrows(MeosException.class,
-                        () -> functions.div_tfloat_float(sog.getInner(), 0.0));
+                        () -> GeneratedFunctions.div_tfloat_float(sog.getInner(), 0.0));
                 assertTrue(
                         ex instanceof MeosDivisionByZeroError,
                         "Expected MeosDivisionByZeroError, got: " + ex.getClass().getSimpleName());
@@ -608,7 +610,7 @@ class MeosInternalErrorBranchTest {
             void divByZero_catchableAsMeosException() {
                 TFloatInst sog = new TFloatInst("12.5@2024-06-01 08:00:00+00");
                 assertThrows(MeosException.class,
-                        () -> functions.div_tfloat_float(sog.getInner(), 0.0));
+                        () -> GeneratedFunctions.div_tfloat_float(sog.getInner(), 0.0));
             }
         }
     }
@@ -741,7 +743,7 @@ class MeosInternalErrorBranchTest {
             //void enormousCorruptWkb_throwsMeosMemoryAllocError() {
             //    String hugeWkb = "FF".repeat(100_000);
             //    assertThrows(MeosMemoryAllocError.class, // FIXME MeoWKBInputError was thrown
-            //            () -> functions.temporal_from_hexwkb(hugeWkb));
+            //            () -> GeneratedFunctions.temporal_from_hexwkb(hugeWkb));
             //}
 
             @Test
@@ -749,7 +751,7 @@ class MeosInternalErrorBranchTest {
             void enormousCorruptWkb_throwsMeosException() {
                 String hugeWkb = "FF".repeat(100_000);
                 assertThrows(MeosException.class,
-                        () -> functions.temporal_from_hexwkb(hugeWkb));
+                        () -> GeneratedFunctions.temporal_from_hexwkb(hugeWkb));
             }
         }
     }

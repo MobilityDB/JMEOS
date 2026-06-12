@@ -191,7 +191,9 @@ public final class MeosOpsTText {
             throw new UnsupportedOperationException(
                 "ttext_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.ttext_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        Pointer ptr = GeneratedFunctions.ttext_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putPointer(0, ptr);
+        return ptr != null;
     }
 
     /**

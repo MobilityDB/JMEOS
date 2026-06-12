@@ -135,7 +135,9 @@ public final class MeosOpsTBool {
             throw new UnsupportedOperationException(
                 "tbool_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tbool_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        Pointer ptr = GeneratedFunctions.tbool_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putByte(0, ptr.getByte(0));
+        return ptr != null;
     }
 
     /**

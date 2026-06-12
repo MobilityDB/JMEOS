@@ -219,7 +219,9 @@ public final class MeosOpsTInt {
             throw new UnsupportedOperationException(
                 "tint_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tint_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        Pointer ptr = GeneratedFunctions.tint_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putInt(0, ptr.getInt(0));
+        return ptr != null;
     }
 
     /**

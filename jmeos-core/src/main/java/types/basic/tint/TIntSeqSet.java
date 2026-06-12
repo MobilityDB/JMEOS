@@ -1,6 +1,6 @@
 package types.basic.tint;
 
-import functions.functions;
+import functions.GeneratedFunctions;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
@@ -41,13 +41,13 @@ public class TIntSeqSet extends TSequenceSet<Integer> implements TInt{
 	 */
 	public TIntSeqSet(String value) {
 		super(value);
-		this.inner = functions.tint_in(value);
+		this.inner = GeneratedFunctions.tint_in(value);
 	}
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tint_in(str);
+		return GeneratedFunctions.tint_in(str);
 	}
 
 	@Override

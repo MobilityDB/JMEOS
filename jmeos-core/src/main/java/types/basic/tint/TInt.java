@@ -1,5 +1,5 @@
 package types.basic.tint;
-import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
@@ -50,7 +50,7 @@ public interface TInt extends TNumber {
 	 * @return A new {@link Float} object.
 	 */
 	default TInt from_base_temporal(int value, Temporal base, TInterpolation interp){
-		return (TInt) Factory.create_temporal(functions.tint_from_base_temp(value,base.getInner()),getCustomType(),getTemporalType());
+		return (TInt) Factory.create_temporal(GeneratedFunctions.tint_from_base_temp(value,base.getInner()),getCustomType(),getTemporalType());
 	}
 
 	/**
@@ -73,15 +73,15 @@ public interface TInt extends TNumber {
 	 */
 	static TInt from_base_time(int value, Object base, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		if (base instanceof LocalDateTime){
-			return new TIntInst(functions.tintinst_make(value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) base)));
+			return new TIntInst(GeneratedFunctions.tintinst_make(value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) base)));
 		}
 		if (base instanceof tstzspanset) {
-			return new TIntSeqSet(functions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
+			return new TIntSeqSet(GeneratedFunctions.tintseqset_from_base_tstzspanset(value, ((tstzspanset) base).get_inner()));
 		} else if (base instanceof tstzset) {
-			return new TIntSeq(functions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));
+			return new TIntSeq(GeneratedFunctions.tintseq_from_base_tstzset(value, ((tstzset) base).get_inner()));
 		} else if (base instanceof tstzspan) {
 			tstzspanset ss= new tstzspanset(((tstzspan) base).to_spanset(tstzspanset.class).get_inner());
-			return new TIntSeq(functions.tintseqset_from_base_tstzspanset(value, ss.get_inner()));
+			return new TIntSeq(GeneratedFunctions.tintseqset_from_base_tstzspanset(value, ss.get_inner()));
 		}
 		throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());
 	}
@@ -100,7 +100,7 @@ public interface TInt extends TNumber {
 */
 
 	default TInt from_mfjson(String mfjson){
-		Pointer result= functions.tint_from_mfjson(mfjson);
+		Pointer result= GeneratedFunctions.tint_from_mfjson(mfjson);
 		return (TInt) Factory.create_temporal(result, getCustomType(), getTemporalType());
 	}
 
@@ -117,7 +117,7 @@ public interface TInt extends TNumber {
 	 * @return A string representation of "this".
 	 */
 	default String to_string(){
-		return functions.tint_out(getNumberInner());
+		return GeneratedFunctions.tint_out(getNumberInner());
 	}
 
 	/**
@@ -129,7 +129,7 @@ public interface TInt extends TNumber {
 	 * @return A string representation of "this".
 	 */
 	default String as_wkt(){
-		return functions.tint_out(getNumberInner());
+		return GeneratedFunctions.tint_out(getNumberInner());
 	}
 
 
@@ -150,7 +150,7 @@ public interface TInt extends TNumber {
 	 * @return A new temporal float.
 	 */
 	default TFloat to_tfloat(){
-		return (TFloat) Factory.create_temporal(functions.tint_to_tfloat(getNumberInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tint_to_tfloat(getNumberInner()),"Float",getTemporalType());
 	}
 
 
@@ -167,7 +167,7 @@ public interface TInt extends TNumber {
 	 * @return An {@link IntSpan} with the value span of "this".
 	 */
 	default IntSpan to_intspan(){
-		return new IntSpan(functions.tnumber_to_span(getNumberInner()));
+		return new IntSpan(GeneratedFunctions.tnumber_to_span(getNumberInner()));
 	}
 
 
@@ -197,7 +197,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link IntSpanSet} with the value spans of "this".
 	 */
 	default IntSpanSet value_spans(){
-		return new IntSpanSet(functions.tnumber_valuespans(getNumberInner()));
+		return new IntSpanSet(GeneratedFunctions.tnumber_valuespans(getNumberInner()));
 	}
 
 	/**
@@ -210,7 +210,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Integer} with the start value.
 	 */
 	default int start_value(){
-		return functions.tint_start_value(getNumberInner());
+		return GeneratedFunctions.tint_start_value(getNumberInner());
 	}
 
 	/**
@@ -222,7 +222,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Integer} with the end value.
 	 */
 	default int end_value(){
-		return functions.tint_end_value(getNumberInner());
+		return GeneratedFunctions.tint_end_value(getNumberInner());
 	}
 
 /**
@@ -240,7 +240,7 @@ public interface TInt extends TNumber {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		Pointer res= functions.tint_values(this.getNumberInner(), intPointer);
+		Pointer res= GeneratedFunctions.tint_values(this.getNumberInner(), intPointer);
 		int count= intPointer.getInt(Integer.BYTES);
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -265,7 +265,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Integer} with the minimum value.
 	 */
 	default int min_value(){
-		return functions.tint_min_value(getNumberInner());
+		return GeneratedFunctions.tint_min_value(getNumberInner());
 	}
 
 	/**
@@ -278,7 +278,7 @@ public interface TInt extends TNumber {
 	 * @return A {@link Integer} with the maximum value.
 	 */
 	default int max_value(){
-		return functions.tint_max_value(getNumberInner());
+		return GeneratedFunctions.tint_max_value(getNumberInner());
 	}
 
 /*
@@ -295,13 +295,10 @@ public interface TInt extends TNumber {
 */
 
 	default int value_at_timestamp(LocalDateTime timestamp){
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		boolean x= functions.tint_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true, intPointer);
-		int num= intPointer.getInt(Integer.BYTES);
-		return num;
+		Pointer ptr = GeneratedFunctions.tint_value_at_timestamptz(
+				this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true);
+		if (ptr == null) throw new IllegalArgumentException("this has no value at the given timestamp");
+		return ptr.getInt(0);
 	}
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
@@ -319,7 +316,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_equal(int value){
-		return functions.always_eq_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.always_eq_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -334,7 +331,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_not_equal(int value){
-		return (functions.ever_ne_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.ever_ne_tint_int(getNumberInner(),value)) > 0;
 	}
 
 
@@ -350,7 +347,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean always_less(int value){
-		return functions.always_lt_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.always_lt_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -367,7 +364,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean always_less_or_equal(int value){
-		return functions.always_le_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.always_le_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -383,7 +380,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean always_greater_or_equal(int value){
-		return (functions.ever_lt_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.ever_lt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -398,7 +395,7 @@ public interface TInt extends TNumber {
 	 * 	 *            " `False`" otherwise.
 	 */
 	default boolean always_greater(int value){
-		return (functions.always_gt_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.always_gt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -413,7 +410,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_less(int value){
-		return functions.ever_lt_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.ever_lt_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -430,7 +427,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean ever_less_or_equal(int value){
-		return functions.ever_le_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.ever_le_tint_int(getNumberInner(),value) > 0;
 	}
 
 
@@ -446,7 +443,7 @@ public interface TInt extends TNumber {
 	 * 	 *             otherwise.
 	 */
 	default boolean ever_equal(int value){
-		return functions.ever_eq_tint_int(getNumberInner(),value) > 0;
+		return GeneratedFunctions.ever_eq_tint_int(getNumberInner(),value) > 0;
 	}
 
 	/**
@@ -461,7 +458,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_not_equal(int value){
-		return (functions.ever_ne_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.ever_ne_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -478,7 +475,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "value", "False" otherwise.
 	 */
 	default boolean ever_greater_or_equal(int value){
-		return (functions.ever_ge_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.ever_ge_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -493,7 +490,7 @@ public interface TInt extends TNumber {
 	 * 	 *             "False" otherwise.
 	 */
 	default boolean ever_greater(int value){
-		return (functions.ever_gt_tint_int(getNumberInner(),value)) > 0;
+		return (GeneratedFunctions.ever_gt_tint_int(getNumberInner(),value)) > 0;
 	}
 
 	/**
@@ -608,7 +605,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_equal(Object other){
 		if ((other instanceof Integer)){
-			return Factory.create_temporal(functions.teq_tint_int(getNumberInner(), ((Integer) other)), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.teq_tint_int(getNumberInner(), ((Integer) other)), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -632,7 +629,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_not_equal(Integer other){
 		if ((other != null)){
-			return Factory.create_temporal(functions.tne_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.tne_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -657,7 +654,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_less(Integer other){
 		if ((other != null)){
-			return Factory.create_temporal(functions.tlt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.tlt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -682,7 +679,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_less_or_equal(Integer other){
 		if ((other != null)){
-			return Factory.create_temporal(functions.tle_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.tle_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -706,7 +703,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_greater_or_equal(Integer other){
 		if ((other != null)){
-			return Factory.create_temporal(functions.tge_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.tge_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");
@@ -729,7 +726,7 @@ public interface TInt extends TNumber {
 	 */
 	default Temporal temporal_greater(Integer other){
 		if ((other instanceof Integer)){
-			return Factory.create_temporal(functions.tgt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
+			return Factory.create_temporal(GeneratedFunctions.tgt_tint_int(getNumberInner(), other), getCustomType(),getTemporalType());
 		}
 		else{
 			throw new UnsupportedOperationException("Parameter not supported");

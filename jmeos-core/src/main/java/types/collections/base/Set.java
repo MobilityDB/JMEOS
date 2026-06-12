@@ -6,7 +6,7 @@ import org.locationtech.jts.io.ParseException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import functions.functions;
+import functions.GeneratedFunctions;
 
 /**
  * Abstract class that represents a set of temporal object
@@ -44,7 +44,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     /*
     public SpanSet to_spanset(){
-        return new SpanSet(functions.set_to_spanset(this._inner));
+        return new SpanSet(GeneratedFunctions.set_to_spanset(this._inner));
     }
 
      */
@@ -58,7 +58,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     /*
     public Span to_span(){
-        return new Span(functions.set_span(this._inner));
+        return new Span(GeneratedFunctions.set_span(this._inner));
     }
 
      */
@@ -73,7 +73,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
 
     public Pointer copy() {
-        return functions.set_copy(this._inner);
+        return GeneratedFunctions.set_copy(this._inner);
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
 
     public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.set_from_wkb(wkb, size);
+        Pointer spanPointer = GeneratedFunctions.set_from_wkb(wkb, size);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -93,7 +93,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
 
     public <T> T from_hexwkb(String hexwkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.set_from_hexwkb(hexwkb);
+        Pointer spanPointer = GeneratedFunctions.set_from_hexwkb(hexwkb);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -103,7 +103,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return Pointer type
      */
     public Pointer as_wkb() {
-        return functions.set_as_wkb(this._inner, (byte) 4);
+        return GeneratedFunctions.set_as_wkb(this._inner, (byte) 4);
     }
 
     /**
@@ -111,7 +111,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return String type
      */
     public String as_hexwkb() {
-        String[] result= new String[]{functions.set_as_hexwkb(this._inner, (byte) -1)};
+        String[] result= new String[]{GeneratedFunctions.set_as_hexwkb(this._inner, (byte) -1)};
         System.out.println(result[0]);
         return result[0];
     }
@@ -124,7 +124,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      *     @return A new {@link Span} instance
      */
     public <T> T to_span(Class<T> spanType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.set_to_span(this._inner);
+        Pointer spanPointer = GeneratedFunctions.set_to_span(this._inner);
         Constructor<T> constructor = spanType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -138,7 +138,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
 
     public <T> T to_spanset(Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = functions.set_to_spanset(this._inner);
+        Pointer spanPointer = GeneratedFunctions.set_to_spanset(this._inner);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -152,7 +152,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return An {@link Integer}
      */
     public int num_elements(){
-        return functions.set_num_values(this._inner);
+        return GeneratedFunctions.set_num_values(this._inner);
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return A new {@link Integer} instance
      */
     public long hash(){
-        return functions.set_hash(this._inner);
+        return GeneratedFunctions.set_hash(this._inner);
     }
 
 
@@ -244,7 +244,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean is_contained_in(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.contained_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.contained_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -267,7 +267,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean contains(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.contains_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.contains_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -292,7 +292,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean overlaps(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.overlaps_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.overlaps_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -321,7 +321,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean is_left(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.left_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.left_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -345,7 +345,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean is_over_or_left(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.overleft_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.overleft_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -371,7 +371,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean is_over_or_right(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.overright_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.overright_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -398,7 +398,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean is_right(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.right_set_set(this._inner, ((Set<?>) other)._inner);
+            return GeneratedFunctions.right_set_set(this._inner, ((Set<?>) other)._inner);
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -424,11 +424,11 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
 //    public float distance(Base other) throws Exception {
 //        if (other instanceof Set<?>){
-//            return (float) functions.distance_floatset_floatset(this._inner, ((Set<?>) other)._inner);
+//            return (float) GeneratedFunctions.distance_floatset_floatset(this._inner, ((Set<?>) other)._inner);
 //        } else if (other instanceof Span<?>) {
-//            return (float) functions.distance_floatspan_floatspan(functions.set_to_span(this._inner), ((Span<?>) other).get_inner());
+//            return (float) GeneratedFunctions.distance_floatspan_floatspan(GeneratedFunctions.set_to_span(this._inner), ((Span<?>) other).get_inner());
 //        } else if (other instanceof SpanSet<?>) {
-//            return (float) functions.distance_floatspanset_floatspan(this._inner,((SpanSet<?>) other).get_inner());
+//            return (float) GeneratedFunctions.distance_floatspanset_floatspan(this._inner,((SpanSet<?>) other).get_inner());
 //        }
 //        else {
 //            throw new Exception("Operation not supported with this type");
@@ -437,7 +437,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
 
 //    public <T> T distance(Object other) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-////        Pointer spanPointer = functions.set_to_spanset(this._inner);
+////        Pointer spanPointer = GeneratedFunctions.set_to_spanset(this._inner);
 ////        Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
 //        return constructor.newInstance(spanPointer);
 //    }
@@ -469,9 +469,9 @@ public abstract class Set<T extends Object> implements Collection, Base {
 
     public boolean is_adjacent(Base other) throws Exception {
         if (other instanceof Span<?>){
-            return functions.adjacent_span_span(this._inner, ((Span<?>) other).get_inner());
+            return GeneratedFunctions.adjacent_span_span(this._inner, ((Span<?>) other).get_inner());
         } else if (other instanceof SpanSet<?>) {
-            return functions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
+            return GeneratedFunctions.adjacent_spanset_span(((SpanSet<?>) other).get_inner(),this._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -496,7 +496,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     private Base intersection(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.intersection_set_set(this._inner, ((Set<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.intersection_set_set(this._inner, ((Set<?>) other)._inner));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -527,7 +527,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
     */
     private Base minus(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.minus_set_set(this._inner, ((Set<?>) other).get_inner()));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.minus_set_set(this._inner, ((Set<?>) other).get_inner()));
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -587,7 +587,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
     */
     private Base union(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return this.getClass().getConstructor(Pointer.class).newInstance(functions.union_set_set(this._inner, ((Set<?>) other)._inner));
+            return this.getClass().getConstructor(Pointer.class).newInstance(GeneratedFunctions.union_set_set(this._inner, ((Set<?>) other)._inner));
         }
         else {
             throw new Exception("Operation not supported with " + other + " type");
@@ -621,7 +621,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean eq(Base other){
         if (other instanceof Set<?>){
-            return functions.set_eq(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_eq(this._inner,((Set<?>) other)._inner);
         }
         else {
             return false;
@@ -641,7 +641,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean notEquals(Base other){
         if (other instanceof Set<?>){
-            return functions.set_ne(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_ne(this._inner,((Set<?>) other)._inner);
         }
         else {
             return true;
@@ -662,7 +662,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean lessThan(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.set_lt(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_lt(this._inner,((Set<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -684,7 +684,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean lessThanOrEqual(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.set_le(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_le(this._inner,((Set<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -706,7 +706,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean greaterThan(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.set_gt(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_gt(this._inner,((Set<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");
@@ -728,7 +728,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      */
     public boolean greaterThanOrEqual(Base other) throws Exception {
         if (other instanceof Set<?>){
-            return functions.set_ge(this._inner,((Set<?>) other)._inner);
+            return GeneratedFunctions.set_ge(this._inner,((Set<?>) other)._inner);
         }
         else {
             throw new Exception("Operation not supported with this type");

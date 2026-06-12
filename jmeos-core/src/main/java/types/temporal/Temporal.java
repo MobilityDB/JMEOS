@@ -1377,11 +1377,9 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         else{
             st= GeneratedFunctions.timestamptz_in(start.toString(), -1);
         }
-        // temporal_time_split returns a TimeSplit struct by value (sret):
-        //   TimeSplit { Temporal **fragments @0; int *bins @8; int count @16; }
-        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st);
-        Pointer fragments= p.getPointer(0);
-        int count= p.getInt(16);
+        Pointer countPtr = Memory.allocateDirect(Runtime.getSystemRuntime(), Integer.BYTES);
+        Pointer fragments = GeneratedFunctions.temporal_time_split(this.inner, dt, st, null, countPtr);
+        int count = countPtr.getInt(0);
         List<Temporal> tempList= new ArrayList<>();
         for(int i=0;i<count;i++){
             Pointer res= fragments.getPointer((long) i *Long.BYTES);
@@ -1440,11 +1438,9 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         LocalDateTime end= this.end_timestamp();
         Duration dur= calculateIntermediateDuration(start, end, n);
         dt = ConversionUtils.timedelta_to_interval(dur);
-        // temporal_time_split returns a TimeSplit struct by value (sret):
-        //   TimeSplit { Temporal **fragments @0; int *bins @8; int count @16; }
-        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st);
-        Pointer fragments= p.getPointer(0);
-        int count= p.getInt(16);
+        Pointer countPtr = Memory.allocateDirect(Runtime.getSystemRuntime(), Integer.BYTES);
+        Pointer fragments = GeneratedFunctions.temporal_time_split(this.inner, dt, st, null, countPtr);
+        int count = countPtr.getInt(0);
         List<Temporal> tempList= new ArrayList<>();
         for(int i=0;i<count;i++){
             Pointer res= fragments.getPointer((long) i *Long.BYTES);

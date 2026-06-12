@@ -456,11 +456,11 @@ public interface TNumber {
      */
     default TNumber mul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.mult_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -485,9 +485,9 @@ public interface TNumber {
      */
     default TNumber rmul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(GeneratedFunctions.mul_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -801,12 +801,9 @@ public interface TNumber {
 //    }
 
     default List<TNumber> value_split(int size, int start){
-        // tint_value_split returns an IntSplit struct by value (sret); the
-        // generated wrapper hands back the filled struct buffer:
-        //   IntSplit { Temporal **fragments @0; int *bins @8; int count @16; }
-        Pointer result= GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start);
-        Pointer fragments= result.getPointer(0);
-        int count= result.getInt(16);
+        Pointer countPtr = Memory.allocateDirect(Runtime.getSystemRuntime(), Integer.BYTES);
+        Pointer fragments = GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start, null, countPtr);
+        int count = countPtr.getInt(0);
         List<TNumber> tempList= new ArrayList<>();
         for(int i=0;i<count;i++){
             Pointer res= fragments.getPointer((long) i *Long.BYTES);
@@ -852,12 +849,10 @@ public interface TNumber {
         else{
             st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
         }
-        // tint_value_time_split returns an IntTimeSplit struct by value (sret):
-        //   IntTimeSplit { Temporal **fragments @0; int *value_bins @8;
-        //                  int *time_bins @16; int count @24; }
-        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st);
-        Pointer fragments= p.getPointer(0);
-        int count= p.getInt(24);
+        Pointer countPtr = Memory.allocateDirect(Runtime.getSystemRuntime(), Integer.BYTES);
+        Pointer fragments = GeneratedFunctions.tint_value_time_split(
+                this.getNumberInner(), (long) value_size, dt, value_start, st, null, null, countPtr);
+        int count = countPtr.getInt(0);
         List<TNumber> tempList= new ArrayList<>();
         for(int i=0;i<count;i++){
             Pointer res= fragments.getPointer((long) i *Long.BYTES);

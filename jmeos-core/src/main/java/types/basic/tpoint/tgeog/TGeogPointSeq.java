@@ -1,7 +1,7 @@
 package types.basic.tpoint.tgeog;
 
 import jnr.ffi.Pointer;
-import functions.functions;
+import functions.GeneratedFunctions;
 import types.basic.tpoint.TPointSeq;
 import types.temporal.TemporalType;
 
@@ -36,13 +36,13 @@ public class TGeogPointSeq extends TPointSeq implements TGeogPoint {
 	 */
 	public TGeogPointSeq(String value){
 		super(value);
-		this.inner = functions.tgeogpoint_in(value);
+		this.inner = GeneratedFunctions.tgeogpoint_in(value);
 	}
 
 
 	@Override
 	public Pointer createStringInner(String str) {
-		return functions.tgeogpoint_in(str);
+		return GeneratedFunctions.tgeogpoint_in(str);
 	}
 
 	@Override

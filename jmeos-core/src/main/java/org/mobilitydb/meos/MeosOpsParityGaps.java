@@ -774,7 +774,9 @@ public final class MeosOpsParityGaps {
     public static boolean tcbuffer_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("tcbuffer_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.tcbuffer_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        jnr.ffi.Pointer ptr = functions.GeneratedFunctions.tcbuffer_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putPointer(0, ptr);
+        return ptr != null;
     }
 
     /** MEOS {@code tcbuffer_value_n} — meos_cbuffer.h · scalar / stateless. */
@@ -1033,7 +1035,9 @@ public final class MeosOpsParityGaps {
     public static boolean tnpoint_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("tnpoint_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.tnpoint_value_at_timestamptz(arg0, arg1, arg2, arg3);
+        jnr.ffi.Pointer ptr = functions.GeneratedFunctions.tnpoint_value_at_timestamptz(arg0, arg1, arg2);
+        if (ptr != null && arg3 != null) arg3.putPointer(0, ptr);
+        return ptr != null;
     }
 
     /** MEOS {@code tnpoint_value_n} — meos_npoint.h · scalar / stateless. */

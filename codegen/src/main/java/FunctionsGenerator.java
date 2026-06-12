@@ -134,7 +134,7 @@ public class FunctionsGenerator {
     //   1. The interface method returns boolean
     //   2. There is a parameter whose name is in OUTPUT_RESULT_PARAMS
     //   3. That parameter's Java type is Pointer
-    private static final Set<String> OUTPUT_RESULT_PARAMS = Set.of("result");
+    private static final Set<String> OUTPUT_RESULT_PARAMS = Set.of("result", "value");
 
     // -------------------------------------------------------------------------
     // Entry point
@@ -819,10 +819,11 @@ public class FunctionsGenerator {
             args.add("_sret"); // hidden sret buffer is the first native argument
         }
         for (ParamDef p : fn.params) {
-            if (OUTPUT_SIZE_PARAMS.contains(p.name)
-                    || (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
-                    && p.javaType().equals("Pointer"))) {
-                args.add(p.name); // pass locally-allocated pointer
+            if (OUTPUT_SIZE_PARAMS.contains(p.name)) {
+                args.add(p.name); // pass locally-allocated size pointer
+            } else if (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
+                    && p.javaType().equals("Pointer")) {
+                args.add("result"); // pass locally-allocated result buffer (always named "result")
             } else {
                 boolean converted = isTemporalCType(p.cType());
                 args.add(converted ? p.name + "_new" : p.name);
