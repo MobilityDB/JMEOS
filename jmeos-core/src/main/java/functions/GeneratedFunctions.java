@@ -465,6 +465,8 @@ public class GeneratedFunctions {
 
 		Pointer datespanset_shift_scale(Pointer ss, int shift, int width, boolean hasshift, boolean haswidth);
 
+		double float_round(double d, int maxdd);
+
 		Pointer floatset_ceil(Pointer s);
 
 		Pointer floatset_degrees(Pointer s, boolean normalize);
@@ -2203,15 +2205,15 @@ public class GeneratedFunctions {
 
 		Pointer tle_float_tfloat(double d, Pointer temp);
 
-	}
-
-	public interface MeosLibraryPartB {
-
 		Pointer tle_int_tint(int i, Pointer temp);
 
 		Pointer tle_temporal_temporal(Pointer temp1, Pointer temp2);
 
 		Pointer tle_text_ttext(Pointer txt, Pointer temp);
+
+	}
+
+	public interface MeosLibraryPartB {
 
 		Pointer tle_tfloat_float(Pointer temp, double d);
 
@@ -2510,6 +2512,12 @@ public class GeneratedFunctions {
 		Pointer tfloat_ln(Pointer temp);
 
 		Pointer tfloat_log10(Pointer temp);
+
+		Pointer tfloat_sin(Pointer temp);
+
+		Pointer tfloat_cos(Pointer temp);
+
+		Pointer tfloat_tan(Pointer temp);
 
 		Pointer tnumber_abs(Pointer temp);
 
@@ -2969,7 +2977,7 @@ public class GeneratedFunctions {
 
 		int stbox_hash(Pointer box);
 
-		int stbox_hash_extended(Pointer box, int seed);
+		long stbox_hash_extended(Pointer box, long seed);
 
 		boolean stbox_hast(Pointer box);
 
@@ -3595,7 +3603,7 @@ public class GeneratedFunctions {
 
 		int cbuffer_hash(Pointer cb);
 
-		int cbuffer_hash_extended(Pointer cb, int seed);
+		long cbuffer_hash_extended(Pointer cb, long seed);
 
 		Pointer cbuffer_point(Pointer cb);
 
@@ -4159,7 +4167,7 @@ public class GeneratedFunctions {
 
 		int datum_hash(Pointer d, int basetype);
 
-		int datum_hash_extended(Pointer d, int basetype, int seed);
+		long datum_hash_extended(Pointer d, int basetype, long seed);
 
 		Pointer datum_radians(Pointer d);
 
@@ -4395,10 +4403,6 @@ public class GeneratedFunctions {
 
 		Pointer distance_span_value(Pointer s, Pointer value);
 
-	}
-
-	public interface MeosLibraryPartC {
-
 		Pointer distance_spanset_span(Pointer ss, Pointer s);
 
 		Pointer distance_spanset_spanset(Pointer ss1, Pointer ss2);
@@ -4406,6 +4410,10 @@ public class GeneratedFunctions {
 		Pointer distance_spanset_value(Pointer ss, Pointer value);
 
 		Pointer distance_value_value(Pointer l, Pointer r, int basetype);
+
+	}
+
+	public interface MeosLibraryPartC {
 
 		Pointer spanbase_extent_transfn(Pointer state, Pointer value, int basetype);
 
@@ -4702,6 +4710,8 @@ public class GeneratedFunctions {
 		boolean tsequenceset_value_at_timestamptz(Pointer ss, long t, boolean strict, Pointer result);
 
 		boolean tsequenceset_value_n(Pointer ss, int n, Pointer result);
+
+		boolean tsequenceset_value_n_p(Pointer ss, int n, Pointer result);
 
 		Pointer tsequenceset_values_p(Pointer ss, Pointer count);
 
@@ -5735,9 +5745,9 @@ public class GeneratedFunctions {
 
 		boolean h3_is_valid_vertex_meos(long vertex);
 
-		long h3index_parse(String str);
+		long h3index_in(String str);
 
-		String h3index_to_string(long cell);
+		String h3index_out(long cell);
 
 		boolean h3index_eq(long a, long b);
 
@@ -5971,7 +5981,7 @@ public class GeneratedFunctions {
 
 		int jsonb_hash(Pointer jb);
 
-		int jsonb_hash_extended(Pointer jb, int seed);
+		long jsonb_hash_extended(Pointer jb, long seed);
 
 		Pointer jsonb_object_field(Pointer jb, Pointer key);
 
@@ -6587,10 +6597,6 @@ public class GeneratedFunctions {
 
 		Pointer tpointseq_cumulative_length(Pointer seq, double prevlength);
 
-	}
-
-	public interface MeosLibraryPartD {
-
 		boolean tpointseq_is_simple(Pointer seq);
 
 		double tpointseq_length(Pointer seq);
@@ -6604,6 +6610,10 @@ public class GeneratedFunctions {
 		Pointer tpointseqset_azimuth(Pointer ss);
 
 		Pointer tpointseqset_cumulative_length(Pointer ss);
+
+	}
+
+	public interface MeosLibraryPartD {
 
 		boolean tpointseqset_is_simple(Pointer ss);
 
@@ -6677,7 +6687,7 @@ public class GeneratedFunctions {
 
 		int npoint_hash(Pointer np);
 
-		int npoint_hash_extended(Pointer np, int seed);
+		long npoint_hash_extended(Pointer np, long seed);
 
 		double npoint_position(Pointer np);
 
@@ -6907,7 +6917,7 @@ public class GeneratedFunctions {
 
 		int pcpoint_hash(Pointer pt);
 
-		int pcpoint_hash_extended(Pointer pt, int seed);
+		long pcpoint_hash_extended(Pointer pt, long seed);
 
 		boolean pcpoint_get_x(Pointer pt, Pointer schema, Pointer out);
 
@@ -6959,7 +6969,7 @@ public class GeneratedFunctions {
 
 		int pcpatch_hash(Pointer pa);
 
-		int pcpatch_hash_extended(Pointer pa, int seed);
+		long pcpatch_hash_extended(Pointer pa, long seed);
 
 		int pcpatch_cmp(Pointer pa1, Pointer pa2);
 
@@ -7197,7 +7207,7 @@ public class GeneratedFunctions {
 
 		int pose_hash(Pointer pose);
 
-		int pose_hash_extended(Pointer pose, int seed);
+		long pose_hash_extended(Pointer pose, long seed);
 
 		Pointer pose_orientation(Pointer pose, Pointer count);
 
@@ -7883,6 +7893,20 @@ public class GeneratedFunctions {
 
 		String text_to_cstring(Pointer txt);
 
+		Pointer text_in(String str);
+
+		String text_out(Pointer txt);
+
+		Pointer text_upper(Pointer txt);
+
+		Pointer text_lower(Pointer txt);
+
+		Pointer text_initcap(Pointer txt);
+
+		int add_date_int(int date, int days);
+
+		long add_timestamptz_interval(long tstz, Pointer interv);
+
 		int date_in(String str);
 
 		String date_out(int date);
@@ -7891,9 +7915,13 @@ public class GeneratedFunctions {
 
 		Pointer interval_in(String str, int typmod);
 
+		Pointer pg_interval_in(String str, int typmod);
+
 		Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs);
 
 		String interval_out(Pointer interv);
+
+		String pg_interval_out(Pointer interv);
 
 		Pointer time_in(String str, int typmod);
 
@@ -7904,6 +7932,8 @@ public class GeneratedFunctions {
 		String timestamp_out(long ts);
 
 		long timestamptz_in(String str, int typmod);
+
+		long pg_timestamptz_in(String str, int typmod);
 
 		String timestamptz_out(long tstz);
 
@@ -8708,6 +8738,8 @@ public class GeneratedFunctions {
 		Pointer bstring2bytea(Pointer wkb, long size);
 
 		double meos_strtod(String str, Pointer endptr);
+
+		float meos_strtof(String str, Pointer endptr);
 
 		boolean basetype_in(String str, int type, boolean end, Pointer result);
 
@@ -10392,6 +10424,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer datespanset_shift_scale(Pointer ss, int shift, int width, boolean hasshift, boolean haswidth) {
 		var _result = _meos_a.datespanset_shift_scale(ss, shift, width, hasshift, haswidth);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static double float_round(double d, int maxdd) {
+		var _result = _meos_a.float_round(d, maxdd);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -16642,21 +16681,21 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer tle_int_tint(int i, Pointer temp) {
-		var _result = _meos_b.tle_int_tint(i, temp);
+		var _result = _meos_a.tle_int_tint(i, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tle_temporal_temporal(Pointer temp1, Pointer temp2) {
-		var _result = _meos_b.tle_temporal_temporal(temp1, temp2);
+		var _result = _meos_a.tle_temporal_temporal(temp1, temp2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tle_text_ttext(Pointer txt, Pointer temp) {
-		var _result = _meos_b.tle_text_ttext(txt, temp);
+		var _result = _meos_a.tle_text_ttext(txt, temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -17700,6 +17739,27 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static Pointer tfloat_log10(Pointer temp) {
 		var _result = _meos_b.tfloat_log10(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_sin(Pointer temp) {
+		var _result = _meos_b.tfloat_sin(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_cos(Pointer temp) {
+		var _result = _meos_b.tfloat_cos(temp);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tfloat_tan(Pointer temp) {
+		var _result = _meos_b.tfloat_tan(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -19344,7 +19404,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int stbox_hash_extended(Pointer box, int seed) {
+	public static long stbox_hash_extended(Pointer box, long seed) {
 		var _result = _meos_b.stbox_hash_extended(box, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -21602,7 +21662,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int cbuffer_hash_extended(Pointer cb, int seed) {
+	public static long cbuffer_hash_extended(Pointer cb, long seed) {
 		var _result = _meos_b.cbuffer_hash_extended(cb, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -23592,7 +23652,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int datum_hash_extended(Pointer d, int basetype, int seed) {
+	public static long datum_hash_extended(Pointer d, int basetype, long seed) {
 		var _result = _meos_b.datum_hash_extended(d, basetype, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -24412,28 +24472,28 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_spanset_span(Pointer ss, Pointer s) {
-		var _result = _meos_c.distance_spanset_span(ss, s);
+		var _result = _meos_b.distance_spanset_span(ss, s);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_spanset_spanset(Pointer ss1, Pointer ss2) {
-		var _result = _meos_c.distance_spanset_spanset(ss1, ss2);
+		var _result = _meos_b.distance_spanset_spanset(ss1, ss2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_spanset_value(Pointer ss, Pointer value) {
-		var _result = _meos_c.distance_spanset_value(ss, value);
+		var _result = _meos_b.distance_spanset_value(ss, value);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer distance_value_value(Pointer l, Pointer r, int basetype) {
-		var _result = _meos_c.distance_value_value(l, r, basetype);
+		var _result = _meos_b.distance_value_value(l, r, basetype);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -25482,6 +25542,17 @@ public class GeneratedFunctions {
 		Runtime runtime = Runtime.getSystemRuntime();
 		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
 		out = _meos_c.tsequenceset_value_n(ss, n, result);
+		Pointer new_result = result.getPointer(0);
+		MeosErrorHandler.checkError();
+		return out ? new_result : null;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer tsequenceset_value_n_p(Pointer ss, int n) {
+		boolean out;
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
+		out = _meos_c.tsequenceset_value_n_p(ss, n, result);
 		Pointer new_result = result.getPointer(0);
 		MeosErrorHandler.checkError();
 		return out ? new_result : null;
@@ -29118,15 +29189,15 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static long h3index_parse(String str) {
-		var _result = _meos_c.h3index_parse(str);
+	public static long h3index_in(String str) {
+		var _result = _meos_c.h3index_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String h3index_to_string(long cell) {
-		var _result = _meos_c.h3index_to_string(cell);
+	public static String h3index_out(long cell) {
+		var _result = _meos_c.h3index_out(cell);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -29941,7 +30012,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int jsonb_hash_extended(Pointer jb, int seed) {
+	public static long jsonb_hash_extended(Pointer jb, long seed) {
 		var _result = _meos_c.jsonb_hash_extended(jb, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -32114,49 +32185,49 @@ public class GeneratedFunctions {
 
 	@SuppressWarnings("unused")
 	public static boolean tpointseq_is_simple(Pointer seq) {
-		var _result = _meos_d.tpointseq_is_simple(seq);
+		var _result = _meos_c.tpointseq_is_simple(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static double tpointseq_length(Pointer seq) {
-		var _result = _meos_d.tpointseq_length(seq);
+		var _result = _meos_c.tpointseq_length(seq);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseq_linear_trajectory(Pointer seq, boolean unary_union) {
-		var _result = _meos_d.tpointseq_linear_trajectory(seq, unary_union);
+		var _result = _meos_c.tpointseq_linear_trajectory(seq, unary_union);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseq_stboxes(Pointer seq, Pointer count) {
-		var _result = _meos_d.tgeoseq_stboxes(seq, count);
+		var _result = _meos_c.tgeoseq_stboxes(seq, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tgeoseq_split_n_stboxes(Pointer seq, int max_count, Pointer count) {
-		var _result = _meos_d.tgeoseq_split_n_stboxes(seq, max_count, count);
+		var _result = _meos_c.tgeoseq_split_n_stboxes(seq, max_count, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_azimuth(Pointer ss) {
-		var _result = _meos_d.tpointseqset_azimuth(ss);
+		var _result = _meos_c.tpointseqset_azimuth(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpointseqset_cumulative_length(Pointer ss) {
-		var _result = _meos_d.tpointseqset_cumulative_length(ss);
+		var _result = _meos_c.tpointseqset_cumulative_length(ss);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -32415,7 +32486,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int npoint_hash_extended(Pointer np, int seed) {
+	public static long npoint_hash_extended(Pointer np, long seed) {
 		var _result = _meos_d.npoint_hash_extended(np, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -33235,7 +33306,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int pcpoint_hash_extended(Pointer pt, int seed) {
+	public static long pcpoint_hash_extended(Pointer pt, long seed) {
 		var _result = _meos_d.pcpoint_hash_extended(pt, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -33414,7 +33485,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int pcpatch_hash_extended(Pointer pa, int seed) {
+	public static long pcpatch_hash_extended(Pointer pa, long seed) {
 		var _result = _meos_d.pcpatch_hash_extended(pa, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -34284,7 +34355,7 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int pose_hash_extended(Pointer pose, int seed) {
+	public static long pose_hash_extended(Pointer pose, long seed) {
 		var _result = _meos_d.pose_hash_extended(pose, seed);
 		MeosErrorHandler.checkError();
 		return _result;
@@ -36702,6 +36773,56 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer text_in(String str) {
+		var _result = _meos_d.text_in(str);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String text_out(Pointer txt) {
+		var _result = _meos_d.text_out(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer text_upper(Pointer txt) {
+		var _result = _meos_d.text_upper(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer text_lower(Pointer txt) {
+		var _result = _meos_d.text_lower(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static Pointer text_initcap(Pointer txt) {
+		var _result = _meos_d.text_initcap(txt);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static int add_date_int(int date, int days) {
+		var _result = _meos_d.add_date_int(date, days);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static LocalDateTime add_timestamptz_interval(OffsetDateTime tstz, Pointer interv) {
+		var tstz_new = tstz.toEpochSecond();
+		var _result = _meos_d.add_timestamptz_interval(tstz_new, interv);
+		MeosErrorHandler.checkError();
+		return java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(_result), java.time.ZoneOffset.UTC);
+	}
+
+	@SuppressWarnings("unused")
 	public static int date_in(String str) {
 		var _result = _meos_d.date_in(str);
 		MeosErrorHandler.checkError();
@@ -36730,6 +36851,13 @@ public class GeneratedFunctions {
 	}
 
 	@SuppressWarnings("unused")
+	public static Pointer pg_interval_in(String str, int typmod) {
+		var _result = _meos_d.pg_interval_in(str, typmod);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
 	public static Pointer interval_make(int years, int months, int weeks, int days, int hours, int mins, double secs) {
 		var _result = _meos_d.interval_make(years, months, weeks, days, hours, mins, secs);
 		MeosErrorHandler.checkError();
@@ -36739,6 +36867,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static String interval_out(Pointer interv) {
 		var _result = _meos_d.interval_out(interv);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static String pg_interval_out(Pointer interv) {
+		var _result = _meos_d.pg_interval_out(interv);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -36775,6 +36910,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static OffsetDateTime timestamptz_in(String str, int typmod) {
 		var _result = _meos_d.timestamptz_in(str, typmod);
+		MeosErrorHandler.checkError();
+		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
+	}
+
+	@SuppressWarnings("unused")
+	public static OffsetDateTime pg_timestamptz_in(String str, int typmod) {
+		var _result = _meos_d.pg_timestamptz_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);
 	}
@@ -39605,6 +39747,13 @@ public class GeneratedFunctions {
 	@SuppressWarnings("unused")
 	public static double meos_strtod(String str, Pointer endptr) {
 		var _result = _meos_d.meos_strtod(str, endptr);
+		MeosErrorHandler.checkError();
+		return _result;
+	}
+
+	@SuppressWarnings("unused")
+	public static float meos_strtof(String str, Pointer endptr) {
+		var _result = _meos_d.meos_strtof(str, endptr);
 		MeosErrorHandler.checkError();
 		return _result;
 	}

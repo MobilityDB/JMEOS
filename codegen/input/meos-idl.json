@@ -692,7 +692,7 @@
         {
           "name": "value",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -1467,7 +1467,7 @@
         {
           "name": "values",
           "cType": "const int64_t *",
-          "canonical": "const long *"
+          "canonical": "const int64_t *"
         },
         {
           "name": "count",
@@ -1487,12 +1487,12 @@
         {
           "name": "lower",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "upper",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "lower_inc",
@@ -3071,7 +3071,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "uint64_t",
-        "canonical": "unsigned long"
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -3082,7 +3082,7 @@
         {
           "name": "seed",
           "cType": "uint64_t",
-          "canonical": "unsigned long"
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -3121,7 +3121,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "uint64_t",
-        "canonical": "unsigned long"
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -3132,7 +3132,7 @@
         {
           "name": "seed",
           "cType": "uint64_t",
-          "canonical": "unsigned long"
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -3201,7 +3201,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "uint64_t",
-        "canonical": "unsigned long"
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -3212,7 +3212,7 @@
         {
           "name": "seed",
           "cType": "uint64_t",
-          "canonical": "unsigned long"
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -3677,12 +3677,12 @@
         {
           "name": "shift",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "width",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "hasshift",
@@ -3712,12 +3712,12 @@
         {
           "name": "shift",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "width",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "hasshift",
@@ -3747,12 +3747,12 @@
         {
           "name": "shift",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "width",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "hasshift",
@@ -3868,6 +3868,26 @@
           "name": "haswidth",
           "cType": "bool",
           "canonical": "bool"
+        }
+      ]
+    },
+    {
+      "name": "float_round",
+      "file": "meos.h",
+      "returnType": {
+        "c": "double",
+        "canonical": "double"
+      },
+      "params": [
+        {
+          "name": "d",
+          "cType": "double",
+          "canonical": "double"
+        },
+        {
+          "name": "maxdd",
+          "cType": "int",
+          "canonical": "int"
         }
       ]
     },
@@ -5192,7 +5212,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -5332,7 +5352,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -5467,7 +5487,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -5487,7 +5507,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -5507,7 +5527,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -5892,7 +5912,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -6032,7 +6052,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -6172,7 +6192,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -6887,7 +6907,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -6907,7 +6927,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -6927,7 +6947,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -7072,7 +7092,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -7172,7 +7192,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -7272,7 +7292,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -7867,7 +7887,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -7887,7 +7907,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -7907,7 +7927,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -8052,7 +8072,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8152,7 +8172,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8252,7 +8272,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8367,7 +8387,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -8387,7 +8407,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -8407,7 +8427,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -8552,7 +8572,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8652,7 +8672,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8752,7 +8772,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -8867,7 +8887,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -8887,7 +8907,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -8907,7 +8927,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -9052,7 +9072,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9152,7 +9172,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9252,7 +9272,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9367,7 +9387,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -9452,7 +9472,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9592,7 +9612,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9732,7 +9752,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -9907,7 +9927,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -9927,7 +9947,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "sp",
@@ -9947,7 +9967,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -10152,7 +10172,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -10292,7 +10312,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -10432,7 +10452,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -10647,7 +10667,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "s",
@@ -10672,7 +10692,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -10687,7 +10707,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "ss",
@@ -10892,7 +10912,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -11406,7 +11426,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11426,7 +11446,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11446,7 +11466,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11466,7 +11486,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11726,7 +11746,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11737,7 +11757,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -11826,7 +11846,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11837,7 +11857,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -11926,7 +11946,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
@@ -11937,7 +11957,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -12117,7 +12137,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -12137,7 +12157,7 @@
         {
           "name": "i",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -12476,23 +12496,23 @@
       "file": "meos.h",
       "returnType": {
         "c": "int64_t",
-        "canonical": "long"
+        "canonical": "int64_t"
       },
       "params": [
         {
           "name": "value",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "vsize",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "vorigin",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         }
       ]
     },
@@ -12512,12 +12532,12 @@
         {
           "name": "vsize",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "vorigin",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "count",
@@ -12542,12 +12562,12 @@
         {
           "name": "vsize",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "vorigin",
           "cType": "int64_t",
-          "canonical": "long"
+          "canonical": "int64_t"
         },
         {
           "name": "count",
@@ -13396,7 +13416,7 @@
       "file": "meos.h",
       "returnType": {
         "c": "uint64_t",
-        "canonical": "unsigned long"
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -13407,7 +13427,7 @@
         {
           "name": "seed",
           "cType": "uint64_t",
-          "canonical": "unsigned long"
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -24356,6 +24376,51 @@
       ]
     },
     {
+      "name": "tfloat_sin",
+      "file": "meos.h",
+      "returnType": {
+        "c": "Temporal *",
+        "canonical": "Temporal *"
+      },
+      "params": [
+        {
+          "name": "temp",
+          "cType": "const Temporal *",
+          "canonical": "const Temporal *"
+        }
+      ]
+    },
+    {
+      "name": "tfloat_cos",
+      "file": "meos.h",
+      "returnType": {
+        "c": "Temporal *",
+        "canonical": "Temporal *"
+      },
+      "params": [
+        {
+          "name": "temp",
+          "cType": "const Temporal *",
+          "canonical": "const Temporal *"
+        }
+      ]
+    },
+    {
+      "name": "tfloat_tan",
+      "file": "meos.h",
+      "returnType": {
+        "c": "Temporal *",
+        "canonical": "Temporal *"
+      },
+      "params": [
+        {
+          "name": "temp",
+          "cType": "const Temporal *",
+          "canonical": "const Temporal *"
+        }
+      ]
+    },
+    {
       "name": "tnumber_abs",
       "file": "meos.h",
       "returnType": {
@@ -29234,8 +29299,8 @@
       "name": "stbox_hash_extended",
       "file": "meos_geo.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -29245,8 +29310,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -35873,8 +35938,8 @@
       "name": "cbuffer_hash_extended",
       "file": "meos_cbuffer.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -35884,8 +35949,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -41206,8 +41271,8 @@
       "name": "datum_hash_extended",
       "file": "meos_internal.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -41222,8 +41287,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -46664,6 +46729,31 @@
     },
     {
       "name": "tsequenceset_value_n",
+      "file": "meos_internal.h",
+      "returnType": {
+        "c": "bool",
+        "canonical": "bool"
+      },
+      "params": [
+        {
+          "name": "ss",
+          "cType": "const TSequenceSet *",
+          "canonical": "const struct TSequenceSet *"
+        },
+        {
+          "name": "n",
+          "cType": "int",
+          "canonical": "int"
+        },
+        {
+          "name": "result",
+          "cType": "Datum *",
+          "canonical": "int ((*)(int *))()"
+        }
+      ]
+    },
+    {
+      "name": "tsequenceset_value_n_p",
       "file": "meos_internal.h",
       "returnType": {
         "c": "bool",
@@ -58619,7 +58709,7 @@
       ]
     },
     {
-      "name": "h3index_parse",
+      "name": "h3index_in",
       "file": "h3index.h",
       "returnType": {
         "c": "uint64_t",
@@ -58634,7 +58724,7 @@
       ]
     },
     {
-      "name": "h3index_to_string",
+      "name": "h3index_out",
       "file": "h3index.h",
       "returnType": {
         "c": "char *",
@@ -60832,8 +60922,8 @@
       "name": "jsonb_hash_extended",
       "file": "meos_json.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -60843,8 +60933,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -68510,8 +68600,8 @@
       "name": "npoint_hash_extended",
       "file": "meos_npoint.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -68521,8 +68611,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -70669,8 +70759,8 @@
       "name": "pcpoint_hash_extended",
       "file": "meos_pointcloud.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -70680,8 +70770,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -71163,8 +71253,8 @@
       "name": "pcpatch_hash_extended",
       "file": "meos_pointcloud.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -71174,8 +71264,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -73558,8 +73648,8 @@
       "name": "pose_hash_extended",
       "file": "meos_pose.h",
       "returnType": {
-        "c": "int",
-        "canonical": "int"
+        "c": "uint64_t",
+        "canonical": "uint64_t"
       },
       "params": [
         {
@@ -73569,8 +73659,8 @@
         },
         {
           "name": "seed",
-          "cType": "int",
-          "canonical": "int"
+          "cType": "uint64_t",
+          "canonical": "uint64_t"
         }
       ]
     },
@@ -80675,6 +80765,121 @@
       ]
     },
     {
+      "name": "text_in",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "text *",
+        "canonical": "struct varlena *"
+      },
+      "params": [
+        {
+          "name": "str",
+          "cType": "const char *",
+          "canonical": "const char *"
+        }
+      ]
+    },
+    {
+      "name": "text_out",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "char *",
+        "canonical": "char *"
+      },
+      "params": [
+        {
+          "name": "txt",
+          "cType": "const text *",
+          "canonical": "const struct varlena *"
+        }
+      ]
+    },
+    {
+      "name": "text_upper",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "text *",
+        "canonical": "struct varlena *"
+      },
+      "params": [
+        {
+          "name": "txt",
+          "cType": "const text *",
+          "canonical": "const struct varlena *"
+        }
+      ]
+    },
+    {
+      "name": "text_lower",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "text *",
+        "canonical": "struct varlena *"
+      },
+      "params": [
+        {
+          "name": "txt",
+          "cType": "const text *",
+          "canonical": "const struct varlena *"
+        }
+      ]
+    },
+    {
+      "name": "text_initcap",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "text *",
+        "canonical": "struct varlena *"
+      },
+      "params": [
+        {
+          "name": "txt",
+          "cType": "const text *",
+          "canonical": "const struct varlena *"
+        }
+      ]
+    },
+    {
+      "name": "add_date_int",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "DateADT",
+        "canonical": "int"
+      },
+      "params": [
+        {
+          "name": "date",
+          "cType": "DateADT",
+          "canonical": "int"
+        },
+        {
+          "name": "days",
+          "cType": "int32",
+          "canonical": "int"
+        }
+      ]
+    },
+    {
+      "name": "add_timestamptz_interval",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "Timestamp",
+        "canonical": "long"
+      },
+      "params": [
+        {
+          "name": "tstz",
+          "cType": "TimestampTz",
+          "canonical": "long"
+        },
+        {
+          "name": "interv",
+          "cType": "const Interval *",
+          "canonical": "const Interval *"
+        }
+      ]
+    },
+    {
       "name": "date_in",
       "file": "postgres_ext_defs.in.h",
       "returnType": {
@@ -80745,6 +80950,26 @@
       ]
     },
     {
+      "name": "pg_interval_in",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "Interval *",
+        "canonical": "Interval *"
+      },
+      "params": [
+        {
+          "name": "str",
+          "cType": "const char *",
+          "canonical": "const char *"
+        },
+        {
+          "name": "typmod",
+          "cType": "int32",
+          "canonical": "int"
+        }
+      ]
+    },
+    {
       "name": "interval_make",
       "file": "postgres_ext_defs.in.h",
       "returnType": {
@@ -80791,6 +81016,21 @@
     },
     {
       "name": "interval_out",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "char *",
+        "canonical": "char *"
+      },
+      "params": [
+        {
+          "name": "interv",
+          "cType": "const Interval *",
+          "canonical": "const Interval *"
+        }
+      ]
+    },
+    {
+      "name": "pg_interval_out",
       "file": "postgres_ext_defs.in.h",
       "returnType": {
         "c": "char *",
@@ -80876,6 +81116,26 @@
     },
     {
       "name": "timestamptz_in",
+      "file": "postgres_ext_defs.in.h",
+      "returnType": {
+        "c": "TimestampTz",
+        "canonical": "long"
+      },
+      "params": [
+        {
+          "name": "str",
+          "cType": "const char *",
+          "canonical": "const char *"
+        },
+        {
+          "name": "typmod",
+          "cType": "int32",
+          "canonical": "int"
+        }
+      ]
+    },
+    {
+      "name": "pg_timestamptz_in",
       "file": "postgres_ext_defs.in.h",
       "returnType": {
         "c": "TimestampTz",
@@ -91080,6 +91340,26 @@
       "returnType": {
         "c": "double",
         "canonical": "double"
+      },
+      "params": [
+        {
+          "name": "str",
+          "cType": "const char *",
+          "canonical": "const char *"
+        },
+        {
+          "name": "endptr",
+          "cType": "char **",
+          "canonical": "char **"
+        }
+      ]
+    },
+    {
+      "name": "meos_strtof",
+      "file": "type_util.h",
+      "returnType": {
+        "c": "float",
+        "canonical": "float"
       },
       "params": [
         {
