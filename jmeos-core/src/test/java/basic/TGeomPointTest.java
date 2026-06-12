@@ -1,7 +1,6 @@
 package basic;
 
 import functions.GeneratedFunctions;
-import functions.functions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,8 +52,8 @@ public class TGeomPointTest {
     static error_handler_fn errorHandler = new error_handler();
 
     private static Stream<Arguments> fromtemporal() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1.5 1.5)@2019-09-01"), "TGeomPointInst",TInterpolation.NONE, "POINT(1 1)@2019-09-01 00:00:00+00"),
@@ -67,8 +66,8 @@ public class TGeomPointTest {
 
 
     static Stream<Arguments> from_time() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TGeomPointSeq", TInterpolation.DISCRETE),
@@ -80,8 +79,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> fromstring() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst",TInterpolation.NONE, "POINT(1 1)@2019-09-01 00:00:00+00"),
@@ -93,8 +92,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> bounding() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new STBox("STBOX XT(((1, 1),(1, 1)),[2019-09-01, 2019-09-01])")    ),
@@ -106,8 +105,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> fromstart() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", "POINT (1 1)"    ),
@@ -119,8 +118,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> endstart() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", "POINT (1 1)"    ),
@@ -132,8 +131,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> test_time() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new tstzspanset("{[2019-09-01, 2019-09-01]}") ),
@@ -145,8 +144,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> period() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new tstzspan("[2019-09-01, 2019-09-01]") ),
@@ -157,8 +156,8 @@ public class TGeomPointTest {
     }
 
     private static Stream<Arguments> num_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", 1 ),
@@ -170,8 +169,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> start_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("Point(1 1)@2019-09-01", "TGeomPointInst", new TGeomPointInst("Point(1 1)@2019-09-01") ),
@@ -185,8 +184,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> end_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("Point(1 1)@2019-09-01", "TGeomPointInst", new TGeomPointInst("Point(1 1)@2019-09-01") ),
@@ -198,8 +197,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> asmfjson() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         String jsonString1 = "{\n" +
                 "  \"type\": \"MovingGeomPoint\",\n" +
@@ -379,8 +378,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> min_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new TGeomPointInst("Point(1 1)@2019-09-01") ),
@@ -392,8 +391,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> max_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", new TGeomPointInst("Point(1 1)@2019-09-01") ),
@@ -405,8 +404,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> instantn() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 0, new TGeomPointInst("Point(1 1)@2019-09-01") ),
@@ -418,8 +417,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> num_timestamps() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 1),
@@ -432,8 +431,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> start_timestamps() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -445,8 +444,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> end_timestamps() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -459,8 +458,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> hash() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 382694564),
@@ -472,8 +471,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> lower_inc() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), true),
@@ -484,8 +483,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> length() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 0),
@@ -497,8 +496,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> cumullength() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), new TFloatInst("0@2019-09-01")),
@@ -509,8 +508,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> speed() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), null),
@@ -521,8 +520,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> xy() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), new TFloatInst("1@2019-09-01")),
@@ -533,8 +532,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> xyz() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1 1)@2019-09-01"), new TFloatInst("1@2019-09-01")),
@@ -545,8 +544,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> hasz() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), false),
@@ -557,8 +556,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> is_simple() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), true),
@@ -569,8 +568,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> angular_difference() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeomPointSeqSet", new TFloatSeqSet("{0@2019-09-01,0@2019-09-02}"))
@@ -580,8 +579,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> togeom() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), new TGeomPointInst("Point(1 1)@2019-09-01"))
@@ -593,8 +592,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> to_instant() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), new TGeomPointInst("Point(1 1)@2019-09-01")),
@@ -607,8 +606,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> to_sequence() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeq("[Point(1 1)@2019-09-01]")),
@@ -620,8 +619,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> to_sequenceset() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeomPointSeqSet("{[Point(1 1)@2019-09-01]}")),
@@ -634,8 +633,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> set_interp() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), "TGeomPointInst", TInterpolation.DISCRETE, new TGeomPointSeq("{Point(1 1)@2019-09-01}")),
@@ -647,8 +646,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> round() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointInst("Point(1.123456789 1.123456789)@2019-09-01"), "TGeomPointInst", new TGeomPointInst("Point(1.12 1.12)@2019-09-01")),
@@ -660,8 +659,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> insert() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeomPointSeq",new TGeomPointSeq("{Point(1 1)@2019-09-03}"), new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02, Point(1 1)@2019-09-03}")  ),
@@ -672,8 +671,8 @@ public class TGeomPointTest {
 
 
     private static Stream<Arguments> append_sequence() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"),"TGeomPointSeq", new TGeomPointSeq("[Point(1 1)@2019-09-03]"), new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03]}")),
@@ -707,8 +706,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromtemporal")
     void testFromTemporalConstructor(TGeomPoint source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             GeometryFactory factory4326 = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 4326);
@@ -735,8 +734,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}")
     @MethodSource("from_time")
     void testFromBaseTimeConstructor(Time source, String type, TInterpolation interpolation) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             GeometryFactory factory4326 = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
@@ -759,8 +758,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testFromStringConstructor(TGeomPoint source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             TGeomPointInst ti = new TGeomPointInst(expected);
@@ -784,8 +783,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testCopyConstructor(Temporal source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             TGeomPointInst ti = (TGeomPointInst) source.copy();
@@ -809,8 +808,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("bounding")
     void testBounding(TGeomPoint source, String type, STBox expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             //assertEquals(source.bounding_box_point().toString(15), expected.toString(15));
@@ -826,8 +825,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testInterpolation(Temporal source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             assertEquals(source.interpolation(),interpolation);
@@ -843,8 +842,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("asmfjson")
     void testAsmfjson(Temporal source, String type, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         System.out.println(source.as_mfjson());
     }
@@ -853,8 +852,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("fromstart")
     void testStartvalue(TGeomPoint source, String type,  String expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.start_value(15).toString(), expected);
     }
@@ -863,8 +862,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("endstart")
     void testEndvalue(TGeomPoint source, String type,  String expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.end_value(15).toString(), expected);
     }
@@ -873,8 +872,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("test_time")
     void testTime(TGeomPoint source, String type,  tstzspanset expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((Temporal)source).time().toString(), expected.toString());
     }
@@ -884,8 +883,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testtstzspan(TGeomPoint source, String type,  tstzspan expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((Temporal)source).period().toString(), expected.toString());
     }
@@ -894,8 +893,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type{1}, expected={2}")
     @MethodSource("period")
     void testTimeSpan(TGeomPoint source, String type,  tstzspan expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((Temporal)source).period().toString(), expected.toString());
     }
@@ -903,8 +902,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("num_instant")
     void testNumInst(TGeomPoint source, String type,  int expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((Temporal)source).num_instants(), expected);
     }
@@ -913,8 +912,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testStartInstant(String source, String type,  TGeomPoint expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             TGeomPointInst tg = new TGeomPointInst(source);
@@ -936,8 +935,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("end_instant")
     void testEndInstant(String source, String type,  TGeomPoint expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst") {
             TGeomPointInst tg = new TGeomPointInst(source);
@@ -958,8 +957,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("min_instant")
     void testMinInst(Temporal source, String type,  TGeomPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TGeomPointInst)source.min_instant()).to_string(), expected.to_string());
     }
@@ -969,8 +968,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("max_instant")
     void testMaxInst(Temporal source, String type,  TGeomPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TGeomPointInst)source.max_instant()).to_string(), expected.to_string());
     }
@@ -979,8 +978,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, n={1}, expected={2}")
     @MethodSource("instantn")
     void testInstN(Temporal source, int n,  TGeomPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TGeomPointInst)source.instant_n(n)).to_string(), expected.to_string());
     }
@@ -989,8 +988,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, n={1}")
     @MethodSource("num_timestamps")
     void testNumTimestamps(Temporal source, int n) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.num_timestamps(), n);
     }
@@ -999,8 +998,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, local={1}")
     @MethodSource("start_timestamps")
     void testStartTimestamps(Temporal source, LocalDateTime local) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.start_timestamp(), local);
     }
@@ -1009,8 +1008,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, local={1}")
     @MethodSource("end_timestamps")
     void testEndTimestamps(Temporal source, LocalDateTime local) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.end_timestamp(), local);
     }
@@ -1019,8 +1018,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, hash={1}")
     @MethodSource("hash")
     void testHash(Temporal source, long hash) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.hash(), hash);
     }
@@ -1029,8 +1028,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, hash={1}")
     @MethodSource("length")
     void testLength(TGeomPoint source, double hash) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TPoint)source).length(), hash);
     }
@@ -1039,8 +1038,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("cumullength")
     void testCumulLength(TGeomPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals((source).cumulative_length().to_string(15), tfloat.to_string(15));
     }
@@ -1049,8 +1048,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("xy")
     void testXY(TGeomPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.x().to_string(15), tfloat.to_string(15));
         assertEquals(source.y().to_string(15), tfloat.to_string(15));
@@ -1060,8 +1059,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("xyz")
     void testXYZ(TGeomPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.x().to_string(15), tfloat.to_string(15));
         assertEquals(source.y().to_string(15), tfloat.to_string(15));
@@ -1072,8 +1071,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("hasz")
     void testHasz(TGeomPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.has_z(), val);
     }
@@ -1082,8 +1081,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("is_simple")
     void testIsSimple(TGeomPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.is_simple(), val);
     }
@@ -1092,8 +1091,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("is_simple")
     void testSRID(TGeomPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.srid(), 0);
     }
@@ -1103,8 +1102,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, val={2}")
     @MethodSource("angular_difference")
     void testAngula(TGeomPoint source, String type, TFloat val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointSeq"){
             TFloatSeqSet tf = (TFloatSeqSet) source.angular_difference().to_degrees(true);
@@ -1120,8 +1119,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, TGeom={1}")
     @MethodSource("to_instant")
     void testToInstant(Temporal source, TGeomPointInst TGeom) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         TGeomPointInst tmp = (TGeomPointInst) source.to_instant();
         assertTrue(tmp instanceof TGeomPointInst);
@@ -1132,8 +1131,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, interpolation={1}, TGeom={2}")
     @MethodSource("to_sequence")
     void testToSequence(Temporal source, TInterpolation interpolation, TGeomPointSeq TGeom) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         TGeomPointSeq tmp = (TGeomPointSeq) source.to_sequence(interpolation);
         assertTrue(tmp instanceof TGeomPointSeq);
@@ -1144,8 +1143,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, interpolation={1}, TGeom={2}")
     @MethodSource("to_sequenceset")
     void testToSequenceSet(Temporal source, TInterpolation interpolation, TGeomPointSeqSet TGeom) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         TGeomPointSeqSet tmp = (TGeomPointSeqSet) source.to_sequenceset(interpolation);
         assertTrue(tmp instanceof TGeomPointSeqSet);
@@ -1156,8 +1155,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, TGeom={3}")
     @MethodSource("set_interp")
     void testSetInterp(Temporal source, String type, TInterpolation interpolation, TGeomPointSeq TGeom) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointInst"){
             TGeomPointInst tmp = (TGeomPointInst) source.set_interpolation(interpolation);
@@ -1180,8 +1179,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, TGeom={2}")
     @MethodSource("round")
     void testRound(TPoint source, String type, TPoint TGeom) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TGeomPointInst" ){
             assertTrue(source instanceof TGeomPointInst);
@@ -1199,8 +1198,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, add={2}, expected={3}")
     @MethodSource("insert")
     void testInsert(Temporal source, String type, Temporal add, Temporal expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TGeomPointSeq"){
             TGeomPointSeq TGeom = (TGeomPointSeq) source.insert(add);
@@ -1215,8 +1214,8 @@ public class TGeomPointTest {
     @ParameterizedTest(name="source={0}, type={1}, tgeoseq={2}, expected={3}")
     @MethodSource("append_sequence")
     void testAppendSequence(Temporal source, String type, TGeomPointSeq tgeoseq, Temporal expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
 
         if (type == "TGeomPointSeq"){

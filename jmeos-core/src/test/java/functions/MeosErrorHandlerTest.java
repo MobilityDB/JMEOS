@@ -29,8 +29,8 @@ class MeosErrorHandlerTest {
 
     @BeforeAll
     static void initMeos() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(HANDLER);
         GeneratedFunctions.meos_initialize_collation();
     }
 
@@ -44,7 +44,7 @@ class MeosErrorHandlerTest {
 
     @AfterAll
     static void finalizeMeos() {
-        functions.meos_finalize();
+        GeneratedFunctions.meos_finalize();
     }
 
     */

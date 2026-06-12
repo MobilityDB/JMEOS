@@ -1,6 +1,5 @@
 package basic;
 import functions.GeneratedFunctions;
-import functions.functions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,8 +36,8 @@ public class TIntTest {
     static error_handler_fn errorHandler = new error_handler();
 
     private static Stream<Arguments> frombasetemporal() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TIntInst", TInterpolation.NONE),
@@ -49,8 +48,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> frombasetime() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TIntSeq", TInterpolation.DISCRETE),
@@ -71,8 +70,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> fromcopy() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst"),
@@ -82,8 +81,8 @@ public class TIntTest {
     }
 
     private static Stream<Arguments> totfloat() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", "1@2019-09-01 00:00:00+00"),
@@ -95,8 +94,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> bounding() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TBox("TBOXINT XT([1,1],[2019-09-01, 2019-09-01])")),
@@ -106,8 +105,8 @@ public class TIntTest {
     }
 
     private static Stream<Arguments> interp() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", TInterpolation.NONE),
@@ -118,8 +117,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> value_span() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new IntSpan(1, 1, true, true)),
@@ -130,8 +129,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> value_spans() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new IntSpanSet("{[1,1]}")),
@@ -142,8 +141,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> start_value() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1),
@@ -154,8 +153,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> end_value() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1),
@@ -166,8 +165,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> min_value() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1),
@@ -178,8 +177,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> max_value() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1),
@@ -190,8 +189,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> time() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
@@ -202,8 +201,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> period() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new tstzspan("[2019-09-01, 2019-09-01]")),
@@ -213,8 +212,8 @@ public class TIntTest {
     }
 
     private static Stream<Arguments> num_instant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1),
@@ -226,8 +225,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> start_instant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("1@2019-09-01")),
@@ -239,8 +238,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> end_instant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("1@2019-09-01")),
@@ -251,8 +250,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> max_instant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("1@2019-09-01")),
@@ -263,8 +262,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> instant_n() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), 0, new TIntInst("1@2019-09-01")),
@@ -276,8 +275,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> num_timestamps() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), 1, new TIntInst("1@2019-09-01")),
@@ -289,8 +288,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> start_timestamps() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -301,8 +300,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> end_timestamps() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -313,8 +312,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> hash() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), 440045287, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -325,8 +324,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> toinstant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("1@2019-09-01")),
@@ -337,8 +336,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> tosequence() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", TInterpolation.NONE, new TIntSeq("[1@2019-09-01]")),
@@ -349,8 +348,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> tosequenceset() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", TInterpolation.NONE, new TIntSeqSet("{[1@2019-09-01]}"))
@@ -361,8 +360,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> insert() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntSeq("{1@2019-09-03}"), new TIntSeq("{1@2019-09-01, 1@2019-09-03}")),
@@ -373,8 +372,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> update() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("2@2019-09-01"), new TIntInst("2@2019-09-01")),
@@ -385,8 +384,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> append_sequence() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntSeq("[1@2019-09-03]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02], [1@2019-09-03]}")),
@@ -396,8 +395,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> abs() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntInst("2@2019-09-01"), new TIntInst("2@2019-09-01")),
@@ -408,8 +407,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> delta_value() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new TIntInst("2@2019-09-01"), new TIntSeq("[1@2019-09-01, 1@2019-09-02)")),
@@ -420,8 +419,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> always_equal() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, true ),
@@ -436,8 +435,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> ever_equal() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, true ),
@@ -452,8 +451,8 @@ public class TIntTest {
 
 
     private static Stream<Arguments> ever_greater() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", 1, false ),
@@ -487,8 +486,8 @@ public class TIntTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}")
     @MethodSource("frombasetime")
     void testFromBaseTimeConstructor(Time source, String type, TInterpolation interpolation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TIntSeq") {
             System.out.println(source.toString());
@@ -510,8 +509,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}")
     @MethodSource("frombasetemporal")
     void testFromBaseTemporalConstructor(Temporal source, String type, TInterpolation interpolation) {
-        //functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        //GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst ti = new TIntInst();
@@ -539,8 +538,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testStringConstructor(String source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst tinst = new TIntInst(source);
@@ -568,8 +567,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}")
     @MethodSource("fromcopy")
     void testCopyConstructor(Temporal source, String type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst tb = (TIntInst)source.copy();
@@ -590,8 +589,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testString(String source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst tinst = new TIntInst(source);
@@ -611,8 +610,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("totfloat")
     void testToTfloat(TInt source, String type, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TFloatInst tinst = (TFloatInst) source.to_tfloat();
@@ -633,8 +632,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("bounding")
     void testBoundingBox(Temporal source, String type, Box expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.bounding_box().toString(),expected.to_period().toString());
     }
@@ -643,8 +642,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("interp")
     void testInterpolation(Temporal source, String type, TInterpolation expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.interpolation(),expected);
     }
@@ -653,8 +652,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("value_span")
     void testValueSpan(TInt source, String type, IntSpan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.value_span().toString(),expected.toString());
     }
@@ -663,8 +662,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("value_spans")
     void testValuesSpan(TInt source, String type, IntSpanSet expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.value_spans().toString(),expected.toString());
     }
@@ -673,8 +672,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_value")
     void testStart_value(TInt source, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.start_value(),expected);
     }
@@ -683,8 +682,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("end_value")
     void testEnd_value(TInt source, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.end_value(),expected);
     }
@@ -693,8 +692,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("min_value")
     void testMin_value(TInt source, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.min_value(),expected);
     }
@@ -703,8 +702,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("max_value")
     void testMax_value(TInt source, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.max_value(),expected);
     }
@@ -713,8 +712,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("time")
     void testTime(Temporal source, String type, tstzspanset expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.time().toString(),expected.toString());
     }
@@ -724,8 +723,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testtstzspan(Temporal source, String type, tstzspan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.period().toString(),expected.toString());
     }
@@ -734,8 +733,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testTimespan(Temporal source, String type, tstzspan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.timespan().toString(),expected.toString());
     }
@@ -744,8 +743,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("num_instant")
     void testNumInstant(Temporal source, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.num_instants(),expected);
     }
@@ -754,8 +753,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testStartInstant(Temporal source, String type, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TIntInst)source.start_instant()).to_string(),((TIntInst)expected.start_instant()).to_string());
     }
@@ -764,8 +763,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("end_instant")
     void testEndInstant(Temporal source, String type, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TIntInst)source.end_instant()).to_string(),((TIntInst)expected.end_instant()).to_string());
     }
@@ -775,8 +774,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testMinInstant(Temporal source, String type, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TIntInst)source.min_instant()).to_string(),((TIntInst)expected.min_instant()).to_string());
     }
@@ -785,8 +784,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("max_instant")
     void testMaxInstant(Temporal source, String type, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TIntInst)source.max_instant()).to_string(),((TIntInst)expected.max_instant()).to_string());
     }
@@ -796,8 +795,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("instant_n")
     void testInstant_n(Temporal source, int n, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TIntInst)source.instant_n(n)).to_string(),((TIntInst)expected).to_string());
     }
@@ -806,8 +805,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("num_timestamps")
     void testNumTimestamps(Temporal source, int n, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.num_timestamps(),n);
     }
@@ -816,8 +815,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("start_timestamps")
     void testStartTimestamps(Temporal source, int n, LocalDateTime expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.start_timestamp(),expected);
     }
@@ -826,8 +825,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("end_timestamps")
     void testEndTimestamps(Temporal source, int n, LocalDateTime expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.end_timestamp(),expected);
     }
@@ -836,8 +835,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, n={1}, expected={2}")
     @MethodSource("hash")
     void testHash(Temporal source, long n, LocalDateTime expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(source.hash(),n);
     }
@@ -846,8 +845,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, expected={2}")
     @MethodSource("toinstant")
     void testToinstant(Temporal source, String type, TIntInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         TIntInst tmp = (TIntInst) source.to_instant();
         assertTrue(tmp instanceof TIntInst);
@@ -860,8 +859,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, interp={2}, expected={3}")
     @MethodSource("tosequence")
     void testTosequence(Temporal source, String type, TInterpolation interp, TIntSeq expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         System.out.println(source.to_sequence(interp).start_timestamp());
 //        System.out.println(source.to_sequenceset(interp));
@@ -874,8 +873,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, interp={2}, expected={3}")
     @MethodSource("tosequenceset")
     void testTosequenceset(Temporal source, String type, TInterpolation interp, TIntSeqSet expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         System.out.println(source.to_sequenceset(interp).start_timestamp());
         TIntSeqSet tmp = (TIntSeqSet) source.to_sequenceset(interp);
@@ -889,8 +888,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("insert")
     void testInsert(Temporal source, String type, TIntSeq tseq, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst tmp = (TIntInst) source.insert(tseq);
@@ -910,8 +909,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("update")
     void testUpdate(Temporal source, String type, TIntInst tseq, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TIntInst tmp = (TIntInst) source.update(tseq);
@@ -928,8 +927,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("append_sequence")
     void testAppendSequence(Temporal source, String type, TIntSeq tseq, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TIntSeq") {
             TIntSeq tmp = (TIntSeq) source.append_sequence(tseq);
@@ -943,8 +942,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("abs")
     void testAbs(Temporal source, String type, TIntInst tseq, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TNumber tmp = ((TNumber) source).abs();
@@ -962,8 +961,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, tseq={2}, expected={3}")
     @MethodSource("delta_value")
     void testDeltaValue(Temporal source, String type, TIntInst tseq, Temporal expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if(type == "TIntInst"){
             TNumber tmp = ((TNumber) source).delta_value();
@@ -982,8 +981,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("always_equal")
     void testAlwaysEqual(Temporal source, String type, int arg, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         System.out.println(((TInt)source).never_not_equal(arg));
         System.out.println(expected);
@@ -998,8 +997,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("ever_equal")
     void testEverEqual(Temporal source, String type, int arg, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
 //        assertEquals(((TInt)source).ever_equal(arg),expected);
         assertEquals(((TInt)source).always_not_equal(arg),!expected);
@@ -1010,8 +1009,8 @@ public class TIntTest {
     @ParameterizedTest(name ="source={0}, type={1}, arg={2}, expected={3}")
     @MethodSource("ever_greater")
     void testEverGreater(Temporal source, String type, int arg, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TInt)source).always_less(arg),expected);
         assertEquals(((TInt)source).never_greater_or_equal(arg),expected);

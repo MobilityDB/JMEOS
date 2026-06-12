@@ -40,8 +40,8 @@ class MeosIoErrorBranchTest {
 
     @BeforeAll
     static void initMeos() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(HANDLER);
         GeneratedFunctions.meos_initialize_collation();
     }
 
@@ -326,21 +326,21 @@ class MeosIoErrorBranchTest {
             @DisplayName("tgeompoint_from_mfjson(truncated) → MeosMfJsonInputError (code 20)")
             void truncatedMfJson_throwsMeosMfJsonInputError() {
                 assertThrows(MeosMfJsonInputError.class,
-                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+                        () -> GeneratedFunctions.tgeompoint_from_mfjson(TRUNCATED));
             }
 
             @Test
             @DisplayName("tgeompoint_from_mfjson(truncated) catchable as MeosIoError")
             void truncatedMfJson_catchableAsMeosIoError() {
                 assertThrows(MeosIoError.class,
-                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+                        () -> GeneratedFunctions.tgeompoint_from_mfjson(TRUNCATED));
             }
 
             @Test
             @DisplayName("tgeompoint_from_mfjson(truncated) catchable as MeosException")
             void truncatedMfJson_catchableAsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.tgeompoint_from_mfjson(TRUNCATED));
+                        () -> GeneratedFunctions.tgeompoint_from_mfjson(TRUNCATED));
             }
         }
     }
@@ -930,21 +930,21 @@ class MeosIoErrorBranchTest {
             @DisplayName("temporal_from_hexwkb(corrupt): MeosWkbInputError")
             void corruptWkb_throwsMeosWkbInputError() {
                 assertThrows(MeosWkbInputError.class,
-                        () -> functions.temporal_from_hexwkb(CORRUPT));
+                        () -> GeneratedFunctions.temporal_from_hexwkb(CORRUPT));
             }
 
             @Test
             @DisplayName("temporal_from_hexwkb(corrupt) catchable as MeosIoError")
             void corruptWkb_catchableAsMeosIoError() {
                 assertThrows(MeosIoError.class,
-                        () -> functions.temporal_from_hexwkb(CORRUPT));
+                        () -> GeneratedFunctions.temporal_from_hexwkb(CORRUPT));
             }
 
             @Test
             @DisplayName("temporal_from_hexwkb(corrupt) catchable as MeosException")
             void corruptWkb_catchableAsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.temporal_from_hexwkb(CORRUPT));
+                        () -> GeneratedFunctions.temporal_from_hexwkb(CORRUPT));
             }
         }
     }
@@ -1233,21 +1233,21 @@ class MeosIoErrorBranchTest {
             @DisplayName("tgeompoint_from_geojson(truncated) → MeosGeoJsonInputError (code 26)")
             void invalidGeoJson_throwsMeosGeoJsonInputError() {
                 assertThrows(MeosGeoJsonInputError.class,
-                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+                        () -> GeneratedFunctions.geo_from_geojson(INVALID_GEOJSON));
             }
 
             @Test
             @DisplayName("tgeompoint_from_geojson(truncated) catchable as MeosIoError")
             void invalidGeoJson_catchableAsMeosIoError() {
                 assertThrows(MeosIoError.class,
-                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+                        () -> GeneratedFunctions.geo_from_geojson(INVALID_GEOJSON));
             }
 
             @Test
             @DisplayName("tgeompoint_from_geojson(truncated) catchable as MeosException")
             void invalidGeoJson_catchableAsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.geo_from_geojson(INVALID_GEOJSON));
+                        () -> GeneratedFunctions.geo_from_geojson(INVALID_GEOJSON));
             }
         }*/
     }

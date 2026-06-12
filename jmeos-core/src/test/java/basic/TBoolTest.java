@@ -1,6 +1,5 @@
 package basic;
 import functions.GeneratedFunctions;
-import functions.functions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -37,8 +36,8 @@ public class TBoolTest {
     static error_handler_fn errorHandler = new error_handler();
 
     static Stream<Arguments> TBool_copy_constructor() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst"),
@@ -50,8 +49,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_string_constructor() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of("True@2019-09-01", "TBoolInst", TInterpolation.NONE, "t@2019-09-01 00:00:00+00"),
@@ -63,8 +62,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_base_time_constructor() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TBoolSeq", TInterpolation.DISCRETE),
@@ -75,8 +74,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_string() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", "t@2019-09-01 00:00:00+00"),
@@ -87,8 +86,8 @@ public class TBoolTest {
     }
 
     static Stream<Arguments> TBool_bounding() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspan("[2019-09-01, 2019-09-01]")),
@@ -100,8 +99,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_interp() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", TInterpolation.NONE),
@@ -112,8 +111,8 @@ public class TBoolTest {
     }
 
     static Stream<Arguments> TBool_start() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
@@ -125,8 +124,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_end() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
@@ -138,8 +137,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_time() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
@@ -151,8 +150,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_numinst() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 1),
@@ -164,8 +163,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_startinst() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new TBoolInst("True@2019-09-01")),
@@ -177,8 +176,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_endinst() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new TBoolInst("True@2019-09-01")),
@@ -190,8 +189,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_mininst() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new TBoolInst("True@2019-09-01")),
@@ -203,8 +202,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_maxinst() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new TBoolInst("True@2019-09-01")),
@@ -217,8 +216,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_instn() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 0, new TBoolInst("True@2019-09-01")),
@@ -230,8 +229,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_startmstp() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -243,8 +242,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_endtmstp() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -256,8 +255,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_hash() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 440045287),
@@ -269,8 +268,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_instant() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), new TBoolInst("True@2019-09-01")),
@@ -282,8 +281,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_tosequence() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.NONE, new TBoolSeq("[True@2019-09-01]")),
@@ -295,8 +294,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_tosequenceset() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), TInterpolation.NONE, new TBoolSeqSet("{[True@2019-09-01]}")),
@@ -307,8 +306,8 @@ public class TBoolTest {
     }
 
     static Stream<Arguments> TBool_insert() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), new TBoolSeq("{True@2019-09-03}"), new TBoolSeq("{True@2019-09-01, True@2019-09-03}"), "TBoolInst"),
@@ -319,8 +318,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_update() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), new TBoolInst("False@2019-09-01"), new TBoolInst("False@2019-09-01"), "TBoolInst"),
@@ -330,8 +329,8 @@ public class TBoolTest {
     }
 
     static Stream<Arguments> TBool_appendseq() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), new TBoolSeq("{True@2019-09-03}") , new TBoolSeq("{True@2019-09-01, False@2019-09-02, True@2019-09-03}"), "TBoolSeq"),
@@ -342,8 +341,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_whentrue() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
@@ -354,8 +353,8 @@ public class TBoolTest {
     }
 
     static Stream<Arguments> TBool_whenfalse() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq" , new tstzspanset("{[2019-09-02, 2019-09-02]}")),
@@ -366,8 +365,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_alwaystrue() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
@@ -379,8 +378,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_alwaysfalse() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
@@ -392,8 +391,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_evertrue() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
@@ -405,8 +404,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_everfalse() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
@@ -418,8 +417,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_nevertrue() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", false),
@@ -431,8 +430,8 @@ public class TBoolTest {
 
 
     static Stream<Arguments> TBool_neverfalse() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", true),
@@ -455,8 +454,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "value={0}, type={1}, interp={2}, repr={3}")
     @MethodSource("TBool_string_constructor")
     public void testFromStringConstructor(String value, String type, TInterpolation interp, String repr) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             TBoolInst tb = new TBoolInst(value);
@@ -483,8 +482,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, interp={2}")
     @MethodSource("TBool_base_time_constructor")
     public void testFromBaseTimeConstructor(Time base, String type, TInterpolation interp) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             TBoolInst tb = (TBoolInst) TBool.from_base_time(true, base);
@@ -507,8 +506,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}")
     @MethodSource("TBool_copy_constructor")
     public void testCopyConstructor(Temporal base, String type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             TBoolInst tb = (TBoolInst) base.copy();
@@ -527,8 +526,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_string")
     public void testString(Temporal base, String type, String expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals(expected,(((TBoolInst) base).to_string()));
@@ -543,8 +542,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_bounding")
     public void testBoundingBox(Temporal base, String type, tstzspan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.bounding_box().toString(),expected.toString());
     }
@@ -554,8 +553,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_interp")
     public void testInterpolation(Temporal base, String type, TInterpolation expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.interpolation(),expected);
     }
@@ -564,8 +563,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_start")
     public void testStartValues(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBool) base).start_value() ,expected);
     }
@@ -574,8 +573,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_end")
     public void testEndValues(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBool) base).end_value() ,expected);
     }
@@ -584,8 +583,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_time")
     public void testTime(Temporal base, String type, tstzspanset expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.time().toString() ,expected.toString());
     }
@@ -594,8 +593,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_bounding")
     public void testtstzspan(Temporal base, String type, tstzspan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.period().toString() ,expected.toString());
     }
@@ -604,8 +603,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_bounding")
     public void testSpan(Temporal base, String type, tstzspan expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.timespan().toString(),expected.toString());
     }
@@ -614,8 +613,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_numinst")
     public void testNumInst(Temporal base, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.num_instants(),expected);
     }
@@ -624,8 +623,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_startinst")
     public void testStartInst(Temporal base, String type, TBoolInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBoolInst)base.start_instant()).to_string(),expected.to_string());
     }
@@ -634,8 +633,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_endinst")
     public void testEndInst(Temporal base, String type, TBoolInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBoolInst)base.end_instant()).to_string(),expected.to_string());
     }
@@ -644,8 +643,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_mininst")
     public void testMinInst(Temporal base, String type, TBoolInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBoolInst)base.min_instant()).to_string(),expected.to_string());
     }
@@ -654,8 +653,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_maxinst")
     public void testMaxInst(Temporal base, String type, TBoolInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBoolInst)base.max_instant()).to_string(),expected.to_string());
     }
@@ -663,8 +662,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_instn")
     public void testInstN(Temporal base, String type, int n, TBoolInst expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(((TBoolInst)base.instant_n(n)).to_string(),expected.to_string());
     }
@@ -673,8 +672,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_numinst")
     public void testNumtmstmp(Temporal base, String type, int expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.num_timestamps(),expected);
     }
@@ -683,8 +682,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_startmstp")
     public void testStarttmstmp(Temporal base, String type, LocalDateTime expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.start_timestamp(),expected);
     }
@@ -693,8 +692,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_endtmstp")
     public void testEndtmstmp(Temporal base, String type, LocalDateTime expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.end_timestamp(),expected);
     }
@@ -703,8 +702,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_hash")
     public void testHash(Temporal base, String type, long expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         assertEquals(base.hash(),expected);
     }
@@ -713,8 +712,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}")
     @MethodSource("TBool_instant")
     public void testInstant(Temporal base, TBoolInst type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_instant();
         assertTrue(tmp instanceof TBoolInst);
@@ -725,8 +724,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, tseq={2}")
     @MethodSource("TBool_tosequence")
     public void testSequence(Temporal base, TInterpolation type, TBoolSeq tseq) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_sequence(type);
         assertTrue(tmp instanceof TBoolSeq);
@@ -737,8 +736,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, tseqset={2}")
     @MethodSource("TBool_tosequenceset")
     public void testSequenceSet(Temporal base, TInterpolation type, TBoolSeqSet tseqset) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         Temporal tmp = base.to_sequenceset(type);
         assertTrue(tmp instanceof TBoolSeqSet);
@@ -749,8 +748,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, base2={1}, type={2}")
     @MethodSource("TBool_insert")
     public void testInsert(Temporal base, Temporal base2, Temporal tseq, String type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals(((TBoolInst)base.insert(base2)).to_string(), ((TBoolSeq) tseq).to_string());
@@ -765,8 +764,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, base2={1}, type={2}")
     @MethodSource("TBool_update")
     public void testUpdate(Temporal base, Temporal base2, Temporal tseq, String type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals(((TBoolInst)base.update(base2)).to_string(), ((TBoolInst) tseq).to_string());
@@ -781,8 +780,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, base2={1}, tseq={2}, type={3}")
     @MethodSource("TBool_appendseq")
     public void testAppendSeq(Temporal base, TSequence base2, Temporal tseq, String type) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolSeq") {
             assertEquals(((TBoolSeq)base.append_sequence(base2)).to_string(), ((TBoolSeq) tseq).to_string());
@@ -796,8 +795,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, pset={2}")
     @MethodSource("TBool_whentrue")
     public void testWhentrue(Temporal base, String type, tstzspanset pset) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).when_true().toString(), pset.toString());
@@ -812,8 +811,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, pset={2}")
     @MethodSource("TBool_whenfalse")
     public void testWhenfalse(Temporal base, String type, tstzspanset pset) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolSeq") {
             System.out.println(((TBoolSeq) base).when_false().toString());
@@ -830,8 +829,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_alwaystrue")
     public void testAlwaystrue(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).always_eq(true), expected);
@@ -846,8 +845,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_alwaysfalse")
     public void testAlwaysfalse(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).always_eq(false), expected);
@@ -863,8 +862,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_evertrue")
     public void testEvertrue(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).ever_eq(true), expected);
@@ -880,8 +879,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_everfalse")
     public void testEverfalse(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).ever_eq(false), expected);
@@ -896,8 +895,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_nevertrue")
     public void testNevertrue(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).never_eq(true), expected);
@@ -913,8 +912,8 @@ public class TBoolTest {
     @ParameterizedTest(name = "base={0}, type={1}, expected={2}")
     @MethodSource("TBool_neverfalse")
     public void testNeverfalse(Temporal base, String type, boolean expected) {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         if (type == "TBoolInst") {
             assertEquals( ((TBoolInst) base).never_eq(false), expected);

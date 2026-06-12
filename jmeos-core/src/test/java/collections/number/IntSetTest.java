@@ -27,8 +27,8 @@ public class IntSetTest {
 
     static Stream<Arguments> IntSet_sources() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(5, false ),
@@ -38,8 +38,8 @@ public class IntSetTest {
 
     static Stream<Arguments> IntSet_distances() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
         GeneratedFunctions.meos_initialize_collation();
         return Stream.of(
                 Arguments.of(5, 2 ),

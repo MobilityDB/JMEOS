@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import types.collections.text.TextSet;
 import static org.junit.jupiter.api.Assertions.*;
-import functions.functions;
 import functions.GeneratedFunctions;
 import utils.TestLogger;
 
@@ -39,7 +38,7 @@ public class TextSetTest {
     public void testAsHex(){
         TextSet tset = new TextSet("{A, BB, ccc}");
         String pr = tset.as_hexwkb();
-        TextSet ttp = new TextSet(functions.set_from_hexwkb(pr));
+        TextSet ttp = new TextSet(GeneratedFunctions.set_from_hexwkb(pr));
     }
 
 
