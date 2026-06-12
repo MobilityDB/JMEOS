@@ -801,23 +801,16 @@ public interface TNumber {
 //        return listPointer;
 //    }
 
-    private Pointer createEmptyPointerArray(Runtime runtime, int size) {
-        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
-        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), size*Long.BYTES); // Adjust size as needed
-        return listPointer;
-    }
-
     default List<TNumber> value_split(int size, int start){
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-        Pointer listPointer = createEmptyPointerArray(runtime, size);
-        Pointer result= functions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
+        // tint_value_split returns an IntSplit struct by value (sret); the
+        // generated wrapper hands back the filled struct buffer:
+        //   IntSplit { Temporal **fragments @0; int *bins @8; int count @16; }
+        Pointer result= GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start);
+        Pointer fragments= result.getPointer(0);
+        int count= result.getInt(16);
         List<TNumber> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
         for(int i=0;i<count;i++){
-            Pointer res= result.getPointer((long) i *Long.BYTES);
+            Pointer res= fragments.getPointer((long) i *Long.BYTES);
             TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
             tempList.add(t);
         }
@@ -844,35 +837,31 @@ public interface TNumber {
     default List<TNumber> value_time_split(Object duration, int value_size, int value_start, Object time_start){
         OffsetDateTime st= null;
         Pointer dt= null;
-        if(time_start != null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        // The duration is always required; the time_start defaults to 2000-01-03.
+        if(duration instanceof Duration){
+            dt= ConversionUtils.timedelta_to_interval((Duration) duration);
         }
         else{
-            if(time_start instanceof LocalDateTime){
-                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
-            }
-            else{
-                st= functions.pg_timestamptz_in(time_start.toString(), -1);
-            }
-
-            if(duration instanceof Duration){
-                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
-            }
-            else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
-            }
+            dt= GeneratedFunctions.interval_in(duration.toString(), -1);
         }
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-        Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);
-        Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
-        Pointer p= functions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);
+        if(time_start == null){
+            st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
+        }
+        else if(time_start instanceof LocalDateTime){
+            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+        }
+        else{
+            st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
+        }
+        // tint_value_time_split returns an IntTimeSplit struct by value (sret):
+        //   IntTimeSplit { Temporal **fragments @0; int *value_bins @8;
+        //                  int *time_bins @16; int count @24; }
+        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st);
+        Pointer fragments= p.getPointer(0);
+        int count= p.getInt(24);
         List<TNumber> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
         for(int i=0;i<count;i++){
-            Pointer res= p.getPointer((long) i *Long.BYTES);
+            Pointer res= fragments.getPointer((long) i *Long.BYTES);
             TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
             tempList.add(t);
         }

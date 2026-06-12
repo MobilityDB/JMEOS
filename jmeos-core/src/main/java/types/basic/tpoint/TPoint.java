@@ -21,6 +21,7 @@ import types.collections.time.Time;
 import types.collections.time.tstzset;
 import types.temporal.*;
 import functions.functions;
+import functions.GeneratedFunctions;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Point;
@@ -1269,12 +1270,6 @@ public interface TPoint extends Serializable {
         MEOS Functions:
             tpoint_value_split
      */
-	private Pointer createEmptyPointerArray(Runtime runtime, int length) {
-		// Allocate memory for a list of integers
-		Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), length*Long.BYTES); // Adjust size as needed
-		return listPointer;
-	}
-
 	default List<Temporal> space_split(Float xsize, Float ysize, Float zsize, Geometry origin, boolean bitmatrix, boolean include_border){
 		Float ysz = (ysize != null) ? ysize : xsize;
 		Float zsz = (zsize != null) ? zsize : xsize;
@@ -1285,23 +1280,20 @@ public interface TPoint extends Serializable {
 		}
         else{
 			if(isTGeogPoint){
-				gs= functions.geog_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.geom_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		int length= runtime.longSize();
-		Pointer space_buckets = createEmptyPointerArray(runtime, length);
-		Pointer resPointer= functions.tgeo_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		// tgeo_space_split returns a SpaceSplit struct by value (sret):
+		//   SpaceSplit { Temporal **fragments @0; int **bins @8; int count @16; }
+		Pointer resPointer= GeneratedFunctions.tgeo_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border);
+		Pointer fragments= resPointer.getPointer(0);
+		int count= resPointer.getInt(16);
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
-			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			Pointer p= fragments.getPointer((long) i *Long.BYTES);
             tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
 		}
 		return tempList;
@@ -1336,7 +1328,7 @@ public interface TPoint extends Serializable {
 			dt= ConversionUtils.timedelta_to_interval((Duration) duration);
 		}
 		else{
-			dt= functions.pg_interval_in(duration.toString(), -1);
+			dt= GeneratedFunctions.interval_in(duration.toString(), -1);
 		}
 
 		Pointer gs= null;
@@ -1346,38 +1338,33 @@ public interface TPoint extends Serializable {
 		}
 		else{
 			if(isTGeogPoint){
-				gs= functions.geog_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.geom_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
 
 		OffsetDateTime st= null;
-		if(time_start!=null){
-			st= functions.pg_timestamptz_in("2000-01-03", -1);
+		if(time_start == null){
+			st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
+		}
+		else if(time_start instanceof LocalDateTime){
+			st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
 		}
 		else{
-			if(time_start instanceof LocalDateTime){
-				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
-			}
-			else{
-				st= functions.pg_timestamptz_in(time_start.toString(), -1);
-			}
+			st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
 		}
 
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-		int length= runtime.longSize();
-		Pointer space_buckets = createEmptyPointerArray(runtime, length);
-		Pointer time_buckets = createEmptyPointerArray(runtime, length);
-		Pointer resPointer= functions.tgeo_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border, space_buckets, time_buckets, intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		// tgeo_space_time_split returns a SpaceTimeSplit struct by value (sret):
+		//   SpaceTimeSplit { Temporal **fragments @0; int **space_bins @8;
+		//                    int *time_bins @16; int count @24; }
+		Pointer resPointer= GeneratedFunctions.tgeo_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border);
+		Pointer fragments= resPointer.getPointer(0);
+		int count= resPointer.getInt(24);
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
-			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			Pointer p= fragments.getPointer((long) i *Long.BYTES);
 			tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
 		}
 		return tempList;
