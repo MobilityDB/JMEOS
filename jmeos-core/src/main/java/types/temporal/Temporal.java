@@ -1358,43 +1358,33 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
             temporal_time_split
 */
 
-    private Pointer createEmptyPointerArray(Runtime runtime) {
-        // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
-        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), this.num_instants()*Long.BYTES); // Adjust size as needed
-        return listPointer;
-    }
-
     public List<Temporal> time_split(Object duration, Object start){
         OffsetDateTime st= null;
         Pointer dt= null;
-        if(start == null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+        // The duration is always required; the start defaults to 2000-01-03.
+        if(duration instanceof Duration){
+            dt= ConversionUtils.timedelta_to_interval((Duration) duration);
         }
         else{
-            if(start instanceof LocalDateTime){
-                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);
-            }
-            else{
-                st= functions.pg_timestamptz_in(start.toString(), -1);
-            }
-
-            if(duration instanceof Duration){
-                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
-            }
-            else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
-            }
+            dt= GeneratedFunctions.interval_in(duration.toString(), -1);
         }
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-        Pointer listPointer = createEmptyPointerArray(runtime);
-        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        if(start == null){
+            st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
+        }
+        else if(start instanceof LocalDateTime){
+            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);
+        }
+        else{
+            st= GeneratedFunctions.timestamptz_in(start.toString(), -1);
+        }
+        // temporal_time_split returns a TimeSplit struct by value (sret):
+        //   TimeSplit { Temporal **fragments @0; int *bins @8; int count @16; }
+        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st);
+        Pointer fragments= p.getPointer(0);
+        int count= p.getInt(16);
         List<Temporal> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
         for(int i=0;i<count;i++){
-            Pointer res= p.getPointer((long) i *Long.BYTES);
+            Pointer res= fragments.getPointer((long) i *Long.BYTES);
             Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
             tempList.add(t);
         }
@@ -1445,21 +1435,19 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         if(this.start_timestamp() == this.end_timestamp()){
             return Collections.singletonList(this);
         }
-        st= functions.temporal_start_timestamptz(this.inner);
+        st= GeneratedFunctions.temporal_start_timestamptz(this.inner);
         LocalDateTime start= this.start_timestamp();
         LocalDateTime end= this.end_timestamp();
         Duration dur= calculateIntermediateDuration(start, end, n);
         dt = ConversionUtils.timedelta_to_interval(dur);
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-        Pointer listPointer = createEmptyPointerArray(runtime);
-        Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        // temporal_time_split returns a TimeSplit struct by value (sret):
+        //   TimeSplit { Temporal **fragments @0; int *bins @8; int count @16; }
+        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st);
+        Pointer fragments= p.getPointer(0);
+        int count= p.getInt(16);
         List<Temporal> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
         for(int i=0;i<count;i++){
-            Pointer res= p.getPointer((long) i *Long.BYTES);
+            Pointer res= fragments.getPointer((long) i *Long.BYTES);
             Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
             tempList.add(t);
         }

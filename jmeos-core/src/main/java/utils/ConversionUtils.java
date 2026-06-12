@@ -61,14 +61,20 @@ public class ConversionUtils {
 
 
 	public static Pointer timedelta_to_interval(Duration td){
-		int years = 0;
-		int month = 0;
-		int weeks = 0;
-		int days = (int)td.toDays();
-		int hours = (int)td.toHours();
-		int minutes = (int)td.toMinutes();
-		double seconds = (double)td.toSeconds();
-		return functions.interval_make(years,month,weeks,days,hours,minutes,seconds);
+		// Build a PostgreSQL interval literal and parse it with interval_in
+		// rather than interval_make.  interval_make takes six int arguments
+		// followed by a trailing double (secs); jnr-ffi mis-passes that trailing
+		// double on this platform (the six leading ints fill all integer
+		// registers), so the resulting interval carries a garbage sub-day field.
+		// interval_in parses the textual form correctly. The parts are decomposed
+		// per field (toHoursPart/… give the component, not the cumulative total).
+		long days = td.toDaysPart();
+		int hours = td.toHoursPart();
+		int minutes = td.toMinutesPart();
+		double seconds = td.toSecondsPart() + td.toNanosPart() / 1_000_000_000.0;
+		String literal = String.format(java.util.Locale.ROOT,
+				"%d days %d hours %d minutes %f seconds", days, hours, minutes, seconds);
+		return GeneratedFunctions.interval_in(literal, -1);
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
