@@ -125,7 +125,7 @@ public final class MeosOpsFreeCbuffer {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: scalar comparison/hash</p>
      */
-    public static long cbuffer_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int cbuffer_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "cbuffer_hash_extended requires libmeos — set -Dmeos.enabled=true");

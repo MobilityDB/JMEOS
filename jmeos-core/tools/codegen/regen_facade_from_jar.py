@@ -43,19 +43,39 @@ def jar_signatures(jar):
     return sigs
 
 
+def resolve_backing(name, sigs):
+    """Map a facade method name to the jar's CURRENT GeneratedFunctions method,
+    applying ONLY the documented naming convention (no per-function hand-map):
+      - standalone libmeos drops the `pg_` collision-prefix (pg_date_in -> date_in)
+      - the legacy `2` shorthand becomes `_to_` (cstring2text -> cstring_to_text)
+    Returns the clean jar name, or None if the function is absent from the jar (a
+    vendored-PG internal leaked by an old catalog → the method is dropped)."""
+    if name in sigs:
+        return name
+    cands = []
+    if name.startswith("pg_"):
+        cands.append(name[3:])
+    if "2" in name:
+        cands.append(name.replace("2", "_to_", 1))
+    if name.startswith("float_"):           # MEOS base float ops use the float8_ name
+        cands.append("float8_" + name[len("float_"):])
+    return next((c for c in cands if c in sigs), None)
+
+
 def emit(jd, name, sigs):
-    if name not in sigs:
+    target = resolve_backing(name, sigs)
+    if target is None:
         return None
-    ret, types = sigs[name]
+    ret, types = sigs[target]
     decl = ", ".join(f"{t} arg{i}" for i, t in enumerate(types))
     call = ", ".join(f"arg{i}" for i in range(len(types)))
     retkw = "" if ret == "void" else "return "
-    return (f'{jd}    public static {ret} {name}({decl}) {{\n'
+    return (f'{jd}    public static {ret} {target}({decl}) {{\n'
             f'        if (!MEOS_AVAILABLE) {{\n'
             f'            throw new UnsupportedOperationException(\n'
-            f'                "{name} requires libmeos — set -Dmeos.enabled=true");\n'
+            f'                "{target} requires libmeos — set -Dmeos.enabled=true");\n'
             f'        }}\n'
-            f'        {retkw}GeneratedFunctions.{name}({call});\n'
+            f'        {retkw}GeneratedFunctions.{target}({call});\n'
             f'    }}\n')
 
 
@@ -67,7 +87,10 @@ def main():
         if os.path.basename(f) in EXCLUDE:
             continue
         txt = open(f).read()
-        new = _BLOCK.sub(lambda m: emit(m.group("jd"), m.group("name"), sigs) or m.group(0), txt)
+        # emit() returns the rewritten method (clean jar-current name) or None when the
+        # function has no backing in the jar (a removed/never-public symbol) -> DROP it,
+        # so the facade auto-tracks the surface; never preserve a stale broken method.
+        new = _BLOCK.sub(lambda m: emit(m.group("jd"), m.group("name"), sigs) if emit(m.group("jd"), m.group("name"), sigs) is not None else "", txt)
         if new != txt:
             open(f, "w").write(new)
             changed += 1

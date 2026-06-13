@@ -298,7 +298,7 @@ public final class MeosOpsSTBox {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static long stbox_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int stbox_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "stbox_hash_extended requires libmeos — set -Dmeos.enabled=true");

@@ -200,7 +200,7 @@ public final class MeosOpsTBox {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static long tbox_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int tbox_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "tbox_hash_extended requires libmeos — set -Dmeos.enabled=true");

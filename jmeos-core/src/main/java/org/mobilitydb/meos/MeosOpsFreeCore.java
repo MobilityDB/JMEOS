@@ -113,7 +113,7 @@ public final class MeosOpsFreeCore {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: scalar arithmetic</p>
      */
-    public static java.time.OffsetDateTime add_timestamptz_interval(java.time.OffsetDateTime arg0, jnr.ffi.Pointer arg1) {
+    public static java.time.LocalDateTime add_timestamptz_interval(java.time.OffsetDateTime arg0, jnr.ffi.Pointer arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "add_timestamptz_interval requires libmeos — set -Dmeos.enabled=true");
@@ -1595,12 +1595,12 @@ public final class MeosOpsFreeCore {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static double float_exp(double arg0) {
+    public static double float8_exp(double arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "float_exp requires libmeos — set -Dmeos.enabled=true");
+                "float8_exp requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.float_exp(arg0);
+        return GeneratedFunctions.float8_exp(arg0);
     }
 
     /**
@@ -1634,12 +1634,12 @@ public final class MeosOpsFreeCore {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static double float_ln(double arg0) {
+    public static double float8_ln(double arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "float_ln requires libmeos — set -Dmeos.enabled=true");
+                "float8_ln requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.float_ln(arg0);
+        return GeneratedFunctions.float8_ln(arg0);
     }
 
     /**
@@ -1647,12 +1647,12 @@ public final class MeosOpsFreeCore {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static double float_log10(double arg0) {
+    public static double float8_log10(double arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "float_log10 requires libmeos — set -Dmeos.enabled=true");
+                "float8_log10 requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.float_log10(arg0);
+        return GeneratedFunctions.float8_log10(arg0);
     }
 
     /**
@@ -4515,31 +4515,7 @@ public final class MeosOpsFreeCore {
         return GeneratedFunctions.teq_ttext_text(arg0, arg1);
     }
 
-    /**
-     * MEOS {@code text_cmp} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: scalar comparison/hash</p>
-     */
-    public static int text_cmp(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "text_cmp requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.text_cmp(arg0, arg1);
-    }
 
-    /**
-     * MEOS {@code text_copy} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
-     */
-    public static jnr.ffi.Pointer text_copy(jnr.ffi.Pointer arg0) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "text_copy requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.text_copy(arg0);
-    }
 
     /**
      * MEOS {@code text_initcap} — tier <b>stateless</b>.
@@ -4606,18 +4582,6 @@ public final class MeosOpsFreeCore {
         return GeneratedFunctions.text_upper(arg0);
     }
 
-    /**
-     * MEOS {@code textcat_text_text} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: text concatenation (per-instant)</p>
-     */
-    public static jnr.ffi.Pointer textcat_text_text(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "textcat_text_text requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.textcat_text_text(arg0, arg1);
-    }
 
     /**
      * MEOS {@code textcat_text_textset} — tier <b>stateless</b>.
@@ -4892,18 +4856,6 @@ public final class MeosOpsFreeCore {
         return GeneratedFunctions.tgt_ttext_text(arg0, arg1);
     }
 
-    /**
-     * MEOS {@code timestamp_to_date} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: name pattern is _to_<type></p>
-     */
-    public static int timestamp_to_date(java.time.LocalDateTime arg0) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "timestamp_to_date requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.timestamp_to_date(arg0);
-    }
 
     /**
      * MEOS {@code timestamptz_extent_transfn} — tier <b>stateless</b>.
@@ -4931,18 +4883,6 @@ public final class MeosOpsFreeCore {
         return GeneratedFunctions.timestamptz_get_bin(arg0, arg1, arg2);
     }
 
-    /**
-     * MEOS {@code timestamptz_shift} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: transform/normalize (pure)</p>
-     */
-    public static java.time.OffsetDateTime timestamptz_shift(java.time.OffsetDateTime arg0, jnr.ffi.Pointer arg1) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "timestamptz_shift requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.timestamptz_shift(arg0, arg1);
-    }
 
     /**
      * MEOS {@code timestamptz_tcount_transfn} — tier <b>stateless</b>.
@@ -4957,18 +4897,6 @@ public final class MeosOpsFreeCore {
         return GeneratedFunctions.timestamptz_tcount_transfn(arg0, arg1);
     }
 
-    /**
-     * MEOS {@code timestamptz_to_date} — tier <b>stateless</b>.
-     * <p>Pure per-event; safe in any scalar position.</p>
-     * <p>Free function (not class-classified). Classification rule: name pattern is _to_<type></p>
-     */
-    public static int timestamptz_to_date(java.time.OffsetDateTime arg0) {
-        if (!MEOS_AVAILABLE) {
-            throw new UnsupportedOperationException(
-                "timestamptz_to_date requires libmeos — set -Dmeos.enabled=true");
-        }
-        return GeneratedFunctions.timestamptz_to_date(arg0);
-    }
 
     /**
      * MEOS {@code timestamptz_to_set} — tier <b>stateless</b>.
@@ -9083,12 +9011,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: string/CString conversion (low-level)</p>
      */
-    public static jnr.ffi.Pointer cstring2text(java.lang.String arg0) {
+    public static jnr.ffi.Pointer cstring_to_text(java.lang.String arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "cstring2text requires libmeos — set -Dmeos.enabled=true");
+                "cstring_to_text requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.cstring2text(arg0);
+        return GeneratedFunctions.cstring_to_text(arg0);
     }
 
     /**
@@ -9434,12 +9362,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: IO/serialization</p>
      */
-    public static int pg_date_in(java.lang.String arg0) {
+    public static int date_in(java.lang.String arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_date_in requires libmeos — set -Dmeos.enabled=true");
+                "date_in requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_date_in(arg0);
+        return GeneratedFunctions.date_in(arg0);
     }
 
     /**
@@ -9447,12 +9375,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: IO/serialization</p>
      */
-    public static java.lang.String pg_date_out(int arg0) {
+    public static java.lang.String date_out(int arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_date_out requires libmeos — set -Dmeos.enabled=true");
+                "date_out requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_date_out(arg0);
+        return GeneratedFunctions.date_out(arg0);
     }
 
     /**
@@ -9460,12 +9388,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: string/CString conversion (low-level)</p>
      */
-    public static int pg_interval_cmp(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+    public static int interval_cmp(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_interval_cmp requires libmeos — set -Dmeos.enabled=true");
+                "interval_cmp requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_interval_cmp(arg0, arg1);
+        return GeneratedFunctions.interval_cmp(arg0, arg1);
     }
 
     /**
@@ -9499,12 +9427,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: IO/serialization</p>
      */
-    public static java.time.LocalDateTime pg_timestamp_in(java.lang.String arg0, int arg1) {
+    public static java.time.LocalDateTime timestamp_in(java.lang.String arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_timestamp_in requires libmeos — set -Dmeos.enabled=true");
+                "timestamp_in requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_timestamp_in(arg0, arg1);
+        return GeneratedFunctions.timestamp_in(arg0, arg1);
     }
 
     /**
@@ -9512,12 +9440,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: IO/serialization</p>
      */
-    public static java.lang.String pg_timestamp_out(java.time.LocalDateTime arg0) {
+    public static java.lang.String timestamp_out(java.time.LocalDateTime arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_timestamp_out requires libmeos — set -Dmeos.enabled=true");
+                "timestamp_out requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_timestamp_out(arg0);
+        return GeneratedFunctions.timestamp_out(arg0);
     }
 
     /**
@@ -9538,12 +9466,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: IO/serialization</p>
      */
-    public static java.lang.String pg_timestamptz_out(java.time.OffsetDateTime arg0) {
+    public static java.lang.String timestamptz_out(java.time.OffsetDateTime arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "pg_timestamptz_out requires libmeos — set -Dmeos.enabled=true");
+                "timestamptz_out requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pg_timestamptz_out(arg0);
+        return GeneratedFunctions.timestamptz_out(arg0);
     }
 
     /**
@@ -9707,12 +9635,12 @@ public final class MeosOpsFreeCore {
      * <p>I/O / catalog / lifecycle helper.</p>
      * <p>Free function (not class-classified). Classification rule: string/CString conversion (low-level)</p>
      */
-    public static java.lang.String text2cstring(jnr.ffi.Pointer arg0) {
+    public static java.lang.String text_to_cstring(jnr.ffi.Pointer arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
-                "text2cstring requires libmeos — set -Dmeos.enabled=true");
+                "text_to_cstring requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.text2cstring(arg0);
+        return GeneratedFunctions.text_to_cstring(arg0);
     }
 
     /**

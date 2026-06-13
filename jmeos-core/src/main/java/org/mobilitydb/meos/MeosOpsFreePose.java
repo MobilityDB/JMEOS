@@ -164,7 +164,7 @@ public final class MeosOpsFreePose {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: scalar comparison/hash</p>
      */
-    public static long pose_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int pose_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "pose_hash_extended requires libmeos — set -Dmeos.enabled=true");

@@ -172,7 +172,7 @@ public final class MeosOpsSpanSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static long spanset_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int spanset_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "spanset_hash_extended requires libmeos — set -Dmeos.enabled=true");
