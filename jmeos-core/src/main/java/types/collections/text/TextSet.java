@@ -3,7 +3,7 @@ package types.collections.text;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.Set;
-import functions.functions;
+import functions.GeneratedFunctions;
 
 /**
  * Class for representing a set of text values.
@@ -31,7 +31,7 @@ public class TextSet extends Set<String> {
 
     public TextSet(String str){
         super(str);
-        _inner = functions.textset_in(str);
+        _inner = GeneratedFunctions.textset_in(str);
     }
 
     public TextSet(Pointer inner){
@@ -40,7 +40,7 @@ public class TextSet extends Set<String> {
     }
     @Override
     public Pointer createStringInner(String str){
-        return functions.textset_in(str);
+        return GeneratedFunctions.textset_in(str);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TextSet extends Set<String> {
 
 
     public String as_hexwkb(){
-        String pr = functions.set_as_hexwkb(this.get_inner(),(byte) -1);
+        String pr = GeneratedFunctions.set_as_hexwkb(this.get_inner(),(byte) -1);
         return pr;
     }
 
@@ -68,7 +68,7 @@ public class TextSet extends Set<String> {
      * @return A new {@link String} instance
      */
     public String toString(){
-        return functions.textset_out(this._inner);
+        return GeneratedFunctions.textset_out(this._inner);
     }
 
 
@@ -88,7 +88,7 @@ public class TextSet extends Set<String> {
      * @return A {@link String} instance
      */
     public String start_element() {
-        return functions.text2cstring(functions.textset_start_value(this._inner));
+        return GeneratedFunctions.text_to_cstring(GeneratedFunctions.textset_start_value(this._inner));
     }
 
     /**
@@ -101,7 +101,7 @@ public class TextSet extends Set<String> {
      * @return A {@link String} instance
      */
     public String end_element(){
-        return functions.text2cstring(functions.textset_end_value(this._inner));
+        return GeneratedFunctions.text_to_cstring(GeneratedFunctions.textset_end_value(this._inner));
     }
 
     /**
@@ -118,7 +118,7 @@ public class TextSet extends Set<String> {
      */
     public String element_n(int n) throws Exception {
         super.element_n(n);
-        return functions.text2cstring(functions.textset_value_n(this._inner,n));
+        return GeneratedFunctions.text_to_cstring(GeneratedFunctions.textset_value_n(this._inner,n));
     }
 
     /* ------------------------- Topological Operations -------------------------------- */
@@ -139,7 +139,7 @@ public class TextSet extends Set<String> {
     public boolean contains(Object other) throws Exception {
         if (other instanceof String){
             TextSet tset = new TextSet((String)other);
-            return functions.contains_set_text(this._inner,tset._inner);
+            return GeneratedFunctions.contains_set_text(this._inner,tset._inner);
         }
         else {
             return super.contains((Base)other);
@@ -160,7 +160,7 @@ public class TextSet extends Set<String> {
      * @return A new {@link TextSet} instance
      */
     public TextSet lowercase(){
-        return new TextSet(functions.textset_lower(this._inner));
+        return new TextSet(GeneratedFunctions.textset_lower(this._inner));
     }
 
     /**
@@ -174,7 +174,7 @@ public class TextSet extends Set<String> {
      * @return A new {@link TextSet} instance
      */
     public TextSet uppercase(){
-        return new TextSet(functions.textset_upper(this._inner));
+        return new TextSet(GeneratedFunctions.textset_upper(this._inner));
     }
 
 
@@ -193,7 +193,7 @@ public class TextSet extends Set<String> {
      * @return An object of the same type as "other" or null if the intersection is empty.
      */
     public TextSet intersection(TextSet ts){
-        return new TextSet(functions.intersection_set_set(this._inner, ts._inner));
+        return new TextSet(GeneratedFunctions.intersection_set_set(this._inner, ts._inner));
     }
 
 
@@ -213,10 +213,10 @@ public class TextSet extends Set<String> {
     public TextSet minus(Object other){
         if (other instanceof String){
             TextSet tmptxt = new TextSet((String) other);
-            return new TextSet(functions.minus_set_text(this._inner, tmptxt._inner));
+            return new TextSet(GeneratedFunctions.minus_set_text(this._inner, tmptxt._inner));
         }
         else if (other instanceof TextSet){
-            return new TextSet(functions.minus_set_set(this._inner,((TextSet) other)._inner));
+            return new TextSet(GeneratedFunctions.minus_set_set(this._inner,((TextSet) other)._inner));
         }
         else{
             return null;
@@ -224,7 +224,7 @@ public class TextSet extends Set<String> {
     }
 
 //    public String subtract_from(Object other){
-//        result= functions.minus_text_set(other, this._inner);
+//        result= GeneratedFunctions.minus_text_set(other, this._inner);
 //
 //    }
 
@@ -244,10 +244,10 @@ public class TextSet extends Set<String> {
     public TextSet union(Object other){
         if (other instanceof String){
             TextSet tmptxt = new TextSet((String) other);
-            return new TextSet(functions.union_set_text(this._inner, tmptxt._inner));
+            return new TextSet(GeneratedFunctions.union_set_text(this._inner, tmptxt._inner));
         }
         else if (other instanceof TextSet){
-            return new TextSet(functions.union_set_set(this._inner,((TextSet) other)._inner));
+            return new TextSet(GeneratedFunctions.union_set_set(this._inner,((TextSet) other)._inner));
         }
         else{
             return null;
