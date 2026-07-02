@@ -44,6 +44,11 @@ public class FunctionsGenerator {
     // jar ships without it. The shared binding jar includes every family by
     // default; pass -D<FAMILY>=OFF|0 to drop one (RGEO needs POSE).
     // -------------------------------------------------------------------------
+    // The canonical family of a function is the IDL ``family`` field, which
+    // MEOS-API derives from the declaring header's ``meos/include/<family>/``
+    // subdirectory — the single source of truth. This basename map is only the
+    // fallback for IDLs generated before that field existed, and covers the
+    // public headers of the families present at the time.
     private static final Map<String, String> HEADER_FAMILY = Map.ofEntries(
             Map.entry("meos_cbuffer.h", "CBUFFER"),
             Map.entry("meos_npoint.h", "NPOINT"),
@@ -57,7 +62,8 @@ public class FunctionsGenerator {
             Map.entry("h3index_sets.h", "H3"),
             Map.entry("h3_generated.h", "H3"));
     private static final Set<String> OPTIONAL_FAMILIES =
-            Set.of("CBUFFER", "NPOINT", "POSE", "RGEO", "H3");
+            Set.of("CBUFFER", "NPOINT", "POSE", "RGEO", "H3",
+                   "QUADBIN", "POINTCLOUD", "JSON", "ARROW", "RASTER");
 
     // Families enabled for this generation run; core headers are always emitted.
     private Set<String> enabledFamilies;
@@ -75,9 +81,23 @@ public class FunctionsGenerator {
         return enabled;
     }
 
-    private boolean familyEnabled(String file) {
-        String family = HEADER_FAMILY.get(file);
-        return family == null || enabledFamilies.contains(family); // core (unmapped) always on
+    // Resolve a function's family: the canonical IDL ``family`` field when
+    // present, else the header-basename fallback for pre-field IDLs.
+    private String familyOf(JsonNode fn) {
+        JsonNode familyNode = fn.get("family");
+        if (familyNode != null) {
+            return familyNode.asText();
+        }
+        JsonNode fileNode = fn.get("file");
+        return fileNode == null ? null : HEADER_FAMILY.get(fileNode.asText());
+    }
+
+    private boolean familyEnabled(String family) {
+        // CORE (and any family not in the optional set) is always emitted; an
+        // optional family is emitted only while it stays enabled.
+        return family == null
+                || !OPTIONAL_FAMILIES.contains(family)
+                || enabledFamilies.contains(family);
     }
 
     // Output-only size parameters that must not appear in the public
@@ -171,8 +191,7 @@ public class FunctionsGenerator {
                 + " (core always included)");
 
         for (JsonNode fn : functionsNode) {
-            JsonNode fileNode = fn.get("file");
-            if (fileNode != null && !familyEnabled(fileNode.asText())) {
+            if (!familyEnabled(familyOf(fn))) {
                 continue; // function belongs to a disabled type family
             }
             FunctionDef def = parseFunctionDef(fn);
