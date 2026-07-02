@@ -35,6 +35,51 @@ public class FunctionsGenerator {
     // so we force long when the interface type resolved to int for these names.
     private static final Set<String> SIZE_PARAM_NAMES = Set.of("size", "wkb_size");
 
+    // -------------------------------------------------------------------------
+    // Optional MEOS type families, gated by build flags mirroring the
+    // MobilityDB/MEOS flag names and ON|OFF (also 1|0) values: -DCBUFFER=OFF,
+    // -DNPOINT=OFF, -DPOSE=OFF, -DRGEO=OFF, -DH3=OFF. Each family maps to the
+    // public headers that declare its functions; a function whose header belongs
+    // to an excluded family is omitted from the generated binding, so a subset
+    // jar ships without it. The shared binding jar includes every family by
+    // default; pass -D<FAMILY>=OFF|0 to drop one (RGEO needs POSE).
+    // -------------------------------------------------------------------------
+    private static final Map<String, String> HEADER_FAMILY = Map.ofEntries(
+            Map.entry("meos_cbuffer.h", "CBUFFER"),
+            Map.entry("meos_npoint.h", "NPOINT"),
+            Map.entry("meos_pose.h", "POSE"),
+            Map.entry("meos_rgeo.h", "RGEO"),
+            Map.entry("meos_h3.h", "H3"),
+            Map.entry("th3index.h", "H3"),
+            Map.entry("th3index_internal.h", "H3"),
+            Map.entry("th3index_boxops.h", "H3"),
+            Map.entry("h3index.h", "H3"),
+            Map.entry("h3index_sets.h", "H3"),
+            Map.entry("h3_generated.h", "H3"));
+    private static final Set<String> OPTIONAL_FAMILIES =
+            Set.of("CBUFFER", "NPOINT", "POSE", "RGEO", "H3");
+
+    // Families enabled for this generation run; core headers are always emitted.
+    private Set<String> enabledFamilies;
+
+    private static Set<String> resolveEnabledFamilies() {
+        Set<String> enabled = new LinkedHashSet<>();
+        for (String family : OPTIONAL_FAMILIES) {
+            String v = System.getProperty(family);
+            boolean off = v != null
+                    && (v.equalsIgnoreCase("OFF") || v.equals("0") || v.equalsIgnoreCase("false"));
+            if (!off) {
+                enabled.add(family); // included by default, dropped only by -D<FAMILY>=OFF|0
+            }
+        }
+        return enabled;
+    }
+
+    private boolean familyEnabled(String file) {
+        String family = HEADER_FAMILY.get(file);
+        return family == null || enabledFamilies.contains(family); // core (unmapped) always on
+    }
+
     // Output-only size parameters that must not appear in the public
     // static wrapper signature.
     //
@@ -121,7 +166,15 @@ public class FunctionsGenerator {
         List<FunctionDef> functions = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>(); // deduplicate by name#arity
 
+        enabledFamilies = resolveEnabledFamilies();
+        System.out.println("Enabled optional families: " + enabledFamilies
+                + " (core always included)");
+
         for (JsonNode fn : functionsNode) {
+            JsonNode fileNode = fn.get("file");
+            if (fileNode != null && !familyEnabled(fileNode.asText())) {
+                continue; // function belongs to a disabled type family
+            }
             FunctionDef def = parseFunctionDef(fn);
             String key = def.name + "#" + def.params.size();
             if (seen.add(key)) {
