@@ -35,11 +35,11 @@ public final class MeosOpsParityGaps {
 
     private MeosOpsParityGaps() { /* utility */ }
 
-    /** MEOS {@code acontains_geo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code acontains_geo_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int acontains_geo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("acontains_geo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.acontains_geo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("acontains_geo_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.acontains_geo_trgeometry(arg0, arg1);
     }
 
     /** MEOS {@code acovers_geo_tgeo} — meos_geo.h · scalar / stateless. */
@@ -49,11 +49,11 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.acovers_geo_tgeo(arg0, arg1);
     }
 
-    /** MEOS {@code acovers_geo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code acovers_geo_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int acovers_geo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("acovers_geo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.acovers_geo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("acovers_geo_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.acovers_geo_trgeometry(arg0, arg1);
     }
 
     /** MEOS {@code acovers_tcbuffer_tcbuffer} — meos_cbuffer.h · scalar / stateless. */
@@ -77,11 +77,11 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.acovers_tgeo_tgeo(arg0, arg1);
     }
 
-    /** MEOS {@code acovers_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code acovers_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int acovers_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("acovers_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.acovers_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("acovers_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.acovers_trgeometry_geo(arg0, arg1);
     }
 
     /** MEOS {@code adisjoint_tgeoarr_tgeoarr} — meos_geo.h · scalar / stateless. */
@@ -91,53 +91,53 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.adisjoint_tgeoarr_tgeoarr(arg0, arg1, arg2, arg3, arg4);
     }
 
-    /** MEOS {@code adisjoint_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code adisjoint_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int adisjoint_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("adisjoint_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.adisjoint_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("adisjoint_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.adisjoint_trgeometry_geo(arg0, arg1);
     }
 
-    /** MEOS {@code adisjoint_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code adisjoint_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int adisjoint_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("adisjoint_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.adisjoint_trgeo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("adisjoint_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.adisjoint_trgeometry_trgeometry(arg0, arg1);
     }
 
-    /** MEOS {@code adwithin_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code adwithin_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int adwithin_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, double arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("adwithin_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.adwithin_trgeo_geo(arg0, arg1, arg2);
+            throw new UnsupportedOperationException("adwithin_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.adwithin_trgeometry_geo(arg0, arg1, arg2);
     }
 
-    /** MEOS {@code adwithin_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code adwithin_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int adwithin_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, double arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("adwithin_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.adwithin_trgeo_trgeo(arg0, arg1, arg2);
+            throw new UnsupportedOperationException("adwithin_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.adwithin_trgeometry_trgeometry(arg0, arg1, arg2);
     }
 
-    /** MEOS {@code aintersects_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code aintersects_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int aintersects_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("aintersects_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.aintersects_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("aintersects_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.aintersects_trgeometry_geo(arg0, arg1);
     }
 
-    /** MEOS {@code aintersects_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code aintersects_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int aintersects_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("aintersects_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.aintersects_trgeo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("aintersects_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.aintersects_trgeometry_trgeometry(arg0, arg1);
     }
 
-    /** MEOS {@code atouches_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code atouches_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int atouches_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("atouches_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.atouches_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("atouches_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.atouches_trgeometry_geo(arg0, arg1);
     }
 
     /** MEOS {@code bearing_tpoint_point} — meos_geo.h · scalar / stateless. */
@@ -168,11 +168,11 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.bigintspan_to_intspan(arg0);
     }
 
-    /** MEOS {@code econtains_geo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code econtains_geo_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int econtains_geo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("econtains_geo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.econtains_geo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("econtains_geo_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.econtains_geo_trgeometry(arg0, arg1);
     }
 
     /** MEOS {@code ecovers_geo_tcbuffer} — meos_cbuffer.h · scalar / stateless. */
@@ -182,32 +182,32 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.ecovers_geo_tcbuffer(arg0, arg1);
     }
 
-    /** MEOS {@code ecovers_geo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code ecovers_geo_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int ecovers_geo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("ecovers_geo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.ecovers_geo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("ecovers_geo_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.ecovers_geo_trgeometry(arg0, arg1);
     }
 
-    /** MEOS {@code ecovers_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code ecovers_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int ecovers_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("ecovers_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.ecovers_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("ecovers_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.ecovers_trgeometry_geo(arg0, arg1);
     }
 
-    /** MEOS {@code edisjoint_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code edisjoint_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int edisjoint_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("edisjoint_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.edisjoint_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("edisjoint_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.edisjoint_trgeometry_geo(arg0, arg1);
     }
 
-    /** MEOS {@code edisjoint_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code edisjoint_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int edisjoint_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("edisjoint_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.edisjoint_trgeo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("edisjoint_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.edisjoint_trgeometry_trgeometry(arg0, arg1);
     }
 
     /** MEOS {@code edwithin_tgeoarr_tgeoarr} — meos_geo.h · scalar / stateless. */
@@ -217,39 +217,39 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.edwithin_tgeoarr_tgeoarr(arg0, arg1, arg2, arg3, arg4, arg5);
     }
 
-    /** MEOS {@code edwithin_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code edwithin_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int edwithin_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, double arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("edwithin_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.edwithin_trgeo_geo(arg0, arg1, arg2);
+            throw new UnsupportedOperationException("edwithin_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.edwithin_trgeometry_geo(arg0, arg1, arg2);
     }
 
-    /** MEOS {@code edwithin_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code edwithin_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int edwithin_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, double arg2) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("edwithin_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.edwithin_trgeo_trgeo(arg0, arg1, arg2);
+            throw new UnsupportedOperationException("edwithin_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.edwithin_trgeometry_trgeometry(arg0, arg1, arg2);
     }
 
-    /** MEOS {@code eintersects_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code eintersects_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int eintersects_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("eintersects_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.eintersects_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("eintersects_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.eintersects_trgeometry_geo(arg0, arg1);
     }
 
-    /** MEOS {@code eintersects_trgeo_trgeo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code eintersects_trgeometry_trgeometry} — meos_rgeo.h · scalar / stateless. */
     public static int eintersects_trgeo_trgeo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("eintersects_trgeo_trgeo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.eintersects_trgeo_trgeo(arg0, arg1);
+            throw new UnsupportedOperationException("eintersects_trgeometry_trgeometry requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.eintersects_trgeometry_trgeometry(arg0, arg1);
     }
 
-    /** MEOS {@code etouches_trgeo_geo} — meos_rgeo.h · scalar / stateless. */
+    /** MEOS {@code etouches_trgeometry_geo} — meos_rgeo.h · scalar / stateless. */
     public static int etouches_trgeo_geo(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("etouches_trgeo_geo requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.etouches_trgeo_geo(arg0, arg1);
+            throw new UnsupportedOperationException("etouches_trgeometry_geo requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.etouches_trgeometry_geo(arg0, arg1);
     }
 
     /** MEOS {@code floatspan_to_bigintspan} — meos.h · scalar / stateless. */
@@ -362,13 +362,6 @@ public final class MeosOpsParityGaps {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("meos_initialize_noexit_error_handler requires libmeos — set -Dmeos.enabled=true");
         functions.GeneratedFunctions.meos_initialize_noexit_error_handler();
-    }
-
-    /** MEOS {@code meos_initialize_pointcloud} — meos.h · scalar / stateless. */
-    public static void meos_initialize_pointcloud() {
-        if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("meos_initialize_pointcloud requires libmeos — set -Dmeos.enabled=true");
-        functions.GeneratedFunctions.meos_initialize_pointcloud();
     }
 
     /** MEOS {@code meos_set_arrow_roundtrip} — meos.h · scalar / stateless. */
@@ -602,11 +595,11 @@ public final class MeosOpsParityGaps {
         return functions.GeneratedFunctions.pose_from_geopose(arg0);
     }
 
-    /** MEOS {@code pose_normalise} — meos_pose.h · scalar / stateless. */
-    public static jnr.ffi.Pointer pose_normalise(jnr.ffi.Pointer arg0) {
+    /** MEOS {@code pose_normalize} — meos_pose.h · scalar / stateless. */
+    public static jnr.ffi.Pointer pose_normalize(jnr.ffi.Pointer arg0) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
-            throw new UnsupportedOperationException("pose_normalise requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.pose_normalise(arg0);
+            throw new UnsupportedOperationException("pose_normalize requires libmeos — set -Dmeos.enabled=true");
+        return functions.GeneratedFunctions.pose_normalize(arg0);
     }
 
     /** MEOS {@code pose_pitch} — meos_pose.h · scalar / stateless. */
@@ -673,10 +666,10 @@ public final class MeosOpsParityGaps {
     }
 
     /** MEOS {@code super_union_span_span} — meos.h · scalar / stateless. */
-    public static jnr.ffi.Pointer super_union_span_span(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, boolean arg2) {
+    public static jnr.ffi.Pointer super_union_span_span(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MeosOpsRuntime.MEOS_AVAILABLE)
             throw new UnsupportedOperationException("super_union_span_span requires libmeos — set -Dmeos.enabled=true");
-        return functions.GeneratedFunctions.super_union_span_span(arg0, arg1, arg2);
+        return functions.GeneratedFunctions.super_union_span_span(arg0, arg1);
     }
 
     /** MEOS {@code tand_bool_tbool} — meos.h · scalar / stateless. */

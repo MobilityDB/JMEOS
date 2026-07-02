@@ -164,7 +164,7 @@ public final class MeosOpsFreePose {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: scalar comparison/hash</p>
      */
-    public static long pose_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int pose_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "pose_hash_extended requires libmeos — set -Dmeos.enabled=true");
@@ -203,12 +203,12 @@ public final class MeosOpsFreePose {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static jnr.ffi.Pointer pose_make_2d(double arg0, double arg1, double arg2, int arg3) {
+    public static jnr.ffi.Pointer pose_make_2d(double arg0, double arg1, double arg2, boolean arg3, int arg4) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "pose_make_2d requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pose_make_2d(arg0, arg1, arg2, arg3);
+        return GeneratedFunctions.pose_make_2d(arg0, arg1, arg2, arg3, arg4);
     }
 
     /**
@@ -216,12 +216,12 @@ public final class MeosOpsFreePose {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static jnr.ffi.Pointer pose_make_3d(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, int arg7) {
+    public static jnr.ffi.Pointer pose_make_3d(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, boolean arg7, int arg8) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "pose_make_3d requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.pose_make_3d(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+        return GeneratedFunctions.pose_make_3d(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
     }
 
     /**

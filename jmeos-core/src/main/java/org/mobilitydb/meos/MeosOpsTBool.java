@@ -130,12 +130,12 @@ public final class MeosOpsTBool {
      * <p>Object-model role: {@code restriction}.</p>
      * <p>Classification: role=restriction</p>
      */
-    public static jnr.ffi.Pointer tbool_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2) {
+    public static boolean tbool_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "tbool_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tbool_value_at_timestamptz(arg0, arg1, arg2);
+        return GeneratedFunctions.tbool_value_at_timestamptz(arg0, arg1, arg2, arg3);
     }
 
     /**

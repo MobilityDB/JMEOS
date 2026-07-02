@@ -172,7 +172,7 @@ public final class MeosOpsSpanSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static long spanset_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int spanset_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "spanset_hash_extended requires libmeos — set -Dmeos.enabled=true");
@@ -284,12 +284,12 @@ public final class MeosOpsSpanSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer spanset_spanarr(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+    public static jnr.ffi.Pointer spanset_spanarr(jnr.ffi.Pointer arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "spanset_spanarr requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.spanset_spanarr(arg0, arg1);
+        return GeneratedFunctions.spanset_spanarr(arg0);
     }
 
     /**
@@ -298,12 +298,12 @@ public final class MeosOpsSpanSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer spanset_spans(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+    public static jnr.ffi.Pointer spanset_spans(jnr.ffi.Pointer arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "spanset_spans requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.spanset_spans(arg0, arg1);
+        return GeneratedFunctions.spanset_spans(arg0);
     }
 
     /**

@@ -312,12 +312,12 @@ public final class MeosOpsTFloat {
      * <p>Object-model role: {@code restriction}.</p>
      * <p>Classification: role=restriction</p>
      */
-    public static jnr.ffi.Pointer tfloat_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2) {
+    public static boolean tfloat_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "tfloat_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tfloat_value_at_timestamptz(arg0, arg1, arg2);
+        return GeneratedFunctions.tfloat_value_at_timestamptz(arg0, arg1, arg2, arg3);
     }
 
     /**
@@ -368,12 +368,12 @@ public final class MeosOpsTFloat {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer tfloat_value_split(jnr.ffi.Pointer arg0, double arg1, double arg2) {
+    public static jnr.ffi.Pointer tfloat_value_split(jnr.ffi.Pointer arg0, double arg1, double arg2, jnr.ffi.Pointer arg3, jnr.ffi.Pointer arg4) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "tfloat_value_split requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tfloat_value_split(arg0, arg1, arg2);
+        return GeneratedFunctions.tfloat_value_split(arg0, arg1, arg2, arg3, arg4);
     }
 
     /**
@@ -396,12 +396,12 @@ public final class MeosOpsTFloat {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer tfloat_value_time_split(jnr.ffi.Pointer arg0, double arg1, jnr.ffi.Pointer arg2, double arg3, java.time.OffsetDateTime arg4) {
+    public static jnr.ffi.Pointer tfloat_value_time_split(jnr.ffi.Pointer arg0, double arg1, jnr.ffi.Pointer arg2, double arg3, java.time.OffsetDateTime arg4, jnr.ffi.Pointer arg5, jnr.ffi.Pointer arg6, jnr.ffi.Pointer arg7) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "tfloat_value_time_split requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.tfloat_value_time_split(arg0, arg1, arg2, arg3, arg4);
+        return GeneratedFunctions.tfloat_value_time_split(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     /**

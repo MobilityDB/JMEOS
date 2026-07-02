@@ -172,7 +172,7 @@ public final class MeosOpsSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static long set_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int set_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "set_hash_extended requires libmeos — set -Dmeos.enabled=true");
@@ -256,12 +256,12 @@ public final class MeosOpsSet {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer set_spans(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
+    public static jnr.ffi.Pointer set_spans(jnr.ffi.Pointer arg0) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "set_spans requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.set_spans(arg0, arg1);
+        return GeneratedFunctions.set_spans(arg0);
     }
 
     /**

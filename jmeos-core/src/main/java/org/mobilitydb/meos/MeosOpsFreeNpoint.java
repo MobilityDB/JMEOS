@@ -177,7 +177,7 @@ public final class MeosOpsFreeNpoint {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: scalar comparison/hash</p>
      */
-    public static long npoint_hash_extended(jnr.ffi.Pointer arg0, long arg1) {
+    public static int npoint_hash_extended(jnr.ffi.Pointer arg0, int arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "npoint_hash_extended requires libmeos — set -Dmeos.enabled=true");

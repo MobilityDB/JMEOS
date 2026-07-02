@@ -1068,12 +1068,12 @@ public final class MeosOpsTemporal {
      * <p>Object-model role: {@code accessor}.</p>
      * <p>Classification: role=accessor</p>
      */
-    public static jnr.ffi.Pointer temporal_time_split(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, java.time.OffsetDateTime arg2) {
+    public static jnr.ffi.Pointer temporal_time_split(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1, java.time.OffsetDateTime arg2, jnr.ffi.Pointer arg3, jnr.ffi.Pointer arg4) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "temporal_time_split requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.temporal_time_split(arg0, arg1, arg2);
+        return GeneratedFunctions.temporal_time_split(arg0, arg1, arg2, arg3, arg4);
     }
 
     /**

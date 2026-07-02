@@ -186,12 +186,12 @@ public final class MeosOpsTText {
      * <p>Object-model role: {@code restriction}.</p>
      * <p>Classification: role=restriction</p>
      */
-    public static jnr.ffi.Pointer ttext_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2) {
+    public static boolean ttext_value_at_timestamptz(jnr.ffi.Pointer arg0, java.time.OffsetDateTime arg1, boolean arg2, jnr.ffi.Pointer arg3) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "ttext_value_at_timestamptz requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.ttext_value_at_timestamptz(arg0, arg1, arg2);
+        return GeneratedFunctions.ttext_value_at_timestamptz(arg0, arg1, arg2, arg3);
     }
 
     /**

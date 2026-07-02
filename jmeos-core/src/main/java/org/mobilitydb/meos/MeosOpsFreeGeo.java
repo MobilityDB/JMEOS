@@ -346,12 +346,12 @@ public final class MeosOpsFreeGeo {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: make/from_base of instant/scalar</p>
      */
-    public static jnr.ffi.Pointer gbox_make(boolean arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6) {
+    public static jnr.ffi.Pointer gbox_make(boolean arg0, boolean arg1, boolean arg2, double arg3, double arg4, double arg5, double arg6, double arg7, double arg8, double arg9, double arg10) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "gbox_make requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.gbox_make(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+        return GeneratedFunctions.gbox_make(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
     }
 
     /**
@@ -1126,12 +1126,12 @@ public final class MeosOpsFreeGeo {
      * <p>Pure per-event; safe in any scalar position.</p>
      * <p>Free function (not class-classified). Classification rule: base-type fn, default pure</p>
      */
-    public static jnr.ffi.Pointer geom_min_bounding_radius(jnr.ffi.Pointer arg0) {
+    public static jnr.ffi.Pointer geom_min_bounding_radius(jnr.ffi.Pointer arg0, jnr.ffi.Pointer arg1) {
         if (!MEOS_AVAILABLE) {
             throw new UnsupportedOperationException(
                 "geom_min_bounding_radius requires libmeos — set -Dmeos.enabled=true");
         }
-        return GeneratedFunctions.geom_min_bounding_radius(arg0);
+        return GeneratedFunctions.geom_min_bounding_radius(arg0, arg1);
     }
 
     /**
