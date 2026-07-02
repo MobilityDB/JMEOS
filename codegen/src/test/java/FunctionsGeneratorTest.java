@@ -695,4 +695,68 @@ class FunctionsGeneratorTest {
             return p.toString();
         }
     }
+
+    // =========================================================================
+    // Family gating: -D<FAMILY>=OFF drops an optional family
+    // =========================================================================
+
+    @Nested
+    @DisplayName("family gating")
+    class FamilyGatingTests {
+
+        // A core function and a pointcloud function, tagged by the IDL family field.
+        private static final String FIELD_JSON = """
+            {
+              "functions": [
+                {"name": "temporal_num_instants", "family": "CORE",
+                 "returnType": {"c": "int"},
+                 "params": [{"name": "temp", "cType": "Temporal *"}]},
+                {"name": "pcpatch_num_points", "family": "POINTCLOUD",
+                 "returnType": {"c": "int"},
+                 "params": [{"name": "patch", "cType": "Pointer"}]}
+              ]
+            }
+            """;
+
+        @Test
+        @DisplayName("family field: all families emitted by default")
+        void fieldDefaultEmitsAll() throws Exception {
+            String out = generateFromJson(FIELD_JSON);
+            assertTrue(out.contains("temporal_num_instants"));
+            assertTrue(out.contains("pcpatch_num_points"));
+        }
+
+        @Test
+        @DisplayName("family field: -DPOINTCLOUD=OFF drops pointcloud, keeps core")
+        void fieldPointcloudOff() throws Exception {
+            System.setProperty("POINTCLOUD", "OFF");
+            try {
+                String out = generateFromJson(FIELD_JSON);
+                assertTrue(out.contains("temporal_num_instants"), "core stays");
+                assertFalse(out.contains("pcpatch_num_points"), "pointcloud dropped");
+            } finally {
+                System.clearProperty("POINTCLOUD");
+            }
+        }
+
+        @Test
+        @DisplayName("fallback: header basename gates when the family field is absent")
+        void headerFallbackGates() throws Exception {
+            String json = """
+                {
+                  "functions": [
+                    {"name": "cbuffer_out", "file": "meos_cbuffer.h",
+                     "returnType": {"c": "char *"},
+                     "params": [{"name": "cb", "cType": "Pointer"}]}
+                  ]
+                }
+                """;
+            System.setProperty("CBUFFER", "OFF");
+            try {
+                assertFalse(generateFromJson(json).contains("cbuffer_out"));
+            } finally {
+                System.clearProperty("CBUFFER");
+            }
+        }
+    }
 }
