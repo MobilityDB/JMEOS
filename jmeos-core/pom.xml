@@ -240,6 +240,57 @@
             </plugin>
 
 
+            <!-- Generate functions.GeneratedFunctions from the MEOS IDL at build
+                 time. The optional type families are selected with the same flag
+                 names and ON|OFF (also 1|0) values as the MobilityDB/MEOS build:
+                 every family is included by default; pass -DCBUFFER=OFF (or
+                 -DNPOINT/-DPOSE/-DRGEO/-DH3=OFF|0) to drop one (RGEO needs POSE).
+                 exec:java runs in-process so the -D flags are inherited. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-meos-facade</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>FunctionsGenerator</mainClass>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.basedir}/../codegen/target/classes</additionalClasspathElement>
+                            </additionalClasspathElements>
+                            <arguments>
+                                <argument>${project.basedir}/../codegen/input/meos-idl.json</argument>
+                                <argument>${project.build.directory}/generated-sources/jmeos/functions/GeneratedFunctions.java</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-facade</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jmeos</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
