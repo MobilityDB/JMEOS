@@ -13,6 +13,18 @@ import functions.MeosErrorHandler;
 import java.time.*;
 
 public class functions {
+
+	static {
+		// Fully initialize MEOS before any binding call. MEOS splits startup into
+		// granular steps (allocator, error handler, timezone, collation, PROJ/GEOS/
+		// GSL); meos_initialize() runs them in the required order. Installing the
+		// allocator and collation is load-bearing: without collation, text
+		// comparisons route into varstr_cmp with an uninitialized collation and
+		// crash. Callers may still override individual steps afterwards (e.g.
+		// meos_initialize_timezone("UTC")).
+		MeosLibrary.meos.meos_initialize();
+	}
+
 	public interface MeosLibrary {
 
 		String libraryPath = "libmeos.so";
