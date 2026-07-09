@@ -177,7 +177,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
     @Override
     public LocalDate upper() {
-        return date_adt_to_date(functions.datespan_lower(this._inner));
+        return date_adt_to_date(functions.datespan_upper(this._inner));
     }
 
     @Override

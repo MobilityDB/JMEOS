@@ -46,6 +46,12 @@ class DateSpanTest {
         assertEquals("[2019-09-25, 2019-09-28)", dspan.toString());
     }
 
+    @Test
+    public void testLowerUpper(){
+        assertEquals(LocalDate.of(2019, 9, 25), dspan.lower());
+        assertEquals(LocalDate.of(2019, 9, 28), dspan.upper());
+    }
+
 
     @Test
     public void testFromAsConstructor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
