@@ -35,6 +35,71 @@ public class FunctionsGenerator {
     // so we force long when the interface type resolved to int for these names.
     private static final Set<String> SIZE_PARAM_NAMES = Set.of("size", "wkb_size");
 
+    // -------------------------------------------------------------------------
+    // Optional MEOS type families, gated by build flags mirroring the
+    // MobilityDB/MEOS flag names and ON|OFF (also 1|0) values: -DCBUFFER=OFF,
+    // -DNPOINT=OFF, -DPOSE=OFF, -DRGEO=OFF, -DH3=OFF. Each family maps to the
+    // public headers that declare its functions; a function whose header belongs
+    // to an excluded family is omitted from the generated binding, so a subset
+    // jar ships without it. The shared binding jar includes every family by
+    // default; pass -D<FAMILY>=OFF|0 to drop one (RGEO needs POSE).
+    // -------------------------------------------------------------------------
+    // The canonical family of a function is the IDL ``family`` field, which
+    // MEOS-API derives from the declaring header's ``meos/include/<family>/``
+    // subdirectory — the single source of truth. This basename map is only the
+    // fallback for IDLs generated before that field existed, and covers the
+    // public headers of the families present at the time.
+    private static final Map<String, String> HEADER_FAMILY = Map.ofEntries(
+            Map.entry("meos_cbuffer.h", "CBUFFER"),
+            Map.entry("meos_npoint.h", "NPOINT"),
+            Map.entry("meos_pose.h", "POSE"),
+            Map.entry("meos_rgeo.h", "RGEO"),
+            Map.entry("meos_h3.h", "H3"),
+            Map.entry("th3index.h", "H3"),
+            Map.entry("th3index_internal.h", "H3"),
+            Map.entry("th3index_boxops.h", "H3"),
+            Map.entry("h3index.h", "H3"),
+            Map.entry("h3index_sets.h", "H3"),
+            Map.entry("h3_generated.h", "H3"));
+    private static final Set<String> OPTIONAL_FAMILIES =
+            Set.of("CBUFFER", "NPOINT", "POSE", "RGEO", "H3",
+                   "QUADBIN", "POINTCLOUD", "JSON", "ARROW", "RASTER");
+
+    // Families enabled for this generation run; core headers are always emitted.
+    private Set<String> enabledFamilies;
+
+    private static Set<String> resolveEnabledFamilies() {
+        Set<String> enabled = new LinkedHashSet<>();
+        for (String family : OPTIONAL_FAMILIES) {
+            String v = System.getProperty(family);
+            boolean off = v != null
+                    && (v.equalsIgnoreCase("OFF") || v.equals("0") || v.equalsIgnoreCase("false"));
+            if (!off) {
+                enabled.add(family); // included by default, dropped only by -D<FAMILY>=OFF|0
+            }
+        }
+        return enabled;
+    }
+
+    // Resolve a function's family: the canonical IDL ``family`` field when
+    // present, else the header-basename fallback for pre-field IDLs.
+    private String familyOf(JsonNode fn) {
+        JsonNode familyNode = fn.get("family");
+        if (familyNode != null) {
+            return familyNode.asText();
+        }
+        JsonNode fileNode = fn.get("file");
+        return fileNode == null ? null : HEADER_FAMILY.get(fileNode.asText());
+    }
+
+    private boolean familyEnabled(String family) {
+        // CORE (and any family not in the optional set) is always emitted; an
+        // optional family is emitted only while it stays enabled.
+        return family == null
+                || !OPTIONAL_FAMILIES.contains(family)
+                || enabledFamilies.contains(family);
+    }
+
     // Output-only size parameters that must not appear in the public
     // static wrapper signature.
     //
@@ -121,7 +186,14 @@ public class FunctionsGenerator {
         List<FunctionDef> functions = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>(); // deduplicate by name#arity
 
+        enabledFamilies = resolveEnabledFamilies();
+        System.out.println("Enabled optional families: " + enabledFamilies
+                + " (core always included)");
+
         for (JsonNode fn : functionsNode) {
+            if (!familyEnabled(familyOf(fn))) {
+                continue; // function belongs to a disabled type family
+            }
             FunctionDef def = parseFunctionDef(fn);
             String key = def.name + "#" + def.params.size();
             if (seen.add(key)) {
@@ -266,6 +338,10 @@ public class FunctionsGenerator {
             // DateADT is int32 under the hood; Timestamp/TimestampTz are int64.
             case "DateADT"                          -> "int";
             case "Timestamp", "TimestampTz"         -> "long";
+            // H3Index is a uint64 cell identifier (DGGRID/H3), not an opaque
+            // struct pointer; without this it hits the default branch and
+            // becomes Pointer, breaking every h3index/th3index binding.
+            case "H3Index"                          -> "long";
 
             // Explicit enum names (in case not in JSON enums section)
             case "interpType", "RTreeSearchOp",
@@ -307,6 +383,20 @@ public class FunctionsGenerator {
     private boolean isTemporalCType(String cType) {
         String cleaned = cType.replace("const ", "").trim();
         return TIMESTAMP_C_TYPES.contains(cleaned);
+    }
+
+    /**
+     * Returns true if the C return type is an OWNED {@code char *} that the
+     * caller must free: a non-const {@code char *}. {@code const char *}
+     * returns are borrowed/static (e.g. temporal_interp, temporal_subtype,
+     * geo_typename) and must NOT be freed. For an owned char* the interface
+     * binds the return as Pointer and the wrapper frees it after copying the
+     * string, instead of letting JNR-FFI copy the C string to a Java String
+     * and leak the original allocation.
+     */
+    private boolean isOwnedCharReturn(String retCType) {
+        if (retCType.contains("const")) return false;
+        return retCType.replaceAll("\\s+", "").equals("char*");
     }
 
     // bool+result strategy: driven by the pointed-to C type
@@ -443,6 +533,29 @@ public class FunctionsGenerator {
                 """);
 
         sb.append("public class GeneratedFunctions {\n");
+        // Native deallocator for char* returned by owning MEOS functions.
+        // MEOS standalone allocates with the system malloc (palloc/pfree map to
+        // malloc/free outside PostgreSQL); freeMemory() calls the system free
+        // underneath. Uses sun.misc.Unsafe rather than a JNR-FFI libc binding to
+        // avoid classloader-boundary issues, mirroring MobilitySpark MeosMemory.
+        sb.append("""
+                \tprivate static final sun.misc.Unsafe _UNSAFE;
+                \tstatic {
+                \t\ttry {
+                \t\t\tjava.lang.reflect.Field _f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+                \t\t\t_f.setAccessible(true);
+                \t\t\t_UNSAFE = (sun.misc.Unsafe) _f.get(null);
+                \t\t} catch (ReflectiveOperationException _e) {
+                \t\t\tthrow new ExceptionInInitializerError(_e);
+                \t\t}
+                \t}
+
+                \t/** Free a char* returned by an owning (non-const) MEOS function. Null-safe. */
+                \tprivate static void _freeCStr(Pointer _p) {
+                \t\tif (_p != null) _UNSAFE.freeMemory(_p.address());
+                \t}
+
+                """);
         sb.append(generateAllInterfaces(functions, partSize));
         sb.append("\n\n");
 
@@ -476,8 +589,11 @@ public class FunctionsGenerator {
             sb.append("\tpublic interface MeosLibraryPart").append(letters[p]).append(" {\n\n");
             for (int i = start; i < end; i++) {
                 FunctionDef fn = functions.get(i);
+                // Owned char* returns bind as Pointer so the wrapper can free
+                // the native allocation after copying the string.
+                String ifaceRet = isOwnedCharReturn(fn.retCType) ? "Pointer" : fn.returnType;
                 sb.append("\t\t")
-                        .append(fn.returnType).append(" ")
+                        .append(ifaceRet).append(" ")
                         .append(fn.name).append("(")
                         .append(buildInterfaceParamList(fn.params))
                         .append(");\n\n");
@@ -690,6 +806,15 @@ public class FunctionsGenerator {
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
+        } else if (isOwnedCharReturn(fn.retCType)) {
+            // Interface returns Pointer (owned char*). Copy the string, free the
+            // native allocation, and return the Java String — no leak.
+            sb.append("\t\tPointer _result = ").append(call).append("\n");
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\tif (_result == null) return null;\n");
+            sb.append("\t\tString _str = _result.getString(0);\n");
+            sb.append("\t\t_freeCStr(_result);\n");
+            sb.append("\t\treturn _str;\n");
         } else {
             sb.append("\t\tvar _result = ").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
