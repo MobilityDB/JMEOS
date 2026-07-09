@@ -100,51 +100,20 @@ public class FunctionsGenerator {
                 || enabledFamilies.contains(family);
     }
 
-    // Output-only size parameters that must not appear in the public
-    // static wrapper signature.
+    // Out-parameters — the arguments a function writes to rather than reads — are declared
+    // ONCE at the source by the Doxygen @param[out] tag, carried here as the catalog's
+    // shape.outParams flag (cross-checked against the C signature in MEOS-API) on each
+    // ParamDef.  A wrapper hides an out-param from its signature and folds it; the ROLE is
+    // read from the C type, via isSizeOut()/isResultOut():
     //
-    // In the MEOS C API, functions like set_as_wkb() accept a "size_t *size_out"
-    // pointer that is written by the callee to report the number of bytes it
-    // produced.  The caller (our wrapper) does not need to expose this detail:
-    // it allocates the pointer internally (Memory.allocateDirect) and discards
-    // the value, exactly as old_functions.txt does.
+    //   size_t* out-param  → the throwaway byte-count of the *_as_wkb/_as_hexwkb family:
+    //                        allocated internally (Memory.allocateDirect), forwarded, discarded.
+    //   other pointer out-param on a boolean-returning method → the VALUE (the C idiom
+    //                        `bool fn(.., T *result)`): allocated, read back with the accessor
+    //                        matching *result's C type, and returned.
     //
-    // Without this fix the generator was forwarding size_out directly into the
-    // wrapper signature.
-    private static final Set<String> OUTPUT_SIZE_PARAMS = Set.of("size_out");
-
-    // Output-only result parameters for boolean-returning interface
-    // methods.
-    //
-    // Many MEOS functions follow the C idiom:
-    //   bool stbox_xmax(STBox *box, double *result)
-    // where the boolean signals success/failure and the actual value is written
-    // into *result.  The wrapper allocates the result buffer internally, calls
-    // the native method, and returns a Pointer the caller can read.
-    //
-    // The exact generated code depends on the C type of *result:
-    //
-    // Scalar result (double*, TimestampTz*, int*, bool*, …):
-    //   public static Pointer stbox_xmax(Pointer box)
-    //   boolean out;
-    //   Runtime runtime = Runtime.getSystemRuntime();
-    //   Pointer result = Memory.allocateDirect(runtime, Double.BYTES);  ← correct size
-    //   out = MeosLibrary.meos.stbox_xmax(box, result);
-    //   MeosErrorHandler.checkError();
-    //   return out ? result : null;     ← return the buffer; caller does .getDouble(0)
-    //
-    // Pointer result (Span*, STBox*, …):
-    //   Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
-    //   out = MeosLibrary.meos.fn(box, result);
-    //   Pointer new_result = result.getPointer(0);  ← dereference to get the Span*
-    //   MeosErrorHandler.checkError();
-    //   return out ? new_result : null;
-    //
-    // This fix triggers when ALL of these conditions are true:
-    //   1. The interface method returns boolean
-    //   2. There is a parameter whose name is in OUTPUT_RESULT_PARAMS
-    //   3. That parameter's Java type is Pointer
-    private static final Set<String> OUTPUT_RESULT_PARAMS = Set.of("result");
+    // The flag is keyed by the source's @param[out] tag, so an out-param folds regardless of
+    // how it is spelled in the signature (`size_out`, `size`, `result`, `value`, …).
 
     // -------------------------------------------------------------------------
     // Entry point
@@ -251,11 +220,22 @@ public class FunctionsGenerator {
         // ParamDef carries the original C type so that
         // generateStaticMethod can decide whether a conversion is needed.
         List<ParamDef> params = new ArrayList<>();
+        // Out-parameters are declared once, at the source, by the Doxygen @param[out] tag —
+        // carried here as shape.outParams (cross-checked against the C signature in MEOS-API).
+        // The wrapper folds them instead of relying on a hardcoded parameter-name whitelist.
+        java.util.Set<String> outParams = new java.util.HashSet<>();
+        JsonNode shapeNode = fn.get("shape");
+        if (shapeNode != null && shapeNode.has("outParams")) {
+            for (JsonNode o : shapeNode.get("outParams")) {
+                outParams.add(o.asText());
+            }
+        }
         JsonNode paramsNode = fn.get("params");
         if (paramsNode != null && paramsNode.isArray()) {
             for (JsonNode p : paramsNode) {
                 if (p != null && p.isObject()) {
-                    String pName  = sanitizeParamName(p.get("name").asText());
+                    String rawName = p.get("name").asText();
+                    String pName  = sanitizeParamName(rawName);
                     String pCType = p.get("cType").asText();
                     String pJava  = mapCTypeToJava(pCType);
 
@@ -265,7 +245,7 @@ public class FunctionsGenerator {
                         pJava = "long";
                     }
 
-                    params.add(new ParamDef(pName, pJava, pCType));
+                    params.add(new ParamDef(pName, pJava, pCType, outParams.contains(rawName)));
                 }
             }
         }
@@ -647,13 +627,26 @@ public class FunctionsGenerator {
      * For return types, we convert long → OffsetDateTime using
      *   OffsetDateTime.ofEpochSecond(_result, 0, ZoneOffset.UTC)
      */
+    // An out-param (shape.outParams) plays one of two ROLES, read from its C type, not its
+    // spelling: a size_t* out-param is the throwaway byte-count of the *_as_hexwkb/_as_wkb
+    // family (allocated, forwarded, discarded); any other pointer out-param is the VALUE the
+    // boolean+result pattern writes (allocated, dereferenced, returned).
+    private static boolean isSizeOut(ParamDef p) {
+        return p.out() && p.cType().contains("size_t");
+    }
+
+    private static boolean isResultOut(ParamDef p) {
+        return p.out() && p.javaType().equals("Pointer") && !p.cType().contains("size_t");
+    }
+
     private String generateStaticMethod(FunctionDef fn, int partIndex) {
         StringBuilder sb = new StringBuilder();
 
         // Detect the boolean+result pattern.
         //
         // Condition: the interface returns boolean AND the param list
-        // contains a Pointer param whose name is in OUTPUT_RESULT_PARAMS.
+        // contains a Pointer param flagged as an out-param (shape.outParams,
+        // i.e. isResultOut) — the value written back through that pointer.
         //
         // When true, the wrapper:
         //   - hides the "result" param from its signature
@@ -665,10 +658,14 @@ public class FunctionsGenerator {
         //   double* → public static double fn(...)  return result.getDouble(0)
         //   bool*   → public static boolean fn(...) return result.getByte(0) != 0
         //   Span*   → public static Pointer fn(...) return result.getPointer(0)
+        // A boolean function with EXACTLY ONE value out-param folds to a returned
+        // Pointer: the wrapper allocates the buffer, forwards it, reads it back, and
+        // returns it. Functions with two-or-more result-out params
+        // (intersection_*/synchronize_*: inter1/inter2, *_to_arrow: out_schema/out_array)
+        // cannot collapse to a single returned buffer, so they keep those out-params as
+        // caller-provided Pointer arguments.
         boolean isBoolResultPattern = fn.returnType.equals("boolean")
-                && fn.params.stream().anyMatch(p ->
-                OUTPUT_RESULT_PARAMS.contains(p.name)
-                        && p.javaType().equals("Pointer"));
+                && fn.params.stream().filter(FunctionsGenerator::isResultOut).count() == 1;
 
         // Resolve the ResultStrategy from the C type of the result param.
         // Determines allocation size, read expression, and wrapper return type.
@@ -676,8 +673,7 @@ public class FunctionsGenerator {
         // a SIGSEGV at runtime for scalar result types (double*, int*, bool*…).
         ResultStrategy resultStrategy = isBoolResultPattern
                 ? fn.params.stream()
-                .filter(p -> OUTPUT_RESULT_PARAMS.contains(p.name)
-                        && p.javaType().equals("Pointer"))
+                .filter(FunctionsGenerator::isResultOut)
                 .findFirst()
                 .map(p -> resolveResultStrategy(p.cType))
                 .orElse(new ResultStrategy("Long.BYTES", true))
@@ -691,12 +687,11 @@ public class FunctionsGenerator {
         boolean            hasInternalResult  = false;
 
         for (ParamDef p : fn.params) {
-            if (OUTPUT_SIZE_PARAMS.contains(p.name)) {
+            if (isSizeOut(p)) {
                 internalSizeParams.add(p.name);
                 continue;
             }
-            if (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
-                    && p.javaType().equals("Pointer")) {
+            if (isBoolResultPattern && isResultOut(p)) {
                 hasInternalResult = true;
                 continue; // hide from signature; allocated below
             }
@@ -770,10 +765,10 @@ public class FunctionsGenerator {
         // Hidden params (size_out, result) are still forwarded by their local name.
         StringJoiner args = new StringJoiner(", ");
         for (ParamDef p : fn.params) {
-            if (OUTPUT_SIZE_PARAMS.contains(p.name)
-                    || (isBoolResultPattern && OUTPUT_RESULT_PARAMS.contains(p.name)
-                    && p.javaType().equals("Pointer"))) {
-                args.add(p.name); // pass locally-allocated pointer
+            if (isBoolResultPattern && isResultOut(p)) {
+                args.add("result"); // the hidden buffer allocated as `result`
+            } else if (isSizeOut(p)) {
+                args.add(p.name); // size_out buffer is allocated under its own name
             } else {
                 boolean converted = isTemporalCType(p.cType());
                 args.add(converted ? p.name + "_new" : p.name);
@@ -871,8 +866,9 @@ public class FunctionsGenerator {
     private record FunctionDef(String name, String returnType, String retCType, List<ParamDef> params) {}
 
     // Added cType field so each param's original C type is
-    // available when generating conversion code in the static wrapper.
-    private record ParamDef(String name, String javaType, String cType) {}
+    // available when generating conversion code in the static wrapper; `out` carries the
+    // catalog's shape.outParams flag (Doxygen @param[out], cross-checked in MEOS-API).
+    private record ParamDef(String name, String javaType, String cType, boolean out) {}
 
     // New record for wrapper-layer parameter info.
     private record WrapperParam(String name, String wrapperType, String interfaceType, boolean needsConversion) {}

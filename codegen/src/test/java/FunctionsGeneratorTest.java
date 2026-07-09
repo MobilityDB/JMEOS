@@ -496,6 +496,7 @@ class FunctionsGeneratorTest {
                   "functions": [{
                     "name": "stbox_xmax",
                     "returnType": {"c": "bool"},
+                    "shape": {"outParams": ["result"]},
                     "params": [
                       {"name": "box",    "cType": "STBox *"},
                       {"name": "result", "cType": "double *"}
@@ -521,6 +522,7 @@ class FunctionsGeneratorTest {
                   "functions": [{
                     "name": "temporal_bbox",
                     "returnType": {"c": "bool"},
+                    "shape": {"outParams": ["result"]},
                     "params": [
                       {"name": "temp",   "cType": "Temporal *"},
                       {"name": "result", "cType": "STBox *"}
@@ -542,6 +544,7 @@ class FunctionsGeneratorTest {
                   "functions": [{
                     "name": "set_as_wkb",
                     "returnType": {"c": "uint8_t *"},
+                    "shape": {"outParams": ["size_out"]},
                     "params": [
                       {"name": "s",        "cType": "Set *"},
                       {"name": "size_out", "cType": "size_t *"}
@@ -554,6 +557,54 @@ class FunctionsGeneratorTest {
             assertTrue(out.contains("public static Pointer set_as_wkb(Pointer s)"));
             // but is still allocated internally
             assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES)"));
+        }
+
+        @Test
+        @DisplayName("shape.outParams folds by the flag regardless of the param name")
+        void outParamFoldsByFlagNotName() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "tint_value_at_timestamptz",
+                    "returnType": {"c": "bool"},
+                    "shape": {"outParams": ["value"]},
+                    "params": [
+                      {"name": "temp",   "cType": "Temporal *"},
+                      {"name": "strict", "cType": "bool"},
+                      {"name": "value",  "cType": "int *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            // `value` is flagged, so it folds even though it is not named "result":
+            // hidden from the signature, allocated internally, and returned.
+            assertTrue(out.contains(
+                "public static Pointer tint_value_at_timestamptz(Pointer temp, boolean strict)"));
+            assertTrue(out.contains("Pointer result = Memory.allocateDirect(runtime, Integer.BYTES)"));
+            assertTrue(out.contains("return out ? result : null"));
+        }
+
+        @Test
+        @DisplayName("an unflagged trailing pointer stays a visible parameter")
+        void unflaggedTrailingPointerIsNotFolded() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "contains_set_geo",
+                    "returnType": {"c": "bool"},
+                    "params": [
+                      {"name": "s",  "cType": "Set *"},
+                      {"name": "gs", "cType": "GSERIALIZED *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            // No shape.outParams: gs is an input, so it stays in the wrapper signature
+            // and the wrapper keeps the boolean return.
+            assertTrue(out.contains(
+                "public static boolean contains_set_geo(Pointer s, Pointer gs)"));
         }
 
         @Test
