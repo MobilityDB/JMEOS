@@ -802,7 +802,7 @@ public interface TNumber {
 
     private Pointer createEmptyPointerArray(Runtime runtime, int size) {
         // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
-        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), size*Long.BYTES); // Adjust size as needed
+        Pointer listPointer = Memory.allocate(runtime, size*Long.BYTES); // Adjust size as needed
         return listPointer;
     }
 
@@ -810,7 +810,7 @@ public interface TNumber {
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime, size);
         Pointer result= functions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
         List<TNumber> tempList= new ArrayList<>();
@@ -864,7 +864,7 @@ public interface TNumber {
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);
         Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
         Pointer p= functions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);

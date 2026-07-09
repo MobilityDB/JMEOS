@@ -239,7 +239,7 @@ public interface TInt extends TNumber {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer res= functions.tint_values(this.getNumberInner(), intPointer);
 		int count= intPointer.getInt(Integer.BYTES);
 		StringBuilder sb = new StringBuilder();
@@ -298,7 +298,7 @@ public interface TInt extends TNumber {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		boolean x= functions.tint_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true, intPointer);
 		int num= intPointer.getInt(Integer.BYTES);
 		return num;

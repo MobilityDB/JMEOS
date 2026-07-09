@@ -1243,7 +1243,7 @@ public class STBox implements Box {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer);
 		int count= intPointer.getInt(Integer.BYTES);
 		List<STBox> stBoxList= new ArrayList<>();
@@ -1289,7 +1289,7 @@ public class STBox implements Box {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.stbox_quad_split(this.get_inner(), intPointer); // Populate boxes and count
 		List<STBox> boxes= new ArrayList<>();
 		for(int i=0;i<8;i++){
