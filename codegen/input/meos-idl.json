@@ -923,7 +923,12 @@
           "json": "integer"
         }
       },
-      "group": "meos_geo_box_index"
+      "group": "meos_geo_box_index",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "rtree_search_temporal",
@@ -996,7 +1001,12 @@
           "json": "integer"
         }
       },
-      "group": "meos_temporal_box_index"
+      "group": "meos_temporal_box_index",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "rtree_search_temporal_dedup",
@@ -1079,7 +1089,12 @@
           "json": "integer"
         }
       },
-      "group": "meos_temporal_box_index"
+      "group": "meos_temporal_box_index",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "meos_initialize_error_handler",
@@ -3252,7 +3267,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "set_as_wkb",
@@ -3326,7 +3346,12 @@
         "Set_send",
         "Set_as_wkb"
       ],
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "set_from_hexwkb",
@@ -3551,7 +3576,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "span_as_wkb",
@@ -3625,7 +3655,12 @@
         "Span_send",
         "Span_as_wkb"
       ],
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "span_from_hexwkb",
@@ -3828,7 +3863,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "spanset_as_wkb",
@@ -3902,7 +3942,12 @@
         "Spanset_send",
         "Spanset_as_wkb"
       ],
-      "group": "meos_setspan_inout"
+      "group": "meos_setspan_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "spanset_from_hexwkb",
@@ -8043,7 +8088,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "bigintset_values",
@@ -8071,7 +8121,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -8651,7 +8704,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "dateset_values",
@@ -8679,7 +8737,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -8958,7 +9019,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "date",
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "datespanset_dates",
@@ -9436,7 +9502,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "floatset_values",
@@ -9464,7 +9535,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -10051,7 +10125,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "intset_values",
@@ -10079,7 +10158,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -11583,7 +11665,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "textset_values",
@@ -11611,7 +11698,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -11876,7 +11966,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tstzset_values",
@@ -11904,7 +11999,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -12501,7 +12599,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "timestamptz",
-      "group": "meos_setspan_accessor"
+      "group": "meos_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tstzspanset_upper",
@@ -17479,7 +17582,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -17572,7 +17678,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -17731,7 +17840,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -17824,7 +17936,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -42449,7 +42564,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -42539,7 +42657,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -42694,7 +42815,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -42796,7 +42920,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -42955,7 +43082,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43047,7 +43177,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43196,7 +43329,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43288,7 +43424,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43445,7 +43584,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43547,7 +43689,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -43752,7 +43897,12 @@
         "Tbox_send",
         "Tbox_as_wkb"
       ],
-      "group": "meos_box_inout"
+      "group": "meos_box_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "tbox_from_hexwkb",
@@ -45561,7 +45711,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "timestamptz",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_tmax_inc",
@@ -45617,7 +45772,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_tmin",
@@ -45674,7 +45834,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "timestamptz",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_tmin_inc",
@@ -45730,7 +45895,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_xmax",
@@ -45786,7 +45956,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_internal_box_accessor"
+      "group": "meos_internal_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_xmax_inc",
@@ -45842,7 +46017,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_xmin",
@@ -45898,7 +46078,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_internal_box_accessor"
+      "group": "meos_internal_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbox_xmin_inc",
@@ -45954,7 +46139,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxfloat_xmax",
@@ -46010,7 +46200,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxfloat_xmin",
@@ -46066,7 +46261,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxint_xmax",
@@ -46122,7 +46322,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxbigint_xmax",
@@ -46179,7 +46384,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxint_xmin",
@@ -46235,7 +46445,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboxbigint_xmin",
@@ -46292,7 +46507,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_box_accessor"
+      "group": "meos_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tfloatbox_expand",
@@ -48770,7 +48990,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_temporal_inout"
+      "group": "meos_temporal_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "temporal_as_mfjson",
@@ -48939,7 +49164,12 @@
         "Temporal_send",
         "Temporal_as_wkb"
       ],
-      "group": "meos_temporal_inout"
+      "group": "meos_temporal_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "temporal_from_hexwkb",
@@ -52645,7 +52875,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tbool_value_n",
@@ -52728,7 +52963,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbool_values",
@@ -52756,7 +52996,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "predicate",
@@ -53243,7 +53486,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -53810,7 +54056,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -53991,7 +54240,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -54547,7 +54799,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -54652,7 +54907,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "timestamptz",
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "temporal_upper_inc",
@@ -55036,7 +55296,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tfloat_value_n",
@@ -55119,7 +55384,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tfloat_values",
@@ -55147,7 +55417,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -55773,7 +56046,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tint_value_at_timestamptz",
@@ -55867,7 +56145,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tint_value_n",
@@ -55950,7 +56233,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbigint_value_n",
@@ -56033,7 +56321,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tint_values",
@@ -56061,7 +56354,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -56142,7 +56438,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -56746,7 +57045,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "ttext_value_n",
@@ -56830,7 +57134,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_temporal_accessor"
+      "group": "meos_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "ttext_values",
@@ -56858,7 +57167,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -73364,7 +73676,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -73451,7 +73766,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -73539,7 +73857,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -73627,7 +73948,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -73715,7 +74039,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -73798,7 +74125,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -87241,7 +87571,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -87389,7 +87722,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -87789,7 +88125,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -87907,6 +88246,9 @@
           {
             "param": "time_bins"
           }
+        ],
+        "outParams": [
+          "count"
         ]
       },
       "api": "public",
@@ -88140,7 +88482,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -88336,6 +88681,10 @@
           {
             "param": "bins"
           }
+        ],
+        "outParams": [
+          "bins",
+          "count"
         ]
       },
       "api": "public",
@@ -88594,6 +88943,11 @@
           {
             "param": "time_bins"
           }
+        ],
+        "outParams": [
+          "value_bins",
+          "time_bins",
+          "count"
         ]
       },
       "api": "public",
@@ -88725,7 +89079,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -88832,7 +89189,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -88939,7 +89299,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -89159,7 +89522,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -89355,6 +89721,10 @@
           {
             "param": "bins"
           }
+        ],
+        "outParams": [
+          "bins",
+          "count"
         ]
       },
       "api": "public",
@@ -89613,6 +89983,11 @@
           {
             "param": "time_bins"
           }
+        ],
+        "outParams": [
+          "value_bins",
+          "time_bins",
+          "count"
         ]
       },
       "api": "public",
@@ -89744,7 +90119,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -89851,7 +90229,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -89958,7 +90339,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -92254,7 +92638,12 @@
           "presence_return": true
         }
       },
-      "group": "meos_geo_base_accessor"
+      "group": "meos_geo_base_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "geom_length",
@@ -93231,7 +93620,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -93995,7 +94387,12 @@
           ]
         }
       },
-      "group": "meos_geo_base_spatial"
+      "group": "meos_geo_base_spatial",
+      "shape": {
+        "outParams": [
+          "radius"
+        ]
+      }
     },
     {
       "name": "geom_shortestline2d",
@@ -95486,7 +95883,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -96817,7 +97217,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_geo_set_accessor"
+      "group": "meos_geo_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "geoset_values",
@@ -96845,7 +97250,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -98158,7 +98566,12 @@
         "Stbox_send",
         "Stbox_as_wkb"
       ],
-      "group": "meos_geo_box_inout"
+      "group": "meos_geo_box_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "stbox_from_hexwkb",
@@ -99852,7 +100265,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "timestamptz",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_tmax_inc",
@@ -99908,7 +100326,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_tmin",
@@ -99965,7 +100388,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "timestamptz",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_tmin_inc",
@@ -100021,7 +100449,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "boolean",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_volume",
@@ -100125,7 +100558,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_xmin",
@@ -100181,7 +100619,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_ymax",
@@ -100237,7 +100680,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_ymin",
@@ -100293,7 +100741,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_zmax",
@@ -100349,7 +100802,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_zmin",
@@ -100405,7 +100863,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_box_accessor"
+      "group": "meos_geo_box_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "stbox_expand_space",
@@ -100644,7 +101107,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -105561,7 +106027,12 @@
         "Tpoint_to_geomeas",
         "Tpoint_tfloat_to_geomeas"
       ],
-      "group": "meos_geo_conversion"
+      "group": "meos_geo_conversion",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tspatial_to_stbox",
@@ -105707,7 +106178,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "float",
-      "group": "meos_geo_accessor"
+      "group": "meos_geo_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "bearing_tpoint_point",
@@ -106343,7 +106819,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_geo_accessor"
+      "group": "meos_geo_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tgeo_value_n",
@@ -106438,7 +106919,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_geo_accessor"
+      "group": "meos_geo_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tgeo_values",
@@ -106466,7 +106952,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -106775,7 +107264,12 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "float",
-      "group": "meos_geo_accessor"
+      "group": "meos_geo_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tpoint_get_x",
@@ -107483,7 +107977,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -110139,7 +110636,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -110247,7 +110747,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -110411,6 +110914,9 @@
         "nullable": [
           "duration",
           "sorigin"
+        ],
+        "outParams": [
+          "count"
         ]
       },
       "api": "public",
@@ -110555,7 +111061,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -110643,7 +111152,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119182,7 +119694,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119285,7 +119800,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119383,7 +119901,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119476,7 +119997,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119569,7 +120093,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119662,7 +120189,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119755,7 +120285,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119848,7 +120381,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -119956,6 +120492,10 @@
           {
             "param": "periods"
           }
+        ],
+        "outParams": [
+          "count",
+          "periods"
         ]
       },
       "api": "public",
@@ -120068,6 +120608,10 @@
           {
             "param": "periods"
           }
+        ],
+        "outParams": [
+          "count",
+          "periods"
         ]
       },
       "api": "public",
@@ -120175,6 +120719,10 @@
           {
             "param": "periods"
           }
+        ],
+        "outParams": [
+          "count",
+          "periods"
         ]
       },
       "api": "public",
@@ -120282,6 +120830,10 @@
           {
             "param": "periods"
           }
+        ],
+        "outParams": [
+          "count",
+          "periods"
         ]
       },
       "api": "public",
@@ -121984,7 +122536,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -122136,6 +122691,9 @@
         },
         "nullable": [
           "duration"
+        ],
+        "outParams": [
+          "count"
         ]
       },
       "api": "public",
@@ -122288,6 +122846,9 @@
         },
         "nullable": [
           "duration"
+        ],
+        "outParams": [
+          "count"
         ]
       },
       "api": "public",
@@ -122684,7 +123245,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -122761,7 +123325,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -122833,7 +123400,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -122913,7 +123483,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -123214,7 +123787,12 @@
         "Cbuffer_send",
         "Cbuffer_as_wkb"
       ],
-      "group": "meos_cbuffer_base_inout"
+      "group": "meos_cbuffer_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "cbuffer_from_hexwkb",
@@ -126362,7 +126940,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_cbuffer_set_accessor"
+      "group": "meos_cbuffer_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "cbufferset_values",
@@ -126390,7 +126973,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -128304,7 +128890,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_cbuffer_accessor"
+      "group": "meos_cbuffer_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tcbuffer_value_n",
@@ -128399,7 +128990,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_cbuffer_accessor"
+      "group": "meos_cbuffer_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tcbuffer_values",
@@ -128427,7 +129023,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -137593,6 +138192,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -141453,7 +142058,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_setspan_transf"
+      "group": "meos_internal_setspan_transf",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "set_in",
@@ -142288,7 +142898,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_setspan_constructor"
+      "group": "meos_internal_setspan_constructor",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "spanset_make_exp",
@@ -142662,7 +143277,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_setspan_conversion"
+      "group": "meos_internal_setspan_conversion",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "value_set",
@@ -143325,7 +143945,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_setspan_accessor"
+      "group": "meos_internal_setspan_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "set_vals",
@@ -146952,7 +147577,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_setspan_set"
+      "group": "meos_internal_setspan_set",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "inter_span_span",
@@ -147027,7 +147657,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_setspan_set"
+      "group": "meos_internal_setspan_set",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "intersection_set_value",
@@ -147486,7 +148121,12 @@
           "json": "integer"
         }
       },
-      "group": "meos_internal_setspan_set"
+      "group": "meos_internal_setspan_set",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "minus_set_value",
@@ -149115,7 +149755,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "float_set_tbox",
@@ -149167,7 +149812,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "int_set_tbox",
@@ -149219,7 +149869,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "number_set_tbox",
@@ -149281,7 +149936,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "number_tbox",
@@ -149403,7 +150063,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "numspan_set_tbox",
@@ -149461,7 +150126,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "timestamptz_set_tbox",
@@ -149512,7 +150182,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tstzset_set_tbox",
@@ -149570,7 +150245,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tstzspan_set_tbox",
@@ -149628,7 +150308,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tbox_shift_scale_value",
@@ -149854,7 +150539,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_set"
+      "group": "meos_internal_box_set",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tboolinst_from_mfjson",
@@ -153755,7 +154445,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "tinstant_set_tstzspan",
@@ -153812,7 +154507,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "tnumber_set_tbox",
@@ -153871,7 +154571,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tnumberinst_set_tbox",
@@ -153928,7 +154633,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tnumberseq_set_tbox",
@@ -153979,7 +154689,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tnumberseqset_set_tbox",
@@ -154036,7 +154751,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tsequence_set_tstzspan",
@@ -154087,7 +154807,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "tsequenceset_set_tstzspan",
@@ -154144,7 +154869,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "s"
+        ]
+      }
     },
     {
       "name": "temporal_end_inst",
@@ -154358,7 +155088,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -154707,7 +155440,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -154825,7 +155561,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "temporal_start_inst",
@@ -154973,7 +155714,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -155068,7 +155812,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "temporal_values",
@@ -155096,7 +155845,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "accessor",
@@ -155224,7 +155976,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -155340,7 +156095,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tinstant_time",
@@ -155427,7 +156187,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -155644,7 +156407,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tinstant_values_p",
@@ -155672,7 +156440,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -156214,7 +156985,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -156482,7 +157256,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -156568,7 +157345,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -156747,7 +157527,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -156840,7 +157623,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tsequence_values_p",
@@ -156868,7 +157656,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -157183,7 +157974,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -157851,7 +158645,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "timestamptz",
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tsequenceset_timestamps",
@@ -157984,7 +158783,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tsequenceset_value_n",
@@ -158045,7 +158849,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tsequenceset_value_n_p",
@@ -158106,7 +158915,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tsequenceset_values_p",
@@ -158134,7 +158948,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -162347,7 +163164,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tsequenceset_expand_bbox",
@@ -162447,7 +163269,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_temporal_bbox"
+      "group": "meos_internal_temporal_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tcontseq_after_timestamptz",
@@ -163769,7 +164596,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_internal_temporal_accessor"
+      "group": "meos_internal_temporal_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tinstant_after_timestamptz",
@@ -169769,7 +170601,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -169859,7 +170694,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -169949,7 +170787,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -170053,6 +170894,9 @@
         },
         "nullable": [
           "duration"
+        ],
+        "outParams": [
+          "count"
         ]
       },
       "api": "internal",
@@ -170178,6 +171022,10 @@
           {
             "param": "bins"
           }
+        ],
+        "outParams": [
+          "bins",
+          "count"
         ]
       },
       "api": "internal",
@@ -173313,6 +174161,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -173793,6 +174647,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -173891,6 +174751,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -173998,6 +174864,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -174105,6 +174977,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -174517,7 +175395,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "cbufferarr_set_stbox",
@@ -174578,7 +175461,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "cbuffer_timestamptz_set_stbox",
@@ -174645,7 +175533,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "cbuffer_tstzspan_set_stbox",
@@ -174719,7 +175612,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tcbufferinst_set_stbox",
@@ -174775,6 +175673,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -174840,6 +175743,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -181392,7 +182300,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -182983,6 +183894,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -185001,6 +185917,12 @@
           "kind": "json",
           "json": "number"
         }
+      },
+      "shape": {
+        "outParams": [
+          "closest",
+          "dist"
+        ]
       }
     },
     {
@@ -185072,6 +185994,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "p"
+        ]
       }
     },
     {
@@ -185428,6 +186355,11 @@
           "kind": "json",
           "json": "number"
         }
+      },
+      "shape": {
+        "outParams": [
+          "dist"
+        ]
       }
     },
     {
@@ -185526,6 +186458,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -185624,6 +186562,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -185995,6 +186939,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -186967,6 +187916,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -189599,6 +190554,11 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "bm"
+        ]
       }
     },
     {
@@ -189830,6 +190790,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -190058,6 +191023,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -190211,6 +191181,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "ntiles"
+        ]
       }
     },
     {
@@ -190870,7 +191845,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_geo_bbox"
+      "group": "meos_internal_geo_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tgeoseq_expand_stbox",
@@ -190976,7 +191956,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_geo_bbox"
+      "group": "meos_internal_geo_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tspatialinstarr_set_stbox",
@@ -191065,6 +192050,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -191126,7 +192116,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_geo_bbox"
+      "group": "meos_internal_geo_bbox",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tspatialseq_expand_stbox",
@@ -191240,6 +192235,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -191471,6 +192471,9 @@
       "shape": {
         "nullable": [
           "result"
+        ],
+        "outParams": [
+          "result"
         ]
       },
       "api": "public",
@@ -191549,6 +192552,9 @@
       ],
       "shape": {
         "nullable": [
+          "result"
+        ],
+        "outParams": [
           "result"
         ]
       },
@@ -194029,7 +195035,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "h3indexarr_set_stbox",
@@ -194090,7 +195101,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "th3indexinst_set_stbox",
@@ -194146,6 +195162,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -194211,6 +195232,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -200923,7 +201949,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_json_set_accessor"
+      "group": "meos_json_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "jsonbset_values",
@@ -204897,7 +205928,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_json_accessor"
+      "group": "meos_json_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tjsonb_value_n",
@@ -204985,7 +206021,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_json_accessor"
+      "group": "meos_json_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tjsonb_values",
@@ -205013,7 +206054,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -211581,7 +212625,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_temporal_conversion"
+      "group": "meos_temporal_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_temporal_from_arrow",
@@ -211757,7 +212807,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_setspan_conversion"
+      "group": "meos_setspan_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_set_from_arrow",
@@ -211930,7 +212986,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_setspan_conversion"
+      "group": "meos_setspan_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_span_from_arrow",
@@ -212103,7 +213165,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_setspan_conversion"
+      "group": "meos_setspan_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_spanset_from_arrow",
@@ -212276,7 +213344,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_box_conversion"
+      "group": "meos_box_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_tbox_from_arrow",
@@ -212449,7 +213523,13 @@
           "json": "boolean"
         }
       },
-      "group": "meos_box_conversion"
+      "group": "meos_box_conversion",
+      "shape": {
+        "outParams": [
+          "out_schema",
+          "out_array"
+        ]
+      }
     },
     {
       "name": "meos_stbox_from_arrow",
@@ -212718,7 +213798,12 @@
         "H3index_send",
         "H3index_as_wkb"
       ],
-      "group": "meos_h3_base_inout"
+      "group": "meos_h3_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "h3index_as_hexwkb",
@@ -212778,7 +213863,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_h3_base_inout"
+      "group": "meos_h3_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "th3index_in",
@@ -213483,7 +214573,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -213631,7 +214724,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_h3_accessor"
+      "group": "meos_h3_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbigint_to_th3index",
@@ -217608,7 +218706,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "geo_set_stbox",
@@ -218276,7 +219379,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_set"
+      "group": "meos_internal_box_set",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tgeogpointinst_from_mfjson",
@@ -221730,7 +222838,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -221800,7 +222911,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -222080,7 +223194,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -222156,7 +223273,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -222600,7 +223720,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -222714,7 +223837,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "internal",
       "category": "transformation",
@@ -223049,7 +224175,12 @@
       "sqlArity": 1,
       "sqlArityMax": 2,
       "sqlReturnType": "text",
-      "group": "meos_npoint_base_inout"
+      "group": "meos_npoint_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "npoint_as_text",
@@ -223181,7 +224312,12 @@
         "Npoint_send",
         "Npoint_as_wkb"
       ],
-      "group": "meos_npoint_base_inout"
+      "group": "meos_npoint_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "npoint_from_hexwkb",
@@ -226508,7 +227644,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_npoint_set_accessor"
+      "group": "meos_npoint_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "npointset_values",
@@ -226536,7 +227677,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -228717,7 +229861,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_npoint_accessor"
+      "group": "meos_npoint_accessor",
+      "shape": {
+        "outParams": [
+          "value"
+        ]
+      }
     },
     {
       "name": "tnpoint_value_n",
@@ -228812,7 +229961,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_npoint_accessor"
+      "group": "meos_npoint_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tnpoint_values",
@@ -228840,7 +229994,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -234338,7 +235495,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_pointcloud_set_accessor"
+      "group": "meos_pointcloud_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "pcpointset_values",
@@ -235702,7 +236864,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_pointcloud_set_accessor"
+      "group": "meos_pointcloud_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "pcpatchset_values",
@@ -240507,7 +241674,12 @@
         "Pose_send",
         "Pose_as_wkb"
       ],
-      "group": "meos_pose_base_inout"
+      "group": "meos_pose_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "pose_from_wkb",
@@ -241853,7 +243025,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -244045,7 +245220,12 @@
         "text",
         "timestamptz"
       ],
-      "group": "meos_pose_set_accessor"
+      "group": "meos_pose_set_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "poseset_values",
@@ -244073,7 +245253,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -246283,7 +247466,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_pose_accessor"
+      "group": "meos_pose_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tpose_value_n",
@@ -246378,7 +247566,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_pose_accessor"
+      "group": "meos_pose_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tpose_values",
@@ -246406,7 +247599,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -249304,7 +250500,14 @@
       "sqlArity": 1,
       "sqlArityMax": 1,
       "sqlReturnType": "integer[]",
-      "group": "meos_quadbin"
+      "group": "meos_quadbin",
+      "shape": {
+        "outParams": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
     },
     {
       "name": "quadbin_get_resolution",
@@ -249428,7 +250631,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "conversion",
@@ -249545,7 +250751,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -251205,7 +252414,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "accessor",
@@ -251353,7 +252565,12 @@
         "quadbin",
         "text"
       ],
-      "group": "meos_quadbin_accessor"
+      "group": "meos_quadbin_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "tbigint_to_tquadbin",
@@ -252890,7 +254107,12 @@
         "Raquet_send",
         "Raquet_as_wkb"
       ],
-      "group": "meos_raster_base_inout"
+      "group": "meos_raster_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "raquet_as_hexwkb",
@@ -252952,7 +254174,12 @@
           "json": "string"
         }
       },
-      "group": "meos_raster_base_inout"
+      "group": "meos_raster_base_inout",
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
+      }
     },
     {
       "name": "raquet_make",
@@ -253745,7 +254972,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -254568,7 +255798,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -254787,7 +256020,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -254968,7 +256204,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -255330,7 +256569,12 @@
       "sqlArity": 2,
       "sqlArityMax": 2,
       "sqlReturnType": "geometry",
-      "group": "meos_rgeo_accessor"
+      "group": "meos_rgeo_accessor",
+      "shape": {
+        "outParams": [
+          "result"
+        ]
+      }
     },
     {
       "name": "trgeometry_traversed_area",
@@ -255666,7 +256910,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -255826,7 +257073,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -255966,7 +257216,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -256049,7 +257302,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -256137,7 +257393,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -256423,7 +257682,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -256505,7 +257767,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -262662,6 +263927,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -264612,7 +265883,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "npointarr_set_stbox",
@@ -264673,7 +265949,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "nsegment_set_stbox",
@@ -264731,7 +266012,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_npoint_accessor"
+      "group": "meos_internal_npoint_accessor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "npoint_timestamptz_set_stbox",
@@ -264798,6 +266084,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -264872,6 +266163,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -264928,6 +266224,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -265004,6 +266305,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -267155,6 +268461,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -267250,6 +268561,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -267358,6 +268674,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -268984,6 +270305,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -269045,7 +270371,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "pose_timestamptz_set_stbox",
@@ -269113,7 +270444,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "pose_tstzspan_set_stbox",
@@ -269188,7 +270524,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_constructor"
+      "group": "meos_internal_box_constructor",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "ensure_valid_tpose_geo",
@@ -269520,6 +270861,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -269618,6 +270965,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -269674,6 +271027,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -269739,6 +271097,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -271463,7 +272826,12 @@
           "json": "boolean"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "quadbinarr_set_stbox",
@@ -271524,7 +272892,12 @@
           "kind": "void"
         }
       },
-      "group": "meos_internal_box_conversion"
+      "group": "meos_internal_box_conversion",
+      "shape": {
+        "outParams": [
+          "box"
+        ]
+      }
     },
     {
       "name": "tquadbininst_set_stbox",
@@ -271580,6 +272953,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -271645,6 +273023,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -271868,6 +273251,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -276547,6 +277935,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -276634,6 +278027,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -276721,6 +278119,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -276812,6 +278215,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -277093,6 +278501,12 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "lower",
+          "upper"
+        ]
       }
     },
     {
@@ -277470,6 +278884,11 @@
             "wkb"
           ]
         }
+      },
+      "shape": {
+        "outParams": [
+          "newcount"
+        ]
       }
     },
     {
@@ -277951,6 +279370,12 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "delta",
+          "scale"
+        ]
       }
     },
     {
@@ -278119,6 +279544,11 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -280776,6 +282206,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "loc"
+        ]
       }
     },
     {
@@ -282397,6 +283832,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "loc"
+        ]
       }
     },
     {
@@ -285529,6 +286969,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "lower",
+          "upper"
+        ]
       }
     },
     {
@@ -285589,6 +287035,11 @@
       "shape": {
         "nullable": [
           "func"
+        ],
+        "outParams": [
+          "newcount",
+          "tofree",
+          "nfree"
         ]
       },
       "api": "public",
@@ -285698,6 +287149,11 @@
       "shape": {
         "nullable": [
           "func"
+        ],
+        "outParams": [
+          "newcount",
+          "tofree",
+          "nfree"
         ]
       },
       "api": "public",
@@ -285802,6 +287258,9 @@
       "shape": {
         "nullable": [
           "func"
+        ],
+        "outParams": [
+          "newcount"
         ]
       },
       "api": "public",
@@ -288365,6 +289824,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -288994,6 +290458,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289074,6 +290543,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289154,6 +290628,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289306,6 +290785,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289376,6 +290860,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289446,6 +290935,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -289516,6 +291010,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -290161,6 +291660,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "start_bin",
+          "end_bin"
+        ]
       }
     },
     {
@@ -290485,6 +291990,11 @@
         "result": {
           "kind": "void"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -290751,6 +292261,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "ntiles"
+        ]
       }
     },
     {
@@ -290802,6 +292317,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "box"
+        ]
       }
     },
     {
@@ -290835,7 +292355,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -290927,7 +292450,10 @@
             "kind": "param",
             "name": "count"
           }
-        }
+        },
+        "outParams": [
+          "count"
+        ]
       },
       "api": "public",
       "category": "transformation",
@@ -291746,6 +293272,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -293265,6 +294797,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -293432,6 +294970,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "removelast",
+          "removefirst"
+        ]
       }
     },
     {
@@ -293571,6 +295115,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "newcount"
+        ]
       }
     },
     {
@@ -293998,6 +295547,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "sync1",
+          "sync2"
+        ]
       }
     },
     {
@@ -294080,6 +295635,11 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t"
+        ]
       }
     },
     {
@@ -294182,6 +295742,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -294293,6 +295859,12 @@
           "kind": "json",
           "json": "integer"
         }
+      },
+      "shape": {
+        "outParams": [
+          "t1",
+          "t2"
+        ]
       }
     },
     {
@@ -294439,6 +296011,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -294501,6 +296079,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -294563,6 +296147,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -294631,6 +296221,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -294699,6 +296295,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -295215,6 +296817,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -295315,6 +296922,11 @@
           "out_ctype": "struct TSequence **",
           "presence_return": true
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -295419,6 +297031,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "loc"
+        ]
       }
     },
     {
@@ -295472,6 +297089,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "newcount"
+        ]
       }
     },
     {
@@ -295582,6 +297204,9 @@
       "shape": {
         "nullable": [
           "maxt"
+        ],
+        "outParams": [
+          "nsplits"
         ]
       },
       "api": "public",
@@ -295765,6 +297390,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -295850,6 +297481,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -295924,6 +297561,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -295998,6 +297641,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -296066,6 +297715,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -296134,6 +297789,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -296213,6 +297874,12 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "inter1",
+          "inter2"
+        ]
       }
     },
     {
@@ -296714,6 +298381,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "size_out"
+        ]
       }
     },
     {
@@ -298606,6 +300278,11 @@
           "kind": "json",
           "json": "boolean"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
@@ -298650,6 +300327,11 @@
         "result": {
           "kind": "unsupported"
         }
+      },
+      "shape": {
+        "outParams": [
+          "result"
+        ]
       }
     },
     {
