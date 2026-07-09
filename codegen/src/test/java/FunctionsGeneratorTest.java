@@ -559,6 +559,7 @@ class FunctionsGeneratorTest {
             assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES)"));
         }
 
+
         @Test
         @DisplayName("shape.outParams folds by the flag regardless of the param name")
         void outParamFoldsByFlagNotName() throws Exception {
@@ -624,8 +625,9 @@ class FunctionsGeneratorTest {
             String out = generateFromJson(json);
             // Wrapper uses OffsetDateTime
             assertTrue(out.contains("public static Pointer timestamptz_to_stbox(OffsetDateTime t)"));
-            // Conversion line emitted
-            assertTrue(out.contains("var t_new = t.toEpochSecond()"));
+            // Conversion routed through the converter, not inline epoch math
+            assertTrue(out.contains("var t_new = utils.TimestampTzConverter.toTimestampTz(t)"));
+            assertFalse(out.contains(".toEpochSecond()"));
             // Interface uses long
             assertTrue(out.contains("Pointer timestamptz_to_stbox(long t)"));
         }
@@ -646,7 +648,8 @@ class FunctionsGeneratorTest {
                 """;
             String out = generateFromJson(json);
             assertTrue(out.contains("public static OffsetDateTime tinstant_timestamptz(Pointer inst)"));
-            assertTrue(out.contains("Instant.ofEpochSecond(_result).atOffset"));
+            assertTrue(out.contains("return utils.TimestampTzConverter.toOffsetDateTime(_result);"));
+            assertFalse(out.contains("Instant.ofEpochSecond"));
         }
 
         @Test

@@ -616,16 +616,12 @@ public class FunctionsGenerator {
      *   4. Converts the return value back to the user-friendly type if needed
      *   5. Checks for MEOS errors
      *
-     * The original generator used the same type for both the
-     * interface and the wrapper, so no conversion was possible.  We now use
-     * mapCTypeToJavaWrapper() for the wrapper signature, and we emit explicit
-     * epoch-conversion lines mirroring the pattern in old_functions.txt:
+     * The wrapper signature uses mapCTypeToJavaWrapper(), so a temporal param or
+     * return type differs between the interface (long TimestampTz) and the wrapper
+     * (OffsetDateTime/LocalDateTime). The gap is bridged with utils.TimestampTzConverter:
      *
-     *   var t_new = t.toEpochSecond();        // OffsetDateTime → long
-     *   var t_new = t.toEpochSecond(...);     // LocalDateTime → long
-     *
-     * For return types, we convert long → OffsetDateTime using
-     *   OffsetDateTime.ofEpochSecond(_result, 0, ZoneOffset.UTC)
+     *   var t_new = utils.TimestampTzConverter.toTimestampTz(t);   // param → long
+     *   return utils.TimestampTzConverter.toOffsetDateTime(_result); // return → date
      */
     // An out-param (shape.outParams) plays one of two ROLES, read from its C type, not its
     // spelling: a size_t* out-param is the throwaway byte-count of the *_as_hexwkb/_as_wkb
@@ -751,12 +747,9 @@ public class FunctionsGenerator {
         // Emit epoch-second conversion for each temporal param.
         for (WrapperParam wp : wparams) {
             if (wp.needsConversion) {
-                if (wp.wrapperType.equals("OffsetDateTime")) {
-                    sb.append("\t\tvar ").append(wp.name).append("_new = ")
-                            .append(wp.name).append(".toEpochSecond();\n");
-                } else if (wp.wrapperType.equals("LocalDateTime")) {
-                    sb.append("\t\tvar ").append(wp.name).append("_new = ")
-                            .append(wp.name).append(".toInstant(java.time.ZoneOffset.UTC).getEpochSecond();\n");
+                if (wp.wrapperType.equals("OffsetDateTime") || wp.wrapperType.equals("LocalDateTime")) {
+                    sb.append("\t\tvar ").append(wp.name).append("_new = utils.TimestampTzConverter.toTimestampTz(")
+                            .append(wp.name).append(");\n");
                 }
             }
         }
@@ -816,9 +809,9 @@ public class FunctionsGenerator {
 
             // Convert long result back to OffsetDateTime/LocalDateTime.
             if (wrapperReturnType.equals("OffsetDateTime")) {
-                sb.append("\t\treturn java.time.Instant.ofEpochSecond(_result).atOffset(java.time.ZoneOffset.UTC);\n");
+                sb.append("\t\treturn utils.TimestampTzConverter.toOffsetDateTime(_result);\n");
             } else if (wrapperReturnType.equals("LocalDateTime")) {
-                sb.append("\t\treturn java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(_result), java.time.ZoneOffset.UTC);\n");
+                sb.append("\t\treturn utils.TimestampTzConverter.toLocalDateTime(_result);\n");
             } else {
                 sb.append("\t\treturn _result;\n");
             }
