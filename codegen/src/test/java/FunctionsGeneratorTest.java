@@ -22,6 +22,7 @@ class FunctionsGeneratorTest {
     private Method mapCTypeToJava;
     private Method mapCTypeToJavaWrapper;
     private Method isTemporalCType;
+    private Method isOwnedCharReturn;
     private Method resolveResultStrategy;
     private Method sanitizeParamName;
     private Method collectEnumNames;
@@ -35,6 +36,7 @@ class FunctionsGeneratorTest {
         mapCTypeToJava        = reflect("mapCTypeToJava",        String.class);
         mapCTypeToJavaWrapper = reflect("mapCTypeToJavaWrapper", String.class);
         isTemporalCType       = reflect("isTemporalCType",       String.class);
+        isOwnedCharReturn     = reflect("isOwnedCharReturn",     String.class);
         sanitizeParamName     = reflect("sanitizeParamName",     String.class);
         run                   = reflect("run",                   String.class, String.class);
 
@@ -77,6 +79,10 @@ class FunctionsGeneratorTest {
 
     private boolean isTemporal(String cType) throws Exception {
         return (boolean) isTemporalCType.invoke(generator, cType);
+    }
+
+    private boolean isOwnedChar(String retCType) throws Exception {
+        return (boolean) isOwnedCharReturn.invoke(generator, retCType);
     }
 
     private Object resolveStrategy(String cType) throws Exception {
@@ -133,6 +139,7 @@ class FunctionsGeneratorTest {
         @Test void DateADT() throws Exception      { assertEquals("int",     mapJava("DateADT")); }
         @Test void Timestamp() throws Exception    { assertEquals("long",    mapJava("Timestamp")); }
         @Test void TimestampTz() throws Exception  { assertEquals("long",    mapJava("TimestampTz")); }
+        @Test void H3Index() throws Exception      { assertEquals("long",    mapJava("H3Index")); }
 
         @Test void charPointer() throws Exception  { assertEquals("String",  mapJava("char *")); }
         @Test void structPointer() throws Exception { assertEquals("Pointer", mapJava("STBox *")); }
@@ -227,6 +234,25 @@ class FunctionsGeneratorTest {
         @Test void DateADT_false() throws Exception     { assertFalse(isTemporal("DateADT")); }
         @Test void Pointer_false() throws Exception     { assertFalse(isTemporal("STBox *")); }
         @Test void double_false() throws Exception      { assertFalse(isTemporal("double")); }
+    }
+
+    // =========================================================================
+    // isOwnedCharReturn
+    // =========================================================================
+
+    @Nested
+    @DisplayName("isOwnedCharReturn")
+    class IsOwnedCharReturnTests {
+
+        @Test void ownedCharPtr_true() throws Exception      { assertTrue(isOwnedChar("char *")); }
+        @Test void ownedCharPtrNoSpace_true() throws Exception { assertTrue(isOwnedChar("char*")); }
+
+        @Test void constCharPtr_false() throws Exception     { assertFalse(isOwnedChar("const char *")); }
+        @Test void doubleCharPtr_false() throws Exception    { assertFalse(isOwnedChar("char **")); }
+        @Test void text_false() throws Exception             { assertFalse(isOwnedChar("text *")); }
+        @Test void Pointer_false() throws Exception          { assertFalse(isOwnedChar("Temporal *")); }
+        @Test void void_false() throws Exception             { assertFalse(isOwnedChar("void")); }
+        @Test void int_false() throws Exception              { assertFalse(isOwnedChar("int")); }
     }
 
     // =========================================================================
@@ -692,6 +718,70 @@ class FunctionsGeneratorTest {
             Path p = tempDir.resolve("h-" + System.nanoTime() + ".json");
             Files.writeString(p, json);
             return p.toString();
+        }
+    }
+
+    // =========================================================================
+    // Family gating: -D<FAMILY>=OFF drops an optional family
+    // =========================================================================
+
+    @Nested
+    @DisplayName("family gating")
+    class FamilyGatingTests {
+
+        // A core function and a pointcloud function, tagged by the IDL family field.
+        private static final String FIELD_JSON = """
+            {
+              "functions": [
+                {"name": "temporal_num_instants", "family": "CORE",
+                 "returnType": {"c": "int"},
+                 "params": [{"name": "temp", "cType": "Temporal *"}]},
+                {"name": "pcpatch_num_points", "family": "POINTCLOUD",
+                 "returnType": {"c": "int"},
+                 "params": [{"name": "patch", "cType": "Pointer"}]}
+              ]
+            }
+            """;
+
+        @Test
+        @DisplayName("family field: all families emitted by default")
+        void fieldDefaultEmitsAll() throws Exception {
+            String out = generateFromJson(FIELD_JSON);
+            assertTrue(out.contains("temporal_num_instants"));
+            assertTrue(out.contains("pcpatch_num_points"));
+        }
+
+        @Test
+        @DisplayName("family field: -DPOINTCLOUD=OFF drops pointcloud, keeps core")
+        void fieldPointcloudOff() throws Exception {
+            System.setProperty("POINTCLOUD", "OFF");
+            try {
+                String out = generateFromJson(FIELD_JSON);
+                assertTrue(out.contains("temporal_num_instants"), "core stays");
+                assertFalse(out.contains("pcpatch_num_points"), "pointcloud dropped");
+            } finally {
+                System.clearProperty("POINTCLOUD");
+            }
+        }
+
+        @Test
+        @DisplayName("fallback: header basename gates when the family field is absent")
+        void headerFallbackGates() throws Exception {
+            String json = """
+                {
+                  "functions": [
+                    {"name": "cbuffer_out", "file": "meos_cbuffer.h",
+                     "returnType": {"c": "char *"},
+                     "params": [{"name": "cb", "cType": "Pointer"}]}
+                  ]
+                }
+                """;
+            System.setProperty("CBUFFER", "OFF");
+            try {
+                assertFalse(generateFromJson(json).contains("cbuffer_out"));
+            } finally {
+                System.clearProperty("CBUFFER");
+            }
         }
     }
 }
