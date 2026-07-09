@@ -22,15 +22,20 @@ jobs:
       - name: Set up Maven
         run: mvn -B wrapper:wrapper
 
+      - name: Build sources
+        run: mvn -B -DskipTests compile
+        # Compiles the codegen module and generates functions/GeneratedFunctions.java, so the
+        # generate-meos-facade step invoked by javadoc:javadoc finds the FunctionsGenerator class.
+
       - name: Generate Javadoc
         run: mvn -B javadoc:javadoc
         # By default, this generates Javadoc in the target/site/apidocs/ directory
 
       - name: Verify Javadoc Directory
         run: |
-          if [ -d "target/site/apidocs" ]; then
+          if [ -d "jmeos-core/target/site/apidocs" ]; then
           echo "Javadoc generated successfully";
-          ls -la target/site/apidocs;
+          ls -la jmeos-core/target/site/apidocs;
           else
           echo "Javadoc directory not found!";
           exit 1;
@@ -40,4 +45,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site/apidocs
+          publish_dir: jmeos-core/target/site/apidocs
