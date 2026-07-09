@@ -434,13 +434,9 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return ConversionUtils.timestamptz_to_datetime(functions.temporal_end_timestamptz(this.inner));
     }
 
-    // Convert timestamp (number of seconds since epoch) to LocalDateTime
-    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
-        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
-    }
-
     public LocalDateTime timestamp_n(int n){
-        return timestampToLocalDateTime(Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1)).getInt(Integer.BYTES));
+        Pointer result = Objects.requireNonNull(functions.temporal_timestamptz_n(this.inner, n + 1));
+        return utils.TimestampTzConverter.toLocalDateTime(result.getLong(0));
     }
 
 /**
@@ -454,12 +450,12 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer array= functions.temporal_timestamps(this.inner, intPointer);
         List<LocalDateTime> datetimeList= new ArrayList<LocalDateTime>();
         for(int i=0;i<this.num_timestamps(); i++){
-            int p= array.getInt((long) i *Integer.BYTES);
-            LocalDateTime ldt= timestampToLocalDateTime(p);
+            long ts= array.getLong((long) i * Long.BYTES);
+            LocalDateTime ldt= utils.TimestampTzConverter.toLocalDateTime(ts);
             datetimeList.add(ldt);
         }
         return datetimeList;
