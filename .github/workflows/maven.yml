@@ -42,98 +42,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Print current working directory
-        run: pwd
+      # Derive the MEOS catalog (meos-idl.json via run.py) and build+install the
+      # all-families libmeos.so from MobilityDB master, through the shared composite
+      # action. It does the full libmeos provisioning itself (PostgreSQL purge, PGDG,
+      # PG17, build deps, cmake, install under /usr/local), so no inline apt/PG/cmake
+      # steps are needed here. Tracking master keeps the derived catalog and the
+      # libmeos build in lockstep with the same upstream commit — drift-free.
+      - name: Provision MEOS catalog + libmeos
+        id: provision
+        uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
+        with:
+          mobilitydb-ref: master
+          build-libmeos: "true"
 
-      # Prefer apt.postgresql.org over the runner's preinstalled PostgreSQL so
-      # the postgresql-server-dev package resolves cleanly. Only pg_config is
-      # needed here — pgPointCloud produces a static libpc.a, no server.
-      - name: Remove existing PostgreSQL installations [prefer apt.postgresql.org]
+      # Stage the derived catalog where FunctionsGenerator reads it at build time.
+      # The catalog is gitignored — it only ever exists as a build artifact.
+      - name: Stage the derived catalog for the generator
         run: |
-          sudo service postgresql stop || true
-          sudo apt-get --purge remove postgresql* -y || true
-          sudo rm -rf /var/lib/postgresql/ /etc/postgresql/ \
-            /var/log/postgresql/ || true
+          mkdir -p codegen/input
+          cp "${{ steps.provision.outputs.catalog-path }}" codegen/input/meos-idl.json
 
-      - name: Add PostgreSQL APT repository
-        run: |
-          sudo apt-get install -y curl ca-certificates gnupg
-          curl https://www.postgresql.org/media/keys/ACCC4CF8.asc \
-            | sudo apt-key add -
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ \
-            $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-
-      - name: Update apt cache
-        run: sudo apt-get update
-
-      # Install GEOS library
-      - name: Install GEOS
-        run: sudo apt-get install -y libgeos-dev
-
-      # Install PROJ library
-      - name: Install PROJ
-        run: sudo apt-get install proj-bin libproj-dev proj-data
-
-      # Install JSON-C library
-      - name: Install JSON-C
-        run: sudo apt install libjson-c-dev
-
-      # Install GSL library
-      - name: Install GSL
-        run: sudo apt-get install -y libgsl-dev
-
-      # Install libraries needed by the optional MEOS families (H3, GDAL, libxml2,
-      # autotools and a PostgreSQL server-dev package for the vendored pgPointCloud lib)
-      - name: Install all-families dependencies
-        run: sudo apt-get install -y libh3-dev libgdal-dev libxml2-dev autoconf automake libtool pkg-config postgresql-17 postgresql-server-dev-17
-
-      # Fetch and install MEOS library
-      - name: Fetch MEOS sources
-        run: git clone https://github.com/MobilityDB/MobilityDB.git
-
-      # install MObilityDB
-      - name: Install MobilityDB
-        run: |
-          mkdir MobilityDB/build
-          cd MobilityDB/build
-          cmake .. -DMEOS=on -DALL=ON \
-            -DH3_LIBRARY=/usr/lib/x86_64-linux-gnu/libh3.so \
-            -DH3_INCLUDE_DIR=/usr/include/h3 \
-            -DPOSTGRESQL_PG_CONFIG=/usr/lib/postgresql/17/bin/pg_config
-          make -j
-          sudo make install
-
-      # Copy the installed library to your project's src/lib directory
+      # Copy the installed library to the project's src directory (the action installs
+      # libmeos under /usr/local) and expose it via LD_LIBRARY_PATH.
       - name: Copy MEOS library to JMEOS/src/
-        run: |
-          cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/jmeos-core/src/
+        run: cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/jmeos-core/src/
 
-      # Check for the library in the src/lib directory
-      - name: Check for the library
-        run: ls -la $GITHUB_WORKSPACE/jmeos-core/src/
-
-      # Set up the environment variable LD_LIBRARY_PATH
       - name: Set up LD_LIBRARY_PATH
         run: echo "LD_LIBRARY_PATH=$(pwd)/jmeos-core/src/" >> $GITHUB_ENV
 
-      # Check if libmeos.so exists in the target directory
-      - name: Check if libmeos.so exists
-        run: ls -l $LD_LIBRARY_PATH/libmeos.so
-
-      # Verify the architecture compatibility of the library
-      - name: Verify architecture compatibility
-        run: file $LD_LIBRARY_PATH/libmeos.so
-
-      # Test the MEOS library loading using ldd and nm
-      - name: Test libmeos.so loading
-        run: |
-          ldd $LD_LIBRARY_PATH/libmeos.so
-          nm -D $LD_LIBRARY_PATH/libmeos.so
-
-      # Ensure that the library has the correct execution permissions
-      - name: Ensure correct permissions
-        run: chmod +x $LD_LIBRARY_PATH/libmeos.so
-
-      # Build Maven project
       - name: Build with Maven
         run: mvn clean install

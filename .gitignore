@@ -67,3 +67,6 @@ cmake-build-*/
 ### Built MEOS native library (staged in CI, never committed) ###
 jmeos-core/src/libmeos.so
 jmeos-core/src/main/resources/lib/libmeos.so
+
+### Derived MEOS catalog (generated in CI via provision-meos, never committed) ###
+codegen/input/meos-idl.json
