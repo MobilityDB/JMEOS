@@ -578,15 +578,6 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     /*---------------Set Operations-------------------*/
 
-    /**
-     *
-     * Convert timestamp (number of seconds since epoch) to LocalDateTime
-     */
-
-    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
-        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
-    }
-
 /**
         Returns the temporal intersection of ``self`` and ``other``.
 
@@ -664,20 +655,21 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-    /**
-     *
-     * convert timestamp (number of seconds since epoch) to LocalDate
-     */
+/**
+        Returns the temporal difference of ``other`` and ``self``.
 
-    public static LocalDate timestampToLocalDate(int timestamp) {
-        return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days
-    }
+        Args:
+            other: the date to subtract this span set from
 
-    public LocalDate subtract_from(Object other) throws Exception {
-        int ts= dateToTimestamp((LocalDate) other);
-        Pointer resultPointer= functions.minus_date_set(ts, this._inner);
-        int resultTimestamp= resultPointer.getInt(Integer.BYTES);
-        return timestampToLocalDate(resultTimestamp);
+        Returns:
+            A :class:`datespanset` instance.
+
+        MEOS Functions:
+            minus_date_spanset
+*/
+
+    public datespanset subtract_from(LocalDate other) throws Exception {
+        return new datespanset(functions.minus_date_spanset(dateToTimestamp(other), this._inner));
     }
 
 /**

@@ -570,15 +570,6 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     /*---------------Set Operations-------------------*/
 
-    /**
-     *
-     * Convert timestamp (number of seconds since epoch) to LocalDateTime
-     */
-
-    public static LocalDateTime timestampToLocalDateTime(int timestamp) {
-        return LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
-    }
-
 /**
         Returns the temporal intersection of ``self`` and ``other``.
 
@@ -586,35 +577,27 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             other: temporal object to intersect with
 
         Returns:
-            A :class:`TimeDate` instance. The actual class depends on ``other``.
+            A :class:`Time` instance. The actual class depends on ``other``:
+            a :class:`datespan` for a date or a span, a :class:`datespanset` otherwise.
 
         MEOS Functions:
-            intersection_set_date, intersection_set_set, intersection_spanset_span,
-            intersection_spanset_spanset
+            intersection_span_date, intersection_span_span, intersection_spanset_span
 */
 
-    public LocalDateTime intersection(Object other) throws Exception {
-        LocalDateTime result = null;
+    public Time intersection(Object other) throws Exception {
+        Time result;
         if (other instanceof LocalDate){
-            Pointer resultPointer= functions.intersection_span_date(this._inner, dateToTimestamp((LocalDate) other));
-            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
-            result = timestampToLocalDateTime(resultTimestamp);
+            result = new datespan(functions.intersection_span_date(this._inner, dateToTimestamp((LocalDate) other)));
+        }
+        else if (other instanceof datespan){
+            result = new datespan(functions.intersection_span_span(this._inner, ((datespan) other)._inner));
         }
         else if (other instanceof dateset){
             datespanset ds = ((dateset) other).to_spanset(datespanset.class);
-            Pointer resultPointer= functions.intersection_spanset_span(ds.get_inner(), this.get_inner());
-            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
-            result = timestampToLocalDateTime(resultTimestamp);
-        }
-        else if (other instanceof datespan){
-            Pointer resultPointer = functions.intersection_span_span(this._inner, ((datespan) other)._inner);
-            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
-            result = timestampToLocalDateTime(resultTimestamp);
+            result = new datespanset(functions.intersection_spanset_span(ds.get_inner(), this._inner));
         }
         else if (other instanceof datespanset){
-            Pointer resultPointer = functions.intersection_spanset_span(((datespanset) other).get_inner(), this._inner);
-            int resultTimestamp= resultPointer.getInt(Integer.BYTES);
-            result = timestampToLocalDateTime(resultTimestamp);
+            result = new datespanset(functions.intersection_spanset_span(((datespanset) other).get_inner(), this._inner));
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -660,20 +643,21 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
         return result;
     }
 
-    /**
-     *
-     * Convert timestamp (number of seconds since epoch) to LocalDate
-     */
+/**
+        Returns the temporal difference of ``other`` and ``self``.
 
-    public static LocalDate timestampToLocalDate(int timestamp) {
-        return LocalDate.ofEpochDay(timestamp / 86400); // Convert seconds back to days
-    }
+        Args:
+            other: the date to subtract this span from
 
-    public LocalDate subtract_from(Object other) throws Exception {
-        int ts= dateToTimestamp((LocalDate) other);
-        Pointer resultPointer= functions.minus_date_set(ts, this._inner);
-        int resultTimestamp= resultPointer.getInt(0);
-        return timestampToLocalDate(resultTimestamp);
+        Returns:
+            A :class:`datespanset` instance.
+
+        MEOS Functions:
+            minus_date_span
+*/
+
+    public datespanset subtract_from(LocalDate other) throws Exception {
+        return new datespanset(functions.minus_date_span(dateToTimestamp(other), this._inner));
     }
 
 /**
