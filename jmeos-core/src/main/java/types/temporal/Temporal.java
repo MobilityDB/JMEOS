@@ -476,7 +476,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         Pointer array= functions.temporal_instants(this.inner, intPointer);
         List<Temporal> instantList= new ArrayList<Temporal>();
         for(int i=0; i<this.num_instants(); i++){
-            Pointer p= array.getPointer((long) i *Integer.BYTES);
+            Pointer p= array.getPointer((long) i *Long.BYTES);
             Temporal t= Factory.create_temporal(p, this.getCustomType(),this.getTemporalType());
             instantList.add(t);
         }

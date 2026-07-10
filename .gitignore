@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Per-worktree local Maven repository
+.m2local/
+
 # Build process temporary files
 src/main/java/functions/builder/tmp/
 
