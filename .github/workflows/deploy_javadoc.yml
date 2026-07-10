@@ -22,6 +22,23 @@ jobs:
       - name: Set up Maven
         run: mvn -B wrapper:wrapper
 
+      # Derive the MEOS catalog from MobilityDB in CI — it is no longer committed.
+      # Catalog-only (build-libmeos: false): javadoc compiles the sources but never
+      # runs them, so the native libmeos is not needed here.
+      - name: Provision MEOS catalog
+        id: provision
+        uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
+        with:
+          mobilitydb-ref: master
+          build-libmeos: "false"
+
+      # Stage the derived catalog where FunctionsGenerator reads it at build time.
+      # The catalog is gitignored — it only ever exists as a build artifact.
+      - name: Stage the derived catalog for the generator
+        run: |
+          mkdir -p codegen/input
+          cp "${{ steps.provision.outputs.catalog-path }}" codegen/input/meos-idl.json
+
       - name: Build sources
         run: mvn -B -DskipTests compile
         # Compiles the codegen module and generates functions/GeneratedFunctions.java, so the
