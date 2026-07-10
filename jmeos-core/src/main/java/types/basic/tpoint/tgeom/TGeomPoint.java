@@ -241,7 +241,7 @@ public interface TGeomPoint extends TPoint {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.tgeo_values(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
 		int count= intPointer.getInt(Integer.BYTES);

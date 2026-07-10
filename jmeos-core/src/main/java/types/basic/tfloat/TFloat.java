@@ -238,7 +238,7 @@ public interface TFloat extends TNumber {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer = functions.tfloat_values(this.getNumberInner(), intPointer);
 		StringBuilder sb = null;
 		sb.append("{");
@@ -733,7 +733,7 @@ public interface TFloat extends TNumber {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer floatPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer floatPointer = Memory.allocate(runtime, 4);
 		boolean res= functions.tfloat_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(ts), true, floatPointer);
 		float value= floatPointer.getFloat(Float.BYTES);
 		return value;

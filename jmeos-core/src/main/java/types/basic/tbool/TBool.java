@@ -134,7 +134,7 @@ public interface TBool {
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer resPointer = functions.tbool_values(this.getBoolInner(), intPointer);
         StringBuilder sb = null;
         sb.append("{");
@@ -219,7 +219,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
     // Create a JNR-FFI runtime instance
     Runtime runtime = Runtime.getSystemRuntime();
     // Allocate memory for an integer (4 bytes) but do not set a value
-    Pointer boolPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+    Pointer boolPointer = Memory.allocate(runtime, 4);
     boolean res= functions.tbool_value_at_timestamptz(this.getBoolInner(), ConversionUtils.datetimeToTimestampTz(ts), true, boolPointer);
     int value= boolPointer.getInt(Integer.BYTES);
     return value > 0;

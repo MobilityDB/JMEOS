@@ -206,7 +206,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer temporalP = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);
+        Pointer temporalP = Memory.allocate(runtime, Long.BYTES);
         // Copy the array elements into the allocated memory
         for (int i = 0; i < length_list; i++) {
             temporalP.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());
@@ -241,7 +241,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer temporalPointer = Memory.allocate(Runtime.getRuntime(runtime), Long.BYTES);
+        Pointer temporalPointer = Memory.allocate(runtime, Long.BYTES);
         // Copy the array elements into the allocated memory
         for (int i = 0; i < length; i++) {
             temporalPointer.putPointer((long) i * Long.BYTES, temporal_list.get(i).getInner());
@@ -472,7 +472,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer array= functions.temporal_instants(this.inner, intPointer);
         List<Temporal> instantList= new ArrayList<Temporal>();
         for(int i=0; i<this.num_instants(); i++){
@@ -502,7 +502,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer array= functions.temporal_segments(this.inner, intPointer);
         List<Temporal> segmentList= new ArrayList<Temporal>();
         int num_segments= functions.temporal_num_sequences(this.inner);
@@ -804,7 +804,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer pointerArray = Memory.allocate(Runtime.getRuntime(runtime), (temporalList.size() + 1) * Long.BYTES);
+        Pointer pointerArray = Memory.allocate(runtime, (temporalList.size() + 1) * Long.BYTES);
         pointerArray.putPointer(0, this.inner); // Add the current instance's inner pointer
 
         for (int i = 0; i < temporalList.size(); i++) {
@@ -1356,7 +1356,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
 
     private Pointer createEmptyPointerArray(Runtime runtime) {
         // Allocate memory for a list of integers (let's assume a fixed size, e.g., 10 elements)
-        Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), this.num_instants()*Long.BYTES); // Adjust size as needed
+        Pointer listPointer = Memory.allocate(runtime, this.num_instants()*Long.BYTES); // Adjust size as needed
         return listPointer;
     }
 
@@ -1384,7 +1384,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime);
         Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();
@@ -1449,7 +1449,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime);
         Pointer p= functions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();

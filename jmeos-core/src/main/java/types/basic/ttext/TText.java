@@ -147,7 +147,7 @@ public interface TText {
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+        Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer resPointer= GeneratedFunctions.ttext_values(this.getTextInner(), intPointer);
         StringBuilder sb= null;
         sb.append("{");
@@ -739,7 +739,7 @@ public interface TText {
             Runtime runtime = Runtime.getSystemRuntime();
 
             // Allocate memory for the string in native space and copy the string contents
-            Pointer pointer = Memory.allocate(Runtime.getRuntime(runtime), str.length()+1);
+            Pointer pointer = Memory.allocate(runtime, str.length()+1);
             pointer.putString(0, str, str.length(), StandardCharsets.UTF_8);
 
             return pointer;

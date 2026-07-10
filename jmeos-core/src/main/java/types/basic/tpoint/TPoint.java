@@ -161,7 +161,7 @@ public interface TPoint extends Serializable {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.temporal_instants(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
 		int count= intPointer.getInt(Integer.BYTES);
@@ -275,7 +275,7 @@ public interface TPoint extends Serializable {
 		 // Create a JNR-FFI runtime instance
 		 Runtime runtime = Runtime.getSystemRuntime();
 		 // Allocate memory for an integer (4 bytes) but do not set a value
-		 Pointer geomPointer = Memory.allocate(Runtime.getRuntime(runtime), 8);
+		 Pointer geomPointer = Memory.allocate(runtime, 8);
 		 boolean b= functions.tgeo_value_at_timestamptz(this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true, geomPointer);
 		 Pointer geom= geomPointer.getPointer(Long.BYTES);
 		 return ConversionUtils.gserialized_to_shapely_point(geom, precision);
@@ -390,7 +390,7 @@ public interface TPoint extends Serializable {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.tgeo_stboxes(this.getPointInner(), intPointer);
 		List<STBox> stBoxList= new ArrayList<>();
 		int length= intPointer.getInt(Integer.BYTES);
@@ -552,7 +552,7 @@ public interface TPoint extends Serializable {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= functions.tpoint_make_simple(this.getPointInner(), intPointer);
 		int length= intPointer.getInt(Integer.BYTES);
 		List<TPoint> tPointList= new ArrayList<>();
@@ -1271,7 +1271,7 @@ public interface TPoint extends Serializable {
      */
 	private Pointer createEmptyPointerArray(Runtime runtime, int length) {
 		// Allocate memory for a list of integers
-		Pointer listPointer = Memory.allocate(Runtime.getRuntime(runtime), length*Long.BYTES); // Adjust size as needed
+		Pointer listPointer = Memory.allocate(runtime, length*Long.BYTES); // Adjust size as needed
 		return listPointer;
 	}
 
@@ -1294,7 +1294,7 @@ public interface TPoint extends Serializable {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		int length= runtime.longSize();
 		Pointer space_buckets = createEmptyPointerArray(runtime, length);
 		Pointer resPointer= functions.tgeo_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);
@@ -1369,7 +1369,7 @@ public interface TPoint extends Serializable {
 		// Create a JNR-FFI runtime instance
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
+		Pointer intPointer = Memory.allocate(runtime, 4);
 		int length= runtime.longSize();
 		Pointer space_buckets = createEmptyPointerArray(runtime, length);
 		Pointer time_buckets = createEmptyPointerArray(runtime, length);
