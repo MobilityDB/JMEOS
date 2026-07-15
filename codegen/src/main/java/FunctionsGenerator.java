@@ -63,7 +63,7 @@ public class FunctionsGenerator {
             Map.entry("h3_generated.h", "H3"));
     private static final Set<String> OPTIONAL_FAMILIES =
             Set.of("CBUFFER", "NPOINT", "POSE", "RGEO", "H3",
-                   "QUADBIN", "POINTCLOUD", "JSON", "ARROW", "RASTER");
+                   "QUADBIN", "POINTCLOUD", "JSON", "RASTER");
 
     // Families enabled for this generation run; core headers are always emitted.
     private Set<String> enabledFamilies;
@@ -657,7 +657,7 @@ public class FunctionsGenerator {
         // A boolean function with EXACTLY ONE value out-param folds to a returned
         // Pointer: the wrapper allocates the buffer, forwards it, reads it back, and
         // returns it. Functions with two-or-more result-out params
-        // (intersection_*/synchronize_*: inter1/inter2, *_to_arrow: out_schema/out_array)
+        // (intersection_*/synchronize_*: inter1/inter2)
         // cannot collapse to a single returned buffer, so they keep those out-params as
         // caller-provided Pointer arguments.
         boolean isBoolResultPattern = fn.returnType.equals("boolean")
