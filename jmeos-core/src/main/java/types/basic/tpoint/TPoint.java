@@ -21,6 +21,7 @@ import types.collections.time.Time;
 import types.collections.time.tstzset;
 import types.temporal.*;
 import functions.functions;
+import functions.GeneratedFunctions;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Point;
@@ -1017,9 +1018,9 @@ public interface TPoint extends Serializable {
 	 */
 	default TBool is_spatially_contained_in(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TBool) Factory.create_temporal(functions.tcontains_geo_tgeo(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner(),false,false), "Boolean", getTemporalType() ) ;
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tcontains_geo_tgeo(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner()), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(functions.tcontains_geo_tgeo(functions.stbox_to_geo(((STBox) other).get_inner()), getPointInner(), false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tcontains_geo_tgeo(functions.stbox_to_geo(((STBox) other).get_inner()), getPointInner()), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1039,9 +1040,9 @@ public interface TPoint extends Serializable {
 	 */
 	default TBool disjoint(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TBool) Factory.create_temporal(functions.tdisjoint_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdisjoint_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(functions.tdisjoint_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdisjoint_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1062,11 +1063,11 @@ public interface TPoint extends Serializable {
 	 */
 	default TBool within_distance(Object other, float distance) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TBool) Factory.create_temporal(functions.tdwithin_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance, false,false), "Boolean", getTemporalType() ) ;
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(functions.tdwithin_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), distance,false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), distance), "Boolean", getTemporalType()  );
 		} else if(other instanceof TPoint){
-			return (TBool) Factory.create_temporal(functions.tdwithin_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner(), distance,false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner(), distance), "Boolean", getTemporalType()  );
 		}else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1086,9 +1087,9 @@ public interface TPoint extends Serializable {
 	 */
 	default TBool intersects(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TBool) Factory.create_temporal(functions.tintersects_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tintersects_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(functions.tintersects_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tintersects_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1108,9 +1109,9 @@ public interface TPoint extends Serializable {
 	 */
 	default TBool touches(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TBool) Factory.create_temporal(functions.ttouches_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint),false,false), "Boolean", getTemporalType() ) ;
+			return (TBool) Factory.create_temporal(GeneratedFunctions.ttouches_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(functions.ttouches_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), false,false), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.ttouches_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
