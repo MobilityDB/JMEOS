@@ -30,9 +30,21 @@ Each binding repo satisfies the same invariants:
 ## JMEOS scope: raw FFI ONLY
 
 JMEOS owns the **raw FFI** projection: `FunctionsGenerator.java` →
-`jmeos-core/.../functions/GeneratedFunctions.java` plus the OO type layer. It exposes no
-hand-written facade — the FFI surface and the OO type layer are both projected from the
-catalog.
+`jmeos-core/.../functions/GeneratedFunctions.java`, emitted into `target/generated-sources/`
+at `generate-sources` and not committed.
+
+Two surfaces are hand-written, and are the standing work toward the zero-hand North Star above:
+
+- `jmeos-core/src/main/java/functions/functions.java` — a second FFI facade that coexists with
+  `GeneratedFunctions`. MobilityFlink calls it directly (`aisdata/Query8_V2_Main.java`,
+  `sncbdata/Query8_V2_Main.java`), so it is retired once those call sites move to
+  `GeneratedFunctions`.
+- the 65 OO type classes under `jmeos-core/src/main/java/types/` — no generator emits them.
+
+Both bind C symbols by name and jnr-ffi resolves a method on its first call, so a MEOS rename
+reaches them as an `UnsatisfiedLinkError` at run time rather than a build failure.
+`NativeSymbolParityTest` resolves every declared FFI method against the loaded libmeos, which
+turns that into a named build failure instead.
 
 The `MeosOps*` **facades** and the **Spark-Connect registrar** are **consumer** projections
 — each JVM consumer generates its own, in its own repo and namespace, from the same catalog,
@@ -65,8 +77,60 @@ Removing hand-written code happens **little by little, never wipe-first**:
 
 ## Catalog: derived from MobilityDB master
 
-JMEOS's vendored `codegen/input/meos-idl.json` is produced by MEOS-API `run.py` over the
-current MobilityDB `master` `meos/include`. `tools/regen-from-catalog.sh <catalog>` vendors
-that catalog, runs `FunctionsGenerator`, and builds the jar the JVM consumers bind. The
-consumers regenerate their own projections from the same catalog, so the whole JVM tier
-tracks `master` with no hand-written surface.
+JMEOS's `codegen/input/meos-idl.json` is produced by MEOS-API `run.py`. It is derived, not
+committed, so a clean checkout has no `codegen/input/` directory —
+`tools/regen-from-catalog.sh` creates it.
+
+`tools/meos-source-commit.txt` holds the MobilityDB commit this binding is built and tested
+against; `.github/workflows/maven.yml` reads it and feeds it to the shared
+`MobilityDB/MEOS-API/.github/actions/provision-meos` action, which derives the catalog and
+builds libmeos from that one commit. Bumping the surface is an edit to that file.
+
+## Regenerating by hand
+
+CI does the three steps below through `provision-meos`. To run them yourself, on Ubuntu with
+a JDK, Maven, CMake and the MEOS build dependencies installed:
+
+**1. Build and install libmeos from the MobilityDB commit you are targeting.** Install into a
+private prefix rather than `/usr/local`, so the run is self-contained:
+
+```bash
+MDB=~/src/MobilityDB                       # a checkout at the target commit
+cmake -S "$MDB" -B "$MDB/build" -DCMAKE_BUILD_TYPE=Release -DMEOS=ON -DALL=ON
+cmake --build "$MDB/build" -j"$(nproc)"
+cmake --install "$MDB/build" --prefix "$MDB/.prefix"
+```
+
+`-DALL=ON` enables every optional family, matching what CI builds. The install writes the
+self-contained public headers (`meos.h` spliced from `meos_export.h`) that the parse needs.
+
+**2. Produce the catalog with MEOS-API `run.py`**, pointing it at the *installed* headers and
+at the source checkout, which supplies the Doxygen `@ingroup` and `@sqlfn` maps:
+
+```bash
+MEOSAPI=~/src/MEOS-API
+pip install -r "$MEOSAPI/requirements.txt"          # libclang and friends
+cd "$MEOSAPI" && MDB_SRC_ROOT="$MDB" python3 run.py "$MDB/.prefix/include"
+# -> $MEOSAPI/output/meos-idl.json
+```
+
+**3. Regenerate JMEOS and build the jar the JVM consumers bind:**
+
+```bash
+cd ~/src/JMEOS
+CATALOG="$MEOSAPI/output/meos-idl.json" LIBMEOS="$MDB/.prefix/lib/libmeos.so" \
+  tools/regen-from-catalog.sh
+# -> jar/JMEOS.jar
+```
+
+With `LIBMEOS` set, the script runs the FFI suite against that library; without it the jar is
+built with tests skipped. To run the suite directly instead:
+
+```bash
+GITHUB_WORKFLOW=1 LD_LIBRARY_PATH="$MDB/.prefix/lib" mvn clean test
+```
+
+`GITHUB_WORKFLOW=1` enables the FFI tests, and `LD_LIBRARY_PATH` is how `libmeos.so` is found.
+
+The JVM consumers (MobilitySpark, MobilityFlink, MobilityKafka) regenerate their own
+projections from the same catalog and the jar produced here.
