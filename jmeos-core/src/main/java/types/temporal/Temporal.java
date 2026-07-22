@@ -683,11 +683,11 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * Returns "this" as a {@link TInstant}.
      * <p>
      *         MEOS Functions:
-     *             <li>temporal_to_tinstant</li>
+     *             <li>temporal_as_tinstant</li>
      * @return Returns "this" as a {@link TInstant}.
      */
     public Temporal to_instant(){
-        return Factory.create_temporal(functions.temporal_to_tinstant(this.inner),this.getCustomType(),TEMPORAL_INSTANT);
+        return Factory.create_temporal(functions.temporal_as_tinstant(this.inner),this.getCustomType(),TEMPORAL_INSTANT);
     }
 
 
@@ -701,19 +701,19 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      */
     public Temporal to_sequence(TInterpolation interpolation){
         System.out.println(interpolation.toString());
-        return Factory.create_temporal(functions.temporal_to_tsequence(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE);
+        return Factory.create_temporal(functions.temporal_tsequence(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE);
     }
 
     /**
      * Returns "this" as a new {@link TSequenceSet}.
      *
      *         MEOS Functions:
-     *             <li>temporal_to_tsequenceset</li>
+     *             <li>temporal_tsequenceset</li>
      * @param interpolation int value
      * @return a new {@link TSequenceSet}
      */
     public Temporal to_sequenceset(TInterpolation interpolation){
-        return Factory.create_temporal(functions.temporal_to_tsequenceset(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
+        return Factory.create_temporal(functions.temporal_tsequenceset(this.inner, interpolation.getValue()),this.getCustomType(),TEMPORAL_SEQUENCE_SET);
 
     }
 

@@ -731,10 +731,10 @@
 - [x] `extern Temporal *temporal_merge_array(Temporal **temparr, int count);`
 - [x] `extern Temporal *temporal_shift_tscale(const Temporal *temp, const Interval *shift, const Interval *duration);`
 - [x] `extern Temporal *temporal_step_to_linear(const Temporal *temp);`
-- [x] `extern Temporal *temporal_to_tinstant(const Temporal *temp);`
+- [x] `extern Temporal *temporal_as_tinstant(const Temporal *temp);`
 - [x] `extern Temporal *temporal_to_tdiscseq(const Temporal *temp);`
-- [x] `extern Temporal *temporal_to_tsequence(const Temporal *temp);`
-- [x] `extern Temporal *temporal_to_tsequenceset(const Temporal *temp);`
+- [x] `extern Temporal *temporal_tsequence(const Temporal *temp);`
+- [x] `extern Temporal *temporal_tsequenceset(const Temporal *temp);`
 
 
 
@@ -815,11 +815,11 @@
 - [x] `extern Temporal *div_tfloat_float(const Temporal *tnumber, double d);`
 - [x] `extern Temporal *div_tint_int(const Temporal *tnumber, int i);`
 - [x] `extern Temporal *div_tnumber_tnumber(const Temporal *tnumber1, const Temporal *tnumber2);`
-- [x] `extern Temporal *mult_float_tfloat(double d, const Temporal *tnumber);`
-- [x] `extern Temporal *mult_int_tint(int i, const Temporal *tnumber);`
-- [x] `extern Temporal *mult_tfloat_float(const Temporal *tnumber, double d);`
-- [x] `extern Temporal *mult_tint_int(const Temporal *tnumber, int i);`
-- [x] `extern Temporal *mult_tnumber_tnumber(const Temporal *tnumber1, const Temporal *tnumber2);`
+- [x] `extern Temporal *mul_float_tfloat(double d, const Temporal *tnumber);`
+- [x] `extern Temporal *mul_int_tint(int i, const Temporal *tnumber);`
+- [x] `extern Temporal *mul_tfloat_float(const Temporal *tnumber, double d);`
+- [x] `extern Temporal *mul_tint_int(const Temporal *tnumber, int i);`
+- [x] `extern Temporal *mul_tnumber_tnumber(const Temporal *tnumber1, const Temporal *tnumber2);`
 - [x] `extern Temporal *sub_float_tfloat(double d, const Temporal *tnumber);`
 - [x] `extern Temporal *sub_int_tint(int i, const Temporal *tnumber);`
 - [x] `extern Temporal *sub_tfloat_float(const Temporal *tnumber, double d);`
