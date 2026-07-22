@@ -3073,11 +3073,9 @@ public class functions {
 
 		Pointer tgeo_minus_value(Pointer temp, Pointer gs);
 
-		Pointer tpoint_at_geom(Pointer temp, Pointer gs, Pointer zspan);
 
 		Pointer tpoint_at_value(Pointer temp, Pointer gs);
 
-		Pointer tpoint_minus_geom(Pointer temp, Pointer gs, Pointer zspan);
 
 		Pointer tpoint_minus_value(Pointer temp, Pointer gs);
 
@@ -3303,41 +3301,23 @@ public class functions {
 
 		int etouches_tpoint_geo(Pointer temp, Pointer gs);
 
-		Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
-		Pointer tcontains_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
-		Pointer tcontains_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
-		Pointer tcovers_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
-		Pointer tcovers_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
-		Pointer tcovers_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
-		Pointer tdisjoint_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
-		Pointer tdisjoint_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
-		Pointer tdisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
-		Pointer tdwithin_geo_tgeo(Pointer gs, Pointer temp, double dist, boolean restr, boolean atvalue);
 
-		Pointer tdwithin_tgeo_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue);
 
-		Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean restr, boolean atvalue);
 
-		Pointer tintersects_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
-		Pointer tintersects_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
-		Pointer tintersects_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
-		Pointer ttouches_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue);
 
-		Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue);
 
-		Pointer ttouches_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue);
 
 		Pointer tdistance_tgeo_geo(Pointer temp, Pointer gs);
 
@@ -14249,12 +14229,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_at_geom(Pointer temp, Pointer gs, Pointer zspan) {
-		var _result = MeosLibrary.meos.tpoint_at_geom(temp, gs, zspan);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_at_value(Pointer temp, Pointer gs) {
@@ -14263,12 +14237,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tpoint_minus_geom(Pointer temp, Pointer gs, Pointer zspan) {
-		var _result = MeosLibrary.meos.tpoint_minus_geom(temp, gs, zspan);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tpoint_minus_value(Pointer temp, Pointer gs) {
@@ -15055,131 +15023,23 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcontains_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcontains_geo_tgeo(gs, temp, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcontains_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcontains_tgeo_geo(temp, gs, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcontains_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcontains_tgeo_tgeo(temp1, temp2, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcovers_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcovers_geo_tgeo(gs, temp, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcovers_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcovers_tgeo_geo(temp, gs, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tcovers_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tcovers_tgeo_tgeo(temp1, temp2, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdisjoint_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdisjoint_geo_tgeo(gs, temp, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdisjoint_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdisjoint_tgeo_geo(temp, gs, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdisjoint_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdisjoint_tgeo_tgeo(temp1, temp2, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdwithin_geo_tgeo(Pointer gs, Pointer temp, double dist, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdwithin_geo_tgeo(gs, temp, dist, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdwithin_tgeo_geo(Pointer temp, Pointer gs, double dist, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdwithin_tgeo_geo(temp, gs, dist, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tdwithin_tgeo_tgeo(Pointer temp1, Pointer temp2, double dist, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tdwithin_tgeo_tgeo(temp1, temp2, dist, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tintersects_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tintersects_geo_tgeo(gs, temp, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tintersects_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tintersects_tgeo_geo(temp, gs, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tintersects_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.tintersects_tgeo_tgeo(temp1, temp2, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer ttouches_geo_tgeo(Pointer gs, Pointer temp, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.ttouches_geo_tgeo(gs, temp, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer ttouches_tgeo_geo(Pointer temp, Pointer gs, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.ttouches_tgeo_geo(temp, gs, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
-	@SuppressWarnings("unused")
-	public static Pointer ttouches_tgeo_tgeo(Pointer temp1, Pointer temp2, boolean restr, boolean atvalue) {
-		var _result = MeosLibrary.meos.ttouches_tgeo_tgeo(temp1, temp2, restr, atvalue);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tdistance_tgeo_geo(Pointer temp, Pointer gs) {
