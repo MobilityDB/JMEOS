@@ -25,6 +25,10 @@ public class FunctionsGenerator {
     private final Set<String> enumNames = new HashSet<>();
     /** Struct names the catalog defines, used to spot a by-value struct return. */
     private final Set<String> structNames = new HashSet<>();
+    /** Fields of each struct the catalog defines, keyed by struct name. */
+    private final Map<String, List<StructField>> structFields = new LinkedHashMap<>();
+    /** Structs a generated function returns by value, so a Struct class is emitted for each. */
+    private final Set<String> returnedStructs = new LinkedHashSet<>();
     /** Functions left out because their return is a by-value struct; reported at the end. */
     private final List<String> byValueStructReturns = new ArrayList<>();
 
@@ -38,6 +42,9 @@ public class FunctionsGenerator {
     // "int" in the interface.  old_functions.txt used "long" consistently for these,
     // so we force long when the interface type resolved to int for these names.
     private static final Set<String> SIZE_PARAM_NAMES = Set.of("size", "wkb_size");
+
+    /** Name of the leading parameter carrying the address of a struct returned through memory. */
+    private static final String RESULT_PARAM = "_result_address";
 
     // -------------------------------------------------------------------------
     // Optional MEOS type families, gated by build flags mirroring the
@@ -170,8 +177,14 @@ public class FunctionsGenerator {
             }
             FunctionDef def = parseFunctionDef(fn);
             if (returnsStructByValue(def)) {
-                byValueStructReturns.add(def.name() + " -> " + def.retCType());
-                continue;
+                String struct = def.retCType().replace("const ", "").trim();
+                if (!returnedThroughMemory(struct)) {
+                    byValueStructReturns.add(def.name() + " -> " + struct
+                            + " (" + structSize(struct) + " bytes, returned in registers)");
+                    continue;
+                }
+                returnedStructs.add(struct);
+                def = withResultParam(def, struct);
             }
             String key = def.name + "#" + def.params.size();
             if (seen.add(key)) {
@@ -179,8 +192,12 @@ public class FunctionsGenerator {
             }
         }
         System.out.println("Functions parsed: " + functions.size());
+        if (!returnedStructs.isEmpty()) {
+            System.out.println("Structs returned through caller memory, bound with a generated "
+                    + "Struct class (" + returnedStructs.size() + "): " + returnedStructs);
+        }
         if (!byValueStructReturns.isEmpty()) {
-            System.out.println("Returning a struct by value, awaiting generated Struct classes ("
+            System.out.println("Left out, returning a struct small enough to travel in registers ("
                     + byValueStructReturns.size() + "): " + byValueStructReturns);
         }
 
@@ -204,11 +221,130 @@ public class FunctionsGenerator {
         if (structs != null && structs.isArray()) {
             for (JsonNode st : structs) {
                 JsonNode nameNode = st.get("name");
-                if (nameNode != null) {
-                    structNames.add(nameNode.asText());
+                if (nameNode == null) {
+                    continue;
                 }
+                structNames.add(nameNode.asText());
+                List<StructField> fields = new ArrayList<>();
+                JsonNode fieldsNode = st.get("fields");
+                if (fieldsNode != null && fieldsNode.isArray()) {
+                    for (JsonNode f : fieldsNode) {
+                        JsonNode fname = f.get("name");
+                        JsonNode fctype = f.get("cType");
+                        if (fname != null && fctype != null) {
+                            fields.add(new StructField(fname.asText(), fctype.asText().trim()));
+                        }
+                    }
+                }
+                structFields.put(nameNode.asText(), fields);
             }
         }
+    }
+
+    /** Size in bytes of a struct field on the 64-bit targets the binding ships for. */
+    private static int fieldSize(String cType) {
+        if (cType.endsWith("*")) {
+            return 8;
+        }
+        return switch (cType.replace("const ", "").trim()) {
+            case "bool", "char", "int8", "int8_t", "uint8", "uint8_t" -> 1;
+            case "short", "int16", "int16_t", "uint16", "uint16_t" -> 2;
+            case "int", "int32", "int32_t", "uint32", "uint32_t", "float", "Oid", "DateADT" -> 4;
+            default -> 8;
+        };
+    }
+
+    /**
+     * Size of a struct laid out by the C rules: each field sits at a multiple of its own size and
+     * the whole is padded to a multiple of its widest field. Returns -1 when the catalog carries no
+     * fields for it.
+     */
+    private int structSize(String name) {
+        List<StructField> fields = structFields.get(name);
+        if (fields == null || fields.isEmpty()) {
+            return -1;
+        }
+        int offset = 0;
+        int widest = 1;
+        for (StructField f : fields) {
+            int size = fieldSize(f.cType());
+            widest = Math.max(widest, size);
+            offset = (offset + size - 1) / size * size + size;
+        }
+        return (offset + widest - 1) / widest * widest;
+    }
+
+    /**
+     * Whether a struct returned by value travels through memory the caller supplies.
+     *
+     * <p>A struct wider than two eightbytes is returned that way on every target the binding ships
+     * for: the caller passes the address of the result as a hidden first argument and the callee
+     * fills it. A struct small enough to travel in registers is returned in them instead, a shape
+     * jnr-ffi cannot express, so those stay out of the generated surface.
+     */
+    private boolean returnedThroughMemory(String structName) {
+        return structSize(structName) > 16;
+    }
+
+    /** The same function with the hidden result address named as its leading parameter. */
+    private static FunctionDef withResultParam(FunctionDef fn, String structName) {
+        List<ParamDef> params = new ArrayList<>();
+        params.add(new ParamDef(RESULT_PARAM, "Pointer", structName + " *", false));
+        params.addAll(fn.params());
+        return new FunctionDef(fn.name(), "Pointer", fn.retCType(), params);
+    }
+
+    /** Whether this function returns a struct through memory the wrapper supplies. */
+    private boolean isStructResultPattern(FunctionDef fn) {
+        return returnedStructs.contains(fn.retCType().replace("const ", "").trim());
+    }
+
+    /** The Java name of the jnr Struct class generated for a C struct. */
+    private static String structClassName(String cName) {
+        return cName;
+    }
+
+    /** Generates a jnr Struct class per struct a generated function returns by value. */
+    private String generateStructClasses() {
+        if (returnedStructs.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String name : returnedStructs) {
+            sb.append("\t/** {@code ").append(name).append("} as MEOS declares it. */\n");
+            sb.append("\tpublic static final class ").append(structClassName(name))
+                    .append(" extends jnr.ffi.Struct {\n");
+            for (StructField f : structFields.get(name)) {
+                sb.append("\t\tpublic final ").append(structFieldType(f.cType()))
+                        .append(" ").append(f.name()).append(" = new ")
+                        .append(structFieldType(f.cType())).append("();\n");
+            }
+            sb.append("\n\t\tpublic ").append(structClassName(name)).append("(Runtime runtime) {\n");
+            sb.append("\t\t\tsuper(runtime);\n");
+            sb.append("\t\t}\n");
+            sb.append("\t}\n\n");
+        }
+        return sb.toString();
+    }
+
+    /** The jnr Struct member type that holds a field of this C type. */
+    private static String structFieldType(String cType) {
+        if (cType.endsWith("*")) {
+            return "Pointer";
+        }
+        return switch (cType.replace("const ", "").trim()) {
+            case "bool" -> "Boolean";
+            case "char", "int8", "int8_t" -> "Signed8";
+            case "uint8", "uint8_t" -> "Unsigned8";
+            case "short", "int16", "int16_t" -> "Signed16";
+            case "uint16", "uint16_t" -> "Unsigned16";
+            case "uint32", "uint32_t", "Oid" -> "Unsigned32";
+            case "int", "int32", "int32_t", "DateADT" -> "Signed32";
+            case "float" -> "Float";
+            case "double" -> "Double";
+            case "uint64", "uint64_t" -> "Unsigned64";
+            default -> "Signed64";
+        };
     }
 
     /**
@@ -577,6 +713,7 @@ public class FunctionsGenerator {
                 \t}
 
                 """);
+        sb.append(generateStructClasses());
         sb.append(generateAllInterfaces(functions, partSize));
         sb.append("\n\n");
 
@@ -723,7 +860,15 @@ public class FunctionsGenerator {
         List<String>       internalSizeParams = new ArrayList<>();
         boolean            hasInternalResult  = false;
 
+        boolean isStructResult = isStructResultPattern(fn);
+        String resultStructClass = isStructResult
+                ? structClassName(fn.retCType().replace("const ", "").trim())
+                : null;
+
         for (ParamDef p : fn.params) {
+            if (isStructResult && p.name().equals(RESULT_PARAM)) {
+                continue; // hide from signature; the struct below owns the memory
+            }
             if (isSizeOut(p)) {
                 internalSizeParams.add(p.name);
                 continue;
@@ -747,7 +892,7 @@ public class FunctionsGenerator {
         // (.getDouble(0), .getLong(0), etc.), matching existing call sites.
         String wrapperReturnType = isBoolResultPattern
                 ? "Pointer"
-                : mapCTypeToJavaWrapper(fn.retCType);
+                : isStructResult ? resultStructClass : mapCTypeToJavaWrapper(fn.retCType);
 
         // --- Method signature (only visible params) ---
         sb.append("\t@SuppressWarnings(\"unused\")\n");
@@ -758,7 +903,7 @@ public class FunctionsGenerator {
 
         // --- Internal allocations ---
         // Determine if we need a Runtime (needed for any Memory.allocateDirect call).
-        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult;
+        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult || isStructResult;
 
         if (isBoolResultPattern) {
             // Emit the "boolean out" sentinel variable first,
@@ -776,6 +921,14 @@ public class FunctionsGenerator {
         if (hasInternalResult) {
             sb.append("\t\tPointer result = Memory.allocateDirect(runtime, ")
                     .append(resultStrategy.allocExpr()).append(");\n");
+        }
+
+        // Back the struct with memory of its own layout and hand MEOS that address.
+        if (isStructResult) {
+            sb.append("\t\t").append(resultStructClass).append(" _result = new ")
+                    .append(resultStructClass).append("(runtime);\n");
+            sb.append("\t\tPointer ").append(RESULT_PARAM)
+                    .append(" = jnr.ffi.Struct.getMemory(_result);\n");
         }
 
         // Allocate hidden size_out pointer(s).
@@ -832,6 +985,11 @@ public class FunctionsGenerator {
                 sb.append("\t\tMeosErrorHandler.checkError();\n");
                 sb.append("\t\treturn out ? result : null;\n");
             }
+        } else if (isStructResult) {
+            // MEOS fills the memory backing _result and returns that same address.
+            sb.append("\t\t").append(call).append("\n");
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\treturn _result;\n");
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n");
             sb.append("\t\tMeosErrorHandler.checkError();\n");
@@ -906,4 +1064,7 @@ public class FunctionsGenerator {
 
     // New record for wrapper-layer parameter info.
     private record WrapperParam(String name, String wrapperType, String interfaceType, boolean needsConversion) {}
+
+    // One field of a struct the catalog declares: its name and its C type.
+    private record StructField(String name, String cType) {}
 }

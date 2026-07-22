@@ -2995,8 +2995,6 @@ public class functions {
 
 		Pointer tgeompoint_to_tgeometry(Pointer temp);
 
-		boolean tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom, Pointer gsarr, Pointer timesarr, Pointer count);
-
 		boolean tpoint_tfloat_to_geomeas(Pointer tpoint, Pointer measure, boolean segmentize, Pointer result);
 
 		Pointer tspatial_to_stbox(Pointer temp);
@@ -3358,10 +3356,6 @@ public class functions {
 		Pointer stbox_space_time_tiles(Pointer bounds, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean border_inc, Pointer count);
 
 		Pointer stbox_time_tiles(Pointer bounds, Pointer duration, long torigin, boolean border_inc, Pointer count);
-
-		Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer count);
-
-		Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer time_bins, Pointer count);
 
 
 		Pointer geo_cluster_dbscan(Pointer geoms, int ngeoms, double tolerance, int minpoints, Pointer count);
@@ -13942,13 +13936,6 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tpoint_as_mvtgeom(Pointer temp, Pointer bounds, int extent, int buffer, boolean clip_geom, Pointer gsarr, Pointer timesarr, Pointer count) {
-		var _result = MeosLibrary.meos.tpoint_as_mvtgeom(temp, bounds, extent, buffer, clip_geom, gsarr, timesarr, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static Pointer tpoint_tfloat_to_geomeas(Pointer tpoint, Pointer measure, boolean segmentize) {
 		boolean out;
 		Runtime runtime = Runtime.getSystemRuntime();
@@ -15183,21 +15170,6 @@ public class functions {
 	public static Pointer stbox_time_tiles(Pointer bounds, Pointer duration, OffsetDateTime torigin, boolean border_inc, Pointer count) {
 		var torigin_new = utils.TimestampTzConverter.toTimestampTz(torigin);
 		var _result = MeosLibrary.meos.stbox_time_tiles(bounds, duration, torigin_new, border_inc, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer tgeo_space_split(Pointer temp, double xsize, double ysize, double zsize, Pointer sorigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer count) {
-		var _result = MeosLibrary.meos.tgeo_space_split(temp, xsize, ysize, zsize, sorigin, bitmatrix, border_inc, space_bins, count);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, OffsetDateTime torigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer time_bins, Pointer count) {
-		var torigin_new = utils.TimestampTzConverter.toTimestampTz(torigin);
-		var _result = MeosLibrary.meos.tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, torigin_new, bitmatrix, border_inc, space_bins, time_bins, count);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
