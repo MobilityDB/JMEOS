@@ -62,15 +62,23 @@ public class MeosErrorHandler implements error_handler_fn {
         EXCEPTION_MAP.put(MEOS_ERR_GEOJSON_OUTPUT,      MeosGeoJsonOutputError::new);
     }
 
-    private static int    lastCode    = 0;
-    private static int    lastLevel   = 0;
-    private static String lastMessage = null;
+    /**
+     * The last error MEOS reported to the calling thread, as {@code {code, level}}.
+     *
+     * <p>MEOS raises an error on the thread that made the call and keeps its own error number in
+     * thread-local storage, so this mirror is per-thread too. One slot shared across threads lets a
+     * thread consume or clear an error raised on another, which loses the exception its caller was
+     * owed and hands it to whichever thread asks next.
+     */
+    private static final ThreadLocal<int[]> LAST_ERROR = ThreadLocal.withInitial(() -> new int[2]);
+    private static final ThreadLocal<String> LAST_MESSAGE = new ThreadLocal<>();
 
     @Override
     public void apply(int errorLevel, int errorCode, String errorMessage) {
-        lastCode    = errorCode;
-        lastLevel   = errorLevel;
-        lastMessage = errorMessage;
+        int[] last = LAST_ERROR.get();
+        last[0] = errorCode;
+        last[1] = errorLevel;
+        LAST_MESSAGE.set(errorMessage);
     }
 
     private static void reportMeosException(int level, int code, String message) {
@@ -92,13 +100,14 @@ public class MeosErrorHandler implements error_handler_fn {
     }
 
     public static void checkError() {
-        if (lastCode != 0) {
-            int    code    = lastCode;
-            int    level   = lastLevel;
-            String message = lastMessage;
-            lastCode = 0;
-            lastLevel = 0;
-            lastMessage = null;
+        int[] last = LAST_ERROR.get();
+        if (last[0] != 0) {
+            int    code    = last[0];
+            int    level   = last[1];
+            String message = LAST_MESSAGE.get();
+            last[0] = 0;
+            last[1] = 0;
+            LAST_MESSAGE.remove();
             reportMeosException(level, code, message);
         }
     }

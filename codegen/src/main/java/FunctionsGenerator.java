@@ -46,6 +46,9 @@ public class FunctionsGenerator {
     /** Name of the leading parameter carrying the address of a struct returned through memory. */
     private static final String RESULT_PARAM = "_result_address";
 
+    /** The per-thread MEOS initialisation every wrapper performs before reaching the library. */
+    private static final String GUARD_CALL = "ensureReady();";
+
     // -------------------------------------------------------------------------
     // Optional MEOS type families, gated by build flags mirroring the
     // MobilityDB/MEOS flag names and ON|OFF (also 1|0) values: -DCBUFFER=OFF,
@@ -204,6 +207,17 @@ public class FunctionsGenerator {
         // 3. Generate file content
         String content = generateFile(functions);
 
+        // 3b. Every wrapper reaching the library must initialise MEOS for its thread first, so a
+        //     future emit path cannot drop the guard unnoticed.
+        List<String> unguarded = unguardedWrappers(content);
+        if (!unguarded.isEmpty()) {
+            System.err.println("FATAL: " + unguarded.size() + " generated wrapper(s) reach MEOS "
+                    + "without the per-thread init guard (" + GUARD_CALL + "):");
+            unguarded.stream().limit(20).forEach(w -> System.err.println("   " + w));
+            System.exit(1);
+        }
+        System.out.println("Per-thread MEOS-init guard: every wrapper verified");
+
         // 4. Write to disk
         Path out = Paths.get(outputPath);
         Files.createDirectories(out.getParent());
@@ -302,6 +316,89 @@ public class FunctionsGenerator {
     /** The Java name of the jnr Struct class generated for a C struct. */
     private static String structClassName(String cName) {
         return cName;
+    }
+
+    /**
+     * The generated wrappers that reach the library without initialising MEOS for their thread.
+     *
+     * <p>Reads the emitted source rather than the model, so it reports what actually ships.
+     * {@code ensureReady} itself is excluded: it is the guard.
+     */
+    private static List<String> unguardedWrappers(String content) {
+        List<String> unguarded = new ArrayList<>();
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("\tpublic static [^\n]*? (\\w+)\\([^\n]*\\) \\{\n(.*?)\n\t\\}",
+                        java.util.regex.Pattern.DOTALL)
+                .matcher(content);
+        while (m.find()) {
+            String name = m.group(1);
+            String body = m.group(2);
+            if (name.equals("ensureReady") || !body.contains("_meos_")) {
+                continue; // the guard itself, or a wrapper that never reaches the library
+            }
+            if (body.indexOf(GUARD_CALL) < 0
+                    || body.indexOf(GUARD_CALL) > body.indexOf("_meos_")) {
+                unguarded.add(name);
+            }
+        }
+        return unguarded;
+    }
+
+    /**
+     * Generates the per-thread MEOS initialisation every wrapper runs before reaching the library.
+     *
+     * <p>MEOS holds its session timezone, collation cache, PROJ and GEOS contexts, RNGs and errno in
+     * thread-local storage, so a thread that has not initialised MEOS reads uninitialised state: a
+     * text comparison reaches {@code varstr_cmp} with no collation and the process dies. A library
+     * that is thread-safe still has to be thread-initialised, and the binding is what knows which
+     * threads reach the library, so it initialises each one on first use.
+     */
+    private String generateThreadGuard() {
+        return """
+                \t/**
+                \t * The error handler MEOS calls on this binding's threads. MEOS's own default ends
+                \t * the process with exit(EXIT_FAILURE), which would take the whole JVM down;
+                \t * MeosErrorHandler records the level, code and message instead, which
+                \t * MeosErrorHandler.checkError() reads after each call and rethrows as a Java
+                \t * exception. Registering it is what makes a MEOS error reach the caller, so every
+                \t * thread installs it. Held in a static field so jnr-ffi keeps the native callback
+                \t * alive for the life of the process.
+                \t */
+                \tpublic static final error_handler_fn ERROR_HANDLER = new MeosErrorHandler();
+
+                \tprivate static final ThreadLocal<Boolean> MEOS_READY = new ThreadLocal<>();
+                \tprivate static boolean MEOS_PROCESS_READY = false;
+
+                \t/**
+                \t * Initialises MEOS for the calling thread.
+                \t *
+                \t * <p>What MEOS holds per thread and what it holds per process differ, so the two
+                \t * are set up separately. The session timezone and the collation cache are
+                \t * thread-local, and the PROJ, GEOS and RNG contexts are created lazily per thread,
+                \t * so each thread prepares its own. The error handler is a single process-wide
+                \t * pointer, and meos_initialize() resets it to MEOS's default, which ends the
+                \t * process on an error; running that per thread would disarm the handler the other
+                \t * threads depend on. It therefore runs once, under a lock, before any thread goes on.
+                \t */
+                \tpublic static void ensureReady() {
+                \t\tif (MEOS_READY.get() != null) {
+                \t\t\treturn;
+                \t\t}
+                \t\t// Marked ready before the calls below, which are wrappers that ask for the
+                \t\t// same guard: the flag makes that re-entry a no-op rather than a recursion.
+                \t\tMEOS_READY.set(Boolean.TRUE);
+                \t\tsynchronized (GeneratedFunctions.class) {
+                \t\t\tif (!MEOS_PROCESS_READY) {
+                \t\t\t\tmeos_initialize();
+                \t\t\t\tmeos_initialize_error_handler(ERROR_HANDLER);
+                \t\t\t\tMEOS_PROCESS_READY = true;
+                \t\t\t}
+                \t\t}
+                \t\tmeos_initialize_timezone("UTC");
+                \t\tmeos_initialize_collation();
+                \t}
+
+                """;
     }
 
     /** Generates a jnr Struct class per struct a generated function returns by value. */
@@ -713,6 +810,7 @@ public class FunctionsGenerator {
                 \t}
 
                 """);
+        sb.append(generateThreadGuard());
         sb.append(generateStructClasses());
         sb.append(generateAllInterfaces(functions, partSize));
         sb.append("\n\n");
@@ -900,6 +998,10 @@ public class FunctionsGenerator {
                 .append(fn.name).append("(")
                 .append(buildWrapperParamList(wparams))
                 .append(") {\n");
+
+        // MEOS keeps its session timezone, collation cache, PROJ and GEOS contexts and RNGs in
+        // thread-local storage, so every thread that reaches the library initialises it for itself.
+        sb.append("\t\t").append(GUARD_CALL).append("\n");
 
         // --- Internal allocations ---
         // Determine if we need a Runtime (needed for any Memory.allocateDirect call).

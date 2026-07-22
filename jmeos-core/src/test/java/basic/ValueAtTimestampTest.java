@@ -32,7 +32,6 @@ class ValueAtTimestampTest {
     @BeforeAll
     static void init() {
         GeneratedFunctions.meos_initialize_timezone("UTC");
-        GeneratedFunctions.meos_initialize_error_handler(errorHandler);
     }
 
     private static LocalDateTime day(int d) {

@@ -24,7 +24,6 @@ class DateSetOperationsTest {
 
     DateSetOperationsTest() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
     }
 
     @Test

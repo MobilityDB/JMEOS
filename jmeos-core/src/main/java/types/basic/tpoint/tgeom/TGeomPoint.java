@@ -82,7 +82,7 @@ public interface TGeomPoint extends TPoint {
 		} else if (base instanceof tstzspan) {
 			return new TGeomPointSeqSet(GeneratedFunctions.tpointseq_from_base_tstzspan(ConversionUtils.geometry_to_gserialized(value), ((tstzspan) base).get_inner(), interp.getValue()));
 		} else if (base instanceof tstzspanset) {
-			return new TGeomPointSeq(GeneratedFunctions.tpointseq_from_base_tstzset(ConversionUtils.geometry_to_gserialized(value), ((tstzspanset) base).get_inner()));
+			return new TGeomPointSeqSet(GeneratedFunctions.tpointseqset_from_base_tstzspanset(ConversionUtils.geometry_to_gserialized(value), ((tstzspanset) base).get_inner(), interp.getValue()));
 		}
 		else{
 			throw new UnsupportedOperationException("Operation not supported with type " + base.getClass());

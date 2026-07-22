@@ -41,7 +41,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> frombasetemporal() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TFloatInst", TInterpolation.NONE),
                 Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR),
@@ -52,7 +51,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> frombasetime() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TFloatSeq", TInterpolation.DISCRETE),
                 Arguments.of(new tstzspan("[2019-09-01, 2019-09-02]"), "TFloatSeqSet", TInterpolation.LINEAR),
@@ -73,7 +71,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> fromcopy() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst"),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq"),
@@ -84,7 +81,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> totint() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", "1@2019-09-01 00:00:00+00")
                 //Arguments.of(new TFloatSeq("{1.5@2019-09-01, 2.5@2019-09-02}"), "TFloatSeq", "[1@2019-09-01 00:00:00+00, 2@2019-09-02 00:00:00+00]"),
@@ -96,7 +92,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> bounding() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TBox("TBOXFLOAT XT([1.5,1.5],[2019-09-01, 2019-09-01])")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TBox("TBOXFLOAT XT([1.5,2.5],[2019-09-01, 2019-09-02])")),
@@ -108,7 +103,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> interp() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.NONE),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR),
@@ -119,7 +113,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> value_span() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new FloatSpan(1.5f, 1.5f, true, true)),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new FloatSpan(1.5f, 2.5f, true, true)),
@@ -130,7 +123,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> value_spans() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new IntSpanSet("{[1,1]}")),
                 Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), "TIntSeq", new IntSpanSet("{[1,2]}")),
@@ -141,7 +133,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> start_value() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f),
@@ -152,7 +143,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> end_value() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 2.5f),
@@ -163,7 +153,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> min_value() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", 1.5f),
@@ -174,7 +163,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> max_value() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TIntInst", 1.5f),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TIntSeq", 2.5f),
@@ -185,7 +173,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> time() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new tstzspanset("{[2019-09-01, 2019-09-01]}")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new tstzspanset("{[2019-09-01, 2019-09-02]}")),
@@ -196,7 +183,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> period() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new tstzspan("[2019-09-01, 2019-09-01]")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new tstzspan("[2019-09-01, 2019-09-02]")),
@@ -206,7 +192,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> num_instant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",2),
@@ -218,7 +203,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> start_instant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TIntInst", new TFloatInst("1.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TIntSeq",new TFloatInst("1.5@2019-09-01")),
@@ -230,7 +214,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> end_instant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",new TFloatInst("2.5@2019-09-02")),
@@ -241,7 +224,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> max_instant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq",new TFloatInst("2.5@2019-09-02")),
@@ -252,7 +234,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> instant_n() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), 0, new TFloatInst("1.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 1,new TFloatInst("2.5@2019-09-02")),
@@ -264,7 +245,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> num_timestamps() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, new TIntInst("1@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2,new TIntInst("2@2019-09-02")),
@@ -276,7 +256,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> start_timestamps() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -287,7 +266,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> end_timestamps() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), 1, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 2, LocalDateTime.of(2019, 9, 2, 0, 0,0)),
@@ -298,7 +276,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> hash() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), 1307112078, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 1935376725, LocalDateTime.of(2019, 9, 2, 0, 0,0))
@@ -309,7 +286,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> toinstant() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("1.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01]"), "TFloatSeq", new TFloatInst("1.5@2019-09-01")),
@@ -320,7 +296,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> tosequence() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeq("[1.5@2019-09-01]")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]")),
@@ -331,7 +306,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> tosequenceset() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01]}")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", TInterpolation.LINEAR, new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02]}")),
@@ -342,7 +316,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> insert() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 //Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatSeq("{1.5@2019-09-03}"), new TFloatSeq("{1.5@2019-09-01, 1.5@2019-09-03}"))
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1.5@2019-09-03]"), new TFloatSeqSet("[1.5@2019-09-01, 2.5@2019-09-02, 1.5@2019-09-03]")),
@@ -353,7 +326,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> update() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("2.5@2019-09-01"), new TFloatInst("2.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02]}")),
@@ -364,7 +336,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> append_sequence() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("[1.5@2019-09-03]"), new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02], [1.5@2019-09-03]}")),
                 Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeq("[1.5@2019-09-06]"), new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05],[1.5@2019-09-06]}"))
@@ -374,7 +345,6 @@ public class TFloatTest {
 
     private static Stream<Arguments> abs() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", new TFloatInst("2.5@2019-09-01"), new TFloatInst("2.5@2019-09-01")),
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatInst("2.5@2019-09-01"), new TFloatSeqSet("{[2.5@2019-09-01], (1.5@2019-09-01, 2.5@2019-09-02]}")),
@@ -385,7 +355,6 @@ public class TFloatTest {
     /*
     private static Stream<Arguments> delta_value() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), "TFloatSeq", new TFloatSeq("Interp=Step;[1@2019-09-01, 1@2019-09-02)")),
                 Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), "TFloatSeqSet", new TFloatSeqSet("Interp=Step;{[1@2019-09-01, 1@2019-09-02),[0@2019-09-03, 0@2019-09-05)}"))
@@ -398,7 +367,6 @@ functions.meos_initialize_error_handler(errorHandler);
 
     private static Stream<Arguments> always_equal() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, true ),
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, false ),
@@ -413,7 +381,6 @@ functions.meos_initialize_error_handler(errorHandler);
 
     private static Stream<Arguments> ever_equal() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, true ),
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, false ),
@@ -428,7 +395,6 @@ functions.meos_initialize_error_handler(errorHandler);
 
     private static Stream<Arguments> ever_greater() throws SQLException {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         return Stream.of(
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 1.5f, false ),
                 Arguments.of(new TFloatInst("1.5@2019-09-01"), "TFloatInst", 2.5f, true ),
@@ -462,7 +428,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("frombasetime")
     void testFromBaseTimeConstructor(Time source, String type, TInterpolation interpolation) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if (type == "TFloatSeq") {
             TFloatSeq ti = (TFloatSeq) TFloat.from_base_time(1.5f, source, interpolation);
             assertTrue(ti instanceof TFloatSeq);
@@ -482,7 +447,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("frombasetemporal")
     void testFromBaseTemporalConstructor(Temporal source, String type, TInterpolation interpolation) {
         //functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst ti = new TFloatInst();
             TFloatInst new_ti = (TFloatInst) ti.from_base_temporal(1.5f,source,interpolation);
@@ -510,7 +474,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("fromstring")
     void testStringConstructor(String source, String type, TInterpolation interpolation, String expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst tinst = new TFloatInst(source);
             assertTrue(tinst instanceof TFloatInst);
@@ -538,7 +501,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("fromcopy")
     void testCopyConstructor(Temporal source, String type) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst tb = (TFloatInst)source.copy();
             assertEquals(tb.to_string(15),(((TFloatInst) source).to_string(15)));
@@ -559,7 +521,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("fromstring")
     void testString(String source, String type, TInterpolation interpolation, String expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst tinst = new TFloatInst(source);
             assertEquals(tinst.to_string(15),expected);
@@ -579,7 +540,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("totint")
     void testToTInt(TFloat source, String type, String expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TInt tinst = ((TFloatInst) source).to_tint();
             assertEquals(tinst.to_string(),expected);
@@ -602,7 +562,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("bounding")
     void testBoundingBox(Temporal source, String type, Box expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.bounding_box().toString(),expected.to_period().toString());
     }
 
@@ -613,7 +572,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("interp")
     void testInterpolation(Temporal source, String type, TInterpolation expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.interpolation(),expected);
     }
 
@@ -622,7 +580,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("value_span")
     void testValueSpan(TFloat source, String type, FloatSpan expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.value_span().toString(15),expected.toString(15));
     }
 
@@ -631,7 +588,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("value_spans")
     void testValuesSpan(TInt source, String type, IntSpanSet expected) {
         functions.meos_initialize_timezone("UTC");
-functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.value_spans().toString(),expected.toString());
     }
 
@@ -642,7 +598,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("start_value")
     void testStart_value(TFloat source, String type, float expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.start_value(),expected);
     }
 
@@ -651,7 +606,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("end_value")
     void testEnd_value(TFloat source, String type, float expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.end_value(),expected);
     }
 
@@ -660,7 +614,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("min_value")
     void testMin_value(TFloat source, String type, float expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.min_value(),expected);
     }
 
@@ -669,7 +622,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("max_value")
     void testMax_value(TFloat source, String type, float expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.max_value(),expected);
     }
 
@@ -678,7 +630,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("time")
     void testTime(Temporal source, String type, tstzspanset expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.time().toString(),expected.toString());
     }
 
@@ -688,7 +639,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("period")
     void testtstzspan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.period().toString(),expected.toString());
     }
 
@@ -697,7 +647,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("period")
     void testTimespan(Temporal source, String type, tstzspan expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.timespan().toString(),expected.toString());
     }
 
@@ -706,7 +655,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("num_instant")
     void testNumInstant(Temporal source, String type, int expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.num_instants(),expected);
     }
 
@@ -715,7 +663,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("start_instant")
     void testStartInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloatInst)source.start_instant()).to_string(15),((TFloatInst)expected.start_instant()).to_string(15));
     }
 
@@ -724,7 +671,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("end_instant")
     void testEndInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloatInst)source.end_instant()).to_string(15),((TFloatInst)expected.end_instant()).to_string(15));
     }
 
@@ -734,7 +680,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("start_instant")
     void testMinInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloatInst)source.min_instant()).to_string(15),((TFloatInst)expected.min_instant()).to_string(15));
     }
 
@@ -743,7 +688,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("max_instant")
     void testMaxInstant(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloatInst)source.max_instant()).to_string(15),((TFloatInst)expected.max_instant()).to_string(15));
     }
 
@@ -753,7 +697,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("instant_n")
     void testInstant_n(Temporal source, int n, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloatInst)source.instant_n(n)).to_string(15),((TFloatInst)expected).to_string(15));
     }
 
@@ -762,7 +705,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("num_timestamps")
     void testNumTimestamps(Temporal source, int n, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.num_timestamps(),n);
     }
 
@@ -771,7 +713,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("start_timestamps")
     void testStartTimestamps(Temporal source, int n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.start_timestamp(),expected);
     }
 
@@ -780,7 +721,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("end_timestamps")
     void testEndTimestamps(Temporal source, int n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.end_timestamp(),expected);
     }
 
@@ -789,7 +729,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("hash")
     void testHash(Temporal source, long n, LocalDateTime expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(source.hash(),n);
     }
 
@@ -798,7 +737,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("toinstant")
     void testToinstant(Temporal source, String type, TFloatInst expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         TFloatInst tmp = (TFloatInst) source.to_instant();
         assertTrue(tmp instanceof TFloatInst);
         assertEquals(tmp.to_string(15),expected.to_string(15));
@@ -811,7 +749,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("tosequence")
     void testTosequence(Temporal source, String type, TInterpolation interp, TFloatSeq expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         TFloatSeq tmp = (TFloatSeq) source.to_sequence(interp);
         assertTrue(tmp instanceof TFloatSeq);
         assertEquals(tmp.to_string(15),expected.to_string(15));
@@ -823,7 +760,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("tosequenceset")
     void testTosequenceset(Temporal source, String type, TInterpolation interp, TFloatSeqSet expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         TFloatSeqSet tmp = (TFloatSeqSet) source.to_sequenceset(interp);
         assertTrue(tmp instanceof TFloatSeqSet);
         assertEquals(interp, tmp.interpolation());
@@ -836,7 +772,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("insert")
     void testInsert(Temporal source, String type, TFloatSeq tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst tmp = (TFloatInst) source.insert(tseq);
             assertEquals(tmp.to_string(15), ((TFloatSeq)expected).to_string(15));
@@ -856,7 +791,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("update")
     void testUpdate(Temporal source, String type, TFloatInst tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TFloatInst tmp = (TFloatInst) source.update(tseq);
             assertEquals(tmp.to_string(15), ((TFloatInst)expected).to_string(15));
@@ -874,7 +808,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("append_sequence")
     void testAppendSequence(Temporal source, String type, TFloatSeq tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if (type == "TFloatSeq") {
             TFloatSeq tmp = (TFloatSeq) source.append_sequence(tseq);
             assertEquals(tmp.to_string(15), ((TFloatSeqSet)expected).to_string(15));
@@ -892,7 +825,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("abs")
     void testAbs(Temporal source, String type, TFloatInst tseq, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TNumber tmp = ((TNumber) source).abs();
             assertEquals(((TFloatInst)tmp).to_string(15), ((TFloatInst)source).to_string(15));
@@ -910,7 +842,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("delta_value")
     void testDeltaValue(Temporal source, String type, Temporal expected) {
         functions.meos_initialize_timezone("UTC");
-functions.meos_initialize_error_handler(errorHandler);
         if(type == "TFloatInst"){
             TNumber tmp = ((TNumber) source).delta_value();
             assertEquals(((TFloatInst)tmp).tostring(15), ((TFloatInst)expected).tostring(15));
@@ -931,7 +862,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("always_equal")
     void testAlwaysEqual(Temporal source, String type, float arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloat)source).always_equal(arg),expected);
         assertEquals(((TFloat)source).never_not_equal(arg),expected);
         assertEquals(((TFloat)source).ever_not_equal(arg),! expected);
@@ -944,7 +874,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("ever_equal")
     void testEverEqual(Temporal source, String type, float arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloat)source).ever_equal(arg),expected);
         assertEquals(((TFloat)source).always_not_equal(arg),!expected);
         assertEquals(((TFloat)source).never_equal(arg),! expected);
@@ -955,7 +884,6 @@ functions.meos_initialize_error_handler(errorHandler);
     @MethodSource("ever_greater")
     void testEverGreater(Temporal source, String type, float arg, boolean expected) {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
         assertEquals(((TFloat)source).always_less(arg),expected);
         assertEquals(((TFloat)source).never_greater_or_equal(arg),expected);
         assertEquals(((TFloat)source).ever_greater_or_equal(arg),! expected);
