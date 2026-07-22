@@ -13,8 +13,10 @@ set -euo pipefail
 CATALOG="${1:-${CATALOG:?set CATALOG (or pass the catalog path) to the meos-idl.json from MEOS-API run.py over MobilityDB master}}"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 
-# 1. vendor the catalog — codegen/input/meos-idl.json is the generator's committed input,
-#    overwritten in place (there is no pin and no per-SHA copy).
+# 1. stage the catalog — codegen/input/meos-idl.json is the generator's input. It is derived,
+#    not committed, so the directory does not exist in a clean checkout: create it, then
+#    overwrite in place (there is no pin and no per-SHA copy).
+mkdir -p "$HERE/codegen/input"
 cp "$CATALOG" "$HERE/codegen/input/meos-idl.json"
 
 # 2. build the jar the JVM consumers bind. jmeos-core's generate-sources phase runs
