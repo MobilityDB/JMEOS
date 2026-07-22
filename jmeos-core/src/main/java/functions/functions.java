@@ -153,7 +153,7 @@ public class functions {
 
 		String text_to_cstring(Pointer txt);
 
-		int text_cmp(Pointer txt1, Pointer txt2);
+		int text_cmp(Pointer txt1, Pointer txt2, int collid);
 
 		Pointer text_copy(Pointer txt);
 
@@ -2592,7 +2592,7 @@ public class functions {
 
 		String box3d_out(Pointer box, int maxdd);
 
-		Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
+		Pointer gbox_make(boolean hasz, boolean hasm, boolean geodetic, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double mmin, double mmax);
 
 		String gbox_out(Pointer box, int maxdd);
 
@@ -3787,8 +3787,8 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int text_cmp(Pointer txt1, Pointer txt2) {
-		var _result = MeosLibrary.meos.text_cmp(txt1, txt2);
+	public static int text_cmp(Pointer txt1, Pointer txt2, int collid) {
+		var _result = MeosLibrary.meos.text_cmp(txt1, txt2, collid);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12491,8 +12491,8 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer gbox_make(boolean hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
-		var _result = MeosLibrary.meos.gbox_make(hasz, xmin, xmax, ymin, ymax, zmin, zmax);
+	public static Pointer gbox_make(boolean hasz, boolean hasm, boolean geodetic, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double mmin, double mmax) {
+		var _result = MeosLibrary.meos.gbox_make(hasz, hasm, geodetic, xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
