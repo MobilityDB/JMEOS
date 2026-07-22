@@ -108,7 +108,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public LocalDate date_adt_to_date(int ts){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStr= functions.pg_date_out(ts);
+        String dateStr= functions.date_out(ts);
         return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
@@ -262,7 +262,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
                 contains_set_date, contains_set_set, contains_spanset_spanset
     */
     public int dateToTimestamp(LocalDate date){
-       return functions.pg_date_in(date.toString());
+       return functions.date_in(date.toString());
     }
 
     public boolean contains(Object other) throws Exception {

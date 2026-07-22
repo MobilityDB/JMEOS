@@ -101,17 +101,17 @@ public class functions {
 
 		String bool_out(boolean b);
 
-		Pointer cstring2text(String str);
+		Pointer cstring_to_text(String str);
 
 		long date_to_timestamp(int dateVal);
 
 		long date_to_timestamptz(int d);
 
-		double float_exp(double d);
+		double float8_exp(double d);
 
-		double float_ln(double d);
+		double float8_ln(double d);
 
-		double float_log10(double d);
+		double float8_log10(double d);
 
 		String float8_out(double d, int maxdd);
 
@@ -131,27 +131,27 @@ public class functions {
 
 		Pointer minus_timestamptz_timestamptz(long t1, long t2);
 
-		Pointer mul_interval_double(Pointer interv, double factor);
+		Pointer mul_interval_float8(Pointer interv, double factor);
 
-		int pg_date_in(String str);
+		int date_in(String str);
 
-		String pg_date_out(int d);
+		String date_out(int d);
 
-		int pg_interval_cmp(Pointer interv1, Pointer interv2);
+		int interval_cmp(Pointer interv1, Pointer interv2);
 
-		Pointer pg_interval_in(String str, int typmod);
+		Pointer interval_in(String str, int typmod);
 
-		String pg_interval_out(Pointer interv);
+		String interval_out(Pointer interv);
 
-		long pg_timestamp_in(String str, int typmod);
+		long timestamp_in(String str, int typmod);
 
-		String pg_timestamp_out(long t);
+		String timestamp_out(long t);
 
-		long pg_timestamptz_in(String str, int typmod);
+		long timestamptz_in(String str, int typmod);
 
-		String pg_timestamptz_out(long t);
+		String timestamptz_out(long t);
 
-		String text2cstring(Pointer txt);
+		String text_to_cstring(Pointer txt);
 
 		int text_cmp(Pointer txt1, Pointer txt2);
 
@@ -1705,7 +1705,6 @@ public class functions {
 
 		boolean temporal_upper_inc(Pointer temp);
 
-		double tfloat_avg_value(Pointer temp);
 
 		double tfloat_end_value(Pointer temp);
 
@@ -1771,11 +1770,11 @@ public class functions {
 
 		Pointer temporal_shift_time(Pointer temp, Pointer shift);
 
-		Pointer temporal_to_tinstant(Pointer temp);
+		Pointer temporal_as_tinstant(Pointer temp);
 
-		Pointer temporal_to_tsequence(Pointer temp, int interp);
+		Pointer temporal_tsequence(Pointer temp, int interp);
 
-		Pointer temporal_to_tsequenceset(Pointer temp, int interp);
+		Pointer temporal_tsequenceset(Pointer temp, int interp);
 
 		Pointer tfloat_ceil(Pointer temp);
 
@@ -2383,15 +2382,15 @@ public class functions {
 
 		Pointer div_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
-		Pointer mult_float_tfloat(double d, Pointer tnumber);
+		Pointer mul_float_tfloat(double d, Pointer tnumber);
 
-		Pointer mult_int_tint(int i, Pointer tnumber);
+		Pointer mul_int_tint(int i, Pointer tnumber);
 
-		Pointer mult_tfloat_float(Pointer tnumber, double d);
+		Pointer mul_tfloat_float(Pointer tnumber, double d);
 
-		Pointer mult_tint_int(Pointer tnumber, int i);
+		Pointer mul_tint_int(Pointer tnumber, int i);
 
-		Pointer mult_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
+		Pointer mul_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2);
 
 		Pointer sub_float_tfloat(double d, Pointer tnumber);
 
@@ -2589,7 +2588,6 @@ public class functions {
 
 		String geo_out(Pointer gs);
 
-		Pointer geog_from_binary(String wkb_bytea);
 
 		Pointer geog_from_hexewkb(String wkt);
 
@@ -3633,8 +3631,8 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer cstring2text(String str) {
-		var _result = MeosLibrary.meos.cstring2text(str);
+	public static Pointer cstring_to_text(String str) {
+		var _result = MeosLibrary.meos.cstring_to_text(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -3654,22 +3652,22 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double float_exp(double d) {
-		var _result = MeosLibrary.meos.float_exp(d);
+	public static double float8_exp(double d) {
+		var _result = MeosLibrary.meos.float8_exp(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double float_ln(double d) {
-		var _result = MeosLibrary.meos.float_ln(d);
+	public static double float8_ln(double d) {
+		var _result = MeosLibrary.meos.float8_ln(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static double float_log10(double d) {
-		var _result = MeosLibrary.meos.float_log10(d);
+	public static double float8_log10(double d) {
+		var _result = MeosLibrary.meos.float8_log10(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -3741,80 +3739,80 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mul_interval_double(Pointer interv, double factor) {
-		var _result = MeosLibrary.meos.mul_interval_double(interv, factor);
+	public static Pointer mul_interval_float8(Pointer interv, double factor) {
+		var _result = MeosLibrary.meos.mul_interval_float8(interv, factor);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int pg_date_in(String str) {
-		var _result = MeosLibrary.meos.pg_date_in(str);
+	public static int date_in(String str) {
+		var _result = MeosLibrary.meos.date_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_date_out(int d) {
-		var _result = MeosLibrary.meos.pg_date_out(d);
+	public static String date_out(int d) {
+		var _result = MeosLibrary.meos.date_out(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int pg_interval_cmp(Pointer interv1, Pointer interv2) {
-		var _result = MeosLibrary.meos.pg_interval_cmp(interv1, interv2);
+	public static int interval_cmp(Pointer interv1, Pointer interv2) {
+		var _result = MeosLibrary.meos.interval_cmp(interv1, interv2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer pg_interval_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_interval_in(str, typmod);
+	public static Pointer interval_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.interval_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_interval_out(Pointer interv) {
-		var _result = MeosLibrary.meos.pg_interval_out(interv);
+	public static String interval_out(Pointer interv) {
+		var _result = MeosLibrary.meos.interval_out(interv);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static LocalDateTime pg_timestamp_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_timestamp_in(str, typmod);
+	public static LocalDateTime timestamp_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.timestamp_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return utils.TimestampTzConverter.toLocalDateTime(_result);
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_timestamp_out(LocalDateTime t) {
+	public static String timestamp_out(LocalDateTime t) {
 		var t_new = utils.TimestampTzConverter.toTimestampTz(t);
-		var _result = MeosLibrary.meos.pg_timestamp_out(t_new);
+		var _result = MeosLibrary.meos.timestamp_out(t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static OffsetDateTime pg_timestamptz_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_timestamptz_in(str, typmod);
+	public static OffsetDateTime timestamptz_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.timestamptz_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return utils.TimestampTzConverter.toOffsetDateTime(_result);
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_timestamptz_out(OffsetDateTime t) {
+	public static String timestamptz_out(OffsetDateTime t) {
 		var t_new = utils.TimestampTzConverter.toTimestampTz(t);
-		var _result = MeosLibrary.meos.pg_timestamptz_out(t_new);
+		var _result = MeosLibrary.meos.timestamptz_out(t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String text2cstring(Pointer txt) {
-		var _result = MeosLibrary.meos.text2cstring(txt);
+	public static String text_to_cstring(Pointer txt) {
+		var _result = MeosLibrary.meos.text_to_cstring(txt);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -9416,13 +9414,6 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static double tfloat_avg_value(Pointer temp) {
-		var _result = MeosLibrary.meos.tfloat_avg_value(temp);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
 	public static double tfloat_end_value(Pointer temp) {
 		var _result = MeosLibrary.meos.tfloat_end_value(temp);
 		MeosErrorHandler.checkError();
@@ -9660,22 +9651,22 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_to_tinstant(Pointer temp) {
-		var _result = MeosLibrary.meos.temporal_to_tinstant(temp);
+	public static Pointer temporal_as_tinstant(Pointer temp) {
+		var _result = MeosLibrary.meos.temporal_as_tinstant(temp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_to_tsequence(Pointer temp, int interp) {
-		var _result = MeosLibrary.meos.temporal_to_tsequence(temp, interp);
+	public static Pointer temporal_tsequence(Pointer temp, int interp) {
+		var _result = MeosLibrary.meos.temporal_tsequence(temp, interp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer temporal_to_tsequenceset(Pointer temp, int interp) {
-		var _result = MeosLibrary.meos.temporal_to_tsequenceset(temp, interp);
+	public static Pointer temporal_tsequenceset(Pointer temp, int interp) {
+		var _result = MeosLibrary.meos.temporal_tsequenceset(temp, interp);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -11807,36 +11798,36 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_float_tfloat(double d, Pointer tnumber) {
-		var _result = MeosLibrary.meos.mult_float_tfloat(d, tnumber);
+	public static Pointer mul_float_tfloat(double d, Pointer tnumber) {
+		var _result = MeosLibrary.meos.mul_float_tfloat(d, tnumber);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_int_tint(int i, Pointer tnumber) {
-		var _result = MeosLibrary.meos.mult_int_tint(i, tnumber);
+	public static Pointer mul_int_tint(int i, Pointer tnumber) {
+		var _result = MeosLibrary.meos.mul_int_tint(i, tnumber);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tfloat_float(Pointer tnumber, double d) {
-		var _result = MeosLibrary.meos.mult_tfloat_float(tnumber, d);
+	public static Pointer mul_tfloat_float(Pointer tnumber, double d) {
+		var _result = MeosLibrary.meos.mul_tfloat_float(tnumber, d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tint_int(Pointer tnumber, int i) {
-		var _result = MeosLibrary.meos.mult_tint_int(tnumber, i);
+	public static Pointer mul_tint_int(Pointer tnumber, int i) {
+		var _result = MeosLibrary.meos.mul_tint_int(tnumber, i);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer mult_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
-		var _result = MeosLibrary.meos.mult_tnumber_tnumber(tnumber1, tnumber2);
+	public static Pointer mul_tnumber_tnumber(Pointer tnumber1, Pointer tnumber2) {
+		var _result = MeosLibrary.meos.mul_tnumber_tnumber(tnumber1, tnumber2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
@@ -12538,13 +12529,6 @@ public class functions {
 	@SuppressWarnings("unused")
 	public static String geo_out(Pointer gs) {
 		var _result = MeosLibrary.meos.geo_out(gs);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
-
-	@SuppressWarnings("unused")
-	public static Pointer geog_from_binary(String wkb_bytea) {
-		var _result = MeosLibrary.meos.geog_from_binary(wkb_bytea);
 		MeosErrorHandler.checkError();
 		return _result;
 	}

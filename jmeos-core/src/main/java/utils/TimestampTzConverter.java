@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
  * and {@link LocalDateTime}, applying both the epoch offset and the microsecond unit.
  *
  * <p>Timezone resolution stays in MEOS: a timestamp string is parsed by
- * {@code pg_timestamptz_in}; this class only converts the numeric {@code TimestampTz}.
+ * {@code timestamptz_in}; this class only converts the numeric {@code TimestampTz}.
  */
 public final class TimestampTzConverter {
 

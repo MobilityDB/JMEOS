@@ -445,9 +445,9 @@ public interface TNumber {
      *
      *         MEOS Functions:
      *         <ul>
-     *             <li>mult_tint_int</li>
-     *             <li>mult_tfloat_float</li>
-     *             <li>mult_tnumber_tnumber</li>
+     *             <li>mul_tint_int</li>
+     *             <li>mul_tfloat_float</li>
+     *             <li>mul_tnumber_tnumber</li>
      *         </ul>
      * @param other A {@link Integer}, {@link Float} or {@link TNumber} to add
      *      *      *             to "this".
@@ -456,11 +456,11 @@ public interface TNumber {
      */
     default TNumber mul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(functions.mul_tint_int(getNumberInner(),((Integer) other).intValue()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(functions.mul_tfloat_float(getNumberInner(),((Float) other).floatValue()),getCustomType(),getTemporalType());
         } else if (other instanceof TNumber) {
-            return (TNumber) Factory.create_temporal(functions.mult_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(functions.mul_tnumber_tnumber(getNumberInner(),((TNumber) other).getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -476,8 +476,8 @@ public interface TNumber {
      *
      *         MEOS Functions:
      *         <ul>
-     *             <li>mult_int_tint</li>
-     *             <li>mult_float_tfloat</li>
+     *             <li>mul_int_tint</li>
+     *             <li>mul_float_tfloat</li>
      *         </ul>
      * @param other A {@link Integer} or {@link Float} to add to "this".
      * @return A new temporal object of the same subtype as "this".
@@ -485,9 +485,9 @@ public interface TNumber {
      */
     default TNumber rmul(Object other) throws OperationNotSupportedException {
         if ((this instanceof TInt) && (other instanceof Integer)){
-            return (TNumber) Factory.create_temporal(functions.mult_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(functions.mul_int_tint(((Integer) other).intValue(),getNumberInner()),getCustomType(),getTemporalType());
         } else if ((this instanceof TFloat) && (other instanceof Float)) {
-            return (TNumber) Factory.create_temporal(functions.mult_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
+            return (TNumber) Factory.create_temporal(functions.mul_float_tfloat(((Float) other).floatValue(),getNumberInner()),getCustomType(),getTemporalType());
         }
         else{
             throw new OperationNotSupportedException("Operand not supported");
@@ -631,7 +631,7 @@ public interface TNumber {
             A new temporal object of the same subtype as `self`.
 
         MEOS Functions:
-            mult_tint_int, mult_tfloat_float, mult_tnumber_tnumber
+            mul_tint_int, mul_tfloat_float, mul_tnumber_tnumber
 */
     default TNumber _mul(Object other) throws OperationNotSupportedException {
         return this.mul(other);
@@ -648,7 +648,7 @@ public interface TNumber {
             A new temporal object of the same subtype as `self`.
 
         MEOS Functions:
-            mult_int_tint, mult_float_tfloat
+            mul_int_tint, mul_float_tfloat
 */
     default  TNumber _rmul(Object other) throws OperationNotSupportedException {
         return this.rmul(other);
@@ -844,21 +844,21 @@ public interface TNumber {
         OffsetDateTime st= null;
         Pointer dt= null;
         if(time_start != null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else{
             if(time_start instanceof LocalDateTime){
                 st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
             }
             else{
-                st= functions.pg_timestamptz_in(time_start.toString(), -1);
+                st= functions.timestamptz_in(time_start.toString(), -1);
             }
 
             if(duration instanceof Duration){
                 dt= ConversionUtils.timedelta_to_interval((Duration) duration);
             }
             else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
+                dt= functions.interval_in(duration.toString(), -1);
             }
         }
         // Create a JNR-FFI runtime instance
