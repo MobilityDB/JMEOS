@@ -6,6 +6,7 @@ import org.locationtech.jts.io.ParseException;
 import types.collections.base.Set;
 import utils.ConversionUtils;
 import functions.functions;
+import functions.GeneratedFunctions;
 
 
 /**
@@ -67,7 +68,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public String toString(){
         int max_decimals = 15;
-        return functions.tspatial_out(this._inner,max_decimals);
+        return GeneratedFunctions.tspatial_out(this._inner,max_decimals);
     }
 
 
@@ -82,7 +83,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_ewkt(){
         int max_decimals = 15;
-        return functions.tspatial_as_ewkt(this._inner,max_decimals);
+        return GeneratedFunctions.tspatial_as_ewkt(this._inner,max_decimals);
     }
 
     /**
@@ -95,7 +96,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_wkt(){
         int max_decimals = 15;
-        return functions.tspatial_as_text(this._inner,max_decimals);
+        return GeneratedFunctions.tspatial_as_text(this._inner,max_decimals);
     }
 
     /**
@@ -108,7 +109,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     protected String as_text(){
         int max_decimals = 15;
-        return functions.tspatial_as_text(this._inner,max_decimals);
+        return GeneratedFunctions.tspatial_as_text(this._inner,max_decimals);
     }
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -126,7 +127,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     @Override
     public Geometry start_element() throws ParseException {
-        return ConversionUtils.gserialized_to_shapely_geometry(functions.geoset_start_value(this._inner),15);
+        return ConversionUtils.gserialized_to_shapely_geometry(GeneratedFunctions.geoset_start_value(this._inner),15);
     }
 
 
@@ -140,7 +141,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     @Override
     public Geometry end_element() throws ParseException {
-        return ConversionUtils.gserialized_to_shapely_geometry(functions.geoset_end_value(this._inner),15);
+        return ConversionUtils.gserialized_to_shapely_geometry(GeneratedFunctions.geoset_end_value(this._inner),15);
     }
 
 
@@ -153,7 +154,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @return An integer
      */
     protected int srid(){
-        return functions.tspatial_srid(this._inner);
+        return GeneratedFunctions.tspatial_srid(this._inner);
     }
 
 
@@ -179,7 +180,7 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public Geometry intersection_geom(Geometry geom) throws ParseException {
         return ConversionUtils.gserialized_to_shapely_geometry(
-                functions.intersection_set_geo(this._inner, ConversionUtils.geometry_to_gserialized(geom)),15);
+                GeneratedFunctions.intersection_set_geo(this._inner, ConversionUtils.geometry_to_gserialized(geom)),15);
     }
 
     /**
@@ -195,7 +196,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @throws ParseException
      */
     public GeoSet intersection_geoset(GeoSet geo, String type){
-        return factory(type,functions.intersection_set_set(this._inner, geo._inner));
+        return factory(type,GeneratedFunctions.intersection_set_set(this._inner, geo._inner));
     }
 
 
@@ -214,9 +215,9 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public GeoSet minus(Object geo, String type){
         if(geo instanceof Geometry){
-            return factory(type, functions.minus_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
+            return factory(type, GeneratedFunctions.minus_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
         } else if (geo instanceof GeoSet) {
-            return factory(type, functions.minus_set_set(this._inner, ((GeoSet)geo)._inner));
+            return factory(type, GeneratedFunctions.minus_set_set(this._inner, ((GeoSet)geo)._inner));
         }
         return null;
     }
@@ -237,7 +238,7 @@ public abstract class GeoSet extends Set<Geometry> {
             :meth:`minus`
 */
     public Geometry subtract_from(Object geo, String type) throws ParseException {
-        Pointer result= functions.minus_geo_set(ConversionUtils.geometry_to_gserialized((Geometry) geo), this._inner);
+        Pointer result= GeneratedFunctions.minus_geo_set(ConversionUtils.geometry_to_gserialized((Geometry) geo), this._inner);
         if(result != null) {
             return ConversionUtils.gserialized_to_shapely_geometry(result, 15);
         }
@@ -260,9 +261,9 @@ public abstract class GeoSet extends Set<Geometry> {
      */
     public GeoSet union(Object geo, String type){
         if(geo instanceof Geometry){
-            return factory(type, functions.union_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
+            return factory(type, GeneratedFunctions.union_set_geo(this._inner, ConversionUtils.geometry_to_gserialized((Geometry) geo)));
         } else if (geo instanceof GeoSet) {
-            return factory(type, functions.union_set_set(this._inner, ((GeoSet)geo)._inner));
+            return factory(type, GeneratedFunctions.union_set_set(this._inner, ((GeoSet)geo)._inner));
         }
         return null;
     }
@@ -284,7 +285,7 @@ public abstract class GeoSet extends Set<Geometry> {
      * @return A new {@link GeoSet} object of the same subtype of "this".
      */
     public GeoSet round(int decimals, String type){
-        return factory(type, functions.temporal_round(this._inner,decimals));
+        return factory(type, GeneratedFunctions.temporal_round(this._inner,decimals));
     }
 
 

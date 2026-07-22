@@ -1,6 +1,7 @@
 package types.basic.ttext;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;
 import types.temporal.TemporalType;
@@ -36,14 +37,14 @@ public class TTextSeqSet extends TSequenceSet<String> implements TText{
 	 */
 	public TTextSeqSet(String value) {
 		super(value);
-		this.inner = functions.ttext_in(value);
+		this.inner = GeneratedFunctions.ttext_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.ttext_in(str);
+		return GeneratedFunctions.ttext_in(str);
 	}
 
 	@Override

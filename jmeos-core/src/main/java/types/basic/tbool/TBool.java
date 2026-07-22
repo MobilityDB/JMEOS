@@ -48,7 +48,7 @@ public interface TBool {
      * @return A new :class:`TBool` object.
      */
     default TBool from_base_temporal(boolean value, Temporal base){
-        return (TBool) Factory.create_temporal(functions.tbool_from_base_temp(value, base.getInner()),customType,base.getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tbool_from_base_temp(value, base.getInner()),customType,base.getTemporalType());
     }
 
     /**
@@ -69,13 +69,13 @@ public interface TBool {
      */
     static Temporal from_base_time(boolean value, Time base){
         if (base instanceof tstzspanset){
-            return new TBoolSeq(functions.tboolseqset_from_base_tstzspanset(value,((tstzspanset) base).get_inner()));
+            return new TBoolSeq(GeneratedFunctions.tboolseqset_from_base_tstzspanset(value,((tstzspanset) base).get_inner()));
 
         } else if (base instanceof tstzset) {
-            return new TBoolSeq(functions.tboolseq_from_base_tstzset(value,((tstzset) base).get_inner()));
+            return new TBoolSeq(GeneratedFunctions.tboolseq_from_base_tstzset(value,((tstzset) base).get_inner()));
 
         } else if (base instanceof tstzspan) {
-            return new TBoolSeqSet(functions.tboolseq_from_base_tstzspan(value,((tstzspan) base).get_inner()));
+            return new TBoolSeqSet(GeneratedFunctions.tboolseq_from_base_tstzspan(value,((tstzspan) base).get_inner()));
         }
 
         return null;
@@ -93,7 +93,7 @@ public interface TBool {
             tbool_from_mfjson
 */
     default TBool from_mfjson(String mfjson){
-        Pointer result= functions.tbool_from_mfjson(mfjson);
+        Pointer result= GeneratedFunctions.tbool_from_mfjson(mfjson);
         return (TBool) Factory.create_temporal(result, getCustomType(), getTemporalType());
     }
 
@@ -109,7 +109,7 @@ public interface TBool {
      * @return Returns the string representation of "this"
      */
     default String to_string(){
-        return functions.tbool_out(getBoolInner());
+        return GeneratedFunctions.tbool_out(getBoolInner());
     }
 
     /**
@@ -120,7 +120,7 @@ public interface TBool {
      * @return Returns the string representation of "this"
      */
     default String as_wkt(){
-        return functions.tbool_out(getBoolInner());
+        return GeneratedFunctions.tbool_out(getBoolInner());
     }
 
 
@@ -136,7 +136,7 @@ public interface TBool {
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
-        Pointer resPointer = functions.tbool_values(this.getBoolInner(), intPointer);
+        Pointer resPointer = GeneratedFunctions.tbool_values(this.getBoolInner(), intPointer);
         StringBuilder sb = null;
         sb.append("{");
         int count= intPointer.getInt(Integer.BYTES);
@@ -166,17 +166,17 @@ public interface TBool {
 
             @Override
             public Pointer createStringInner(String str) {
-                return functions.tbool_in(str);
+                return GeneratedFunctions.tbool_in(str);
             }
 
             @Override
             public Boolean start_element() throws ParseException {
-                return functions.tbool_start_value(this.get_inner());
+                return GeneratedFunctions.tbool_start_value(this.get_inner());
             }
 
             @Override
             public Boolean end_element() throws ParseException {
-                return functions.tbool_end_value(this.get_inner());
+                return GeneratedFunctions.tbool_end_value(this.get_inner());
             }
         };
     }
@@ -189,7 +189,7 @@ public interface TBool {
      * @return Returns the starting value of "this".
      */
     default boolean start_value(){
-        return functions.tbool_start_value(getBoolInner());
+        return GeneratedFunctions.tbool_start_value(getBoolInner());
     }
 
     /**
@@ -200,7 +200,7 @@ public interface TBool {
      * @return Returns the ending value of "this".
      */
     default boolean end_value(){
-        return functions.tbool_end_value(getBoolInner());
+        return GeneratedFunctions.tbool_end_value(getBoolInner());
     }
 
 /**
@@ -237,7 +237,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return True if "this" is always equal to "value", False otherwise.
      */
     default boolean always_eq(boolean value){
-        int result= functions.always_eq_tbool_bool(getBoolInner(), value);
+        int result= GeneratedFunctions.always_eq_tbool_bool(getBoolInner(), value);
         return result > 0;
     }
 
@@ -253,7 +253,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return True if "this" is ever equal to "value", False otherwise.
      */
     default boolean ever_eq(boolean value){
-        int result= functions.ever_eq_tbool_bool(getBoolInner(), value);
+        int result= GeneratedFunctions.ever_eq_tbool_bool(getBoolInner(), value);
         return result > 0;
     }
 
@@ -290,7 +290,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A {@link TBool} with the result of the temporal equality relation.
      */
     default TBool temporal_equal(boolean other){
-        return (TBool) Factory.create_temporal(functions.teq_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.teq_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
 
@@ -310,7 +310,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A {@link TBool} with the result of the temporal inequality relation.
      */
     default TBool temporal_not_equal(boolean other){
-        return (TBool) Factory.create_temporal(functions.tne_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tne_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
 
@@ -334,7 +334,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A new temporal boolean.
      */
     default TBool at(boolean other){
-        return (TBool) Factory.create_temporal(functions.tbool_at_value(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tbool_at_value(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
 
@@ -357,7 +357,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A new temporal boolean.
      */
     default TBool minus(boolean other){
-        return (TBool) Factory.create_temporal(functions.tbool_minus_value(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tbool_minus_value(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
     /* ------------------------- Boolean Operations ---------------------------- */
@@ -377,7 +377,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *      *             "other".
      */
     default TBool temporal_and(TBool other){
-        return (TBool) Factory.create_temporal(functions.tand_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tand_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
     }
 
 /**
@@ -411,7 +411,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *      *             "other".
      */
     default TBool temporal_and_bool(boolean other){
-        return (TBool) Factory.create_temporal(functions.tand_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tand_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
     /**
@@ -428,7 +428,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *      *             "other".
      */
     default TBool temporal_or(TBool other){
-        return (TBool) Factory.create_temporal(functions.tor_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tor_tbool_tbool(getBoolInner(),other.getBoolInner()), getCustomType(),getTemporalType());
     }
 
     /**
@@ -462,7 +462,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *      *             "other".
      */
     default TBool temporal_or_bool(boolean other){
-        return (TBool) Factory.create_temporal(functions.tor_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tor_tbool_bool(getBoolInner(),other), getCustomType(),getTemporalType());
     }
 
 
@@ -475,7 +475,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A {@link TBool} with the temporal negation of "this".
      */
     default TBool temporal_not(){
-        return (TBool) Factory.create_temporal(functions.tnot_tbool(getBoolInner()),getCustomType(),getTemporalType());
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tnot_tbool(getBoolInner()),getCustomType(),getTemporalType());
     }
 
 
@@ -488,7 +488,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A {@link tstzspan} with the periods where "this" is True.
      */
     default tstzspanset when_true(){
-        return new tstzspanset(functions.tbool_when_true(getBoolInner()));
+        return new tstzspanset(GeneratedFunctions.tbool_when_true(getBoolInner()));
     }
 
 
@@ -501,7 +501,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * @return A {@link tstzspan} with the periods where "this" is False.
      */
     default tstzspanset when_false(){
-        return new tstzspanset(functions.tbool_when_true(functions.tnot_tbool(getBoolInner())));
+        return new tstzspanset(GeneratedFunctions.tbool_when_true(GeneratedFunctions.tnot_tbool(getBoolInner())));
     }
 /**
         Returns the temporal negation of `this`.
@@ -536,7 +536,7 @@ default boolean value_at_timestamp(LocalDateTime ts){
      *      tbool_out
      */
     default String asString() {
-        return functions.tbool_out(getBoolInner());
+        return GeneratedFunctions.tbool_out(getBoolInner());
     }
 	
 }

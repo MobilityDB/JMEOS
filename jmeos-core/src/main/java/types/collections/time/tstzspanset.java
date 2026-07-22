@@ -13,6 +13,7 @@ import javax.naming.OperationNotSupportedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import functions.functions;
+import functions.GeneratedFunctions;
 
 
 /**
@@ -60,7 +61,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public tstzspanset(String value) {
 		super(value);
-		this._inner = functions.tstzspanset_in(value);
+		this._inner = GeneratedFunctions.tstzspanset_in(value);
 	}
 	
 	/**
@@ -83,12 +84,12 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 		}
 		sb.append("}");
 		System.out.println(sb);
-		this._inner = functions.tstzspanset_in(sb.toString());
+		this._inner = GeneratedFunctions.tstzspanset_in(sb.toString());
 	}
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tstzspanset_in(str);
+		return GeneratedFunctions.tstzspanset_in(str);
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 			}
 		}
 		sb.append("}");
-		return functions.tstzspanset_in(sb.toString());
+		return GeneratedFunctions.tstzspanset_in(sb.toString());
 	}
 
 	/**
@@ -121,7 +122,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new tstzspanset instance
 	 */
 	public Pointer copy()  {
-		return functions.spanset_copy(this._inner);
+		return GeneratedFunctions.spanset_copy(this._inner);
 	}
 
 
@@ -135,7 +136,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new tstzspanset instance
 	 */
 	public Pointer from_hexwkb(String str)  {
-        return functions.spanset_from_hexwkb(str);
+        return GeneratedFunctions.spanset_from_hexwkb(str);
 	}
 
 
@@ -150,7 +151,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new String instance
 	 */
 	public String toString(){
-		return functions.tstzspanset_out(this._inner);
+		return GeneratedFunctions.tstzspanset_out(this._inner);
 	}
     /* ------------------------- Conversions ----------------------------------- */
 
@@ -162,7 +163,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new tstzspan instance
 	 */
 	public tstzspan to_period() {
-		return new tstzspan(functions.spanset_span(this._inner));
+		return new tstzspan(GeneratedFunctions.spanset_span(this._inner));
 	}
 
 
@@ -196,7 +197,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return an Integer instance
 	 */
 	public int num_timestamps(){
-		return functions.tstzspanset_num_timestamps(this._inner);
+		return GeneratedFunctions.tstzspanset_num_timestamps(this._inner);
 	}
 
 	/**
@@ -208,7 +209,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return A {@link LocalDateTime} instance
 	 */
 	public LocalDateTime start_timestamp(){
-		return ConversionUtils.timestamptz_to_datetime(functions.tstzspanset_start_timestamptz(this._inner));
+		return ConversionUtils.timestamptz_to_datetime(GeneratedFunctions.tstzspanset_start_timestamptz(this._inner));
 	}
 
 	/**
@@ -220,7 +221,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return A {@link LocalDateTime} instance
 	 */
 	public LocalDateTime end_timestamp(){
-		return ConversionUtils.timestamptz_to_datetime(functions.tstzspanset_end_timestamptz(this._inner));
+		return ConversionUtils.timestamptz_to_datetime(GeneratedFunctions.tstzspanset_end_timestamptz(this._inner));
 	}
 
 
@@ -244,7 +245,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return an Integer instance
 	 */
 	public int num_periods(){
-		return functions.spanset_num_spans(this._inner);
+		return GeneratedFunctions.spanset_num_spans(this._inner);
 	}
 
 
@@ -256,7 +257,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new tstzspan instance
 	 */
 	public tstzspan start_period()  {
-		return new tstzspan(functions.spanset_start_span(this._inner));
+		return new tstzspan(GeneratedFunctions.spanset_start_span(this._inner));
 	}
 
 
@@ -279,7 +280,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new tstzspan instance
 	 */
 	public tstzspan end_period() {
-		return new tstzspan(functions.spanset_end_span(this._inner));
+		return new tstzspan(GeneratedFunctions.spanset_end_span(this._inner));
 	}
 
 
@@ -303,7 +304,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new Integer instance
 	 */
 	public long hash(){
-		return functions.spanset_hash(this._inner);
+		return GeneratedFunctions.spanset_hash(this._inner);
 	}
 
 
@@ -335,11 +336,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_adjacent(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.adjacent_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.adjacent_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.adjacent_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.adjacent_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.adjacent_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.adjacent_spanset_spanset(this._inner, GeneratedFunctions.set_to_spanset(ts.get_inner()));
 			case Temporal t -> returnValue = is_adjacent((TemporalObject)t.period());
-			case Box b -> returnValue = functions.adjacent_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.adjacent_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_adjacent((Base) other);
 		}
 		return returnValue;
@@ -369,10 +370,10 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_contained_in(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.contained_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.contained_spanset_spanset(this._inner, ps.get_inner());
+			case tstzspan p -> returnValue = GeneratedFunctions.contained_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.contained_spanset_spanset(this._inner, ps.get_inner());
 			case Temporal t -> returnValue = is_contained_in((TemporalObject)t.period());
-			case Box b -> returnValue = functions.contained_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.contained_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_contained_in((Base) other);
 		}
 		return returnValue;
@@ -403,11 +404,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean contains(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.contains_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.contains_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.contains_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.contains_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.contains_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.contains_spanset_spanset(this._inner, GeneratedFunctions.set_to_spanset(ts.get_inner()));
 			case Temporal t -> returnValue = contains((TemporalObject)t.period());
-			case Box b -> returnValue = functions.contains_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.contains_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.contains((Base) other);
 		}
 		return returnValue;
@@ -436,11 +437,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean overlaps(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.overlaps_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overlaps_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.overlaps_spanset_spanset(this._inner, functions.set_to_span(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.overlaps_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.overlaps_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.overlaps_spanset_spanset(this._inner, GeneratedFunctions.set_to_span(ts.get_inner()));
 			case Temporal t -> returnValue = overlaps((TemporalObject)t.period());
-			case Box b -> returnValue = functions.overlaps_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.overlaps_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.overlaps((Base) other);
 		}
 		return returnValue;
@@ -488,11 +489,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_before(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.left_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.left_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.left_spanset_spanset(this._inner, functions.set_to_spanset(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.left_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.left_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.left_spanset_spanset(this._inner, GeneratedFunctions.set_to_spanset(ts.get_inner()));
 			case Temporal t -> returnValue = is_before((TemporalObject)t.period());
-			case Box b -> returnValue = functions.left_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.left_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_left((Base) other);
 		}
 		return returnValue;
@@ -526,11 +527,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_over_or_before(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.overleft_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overleft_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.overleft_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.overleft_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.overleft_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.overleft_spanset_span(this._inner, GeneratedFunctions.set_to_span(ts.get_inner()));
 			case Temporal t -> returnValue = is_over_or_before((TemporalObject)t.period());
-			case Box b -> returnValue = functions.overleft_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.overleft_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_over_or_left((Base) other);
 		}
 		return returnValue;
@@ -560,11 +561,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_after(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.right_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.right_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.right_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.right_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.right_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.right_spanset_span(this._inner, GeneratedFunctions.set_to_span(ts.get_inner()));
 			case Temporal t -> returnValue = is_after((TemporalObject)t.period());
-			case Box b -> returnValue = functions.right_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.right_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_right((Base) other);
 		}
 		return returnValue;
@@ -596,11 +597,11 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public boolean is_over_or_after(TemporalObject other) throws Exception {
 		boolean returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = functions.overright_spanset_span(this._inner, p.get_inner());
-			case tstzspanset ps -> returnValue = functions.overright_spanset_spanset(this._inner, ps.get_inner());
-			case tstzset ts -> returnValue = functions.overright_spanset_span(this._inner, functions.set_to_span(ts.get_inner()));
+			case tstzspan p -> returnValue = GeneratedFunctions.overright_spanset_span(this._inner, p.get_inner());
+			case tstzspanset ps -> returnValue = GeneratedFunctions.overright_spanset_spanset(this._inner, ps.get_inner());
+			case tstzset ts -> returnValue = GeneratedFunctions.overright_spanset_span(this._inner, GeneratedFunctions.set_to_span(ts.get_inner()));
 			case Temporal t -> returnValue = is_over_or_after((TemporalObject)t.period());
-			case Box b -> returnValue = functions.overright_spanset_span(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = GeneratedFunctions.overright_spanset_span(this._inner, b.to_period().get_inner());
 			default -> returnValue = super.is_over_or_right((Base) other);
 		}
 		return returnValue;
@@ -627,9 +628,9 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public Time intersection(Time other) {
 		Time returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = new tstzspan(functions.intersection_spanset_span(this._inner,p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspan(functions.intersection_spanset_spanset(this._inner,ps.get_inner()));
-			case tstzset ts -> returnValue = new tstzspan(functions.intersection_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));
+			case tstzspan p -> returnValue = new tstzspan(GeneratedFunctions.intersection_spanset_span(this._inner,p.get_inner()));
+			case tstzspanset ps -> returnValue = new tstzspan(GeneratedFunctions.intersection_spanset_spanset(this._inner,ps.get_inner()));
+			case tstzset ts -> returnValue = new tstzspan(GeneratedFunctions.intersection_spanset_spanset(this._inner,GeneratedFunctions.set_to_spanset(ts.get_inner())));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -668,9 +669,9 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public tstzspanset minus(Time other) {
 		tstzspanset returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = new tstzspanset(functions.minus_spanset_span(this._inner,p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspanset(functions.minus_spanset_spanset(this._inner,ps.get_inner()));
-			case tstzset ts -> returnValue = new tstzspanset(functions.minus_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));
+			case tstzspan p -> returnValue = new tstzspanset(GeneratedFunctions.minus_spanset_span(this._inner,p.get_inner()));
+			case tstzspanset ps -> returnValue = new tstzspanset(GeneratedFunctions.minus_spanset_spanset(this._inner,ps.get_inner()));
+			case tstzset ts -> returnValue = new tstzspanset(GeneratedFunctions.minus_spanset_spanset(this._inner,GeneratedFunctions.set_to_spanset(ts.get_inner())));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -711,9 +712,9 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	public tstzspanset union(Time other) {
 		tstzspanset returnValue;
 		switch (other) {
-			case tstzspan p -> returnValue = new tstzspanset(functions.union_spanset_span(this._inner,p.get_inner()));
-			case tstzspanset ps -> returnValue = new tstzspanset(functions.union_spanset_spanset(this._inner,ps.get_inner()));
-			case tstzset ts -> returnValue = new tstzspanset(functions.union_spanset_spanset(this._inner,functions.set_to_spanset(ts.get_inner())));
+			case tstzspan p -> returnValue = new tstzspanset(GeneratedFunctions.union_spanset_span(this._inner,p.get_inner()));
+			case tstzspanset ps -> returnValue = new tstzspanset(GeneratedFunctions.union_spanset_spanset(this._inner,ps.get_inner()));
+			case tstzset ts -> returnValue = new tstzspanset(GeneratedFunctions.union_spanset_spanset(this._inner,GeneratedFunctions.set_to_spanset(ts.get_inner())));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
@@ -755,7 +756,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean eq(Time other) {
 		boolean result;
-		result = other instanceof tstzspanset && functions.spanset_eq(this._inner, ((tstzspanset) other).get_inner());
+		result = other instanceof tstzspanset && GeneratedFunctions.spanset_eq(this._inner, ((tstzspanset) other).get_inner());
 		return result;
 	}
 
@@ -771,7 +772,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean notEquals(Time other) {
 		boolean result;
-		result = !(other instanceof tstzspanset) || functions.spanset_ne(this._inner, ((tstzspanset) other).get_inner());
+		result = !(other instanceof tstzspanset) || GeneratedFunctions.spanset_ne(this._inner, ((tstzspanset) other).get_inner());
 		return result;
 	}
 
@@ -788,7 +789,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean lessThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof tstzspanset){
-			return functions.spanset_lt(this._inner,((tstzspanset) other).get_inner());
+			return GeneratedFunctions.spanset_lt(this._inner,((tstzspanset) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -806,7 +807,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean lessThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof tstzspanset){
-			return functions.spanset_le(this._inner,((tstzspanset) other).get_inner());
+			return GeneratedFunctions.spanset_le(this._inner,((tstzspanset) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -825,7 +826,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean greaterThan(Time other) throws OperationNotSupportedException {
 		if (other instanceof tstzspanset){
-			return functions.spanset_gt(this._inner,((tstzspanset) other).get_inner());
+			return GeneratedFunctions.spanset_gt(this._inner,((tstzspanset) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
@@ -843,7 +844,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 */
 	public boolean greaterThanOrEqual(Time other) throws OperationNotSupportedException {
 		if (other instanceof tstzspanset){
-			return functions.spanset_ge(this._inner,((tstzspanset) other).get_inner());
+			return GeneratedFunctions.spanset_ge(this._inner,((tstzspanset) other).get_inner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operation not supported with this type.");
