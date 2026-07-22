@@ -13,6 +13,7 @@ import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
 import functions.functions;
+import functions.GeneratedFunctions;
 import utils.ConversionUtils;
 
 import java.time.LocalDateTime;
@@ -216,13 +217,9 @@ public interface TBool {
 */
 
 default boolean value_at_timestamp(LocalDateTime ts){
-    // Create a JNR-FFI runtime instance
-    Runtime runtime = Runtime.getSystemRuntime();
-    // Allocate memory for an integer (4 bytes) but do not set a value
-    Pointer boolPointer = Memory.allocate(runtime, 4);
-    boolean res= functions.tbool_value_at_timestamptz(this.getBoolInner(), ConversionUtils.datetimeToTimestampTz(ts), true, boolPointer);
-    int value= boolPointer.getInt(Integer.BYTES);
-    return value > 0;
+    Pointer value = GeneratedFunctions.tbool_value_at_timestamptz(
+            this.getBoolInner(), ConversionUtils.datetimeToTimestampTz(ts), true);
+    return value.getByte(0) != 0;
 }
 
 

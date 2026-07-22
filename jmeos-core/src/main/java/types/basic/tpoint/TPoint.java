@@ -273,12 +273,8 @@ public interface TPoint extends Serializable {
             tpoint_value_at_timestamp
 */
 	default Point value_at_timestamp(LocalDateTime ts, int precision) throws ParseException {
-		 // Create a JNR-FFI runtime instance
-		 Runtime runtime = Runtime.getSystemRuntime();
-		 // Allocate memory for an integer (4 bytes) but do not set a value
-		 Pointer geomPointer = Memory.allocate(runtime, 8);
-		 boolean b= functions.tgeo_value_at_timestamptz(this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true, geomPointer);
-		 Pointer geom= geomPointer.getPointer(Long.BYTES);
+		 Pointer geom = GeneratedFunctions.tgeo_value_at_timestamptz(
+				 this.getPointInner(), ConversionUtils.datetimeToTimestampTz(ts), true);
 		 return ConversionUtils.gserialized_to_shapely_point(geom, precision);
 	}
 
