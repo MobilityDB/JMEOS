@@ -340,8 +340,12 @@ public class FunctionsGenerator {
             case "char"                             -> "String";
             case "float"                            -> "float";
             case "double", "float8"                 -> "double";
+            // Oid is a PostgreSQL object identifier, a by-value unsigned int — the
+            // collation a text comparison or hash runs under. Without a case here it
+            // reaches the default branch and becomes Pointer, so the call passes an
+            // address where the library reads a 32-bit value.
             case "int", "int32", "int32_t",
-                 "uint32", "uint32_t"               -> "int";
+                 "uint32", "uint32_t", "Oid"        -> "int";
             case "short", "int16", "int16_t",
                  "uint16", "uint16_t"               -> "short";
             case "int8", "int8_t",
