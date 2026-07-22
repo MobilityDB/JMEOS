@@ -614,20 +614,20 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         Pointer dt= null;
         TInterpolation intrp= null;
         if (start == null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else if (start instanceof LocalDateTime){
             st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);
         }
         else{
-            st= functions.pg_timestamptz_in(start.toString(), -1);
+            st= functions.timestamptz_in(start.toString(), -1);
         }
 
         if(duration instanceof Duration){
             dt= ConversionUtils.timedelta_to_interval((Duration) duration);
         }
         else{
-            dt= functions.pg_interval_in(duration.toString(), -1);
+            dt= functions.interval_in(duration.toString(), -1);
         }
 
         if(interpolation == null){
@@ -658,20 +658,20 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         OffsetDateTime st= null;
         Pointer dt= null;
         if (start == null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else if (start instanceof LocalDateTime){
             st= ConversionUtils.datetimeToTimestampTz((LocalDateTime)start);
         }
         else{
-            st= functions.pg_timestamptz_in(start.toString(), -1);
+            st= functions.timestamptz_in(start.toString(), -1);
         }
 
         if(duration instanceof Duration){
             dt= ConversionUtils.timedelta_to_interval((Duration) duration);
         }
         else{
-            dt= functions.pg_interval_in(duration.toString(), -1);
+            dt= functions.interval_in(duration.toString(), -1);
         }
         Pointer result= functions.temporal_tprecision(this.inner, dt, st);
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
@@ -1364,21 +1364,21 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         OffsetDateTime st= null;
         Pointer dt= null;
         if(start == null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else{
             if(start instanceof LocalDateTime){
                 st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) start);
             }
             else{
-                st= functions.pg_timestamptz_in(start.toString(), -1);
+                st= functions.timestamptz_in(start.toString(), -1);
             }
 
             if(duration instanceof Duration){
                 dt= ConversionUtils.timedelta_to_interval((Duration) duration);
             }
             else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
+                dt= functions.interval_in(duration.toString(), -1);
             }
         }
         // Create a JNR-FFI runtime instance

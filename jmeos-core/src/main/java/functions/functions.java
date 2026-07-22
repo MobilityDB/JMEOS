@@ -133,23 +133,23 @@ public class functions {
 
 		Pointer mul_interval_float8(Pointer interv, double factor);
 
-		int pg_date_in(String str);
+		int date_in(String str);
 
-		String pg_date_out(int d);
+		String date_out(int d);
 
-		int pg_interval_cmp(Pointer interv1, Pointer interv2);
+		int interval_cmp(Pointer interv1, Pointer interv2);
 
-		Pointer pg_interval_in(String str, int typmod);
+		Pointer interval_in(String str, int typmod);
 
-		String pg_interval_out(Pointer interv);
+		String interval_out(Pointer interv);
 
-		long pg_timestamp_in(String str, int typmod);
+		long timestamp_in(String str, int typmod);
 
-		String pg_timestamp_out(long t);
+		String timestamp_out(long t);
 
-		long pg_timestamptz_in(String str, int typmod);
+		long timestamptz_in(String str, int typmod);
 
-		String pg_timestamptz_out(long t);
+		String timestamptz_out(long t);
 
 		String text_to_cstring(Pointer txt);
 
@@ -3746,66 +3746,66 @@ public class functions {
 	}
 
 	@SuppressWarnings("unused")
-	public static int pg_date_in(String str) {
-		var _result = MeosLibrary.meos.pg_date_in(str);
+	public static int date_in(String str) {
+		var _result = MeosLibrary.meos.date_in(str);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_date_out(int d) {
-		var _result = MeosLibrary.meos.pg_date_out(d);
+	public static String date_out(int d) {
+		var _result = MeosLibrary.meos.date_out(d);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static int pg_interval_cmp(Pointer interv1, Pointer interv2) {
-		var _result = MeosLibrary.meos.pg_interval_cmp(interv1, interv2);
+	public static int interval_cmp(Pointer interv1, Pointer interv2) {
+		var _result = MeosLibrary.meos.interval_cmp(interv1, interv2);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static Pointer pg_interval_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_interval_in(str, typmod);
+	public static Pointer interval_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.interval_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_interval_out(Pointer interv) {
-		var _result = MeosLibrary.meos.pg_interval_out(interv);
+	public static String interval_out(Pointer interv) {
+		var _result = MeosLibrary.meos.interval_out(interv);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static LocalDateTime pg_timestamp_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_timestamp_in(str, typmod);
+	public static LocalDateTime timestamp_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.timestamp_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return utils.TimestampTzConverter.toLocalDateTime(_result);
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_timestamp_out(LocalDateTime t) {
+	public static String timestamp_out(LocalDateTime t) {
 		var t_new = utils.TimestampTzConverter.toTimestampTz(t);
-		var _result = MeosLibrary.meos.pg_timestamp_out(t_new);
+		var _result = MeosLibrary.meos.timestamp_out(t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}
 
 	@SuppressWarnings("unused")
-	public static OffsetDateTime pg_timestamptz_in(String str, int typmod) {
-		var _result = MeosLibrary.meos.pg_timestamptz_in(str, typmod);
+	public static OffsetDateTime timestamptz_in(String str, int typmod) {
+		var _result = MeosLibrary.meos.timestamptz_in(str, typmod);
 		MeosErrorHandler.checkError();
 		return utils.TimestampTzConverter.toOffsetDateTime(_result);
 	}
 
 	@SuppressWarnings("unused")
-	public static String pg_timestamptz_out(OffsetDateTime t) {
+	public static String timestamptz_out(OffsetDateTime t) {
 		var t_new = utils.TimestampTzConverter.toTimestampTz(t);
-		var _result = MeosLibrary.meos.pg_timestamptz_out(t_new);
+		var _result = MeosLibrary.meos.timestamptz_out(t_new);
 		MeosErrorHandler.checkError();
 		return _result;
 	}

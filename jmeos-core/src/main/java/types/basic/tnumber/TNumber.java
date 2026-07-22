@@ -844,21 +844,21 @@ public interface TNumber {
         OffsetDateTime st= null;
         Pointer dt= null;
         if(time_start != null){
-            st= functions.pg_timestamptz_in("2000-01-03", -1);
+            st= functions.timestamptz_in("2000-01-03", -1);
         }
         else{
             if(time_start instanceof LocalDateTime){
                 st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
             }
             else{
-                st= functions.pg_timestamptz_in(time_start.toString(), -1);
+                st= functions.timestamptz_in(time_start.toString(), -1);
             }
 
             if(duration instanceof Duration){
                 dt= ConversionUtils.timedelta_to_interval((Duration) duration);
             }
             else{
-                dt= functions.pg_interval_in(duration.toString(), -1);
+                dt= functions.interval_in(duration.toString(), -1);
             }
         }
         // Create a JNR-FFI runtime instance

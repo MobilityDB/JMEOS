@@ -43,7 +43,7 @@ public class ConversionUtils {
 		functions.meos_initialize_timezone("UTC");
 		functions.meos_initialize_error_handler(handler);
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		return functions.pg_timestamptz_in(formattedDt, -1);
+		return functions.timestamptz_in(formattedDt, -1);
 	}
 
 	
@@ -56,7 +56,7 @@ public class ConversionUtils {
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
 		// Parse the string to LocalDateTime
-		return LocalDateTime.parse(functions.pg_timestamptz_out(ts), formatter);
+		return LocalDateTime.parse(functions.timestamptz_out(ts), formatter);
 	}
 
 
@@ -72,7 +72,7 @@ public class ConversionUtils {
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
-		String res= functions.pg_interval_out(p);
+		String res= functions.interval_out(p);
 		System.out.println(res);
 		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
 		Matcher matcher = pattern.matcher(res);

@@ -1355,7 +1355,7 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(duration instanceof String){
-//				dt= functions.pg_interval_in(duration.toString(), -1);
+//				dt= functions.interval_in(duration.toString(), -1);
 //			}
 //			else dt = null;
 //		}
@@ -1366,11 +1366,11 @@ public class STBox implements Box {
 //		}
 //		else{
 //			if(start instanceof String){
-//				st= functions.pg_timestamptz_in(start.toString(), -1);
+//				st= functions.timestamptz_in(start.toString(), -1);
 //			}
 //			else{
 //				if(this.has_t()){
-//					st= functions.pg_timestamptz_in("2000-01-03", -1);
+//					st= functions.timestamptz_in("2000-01-03", -1);
 //				}
 //				else{
 //					st= null;
