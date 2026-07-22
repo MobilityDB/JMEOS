@@ -23,6 +23,10 @@ public class FunctionsGenerator {
     // Enum names extracted from the JSON "enums" section.
     // These are mapped to int in Java (JNR-FFI represents C enums as int).
     private final Set<String> enumNames = new HashSet<>();
+    /** Struct names the catalog defines, used to spot a by-value struct return. */
+    private final Set<String> structNames = new HashSet<>();
+    /** Functions left out because their return is a by-value struct; reported at the end. */
+    private final List<String> byValueStructReturns = new ArrayList<>();
 
     // DateADT      → typedef int32_t  → Java int
     // Timestamp    → typedef int64_t  → Java long  (no timezone)
@@ -144,6 +148,7 @@ public class FunctionsGenerator {
 
         // 1. Collect enum names so they can be mapped to int
         collectEnumNames(root);
+        collectStructNames(root);
         System.out.println("Enums collected: " + enumNames);
 
         // 2. Parse all functions
@@ -164,12 +169,20 @@ public class FunctionsGenerator {
                 continue; // function belongs to a disabled type family
             }
             FunctionDef def = parseFunctionDef(fn);
+            if (returnsStructByValue(def)) {
+                byValueStructReturns.add(def.name() + " -> " + def.retCType());
+                continue;
+            }
             String key = def.name + "#" + def.params.size();
             if (seen.add(key)) {
                 functions.add(def);
             }
         }
         System.out.println("Functions parsed: " + functions.size());
+        if (!byValueStructReturns.isEmpty()) {
+            System.out.println("Returning a struct by value, awaiting generated Struct classes ("
+                    + byValueStructReturns.size() + "): " + byValueStructReturns);
+        }
 
         // 3. Generate file content
         String content = generateFile(functions);
@@ -185,6 +198,30 @@ public class FunctionsGenerator {
     // -------------------------------------------------------------------------
     // JSON parsing helpers
     // -------------------------------------------------------------------------
+
+    private void collectStructNames(JsonNode root) {
+        JsonNode structs = root.get("structs");
+        if (structs != null && structs.isArray()) {
+            for (JsonNode st : structs) {
+                JsonNode nameNode = st.get("name");
+                if (nameNode != null) {
+                    structNames.add(nameNode.asText());
+                }
+            }
+        }
+    }
+
+    /**
+     * A function returning a struct BY VALUE, which jnr-ffi reaches through a
+     * {@code Struct} subclass annotated {@code @ByValue} rather than a plain type. Emitting one of
+     * these as {@code Pointer} — the fallback for an unrecognised type — would declare a return the
+     * library does not produce, so they are reported and left out until the struct classes are
+     * generated.
+     */
+    private boolean returnsStructByValue(FunctionDef fn) {
+        String ret = fn.retCType().replace("const ", "").trim();
+        return !ret.endsWith("*") && structNames.contains(ret);
+    }
 
     private void collectEnumNames(JsonNode root) {
         JsonNode enums = root.get("enums");
