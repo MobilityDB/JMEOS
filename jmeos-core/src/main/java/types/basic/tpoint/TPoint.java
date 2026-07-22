@@ -57,7 +57,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link String} representing the temporal point.
 	 */
 	default String to_string(){
-		return functions.tspatial_as_text(getPointInner(),15);
+		return GeneratedFunctions.tspatial_as_text(getPointInner(),15);
 	}
 
 
@@ -73,7 +73,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link String} representing the temporal point.
 	 */
 	default String as_wkt(int decimals){
-		return functions.tspatial_as_text(getPointInner(),decimals);
+		return GeneratedFunctions.tspatial_as_text(getPointInner(),decimals);
 	}
 
 
@@ -89,7 +89,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link String} representing the temporal point.
 	 */
 	default String as_ewkt(int decimals){
-		return functions.tspatial_as_ewkt(getPointInner(),decimals);
+		return GeneratedFunctions.tspatial_as_ewkt(getPointInner(),decimals);
 	}
 
 
@@ -109,11 +109,11 @@ public interface TPoint extends Serializable {
 	 * @return A new GeoJSON string representing the trajectory of the temporal point.
 	 */
 	default String as_geojson(boolean unary_union, int option, int precision, String srs){
-		return functions.geo_as_geojson(functions.tpoint_trajectory(getPointInner(), unary_union),option,precision,srs);
+		return GeneratedFunctions.geo_as_geojson(GeneratedFunctions.tpoint_trajectory(getPointInner(), unary_union),option,precision,srs);
 	}
 
 	default String as_geojson(int option, int precision, String srs){
-		return functions.geo_as_geojson(functions.tpoint_trajectory(getPointInner(), false),option,precision,srs);
+		return GeneratedFunctions.geo_as_geojson(GeneratedFunctions.tpoint_trajectory(getPointInner(), false),option,precision,srs);
 	}
 
 
@@ -146,7 +146,7 @@ public interface TPoint extends Serializable {
 	 * @return An {@link STBox} representing the bounding box.
 	 */
 	default STBox bounding_box_point(){
-		return new STBox(functions.tspatial_to_stbox(getPointInner()));
+		return new STBox(GeneratedFunctions.tspatial_to_stbox(getPointInner()));
 	}
 
 /**
@@ -163,7 +163,7 @@ public interface TPoint extends Serializable {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
-		Pointer resPointer= functions.temporal_instants(this.getPointInner(), intPointer);
+		Pointer resPointer= GeneratedFunctions.temporal_instants(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
 		int count= intPointer.getInt(Integer.BYTES);
 		for(int i=0; i<count; i++){
@@ -185,7 +185,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point start_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(GeneratedFunctions.tgeo_start_value(getPointInner()),precision);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point end_value(int precision) throws ParseException {
-		return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(getPointInner()),precision);
+		return ConversionUtils.gserialized_to_shapely_point(GeneratedFunctions.tgeo_end_value(getPointInner()),precision);
 	}
 
 /**
@@ -217,7 +217,7 @@ public interface TPoint extends Serializable {
 //		 Runtime runtime = Runtime.getSystemRuntime();
 //		 // Allocate memory for an integer (4 bytes) but do not set a value
 //		 Pointer intPointer = Memory.allocate(Runtime.getRuntime(runtime), 4);
-//		 Pointer resPointer= functions.tpoint_values(this.getPointInner(), intPointer);
+//		 Pointer resPointer= GeneratedFunctions.tpoint_values(this.getPointInner(), intPointer);
 //		 List<TPoint> pointList= new ArrayList<>();
 //		 int count= intPointer.getInt(Integer.BYTES);
 //		 StringBuilder sb = null;
@@ -244,17 +244,17 @@ public interface TPoint extends Serializable {
 //
 //			 @Override
 //			 public Pointer createStringInner(String str) {
-//				 return functions.tgeom(str);
+//				 return GeneratedFunctions.tgeom(str);
 //			 }
 //
 //			 @Override
 //			 public Point start_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_start_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(GeneratedFunctions.tgeo_start_value(this.get_inner()), precision);
 //			 }
 //
 //			 @Override
 //			 public Point end_element() throws ParseException {
-//				 return ConversionUtils.gserialized_to_shapely_point(functions.tgeo_end_value(this.get_inner()), precision);
+//				 return ConversionUtils.gserialized_to_shapely_point(GeneratedFunctions.tgeo_end_value(this.get_inner()), precision);
 //			 }
 //		 };
 //	 }
@@ -289,7 +289,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link Float} with the length of the trajectory.
 	 */
 	default float length(){
-		return (float) functions.tpoint_length(getPointInner());
+		return (float) GeneratedFunctions.tpoint_length(getPointInner());
 	}
 
 
@@ -302,7 +302,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link TFloat} with the cumulative length of the trajectory.
 	 */
 	default TFloat cumulative_length(){
-		return (TFloat) Factory.create_temporal(functions.tpoint_cumulative_length(getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tpoint_cumulative_length(getPointInner()),"Float",getTemporalType());
 	}
 
 
@@ -315,7 +315,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link TFloat} with the speed of the temporal point.
 	 */
 	default TFloat speed(){
-		return (TFloat) Factory.create_temporal(functions.tpoint_speed(getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tpoint_speed(getPointInner()),"Float",getTemporalType());
 	}
 
 
@@ -328,7 +328,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link TFloat} with the x coordinate of the temporal point.
 	 */
 	default TFloat x(){
-		return (TFloat) Factory.create_temporal(functions.tpoint_get_x(getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tpoint_get_x(getPointInner()),"Float",getTemporalType());
 
 	}
 
@@ -342,7 +342,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link TFloat} with the y coordinate of the temporal point.
 	 */
 	default TFloat y(){
-		return (TFloat) Factory.create_temporal(functions.tpoint_get_y(getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tpoint_get_y(getPointInner()),"Float",getTemporalType());
 
 	}
 
@@ -356,7 +356,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link TFloat} with the z coordinate of the temporal point.
 	 */
 	default TFloat z(){
-		return (TFloat) Factory.create_temporal(functions.tpoint_get_z(getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tpoint_get_z(getPointInner()),"Float",getTemporalType());
 
 	}
 
@@ -388,7 +388,7 @@ public interface TPoint extends Serializable {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
-		Pointer resPointer= functions.tgeo_stboxes(this.getPointInner(), intPointer);
+		Pointer resPointer= GeneratedFunctions.tgeo_stboxes(this.getPointInner(), intPointer);
 		List<STBox> stBoxList= new ArrayList<>();
 		int length= intPointer.getInt(Integer.BYTES);
 		for(int i=0; i<length; i++){
@@ -410,7 +410,7 @@ public interface TPoint extends Serializable {
 	 * @return A {@link Boolean} indicating whether the temporal point is simple.
 	 */
 	default boolean is_simple(){
-		return functions.tpoint_is_simple(getPointInner());
+		return GeneratedFunctions.tpoint_is_simple(getPointInner());
 	}
 
 
@@ -427,7 +427,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TFloat} indicating the temporal bearing between the temporal point and "other".
 	 */
 	default TFloat bearing(TPoint other){
-		return (TFloat) Factory.create_temporal(functions.bearing_tpoint_tpoint(getPointInner(),other.getPointInner()),"Float",getTemporalType());
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.bearing_tpoint_tpoint(getPointInner(),other.getPointInner()),"Float",getTemporalType());
 
 	}
 
@@ -442,7 +442,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TFloatSeqSet} indicating the direction of the temporal point.
 	 */
 	default TFloatSeqSet direction(){
-		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_direction(getPointInner()),"Float",getTemporalType());
+		return (TFloatSeqSet) Factory.create_temporal(GeneratedFunctions.tpoint_direction(getPointInner()),"Float",getTemporalType());
 	}
 
 
@@ -456,7 +456,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TFloatSeqSet} indicating the temporal azimuth of the temporal point.
 	 */
 	default TFloatSeqSet azimuth(){
-		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_azimuth(getPointInner()),"Float",getTemporalType());
+		return (TFloatSeqSet) Factory.create_temporal(GeneratedFunctions.tpoint_azimuth(getPointInner()),"Float",getTemporalType());
 	}
 
 
@@ -470,7 +470,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TFloatSeqSet} indicating the temporal angular_difference of the temporal point.
 	 */
 	default TFloatSeqSet angular_difference(){
-		return (TFloatSeqSet) Factory.create_temporal(functions.tpoint_angular_difference(getPointInner()),"Float", TemporalType.TEMPORAL_SEQUENCE_SET);
+		return (TFloatSeqSet) Factory.create_temporal(GeneratedFunctions.tpoint_angular_difference(getPointInner()),"Float", TemporalType.TEMPORAL_SEQUENCE_SET);
 	}
 
 
@@ -485,7 +485,7 @@ public interface TPoint extends Serializable {
 	 * @throws ParseException
 	 */
 	default Point time_weighted_centroid(int precision) throws ParseException {
-		return (Point) ConversionUtils.gserialized_to_shapely_geometry(functions.tpoint_twcentroid(getPointInner()),precision);
+		return (Point) ConversionUtils.gserialized_to_shapely_geometry(GeneratedFunctions.tpoint_twcentroid(getPointInner()),precision);
 	}
 
 
@@ -501,7 +501,7 @@ public interface TPoint extends Serializable {
 	 * @return An {@link Integer} representing the SRID.
 	 */
 	default int srid(){
-		return functions.tspatial_srid(getPointInner());
+		return GeneratedFunctions.tspatial_srid(getPointInner());
 	}
 
 
@@ -514,7 +514,7 @@ public interface TPoint extends Serializable {
 	 * @return Returns a new TPoint with the given SRID.
 	 */
 	default TPoint set_srid(int srid){
-		return (TPoint) Factory.create_temporal(functions.tspatial_set_srid(getPointInner(),srid),getCustomType(),getTemporalType());
+		return (TPoint) Factory.create_temporal(GeneratedFunctions.tspatial_set_srid(getPointInner(),srid),getCustomType(),getTemporalType());
 	}
 
 
@@ -533,7 +533,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link TPoint} object.
 	 */
 	default TPoint round(int max_decimals){
-		return (TPoint) Factory.create_temporal(functions.temporal_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
+		return (TPoint) Factory.create_temporal(GeneratedFunctions.temporal_round(getPointInner(),max_decimals),getCustomType(),getTemporalType());
 	}
 
     /**
@@ -550,7 +550,7 @@ public interface TPoint extends Serializable {
 		Runtime runtime = Runtime.getSystemRuntime();
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
-		Pointer resPointer= functions.tpoint_make_simple(this.getPointInner(), intPointer);
+		Pointer resPointer= GeneratedFunctions.tpoint_make_simple(this.getPointInner(), intPointer);
 		int length= intPointer.getInt(Integer.BYTES);
 		List<TPoint> tPointList= new ArrayList<>();
 		TemporalType temporalType= getTemporalType();
@@ -576,7 +576,7 @@ public interface TPoint extends Serializable {
 	 * @return A new {@link STBox} instance.
 	 */
 	default STBox expand(float other){
-		return new STBox(functions.stbox_expand_space(getPointInner(),other));
+		return new STBox(GeneratedFunctions.stbox_expand_space(getPointInner(),other));
 	}
 	/**
         Returns a new :class:`TPoint` of the same subclass of ``self`` transformed to another SRID
@@ -595,10 +595,10 @@ public interface TPoint extends Serializable {
 		 AbstractMap.SimpleEntry<Integer, Integer> srids = new AbstractMap.SimpleEntry<>(this.srid(), srid);
 		 // Check and cache the projection if not already cached
 		 if (!projectionCache.containsKey(srids)) {
-			 projectionCache.put(srids, functions.lwproj_transform(srids.getKey(), srids.getValue()));
+			 projectionCache.put(srids, GeneratedFunctions.lwproj_transform(srids.getKey(), srids.getValue()));
 		 }
 		 // Perform the transformation using the cached projection
-		 Pointer result = functions.tpoint_transform_pj(this.getPointInner(), srid, projectionCache.get(srids));
+		 Pointer result = GeneratedFunctions.tpoint_transform_pj(this.getPointInner(), srid, projectionCache.get(srids));
 
 		 // Create and return a new TPoint instance
 		 return (TPoint) Factory.create_temporal(result, getCustomType(), getTemporalType());
@@ -629,11 +629,11 @@ public interface TPoint extends Serializable {
 	default TPoint at(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
-			return (TPoint) Factory.create_temporal(functions.tpoint_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tpoint_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
 		} else if (other instanceof GeoSet) {
-			return (TPoint) Factory.create_temporal(functions.temporal_at_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.temporal_at_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {
-			return (TPoint) Factory.create_temporal(functions.tgeo_at_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tgeo_at_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
 		}
 		else{
 			throw new OperationNotSupportedException("Operand not supported");
@@ -661,11 +661,11 @@ public interface TPoint extends Serializable {
 	default TPoint minus(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
-			return (TPoint) Factory.create_temporal(functions.tpoint_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tpoint_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
 		} else if (other instanceof GeoSet) {
-			return (TPoint) Factory.create_temporal(functions.temporal_minus_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.temporal_minus_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {
-			return (TPoint) Factory.create_temporal(functions.tgeo_minus_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tgeo_minus_stbox(getPointInner(),((STBox) other).get_inner(),true),getCustomType(),getTemporalType());
 		}
 		else{
 			throw new OperationNotSupportedException("Operand not supported");
@@ -891,9 +891,9 @@ public interface TPoint extends Serializable {
 	 */
 	default boolean is_ever_contained_in(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return 1 == functions.econtains_geo_tgeo(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner());
+			return 1 == GeneratedFunctions.econtains_geo_tgeo(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner());
 		} else if (other instanceof STBox) {
-			return 1 == functions.econtains_geo_tgeo(functions.stbox_to_geo(((STBox) other).get_inner()),getPointInner());
+			return 1 == GeneratedFunctions.econtains_geo_tgeo(GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()),getPointInner());
 		}
 		else{
 			throw new OperationNotSupportedException("Operand not supported");
@@ -914,11 +914,11 @@ public interface TPoint extends Serializable {
 	 */
 	default boolean is_ever_disjoint(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return 1 == functions.edisjoint_tgeo_geo(getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
+			return 1 == GeneratedFunctions.edisjoint_tgeo_geo(getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
-			return 1 == functions.edisjoint_tgeo_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));
+			return 1 == GeneratedFunctions.edisjoint_tgeo_geo(getPointInner(), GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()));
 		} else if (other instanceof TPoint) {
-			return 1 == functions.edisjoint_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
+			return 1 == GeneratedFunctions.edisjoint_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
 		} else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -940,11 +940,11 @@ public interface TPoint extends Serializable {
 	 */
 	default boolean is_ever_within_distance(Object other, float distance) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return 1 == functions.edwithin_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance);
+			return 1 == GeneratedFunctions.edwithin_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance);
 		} else if (other instanceof STBox) {
-			return 1 == functions.edwithin_tgeo_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()), distance);
+			return 1 == GeneratedFunctions.edwithin_tgeo_geo(getPointInner(), GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()), distance);
 		} else if (other instanceof TPoint) {
-			return 1 == functions.edwithin_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner(), distance);
+			return 1 == GeneratedFunctions.edwithin_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner(), distance);
 		} else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -965,11 +965,11 @@ public interface TPoint extends Serializable {
 	 */
 	default boolean ever_intersects(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return 1 == functions.eintersects_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
+			return 1 == GeneratedFunctions.eintersects_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
-			return 1 == functions.eintersects_tgeo_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));
+			return 1 == GeneratedFunctions.eintersects_tgeo_geo(getPointInner(), GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()));
 		} else if (other instanceof TPoint) {
-			return 1 == functions.eintersects_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
+			return 1 == GeneratedFunctions.eintersects_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
 		} else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -989,9 +989,9 @@ public interface TPoint extends Serializable {
 	 */
 	default boolean ever_touches(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return 1 == functions.etouches_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
+			return 1 == GeneratedFunctions.etouches_tpoint_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
-			return 1 == functions.etouches_tpoint_geo(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));
+			return 1 == GeneratedFunctions.etouches_tpoint_geo(getPointInner(), GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()));
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1016,7 +1016,7 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.tcontains_geo_tgeo(ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), getPointInner()), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(GeneratedFunctions.tcontains_geo_tgeo(functions.stbox_to_geo(((STBox) other).get_inner()), getPointInner()), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tcontains_geo_tgeo(GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()), getPointInner()), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1038,7 +1038,7 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.tdisjoint_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(GeneratedFunctions.tdisjoint_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdisjoint_tgeo_geo(getPointInner(),GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1061,7 +1061,7 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint), distance), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner()), distance), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_geo(getPointInner(),GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()), distance), "Boolean", getTemporalType()  );
 		} else if(other instanceof TPoint){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.tdwithin_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner(), distance), "Boolean", getTemporalType()  );
 		}else{
@@ -1085,7 +1085,7 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.tintersects_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(GeneratedFunctions.tintersects_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.tintersects_tgeo_geo(getPointInner(),GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1107,7 +1107,7 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			return (TBool) Factory.create_temporal(GeneratedFunctions.ttouches_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Boolean", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TBool) Factory.create_temporal(GeneratedFunctions.ttouches_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
+			return (TBool) Factory.create_temporal(GeneratedFunctions.ttouches_tgeo_geo(getPointInner(),GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner())), "Boolean", getTemporalType()  );
 		}  else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1129,11 +1129,11 @@ public interface TPoint extends Serializable {
 	 */
 	default TFloat distance(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TFloat) Factory.create_temporal(functions.tdistance_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Float", getTemporalType() ) ;
+			return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), "Float", getTemporalType() ) ;
 		} else if (other instanceof STBox) {
-			return (TFloat) Factory.create_temporal(functions.tdistance_tgeo_geo(getPointInner(),functions.stbox_to_geo(((STBox) other).get_inner())), "Float", getTemporalType()  );
+			return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tgeo_geo(getPointInner(),GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner())), "Float", getTemporalType()  );
 		} else if(other instanceof TPoint){
-			return (TFloat) Factory.create_temporal(functions.tdistance_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner()), "Float", getTemporalType()  );
+			return (TFloat) Factory.create_temporal(GeneratedFunctions.tdistance_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner()), "Float", getTemporalType()  );
 		}else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1154,11 +1154,11 @@ public interface TPoint extends Serializable {
 	 */
 	default float nearest_approach_distance(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (float) functions.nad_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
+			return (float) GeneratedFunctions.nad_tgeo_geo( getPointInner(), ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint));
 		} else if (other instanceof STBox) {
-			return (float) functions.nad_tgeo_stbox(getPointInner(), functions.stbox_to_geo(((STBox) other).get_inner()));
+			return (float) GeneratedFunctions.nad_tgeo_stbox(getPointInner(), GeneratedFunctions.stbox_to_geo(((STBox) other).get_inner()));
 		} else if (other instanceof TPoint) {
-			return (float) functions.nad_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
+			return (float) GeneratedFunctions.nad_tgeo_tgeo(getPointInner(), ((TPoint) other).getPointInner());
 		} else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1178,9 +1178,9 @@ public interface TPoint extends Serializable {
 	 */
 	default TInstant nearest_approach_instant(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
-			return (TInstant) Factory.create_temporal(functions.nai_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), getCustomType(), getTemporalType() ) ;
+			return (TInstant) Factory.create_temporal(GeneratedFunctions.nai_tgeo_geo(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, this instanceof TGeogPoint)), getCustomType(), getTemporalType() ) ;
 		} else if(other instanceof TPoint){
-			return (TInstant) Factory.create_temporal(functions.nai_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner()), getCustomType(), getTemporalType()  );
+			return (TInstant) Factory.create_temporal(GeneratedFunctions.nai_tgeo_tgeo(getPointInner(),((TPoint) other).getPointInner()), getCustomType(), getTemporalType()  );
 		}else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1205,9 +1205,9 @@ public interface TPoint extends Serializable {
 		if (other instanceof Geometry){
 			boolean b= this instanceof TGeogPoint;
             Pointer gs= ConversionUtils.geo_to_gserialized((Geometry) other, b);
-			res= functions.shortestline_tgeo_geo(this.getPointInner(), gs);
+			res= GeneratedFunctions.shortestline_tgeo_geo(this.getPointInner(), gs);
 		} else if(other instanceof TPoint){
-			res= functions.shortestline_tgeo_geo(this.getPointInner(), ((TPoint) other).getPointInner());
+			res= GeneratedFunctions.shortestline_tgeo_geo(this.getPointInner(), ((TPoint) other).getPointInner());
 		}else{
 			throw new OperationNotSupportedException("Operand not supported");
 		}
@@ -1282,10 +1282,10 @@ public interface TPoint extends Serializable {
 		}
         else{
 			if(isTGeogPoint){
-				gs= functions.geog_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.geom_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
 		// Create a JNR-FFI runtime instance
@@ -1333,7 +1333,7 @@ public interface TPoint extends Serializable {
 			dt= ConversionUtils.timedelta_to_interval((Duration) duration);
 		}
 		else{
-			dt= functions.interval_in(duration.toString(), -1);
+			dt= GeneratedFunctions.interval_in(duration.toString(), -1);
 		}
 
 		Pointer gs= null;
@@ -1343,23 +1343,23 @@ public interface TPoint extends Serializable {
 		}
 		else{
 			if(isTGeogPoint){
-				gs= functions.geog_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geog_in("Point (0 0 0)", -1);
 			}
 			else{
-				gs= functions.geom_in("Point (0 0 0)", -1);
+				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
 
 		OffsetDateTime st= null;
 		if(time_start!=null){
-			st= functions.timestamptz_in("2000-01-03", -1);
+			st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
 		}
 		else{
 			if(time_start instanceof LocalDateTime){
 				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
 			}
 			else{
-				st= functions.timestamptz_in(time_start.toString(), -1);
+				st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
 			}
 		}
 

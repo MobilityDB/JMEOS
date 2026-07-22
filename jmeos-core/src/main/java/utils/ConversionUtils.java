@@ -2,6 +2,7 @@ package utils;
 
 import com.google.common.collect.BoundType;
 import functions.error_handler;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import com.google.common.collect.Range;
 import org.locationtech.jts.geom.Geometry;
@@ -40,10 +41,10 @@ public class ConversionUtils {
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
 		error_handler handler= new error_handler();
-		functions.meos_initialize_timezone("UTC");
-		functions.meos_initialize_error_handler(handler);
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_error_handler(handler);
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		return functions.timestamptz_in(formattedDt, -1);
+		return GeneratedFunctions.timestamptz_in(formattedDt, -1);
 	}
 
 	
@@ -56,7 +57,7 @@ public class ConversionUtils {
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
 		// Parse the string to LocalDateTime
-		return LocalDateTime.parse(functions.timestamptz_out(ts), formatter);
+		return LocalDateTime.parse(GeneratedFunctions.timestamptz_out(ts), formatter);
 	}
 
 
@@ -68,11 +69,11 @@ public class ConversionUtils {
 		int hours = (int)td.toHours();
 		int minutes = (int)td.toMinutes();
 		double seconds = (double)td.toSeconds();
-		return functions.interval_make(years,month,weeks,days,hours,minutes,seconds);
+		return GeneratedFunctions.interval_make(years,month,weeks,days,hours,minutes,seconds);
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
-		String res= functions.interval_out(p);
+		String res= GeneratedFunctions.interval_out(p);
 		System.out.println(res);
 		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
 		Matcher matcher = pattern.matcher(res);
@@ -107,25 +108,25 @@ public class ConversionUtils {
 	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {
 		boolean lower_inc = intrange.lowerBoundType() == BoundType.CLOSED;
 		boolean upper_inc = intrange.upperBoundType() == BoundType.CLOSED;
-		return functions.intspan_make(intrange.lowerEndpoint(),intrange.upperEndpoint(),lower_inc, upper_inc);
+		return GeneratedFunctions.intspan_make(intrange.lowerEndpoint(),intrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
 	public static Range intspan_to_intrange(Pointer span){
-		BoundType lower_inc = functions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
-		BoundType upper_inc = functions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
-		return Range.range(functions.intspan_lower(span), lower_inc, functions.intspan_upper(span), upper_inc);
+		BoundType lower_inc = GeneratedFunctions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		BoundType upper_inc = GeneratedFunctions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		return Range.range(GeneratedFunctions.intspan_lower(span), lower_inc, GeneratedFunctions.intspan_upper(span), upper_inc);
 	}
 
 	public static Pointer floatrange_to_floatspan(Range<Float> floatrange){
 		boolean lower_inc = floatrange.lowerBoundType() == BoundType.CLOSED;
 		boolean upper_inc = floatrange.upperBoundType() == BoundType.CLOSED;
-		return functions.floatspan_make(floatrange.lowerEndpoint(),floatrange.upperEndpoint(),lower_inc, upper_inc);
+		return GeneratedFunctions.floatspan_make(floatrange.lowerEndpoint(),floatrange.upperEndpoint(),lower_inc, upper_inc);
 	}
 
 	public static Range floatspan_to_floatrange(Pointer span){
-		BoundType lower_inc = functions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
-		BoundType upper_inc = functions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
-		return Range.range(functions.floatspan_lower(span), lower_inc, functions.floatspan_upper(span), upper_inc);
+		BoundType lower_inc = GeneratedFunctions.span_lower_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		BoundType upper_inc = GeneratedFunctions.span_upper_inc(span) ? BoundType.CLOSED : BoundType.OPEN;
+		return Range.range(GeneratedFunctions.floatspan_lower(span), lower_inc, GeneratedFunctions.floatspan_upper(span), upper_inc);
 	}
 
 
@@ -159,7 +160,7 @@ public class ConversionUtils {
 		if (geom.getSRID() > 0){
 			text = "SRID="+geom.getSRID()+";"+text;
 		}
-		Pointer ptr = functions.geom_in(text,-1);
+		Pointer ptr = GeneratedFunctions.geom_in(text,-1);
 		return ptr;
 	}
 
@@ -170,7 +171,7 @@ public class ConversionUtils {
 		if (geom.getSRID() > 0){
 			text = "SRID="+geom.getSRID()+";"+text;
 		}
-		Pointer ptr = functions.geog_in(text,-1);
+		Pointer ptr = GeneratedFunctions.geog_in(text,-1);
 		return ptr;
 	}
 
@@ -180,10 +181,10 @@ public class ConversionUtils {
 	}
 
 	public static Geometry gserialized_to_shapely_geometry(Pointer geom, int precision) throws ParseException, ParseException {
-		String text = functions.geo_as_text(geom,precision);
+		String text = GeneratedFunctions.geo_as_text(geom,precision);
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(text);
-		int srid = functions.geo_srid(geom);
+		int srid = GeneratedFunctions.geo_srid(geom);
 		if (srid > 0){
 			geometry.setSRID(srid);
 		}

@@ -1,6 +1,7 @@
 package types.basic.tint;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
@@ -49,7 +50,7 @@ public class TIntSeq extends TSequence<Integer> implements TInt {
 	 */
 	public TIntSeq(String value, int interpolation) {
 		super(value);
-		this.inner = functions.tint_in(value);
+		this.inner = GeneratedFunctions.tint_in(value);
 	}
 
 
@@ -59,7 +60,7 @@ public class TIntSeq extends TSequence<Integer> implements TInt {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tint_in(str);
+		return GeneratedFunctions.tint_in(str);
 	}
 
 	@Override

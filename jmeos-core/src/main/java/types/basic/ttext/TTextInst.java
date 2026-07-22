@@ -1,6 +1,7 @@
 package types.basic.ttext;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TInstant;
 import types.temporal.TemporalType;
@@ -39,7 +40,7 @@ public class TTextInst extends TInstant<String> implements TText {
 	 */
 	public TTextInst(String value)  {
 		super(value);
-		this.inner = functions.ttext_in(value);
+		this.inner = GeneratedFunctions.ttext_in(value);
 	}
 
 	/**
@@ -61,7 +62,7 @@ public class TTextInst extends TInstant<String> implements TText {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.ttext_in(str);
+		return GeneratedFunctions.ttext_in(str);
 	}
 
 	@Override

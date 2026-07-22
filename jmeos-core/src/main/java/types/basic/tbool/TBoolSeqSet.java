@@ -1,6 +1,7 @@
 package types.basic.tbool;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;
 import types.temporal.TemporalType;
@@ -35,14 +36,14 @@ public class TBoolSeqSet extends TSequenceSet<Boolean> implements TBool{
 	 */
 	public TBoolSeqSet(String value) {
 		super(value);
-		this.inner = functions.tbool_in(value);
+		this.inner = GeneratedFunctions.tbool_in(value);
 	}
 
 
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tbool_in(str);
+		return GeneratedFunctions.tbool_in(str);
 	}
 
 	@Override

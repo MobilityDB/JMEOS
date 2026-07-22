@@ -1,6 +1,7 @@
 package types.basic.ttext;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import types.temporal.TSequence;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class TTextSeq extends TSequence<String> implements TText{
 	 */
 	public TTextSeq(String value, int interpolation)  {
 		super(value);
-		this.inner = functions.ttext_in(value);
+		this.inner = GeneratedFunctions.ttext_in(value);
 	}
 
 
@@ -66,7 +67,7 @@ public class TTextSeq extends TSequence<String> implements TText{
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.ttext_in(str);
+		return GeneratedFunctions.ttext_in(str);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import types.basic.tfloat.TFloat;
 import types.basic.tint.TInt;
 import types.basic.tnumber.TNumber;
 import functions.functions;
+import functions.GeneratedFunctions;
 import types.collections.base.Span;
 import types.collections.number.FloatSpan;
 import functions.*;
@@ -78,7 +79,7 @@ public class TBox implements Box {
 	 * @param value - the string with the TBox value
 	 */
 	public TBox(String value){
-		this._inner = functions.tbox_in(value);
+		this._inner = GeneratedFunctions.tbox_in(value);
 	}
 
 
@@ -128,7 +129,7 @@ public class TBox implements Box {
 		}
         assert span != null;
         assert p != null;
-        this._inner = functions.tbox_make(span.get_inner(),p.get_inner());
+        this._inner = GeneratedFunctions.tbox_make(span.get_inner(),p.get_inner());
 	}
 
 
@@ -140,7 +141,7 @@ public class TBox implements Box {
 	 * @return a new TBox instance
 	 */
 	public TBox copy(){
-		return new TBox(functions.tbox_copy(this._inner));
+		return new TBox(GeneratedFunctions.tbox_copy(this._inner));
 	}
 
 
@@ -154,7 +155,7 @@ public class TBox implements Box {
 	 * @return a new TBox instance
 	 */
 	public static TBox from_hexwkb(String hexwkb) {
-		return new TBox(functions.tbox_from_hexwkb(hexwkb));
+		return new TBox(GeneratedFunctions.tbox_from_hexwkb(hexwkb));
 	}
 
 
@@ -162,10 +163,10 @@ public class TBox implements Box {
 	public static TBox from_value_number(Number value)  {
 		TBox tbox = null;
 		if(value instanceof Integer){
-			tbox = new TBox(functions.int_to_tbox((int)value));
+			tbox = new TBox(GeneratedFunctions.int_to_tbox((int)value));
 		}
 		else if (value instanceof Float){
-			tbox = new TBox(functions.float_to_tbox((float)value));
+			tbox = new TBox(GeneratedFunctions.float_to_tbox((float)value));
 		}
 		return tbox;
 	}
@@ -188,10 +189,10 @@ public class TBox implements Box {
 	public static TBox from_value_span(Span span) {
 		TBox tbox = null;
 		if(span instanceof IntSpan){
-			tbox = new TBox(functions.span_to_tbox(span.get_inner()));
+			tbox = new TBox(GeneratedFunctions.span_to_tbox(span.get_inner()));
 		}
 		else if (span instanceof FloatSpan){
-			tbox = new TBox(functions.span_to_tbox(span.get_inner()));
+			tbox = new TBox(GeneratedFunctions.span_to_tbox(span.get_inner()));
 		}
 		return tbox;
 	}
@@ -219,13 +220,13 @@ public class TBox implements Box {
 	public static TBox from_time(Time time) throws Exception {
 		TBox tbox = null;
 		if (time instanceof tstzset){
-			tbox = new TBox(functions.set_to_tbox(((tstzset) time).get_inner()));
+			tbox = new TBox(GeneratedFunctions.set_to_tbox(((tstzset) time).get_inner()));
 		}
 		else if (time instanceof tstzspan){
-			tbox = new TBox(functions.span_to_tbox(((tstzspan) time).get_inner()));
+			tbox = new TBox(GeneratedFunctions.span_to_tbox(((tstzspan) time).get_inner()));
 		}
 		else if (time instanceof tstzspanset){
-			tbox = new TBox(functions.spanset_to_tbox(((tstzspanset) time).get_inner()));
+			tbox = new TBox(GeneratedFunctions.spanset_to_tbox(((tstzspanset) time).get_inner()));
 		}
 		else {
 			throw new Exception("Operation not supported with this type.");
@@ -254,31 +255,31 @@ public class TBox implements Box {
 		TBox tbox = null;
 		if (value instanceof Integer) {
 			if (time instanceof LocalDateTime) {
-				tbox = new TBox(functions.int_timestamptz_to_tbox((Integer) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+				tbox = new TBox(GeneratedFunctions.int_timestamptz_to_tbox((Integer) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
 			}
 			else if (time instanceof tstzspan) {
-				tbox = new TBox(functions.int_tstzspan_to_tbox((Integer) value, ((tstzspan) time).get_inner()));
+				tbox = new TBox(GeneratedFunctions.int_tstzspan_to_tbox((Integer) value, ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof Float) {
 			if (time instanceof LocalDateTime) {
-				tbox = new TBox(functions.float_timestamptz_to_tbox((Float) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+				tbox = new TBox(GeneratedFunctions.float_timestamptz_to_tbox((Float) value, ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
 			}
 			else if (time instanceof tstzspan) {
-				tbox = new TBox(functions.float_tstzspan_to_tbox((Float) value, ((tstzspan) time).get_inner()));
+				tbox = new TBox(GeneratedFunctions.float_tstzspan_to_tbox((Float) value, ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof IntSpan) {
 			if (time instanceof LocalDateTime) {
-				tbox = new TBox(functions.numspan_timestamptz_to_tbox(((IntSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+				tbox = new TBox(GeneratedFunctions.numspan_timestamptz_to_tbox(((IntSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
 			}
 			else if (time instanceof tstzspan) {
-				tbox = new TBox(functions.numspan_tstzspan_to_tbox(((IntSpan) value).get_inner(), ((tstzspan) time).get_inner()));
+				tbox = new TBox(GeneratedFunctions.numspan_tstzspan_to_tbox(((IntSpan) value).get_inner(), ((tstzspan) time).get_inner()));
 			}
 		} else if (value instanceof FloatSpan) {
 			if (time instanceof LocalDateTime) {
-				tbox = new TBox(functions.numspan_timestamptz_to_tbox(((FloatSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
+				tbox = new TBox(GeneratedFunctions.numspan_timestamptz_to_tbox(((FloatSpan) value).get_inner(), ConversionUtils.datetimeToTimestampTz((LocalDateTime) time)));
 			}
 			else if (time instanceof tstzspan) {
-				tbox = new TBox(functions.numspan_tstzspan_to_tbox(((FloatSpan) value).get_inner(), ((tstzspan) time).get_inner()));
+				tbox = new TBox(GeneratedFunctions.numspan_tstzspan_to_tbox(((FloatSpan) value).get_inner(), ((tstzspan) time).get_inner()));
 			}
 		}
 		return tbox;
@@ -296,7 +297,7 @@ public class TBox implements Box {
 	 * @return A new {@link TBox} instance
 	 */
 	public static TBox from_tnumber(TNumber temporal){
-		return new TBox(functions.tnumber_to_tbox(temporal.getNumberInner()));
+		return new TBox(GeneratedFunctions.tnumber_to_tbox(temporal.getNumberInner()));
 	}
 
 
@@ -323,7 +324,7 @@ public class TBox implements Box {
 	 * @return a String instance
 	 */
 	public String toString(int max_decimals){
-		return functions.tbox_out(this._inner,max_decimals);
+		return GeneratedFunctions.tbox_out(this._inner,max_decimals);
 	}
 
 
@@ -340,7 +341,7 @@ public class TBox implements Box {
 	 * @return A new {@link FloatSpan} instance
 	 */
 	public FloatSpan to_floatspan(){
-		return new FloatSpan(functions.tbox_to_floatspan(this._inner));
+		return new FloatSpan(GeneratedFunctions.tbox_to_floatspan(this._inner));
 	}
 
 
@@ -354,9 +355,9 @@ public class TBox implements Box {
 	 */
 	public tstzspan to_period(){
 		error_handler_fn errorHandler = new error_handler();
-		functions.meos_initialize_timezone("UTC");
-		functions.meos_initialize_error_handler(errorHandler);
-		return new tstzspan(functions.tbox_to_tstzspan(this._inner));
+		GeneratedFunctions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_error_handler(errorHandler);
+		return new tstzspan(GeneratedFunctions.tbox_to_tstzspan(this._inner));
 	}
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -371,7 +372,7 @@ public class TBox implements Box {
 	 * @return True if "this" has a numeric dimension, False otherwise
 	 */
 	public boolean has_x(){
-		return functions.tbox_hasx(this._inner);
+		return GeneratedFunctions.tbox_hasx(this._inner);
 	}
 
 	/**
@@ -383,7 +384,7 @@ public class TBox implements Box {
 	 * @return True if "this" has a temporal dimension, False otherwise
 	 */
 	public boolean has_t(){
-		return functions.tbox_hast(this._inner);
+		return GeneratedFunctions.tbox_hast(this._inner);
 	}
 
 
@@ -408,13 +409,13 @@ public class TBox implements Box {
 	public TBox expand(Object obj)   {
 		Pointer result = null;
 		if(obj instanceof Duration){
-			result= functions.tbox_expand_time(this._inner, ConversionUtils.timedelta_to_interval((Duration) obj));
+			result= GeneratedFunctions.tbox_expand_time(this._inner, ConversionUtils.timedelta_to_interval((Duration) obj));
 		}
 		else if(obj instanceof Integer){
-			result = functions.tintbox_expand(this._inner,(int)obj);
+			result = GeneratedFunctions.tintbox_expand(this._inner,(int)obj);
 		}
 		else if(obj instanceof Float){
-			result = functions.tfloatbox_expand(this._inner,(float)obj);
+			result = GeneratedFunctions.tfloatbox_expand(this._inner,(float)obj);
 		}
 		return new TBox(result);
 	}
@@ -442,8 +443,8 @@ public class TBox implements Box {
 	 * @return a {@link TBox instance}
 	 */
 	public TBox round(int maxdd)  {
-		Pointer new_inner = functions.tbox_copy(this._inner);
-		new_inner= functions.tbox_round(new_inner,maxdd);
+		Pointer new_inner = GeneratedFunctions.tbox_copy(this._inner);
+		new_inner= GeneratedFunctions.tbox_round(new_inner,maxdd);
 		return new TBox(new_inner);
 	}
 
@@ -475,12 +476,12 @@ public class TBox implements Box {
 	public boolean is_adjacent_tbox(Object other) {
 		boolean result = false;
 		if (other instanceof TBox) {
-			result = functions.adjacent_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.adjacent_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if (other instanceof TNumber){
-			result = functions.adjacent_tbox_tbox(this._inner,functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.adjacent_tbox_tbox(this._inner,GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		} else if (other instanceof FloatSpan) {
-			result = functions.adjacent_span_span(this._inner,((FloatSpan) other).get_inner());
+			result = GeneratedFunctions.adjacent_span_span(this._inner,((FloatSpan) other).get_inner());
 		}
 
 
@@ -510,9 +511,9 @@ public class TBox implements Box {
 	public boolean is_contained_in(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.contained_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.contained_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		} else if (other instanceof TNumber){
-			result = functions.contained_tbox_tbox(this._inner,functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.contained_tbox_tbox(this._inner,GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 		return result;
 	}
@@ -540,10 +541,10 @@ public class TBox implements Box {
 	public boolean contains(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.contains_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.contains_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.contains_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.contains_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 		return result;
 	}
@@ -562,9 +563,9 @@ public class TBox implements Box {
 	public boolean overlaps(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.overlaps_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.overlaps_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		} else if(other instanceof TNumber){
-			result = functions.overlaps_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.overlaps_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -584,10 +585,10 @@ public class TBox implements Box {
 	public boolean is_same(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.same_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.same_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.same_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.same_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -611,10 +612,10 @@ public class TBox implements Box {
 	public boolean is_left(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.left_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.left_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.left_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.left_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -635,10 +636,10 @@ public class TBox implements Box {
 	public boolean is_over_or_left(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.overleft_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.overleft_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.overleft_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.overleft_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -659,10 +660,10 @@ public class TBox implements Box {
 	public boolean is_right(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.right_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.right_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.right_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.right_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -684,10 +685,10 @@ public class TBox implements Box {
 	public boolean is_over_or_right(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.overright_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.overright_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.overright_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.overright_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -708,10 +709,10 @@ public class TBox implements Box {
 	public boolean is_before(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.before_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.before_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.before_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.before_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -733,10 +734,10 @@ public class TBox implements Box {
 	public boolean is_over_or_before(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.overbefore_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.overbefore_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.overbefore_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.overbefore_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -757,10 +758,10 @@ public class TBox implements Box {
 	public boolean is_after(Object other)  {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.after_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.after_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 		else if(other instanceof TNumber){
-			result = functions.after_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.after_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -783,11 +784,11 @@ public class TBox implements Box {
 	public boolean is_over_or_after(Object other) {
 		boolean result = false;
 		if(other instanceof TBox){
-			result = functions.overafter_tbox_tbox(this._inner, ((TBox) other).get_inner());
+			result = GeneratedFunctions.overafter_tbox_tbox(this._inner, ((TBox) other).get_inner());
 		}
 
 		else if(other instanceof TNumber){
-			result = functions.overafter_tbox_tbox(this._inner, functions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
+			result = GeneratedFunctions.overafter_tbox_tbox(this._inner, GeneratedFunctions.tnumber_to_tbox(((TNumber) other).getNumberInner()));
 		}
 
 		return result;
@@ -806,7 +807,7 @@ public class TBox implements Box {
 	 * @return a {@link TBox} instance
 	 */
 	public TBox union(TBox other, boolean strict) {
-		return new TBox(functions.union_tbox_tbox(this._inner, other._inner,strict));
+		return new TBox(GeneratedFunctions.union_tbox_tbox(this._inner, other._inner,strict));
 	}
 
 
@@ -832,7 +833,7 @@ public class TBox implements Box {
 	 * @return a {@link TBox} instance if the instersection is not empty, "null" otherwise.
 	 */
 	public TBox intersection(TBox other) {
-		return new TBox(functions.intersection_tbox_tbox(this._inner,other.get_inner()));
+		return new TBox(GeneratedFunctions.intersection_tbox_tbox(this._inner,other.get_inner()));
 	}
 
 
@@ -863,8 +864,8 @@ public class TBox implements Box {
 
 	public boolean is_float(){
 		TBox tbox= new TBox(this._inner);
-		tstzspan t= new tstzspan(functions.stbox_to_tstzspan(this._inner));
-		FloatSpan f= new FloatSpan(functions.spanset_span(tbox.get_inner()));
+		tstzspan t= new tstzspan(GeneratedFunctions.stbox_to_tstzspan(this._inner));
+		FloatSpan f= new FloatSpan(GeneratedFunctions.spanset_span(tbox.get_inner()));
         return tbox.get_inner() == t.get_inner();
 	}
 
@@ -872,17 +873,17 @@ public class TBox implements Box {
 		float result = 0.0f;
 		if(other instanceof TBox){
 			if (this.is_float()){
-				return (float) functions.nad_tboxfloat_tboxfloat(this._inner, ((TBox) other)._inner);
+				return (float) GeneratedFunctions.nad_tboxfloat_tboxfloat(this._inner, ((TBox) other)._inner);
 			}
 			else{
-				return (float) functions.nad_tboxint_tboxint(this._inner, ((TBox) other)._inner);
+				return (float) GeneratedFunctions.nad_tboxint_tboxint(this._inner, ((TBox) other)._inner);
 			}
 		}
 		else if(other instanceof TInt){
-			result = (float) functions.nad_tint_tbox(((TInt) other).getNumberInner(), this._inner);
+			result = (float) GeneratedFunctions.nad_tint_tbox(((TInt) other).getNumberInner(), this._inner);
 		}
 		else if(other instanceof TFloat){
-			result = (float) functions.nad_tfloat_tbox(((TFloat) other).getNumberInner(), this._inner);
+			result = (float) GeneratedFunctions.nad_tfloat_tbox(((TFloat) other).getNumberInner(), this._inner);
 		}
 
 		return result;
@@ -905,7 +906,7 @@ public class TBox implements Box {
 	 */
 	public boolean eq(Box other) {
 		boolean result;
-		result = other instanceof TBox && functions.tbox_eq(this._inner, ((TBox) other).get_inner());
+		result = other instanceof TBox && GeneratedFunctions.tbox_eq(this._inner, ((TBox) other).get_inner());
 		return result;
 	}
 
@@ -922,7 +923,7 @@ public class TBox implements Box {
 	 */
 	public boolean notEquals(Box other) {
 		boolean result;
-		result = !(other instanceof TBox) || functions.stbox_ne(this._inner, ((TBox) other).get_inner());
+		result = !(other instanceof TBox) || GeneratedFunctions.stbox_ne(this._inner, ((TBox) other).get_inner());
 		return result;
 	}
 
@@ -942,7 +943,7 @@ public class TBox implements Box {
 	 */
 	public boolean lessThan(Box other) throws Exception {
 		if (other instanceof TBox){
-			return functions.tbox_lt(this._inner,((TBox) other).get_inner());
+			return GeneratedFunctions.tbox_lt(this._inner,((TBox) other).get_inner());
 		}
 		else{
 			throw new Exception("Operation not supported with this type.");
@@ -965,7 +966,7 @@ public class TBox implements Box {
 	 */
 	public boolean lessThanOrEqual(Box other) throws Exception {
 		if (other instanceof TBox){
-			return functions.tbox_le(this._inner,((TBox) other).get_inner());
+			return GeneratedFunctions.tbox_le(this._inner,((TBox) other).get_inner());
 		}
 		else{
 			throw new Exception("Operation not supported with this type.");
@@ -988,7 +989,7 @@ public class TBox implements Box {
 	 */
 	public boolean greaterThan(Box other) throws Exception {
 		if (other instanceof TBox){
-			return functions.tbox_gt(this._inner,((TBox) other).get_inner());
+			return GeneratedFunctions.tbox_gt(this._inner,((TBox) other).get_inner());
 		}
 		else{
 			throw new Exception("Operation not supported with this type.");
@@ -1010,7 +1011,7 @@ public class TBox implements Box {
 	 */
 	public boolean greaterThanOrEqual(Box other) throws Exception {
 		if (other instanceof TBox){
-			return functions.tbox_ge(this._inner,((TBox) other).get_inner());
+			return GeneratedFunctions.tbox_ge(this._inner,((TBox) other).get_inner());
 		}
 		else{
 			throw new Exception("Operation not supported with this type.");

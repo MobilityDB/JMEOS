@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import functions.functions;
+import functions.GeneratedFunctions;
 import utils.ConversionUtils;
 
 /**
@@ -46,7 +47,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
     public datespan(String str) {
         super(str);
-        _inner = functions.datespan_in(str);
+        _inner = GeneratedFunctions.datespan_in(str);
     }
 
 //    // Formatter for parsing date strings
@@ -67,7 +68,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 //        }
 //        this.lowerInc = lowerInc;
 //        this.upperInc = upperInc;
-//        _inner= functions.datespan_make(time)
+//        _inner= GeneratedFunctions.datespan_make(time)
 //    }
 //
 //    // Constructor accepting LocalDate bounds with specified inclusivity
@@ -104,7 +105,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 */
 
     public tstzspan to_tstzspan() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return new tstzspan(functions.datespan_to_tstzspan(this._inner));
+        return new tstzspan(GeneratedFunctions.datespan_to_tstzspan(this._inner));
     }
 
 /**
@@ -118,7 +119,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
             datespan_duration
 */
     public Duration duration() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return ConversionUtils.interval_to_timedelta(functions.datespan_duration(this._inner));
+        return ConversionUtils.interval_to_timedelta(GeneratedFunctions.datespan_duration(this._inner));
     }
 
 /**
@@ -142,7 +143,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
     @Override
     public Pointer createStringInner(String str) {
-        return functions.datespan_in(str);
+        return GeneratedFunctions.datespan_in(str);
     }
 
     @Override
@@ -172,12 +173,12 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
     @Override
     public LocalDate lower() {
-        return date_adt_to_date(functions.datespan_lower(this._inner));
+        return date_adt_to_date(GeneratedFunctions.datespan_lower(this._inner));
     }
 
     @Override
     public LocalDate upper() {
-        return date_adt_to_date(functions.datespan_upper(this._inner));
+        return date_adt_to_date(GeneratedFunctions.datespan_upper(this._inner));
     }
 
     @Override
@@ -187,7 +188,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
 
     public String toString(){
-        return functions.datespan_out(this.get_inner());
+        return GeneratedFunctions.datespan_out(this.get_inner());
     }
 
 /**
@@ -196,7 +197,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public LocalDate date_adt_to_date(int ts){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStr= functions.date_out(ts);
+        String dateStr= GeneratedFunctions.date_out(ts);
         return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
@@ -211,7 +212,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public LocalDate start_element() throws ParseException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         datespanset dss = this.to_spanset(datespanset.class);
-        return date_adt_to_date(functions.datespanset_start_date(dss.get_inner()));
+        return date_adt_to_date(GeneratedFunctions.datespanset_start_date(dss.get_inner()));
     }
 
 /**
@@ -225,7 +226,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     
     public LocalDate end_element() throws ParseException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         datespanset dss = this.to_spanset(datespanset.class);
-        return date_adt_to_date(functions.datespanset_end_date(dss.get_inner()));
+        return date_adt_to_date(GeneratedFunctions.datespanset_end_date(dss.get_inner()));
     }
 
 /**
@@ -294,7 +295,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 */
 
     public datespan shift_scale(Integer shift, Integer duration){
-        return new datespan(functions.datespan_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
+        return new datespan(GeneratedFunctions.datespan_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
     }
 
 /**
@@ -318,15 +319,15 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             contains_span_span, contains_span_spanset, contains_span_date
 */
     public int dateToTimestamp(LocalDate date){
-        return functions.date_in(date.toString());
+        return GeneratedFunctions.date_in(date.toString());
     }
 
     public boolean contains(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.contains_span_date(this._inner, dateToTimestamp((LocalDate) other));
+            return GeneratedFunctions.contains_span_date(this._inner, dateToTimestamp((LocalDate) other));
         }
         else if (other instanceof LocalDateTime){
-            return functions.contains_span_date(this._inner, dateToTimestamp(((LocalDateTime) other).toLocalDate()));
+            return GeneratedFunctions.contains_span_date(this._inner, dateToTimestamp(((LocalDateTime) other).toLocalDate()));
         }
         else {
             return super.contains((Base) other);
@@ -349,7 +350,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     
     public boolean is_adjacent(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.adjacent_span_date(this._inner, dateToTimestamp((LocalDate) other));
+            return GeneratedFunctions.adjacent_span_date(this._inner, dateToTimestamp((LocalDate) other));
         }
         else{
             return super.is_adjacent((Base) other);
@@ -412,7 +413,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public boolean is_left(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.before_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
+            return GeneratedFunctions.before_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
         }
         else {
             return super.is_left((Base) other);
@@ -443,7 +444,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public boolean is_over_or_left(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.overbefore_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
+            return GeneratedFunctions.overbefore_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
         }
         else {
             return super.is_over_or_left((Base) other);
@@ -474,7 +475,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public boolean is_over_or_right(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.overafter_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
+            return GeneratedFunctions.overafter_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
         }
         else {
             return super.is_over_or_right((Base) other);
@@ -506,7 +507,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 
     public boolean is_right(Object other) throws Exception {
         if (other instanceof LocalDate){
-            return functions.after_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
+            return GeneratedFunctions.after_span_date(this._inner, dateToTimestamp(((LocalDate) other)));
         }
         else {
             return super.is_right((Base) other);
@@ -553,14 +554,14 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     public Duration distance(Object other) throws Exception {
         Duration answer = null;
         if (other instanceof LocalDate) {
-            answer= Duration.ofSeconds(functions.distance_span_date(this._inner, dateToTimestamp((LocalDate) other)));
+            answer= Duration.ofSeconds(GeneratedFunctions.distance_span_date(this._inner, dateToTimestamp((LocalDate) other)));
         } else if (other instanceof dateset) {
             datespanset ds = ((dateset) other).to_spanset(datespanset.class);
-            answer= Duration.ofSeconds(functions.distance_datespanset_datespan(ds.get_inner(), this.get_inner()));
+            answer= Duration.ofSeconds(GeneratedFunctions.distance_datespanset_datespan(ds.get_inner(), this.get_inner()));
         } else if (other instanceof datespan) {
-            answer= Duration.ofSeconds(functions.distance_datespan_datespan(this._inner, ((datespan)other)._inner));
+            answer= Duration.ofSeconds(GeneratedFunctions.distance_datespan_datespan(this._inner, ((datespan)other)._inner));
         } else if (other instanceof datespanset) {
-            answer= Duration.ofSeconds(functions.distance_datespanset_datespan(((datespanset) other).get_inner(), this._inner));
+            answer= Duration.ofSeconds(GeneratedFunctions.distance_datespanset_datespan(((datespanset) other).get_inner(), this._inner));
         } else {
             throw new Exception("Operation not supported with " + other + " type");
         }
@@ -587,17 +588,17 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     public Time intersection(Object other) throws Exception {
         Time result;
         if (other instanceof LocalDate){
-            result = new datespan(functions.intersection_span_date(this._inner, dateToTimestamp((LocalDate) other)));
+            result = new datespan(GeneratedFunctions.intersection_span_date(this._inner, dateToTimestamp((LocalDate) other)));
         }
         else if (other instanceof datespan){
-            result = new datespan(functions.intersection_span_span(this._inner, ((datespan) other)._inner));
+            result = new datespan(GeneratedFunctions.intersection_span_span(this._inner, ((datespan) other)._inner));
         }
         else if (other instanceof dateset){
             datespanset ds = ((dateset) other).to_spanset(datespanset.class);
-            result = new datespanset(functions.intersection_spanset_span(ds.get_inner(), this._inner));
+            result = new datespanset(GeneratedFunctions.intersection_spanset_span(ds.get_inner(), this._inner));
         }
         else if (other instanceof datespanset){
-            result = new datespanset(functions.intersection_spanset_span(((datespanset) other).get_inner(), this._inner));
+            result = new datespanset(GeneratedFunctions.intersection_spanset_span(((datespanset) other).get_inner(), this._inner));
         }
         else{
             throw new Exception("Operation not supported with this type");
@@ -621,20 +622,20 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     public datespanset minus(Object other) throws Exception{
         datespanset result = null;
         if (other instanceof LocalDate){
-            Pointer resultPointer= functions.minus_span_date(this._inner, dateToTimestamp((LocalDate) other));
+            Pointer resultPointer= GeneratedFunctions.minus_span_date(this._inner, dateToTimestamp((LocalDate) other));
             result = new datespanset(resultPointer);
         }
         else if (other instanceof dateset){
             datespanset ds = ((dateset) other).to_spanset(datespanset.class);
-            Pointer resultPointer= functions.minus_spanset_span((ds).get_inner(), this._inner);
+            Pointer resultPointer= GeneratedFunctions.minus_spanset_span((ds).get_inner(), this._inner);
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespan){
-            Pointer resultPointer= functions.minus_span_span(this._inner, ((datespan) other)._inner);
+            Pointer resultPointer= GeneratedFunctions.minus_span_span(this._inner, ((datespan) other)._inner);
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespanset){
-            Pointer resultPointer= functions.minus_span_spanset(this._inner, ((datespanset) other).get_inner());
+            Pointer resultPointer= GeneratedFunctions.minus_span_spanset(this._inner, ((datespanset) other).get_inner());
             result = new datespanset(resultPointer);
         }
         else{
@@ -657,7 +658,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 */
 
     public datespanset subtract_from(LocalDate other) throws Exception {
-        return new datespanset(functions.minus_date_span(dateToTimestamp(other), this._inner));
+        return new datespanset(GeneratedFunctions.minus_date_span(dateToTimestamp(other), this._inner));
     }
 
 /**
@@ -676,20 +677,20 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
     public datespanset union(Object other) throws Exception{
         datespanset result = null;
         if (other instanceof LocalDate){
-            Pointer resultPointer= functions.union_span_date(this._inner, dateToTimestamp((LocalDate) other));
+            Pointer resultPointer= GeneratedFunctions.union_span_date(this._inner, dateToTimestamp((LocalDate) other));
             result = new datespanset(resultPointer);
         }
         else if (other instanceof dateset){
             datespanset ds = ((dateset) other).to_spanset(datespanset.class);
-            Pointer resultPointer= functions.union_spanset_span((ds).get_inner(), this.get_inner());
+            Pointer resultPointer= GeneratedFunctions.union_spanset_span((ds).get_inner(), this.get_inner());
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespan){
-            Pointer resultPointer= functions.union_span_span(this._inner, ((datespan) other).get_inner());
+            Pointer resultPointer= GeneratedFunctions.union_span_span(this._inner, ((datespan) other).get_inner());
             result = new datespanset(resultPointer);
         }
         else if (other instanceof datespanset){
-            Pointer resultPointer= functions.union_spanset_span(((datespanset) other).get_inner(), this._inner);
+            Pointer resultPointer= GeneratedFunctions.union_spanset_span(((datespanset) other).get_inner(), this._inner);
             result = new datespanset(resultPointer);
         }
         else{

@@ -3,6 +3,7 @@ package types.basic.tbool;
 import types.temporal.TInstant;
 import jnr.ffi.Pointer;
 import functions.functions;
+import functions.GeneratedFunctions;
 import types.temporal.TemporalType;
 
 
@@ -37,7 +38,7 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 	 */
 	public TBoolInst(String value) {
 		super(value);
-		this.inner = functions.tbool_in(value);
+		this.inner = GeneratedFunctions.tbool_in(value);
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class TBoolInst extends TInstant<Boolean> implements TBool {
 
 	@Override
 	public Pointer createStringInner(String str){
-		return functions.tbool_in(str);
+		return GeneratedFunctions.tbool_in(str);
 	}
 
 	@Override
