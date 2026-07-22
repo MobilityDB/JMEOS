@@ -1,6 +1,9 @@
 package types.collections.time;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import types.TemporalObject;
 import types.boxes.Box;
 import types.collections.base.Base;
@@ -231,8 +234,10 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	}
 
 	public List<LocalDateTime> elements() throws Exception {
-		Pointer dp= functions.tstzset_values(this._inner);
-		long size= this.num_elements();
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer count = Memory.allocate(runtime, Integer.BYTES);
+		Pointer dp= GeneratedFunctions.tstzset_values(this._inner, count);
+		long size= count.getInt(0);
 		List<LocalDateTime> dateTimeList= new ArrayList<LocalDateTime>();
 		for(int i=0; i<size; i++) {
 			dateTimeList.add(ConversionUtils.timestamptz_to_datetime(OffsetDateTime.parse(dp.getPointer((long) i *Long.BYTES).toString())));

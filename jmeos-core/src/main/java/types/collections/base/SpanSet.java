@@ -1,6 +1,9 @@
 package types.collections.base;
 
 import com.google.common.primitives.Ints;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import functions.functions;
 import types.collections.number.FloatSpan;
@@ -234,8 +237,10 @@ public abstract class SpanSet<T extends Object> implements Collection, Base {
             spanset_spans
     */
     public <T> List<T> spans(Class<T> spanType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, InvocationTargetException {
-        Pointer ps = functions.spanset_spans(this._inner);
-        int numSpans = this.num_spans();
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer countPtr = Memory.allocate(runtime, Integer.BYTES);
+        Pointer ps = GeneratedFunctions.spanset_spans(this._inner, countPtr);
+        int numSpans = countPtr.getInt(0);
         List<T> spanList = new ArrayList<T>(numSpans);
 
         long pointerSize = getPointerSize(spanType);

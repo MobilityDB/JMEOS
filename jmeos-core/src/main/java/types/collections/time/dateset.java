@@ -1,6 +1,9 @@
 package types.collections.time;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import jnr.ffi.annotations.In;
 import org.locationtech.jts.io.ParseException;
 import types.collections.base.*;
@@ -162,8 +165,10 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
 */
 
     public List<LocalDate> elements() throws Exception {
-        Pointer dp= functions.dateset_values(this._inner);
-        long size= this.num_elements();
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer count = Memory.allocate(runtime, Integer.BYTES);
+        Pointer dp= GeneratedFunctions.dateset_values(this._inner, count);
+        long size= count.getInt(0);
         List<LocalDate> datelist= new ArrayList<LocalDate>();
         for(int i=0; i<size; i++) {
             int res= dp.getInt((long) i *Integer.BYTES);

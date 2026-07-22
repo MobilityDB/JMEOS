@@ -1,5 +1,8 @@
 package types.collections.number;
 import types.collections.base.Base;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import types.collections.base.Set;
 import jnr.ffi.Pointer;
 
@@ -160,9 +163,11 @@ public class IntSet extends Set<Integer> implements Number{
     }
 
     public List<Integer> elements(){
-        Pointer elems = functions.intset_values(this._inner);
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer count = Memory.allocate(runtime, Integer.BYTES);
+        Pointer elems = GeneratedFunctions.intset_values(this._inner, count);
         List<Integer> ret = new ArrayList<Integer>();
-        for (int i=0;i<this.num_elements();i++)
+        for (int i=0;i<count.getInt(0);i++)
         {
             ret.add(elems.getInt((long) i *Integer.BYTES));
         }
