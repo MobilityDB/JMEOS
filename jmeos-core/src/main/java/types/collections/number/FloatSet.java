@@ -1,5 +1,8 @@
 package types.collections.number;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import types.collections.base.Base;
 import types.collections.base.Set;
 
@@ -163,9 +166,11 @@ public class FloatSet extends Set<Float> implements Number{
     }
 
     public List<Float> elements(){
-        Pointer elems = functions.floatset_values(this._inner);
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer count = Memory.allocate(runtime, Integer.BYTES);
+        Pointer elems = GeneratedFunctions.floatset_values(this._inner, count);
         List<Float> ret = new ArrayList<Float>();
-        for (int i=0;i<this.num_elements();i++)
+        for (int i=0;i<count.getInt(0);i++)
         {
             ret.add((float) elems.getDouble((long) i * Double.BYTES));
         }

@@ -367,7 +367,6 @@ public class functions {
 
 		boolean bigintset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer bigintset_values(Pointer s);
 
 		long bigintspan_lower(Pointer s);
 
@@ -387,7 +386,6 @@ public class functions {
 
 		boolean dateset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer dateset_values(Pointer s);
 
 		Pointer datespan_duration(Pointer s);
 
@@ -413,7 +411,6 @@ public class functions {
 
 		boolean floatset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer floatset_values(Pointer s);
 
 		double floatspan_lower(Pointer s);
 
@@ -433,7 +430,6 @@ public class functions {
 
 		boolean intset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer intset_values(Pointer s);
 
 		int intspan_lower(Pointer s);
 
@@ -475,7 +471,6 @@ public class functions {
 
 		Pointer spanset_span_n(Pointer ss, int i);
 
-		Pointer spanset_spanarr(Pointer ss);
 
 		Pointer spanset_start_span(Pointer ss);
 
@@ -487,7 +482,6 @@ public class functions {
 
 		boolean textset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer textset_values(Pointer s);
 
 		long tstzset_end_value(Pointer s);
 
@@ -495,7 +489,6 @@ public class functions {
 
 		boolean tstzset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer tstzset_values(Pointer s);
 
 		Pointer tstzspan_duration(Pointer s);
 
@@ -641,13 +634,11 @@ public class functions {
 
 		boolean spanset_ne(Pointer ss1, Pointer ss2);
 
-		Pointer set_spans(Pointer s);
 
 		Pointer set_split_each_n_spans(Pointer s, int elems_per_span, Pointer count);
 
 		Pointer set_split_n_spans(Pointer s, int span_count, Pointer count);
 
-		Pointer spanset_spans(Pointer ss);
 
 		Pointer spanset_split_each_n_spans(Pointer ss, int elems_per_span, Pointer count);
 
@@ -2755,7 +2746,6 @@ public class functions {
 
 		boolean geoset_value_n(Pointer s, int n, Pointer result);
 
-		Pointer geoset_values(Pointer s);
 
 		boolean contained_geo_set(Pointer gs, Pointer s);
 
@@ -3393,7 +3383,6 @@ public class functions {
 
 		Pointer tgeo_space_time_split(Pointer temp, double xsize, double ysize, double zsize, Pointer duration, Pointer sorigin, long torigin, boolean bitmatrix, boolean border_inc, Pointer space_bins, Pointer time_bins, Pointer count);
 
-		Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k);
 
 		Pointer geo_cluster_dbscan(Pointer geoms, int ngeoms, double tolerance, int minpoints, Pointer count);
 
@@ -4589,12 +4578,6 @@ public class functions {
 		return out ? result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer bigintset_values(Pointer s) {
-		var _result = MeosLibrary.meos.bigintset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static long bigintspan_lower(Pointer s) {
@@ -4662,12 +4645,6 @@ public class functions {
 		return out ? result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer dateset_values(Pointer s) {
-		var _result = MeosLibrary.meos.dateset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer datespan_duration(Pointer s) {
@@ -4759,12 +4736,6 @@ public class functions {
 		return out ? result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer floatset_values(Pointer s) {
-		var _result = MeosLibrary.meos.floatset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static double floatspan_lower(Pointer s) {
@@ -4832,12 +4803,6 @@ public class functions {
 		return out ? result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer intset_values(Pointer s) {
-		var _result = MeosLibrary.meos.intset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static int intspan_lower(Pointer s) {
@@ -4979,12 +4944,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer spanset_spanarr(Pointer ss) {
-		var _result = MeosLibrary.meos.spanset_spanarr(ss);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_start_span(Pointer ss) {
@@ -5025,12 +4984,6 @@ public class functions {
 		return out ? new_result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer textset_values(Pointer s) {
-		var _result = MeosLibrary.meos.textset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static OffsetDateTime tstzset_end_value(Pointer s) {
@@ -5056,12 +5009,6 @@ public class functions {
 		return out ? result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer tstzset_values(Pointer s) {
-		var _result = MeosLibrary.meos.tstzset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer tstzspan_duration(Pointer s) {
@@ -5575,12 +5522,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer set_spans(Pointer s) {
-		var _result = MeosLibrary.meos.set_spans(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer set_split_each_n_spans(Pointer s, int elems_per_span, Pointer count) {
@@ -5596,12 +5537,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer spanset_spans(Pointer ss) {
-		var _result = MeosLibrary.meos.spanset_spans(ss);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer spanset_split_each_n_spans(Pointer ss, int elems_per_span, Pointer count) {
@@ -13121,12 +13056,6 @@ public class functions {
 		return out ? new_result : null;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer geoset_values(Pointer s) {
-		var _result = MeosLibrary.meos.geoset_values(s);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static boolean contained_geo_set(Pointer gs, Pointer s) {
@@ -15413,12 +15342,6 @@ public class functions {
 		return _result;
 	}
 
-	@SuppressWarnings("unused")
-	public static Pointer geo_cluster_kmeans(Pointer geoms, int ngeoms, int k) {
-		var _result = MeosLibrary.meos.geo_cluster_kmeans(geoms, ngeoms, k);
-		MeosErrorHandler.checkError();
-		return _result;
-	}
 
 	@SuppressWarnings("unused")
 	public static Pointer geo_cluster_dbscan(Pointer geoms, int ngeoms, double tolerance, int minpoints, Pointer count) {

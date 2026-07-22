@@ -1,5 +1,8 @@
 package types.collections.number;
 import jnr.ffi.annotations.In;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
 import jnr.ffi.Pointer;
@@ -179,11 +182,12 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
 
 
     public List<IntSpan> spans(){
-        Pointer ps = functions.spanset_spans(this._inner);
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer count = Memory.allocate(runtime, Integer.BYTES);
+        Pointer ps = GeneratedFunctions.spanset_spans(this._inner, count);
         List<IntSpan> spanList = new ArrayList<IntSpan>();
-        System.out.println(this.num_spans());
         long pointerSize= Long.BYTES;
-        for (long i=0; i<this.num_spans(); i++){
+        for (long i=0; i<count.getInt(0); i++){
             Pointer p= ps.getPointer((long) i*pointerSize);
 //            System.out.println(new IntSpan(p).lower().toString());
 //            System.out.println(new IntSpan(p).upper().toString());

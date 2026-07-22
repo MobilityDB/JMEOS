@@ -1,5 +1,8 @@
 package types.collections.number;
 import com.google.common.primitives.Floats;
+import jnr.ffi.Runtime;
+import jnr.ffi.Memory;
+import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
@@ -174,11 +177,12 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
 
 
     public List<FloatSpan> spans(){
-        Pointer ps = functions.spanset_spans(this._inner);
-        List<FloatSpan> spanList = new ArrayList<FloatSpan>(this.num_spans());
-        System.out.println(this.num_spans());
-        long pointerSize= Double.BYTES;
-        for (long i=0; i<this.num_spans(); i++){
+        Runtime runtime = Runtime.getSystemRuntime();
+        Pointer count = Memory.allocate(runtime, Integer.BYTES);
+        Pointer ps = GeneratedFunctions.spanset_spans(this._inner, count);
+        List<FloatSpan> spanList = new ArrayList<FloatSpan>(count.getInt(0));
+        long pointerSize= Long.BYTES;
+        for (long i=0; i<count.getInt(0); i++){
             Pointer p= ps.getPointer((long) i*pointerSize);
 //            System.out.println(new IntSpan(p).lower().toString());
 //            System.out.println(new IntSpan(p).upper().toString());
