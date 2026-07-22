@@ -22,21 +22,14 @@ jobs:
       - name: Set up Maven
         run: mvn -B wrapper:wrapper
 
-      - name: Resolve the MEOS source commit
-        id: meos
-        # The MEOS catalog is derived from one upstream MobilityDB commit, recorded once
-        # in tools/meos-source-commit.txt (the same pin the build workflow uses), so both
-        # workflows stay in lockstep — bumping the surface is a single edit there.
-        run: echo "sha=$(tr -d '[:space:]' < tools/meos-source-commit.txt)" >> "$GITHUB_OUTPUT"
-
-      # Derive the MEOS catalog from the pinned MobilityDB commit in CI — it is not
+      # Derive the MEOS catalog from upstream MobilityDB master in CI — it is not
       # committed. Catalog-only (build-libmeos: false): javadoc compiles the sources but
       # never runs them, so the native libmeos is not needed here.
       - name: Provision MEOS catalog
         id: provision
         uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
         with:
-          mobilitydb-ref: ${{ steps.meos.outputs.sha }}
+          mobilitydb-ref: master
           build-libmeos: "false"
 
       # Stage the derived catalog where FunctionsGenerator reads it at build time.

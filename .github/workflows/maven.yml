@@ -42,24 +42,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Resolve the MEOS source commit
-        id: meos
-        # The MEOS catalog (meos-idl.json) and the libmeos build are derived from one
-        # upstream MobilityDB commit, recorded once in tools/meos-source-commit.txt. CI
-        # reads it so the derived catalog and the native library stay in lockstep with
-        # the pinned surface — bumping the surface is a single edit there, no SHA duplicated.
-        run: echo "sha=$(tr -d '[:space:]' < tools/meos-source-commit.txt)" >> "$GITHUB_OUTPUT"
-
       # Derive the MEOS catalog (meos-idl.json via run.py) and build+install the
-      # all-families libmeos.so from the pinned MobilityDB commit, through the shared
+      # all-families libmeos.so from upstream MobilityDB master, through the shared
       # composite action. It does the full libmeos provisioning itself (PostgreSQL purge,
       # PGDG, PG17, build deps, cmake, install under /usr/local), so no inline apt/PG/cmake
-      # steps are needed here.
+      # steps are needed here. Both artifacts come from the same commit in the same run, and
+      # the source moves with the @master toolchain that derives it, so neither can skew.
       - name: Provision MEOS catalog + libmeos
         id: provision
         uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
         with:
-          mobilitydb-ref: ${{ steps.meos.outputs.sha }}
+          mobilitydb-ref: master
           build-libmeos: "true"
 
       # Stage the derived catalog where FunctionsGenerator reads it at build time.
