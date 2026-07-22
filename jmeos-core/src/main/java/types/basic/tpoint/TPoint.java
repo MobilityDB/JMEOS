@@ -1288,17 +1288,13 @@ public interface TPoint extends Serializable {
 				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(runtime, 4);
-		int length= runtime.longSize();
-		Pointer space_buckets = createEmptyPointerArray(runtime, length);
-		Pointer resPointer= functions.tgeo_space_split(this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border, space_buckets, intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		GeneratedFunctions.SpaceSplit split= GeneratedFunctions.tgeo_space_split(
+				this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border);
+		int count= split.count.get();
+		Pointer fragments= split.fragments.get();
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
-			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			Pointer p= fragments.getPointer((long) i *Long.BYTES);
             tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
 		}
 		return tempList;
@@ -1363,18 +1359,13 @@ public interface TPoint extends Serializable {
 			}
 		}
 
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(runtime, 4);
-		int length= runtime.longSize();
-		Pointer space_buckets = createEmptyPointerArray(runtime, length);
-		Pointer time_buckets = createEmptyPointerArray(runtime, length);
-		Pointer resPointer= functions.tgeo_space_time_split(this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border, space_buckets, time_buckets, intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		GeneratedFunctions.SpaceTimeSplit split= GeneratedFunctions.tgeo_space_time_split(
+				this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border);
+		int count= split.count.get();
+		Pointer fragments= split.fragments.get();
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
-			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
+			Pointer p= fragments.getPointer((long) i *Long.BYTES);
 			tempList.add(Factory.create_temporal(p, getCustomType(), getTemporalType()));
 		}
 		return tempList;
