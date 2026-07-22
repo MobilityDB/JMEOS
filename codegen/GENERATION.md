@@ -81,10 +81,15 @@ JMEOS's `codegen/input/meos-idl.json` is produced by MEOS-API `run.py`. It is de
 committed, so a clean checkout has no `codegen/input/` directory —
 `tools/regen-from-catalog.sh` creates it.
 
-`tools/meos-source-commit.txt` holds the MobilityDB commit this binding is built and tested
-against; `.github/workflows/maven.yml` reads it and feeds it to the shared
+Both CI workflows pass `mobilitydb-ref: master` to the shared
 `MobilityDB/MEOS-API/.github/actions/provision-meos` action, which derives the catalog and
-builds libmeos from that one commit. Bumping the surface is an edit to that file.
+builds libmeos from that one commit of upstream MobilityDB `master`. The binding records no
+MEOS commit of its own, matching MobilitySpark, MobilityFlink and MobilityKafka.
+
+Tracking `master` keeps the source and the `@master` derivation toolchain moving together. A
+recorded commit stays fixed while `run.py` evolves, so the catalog derived from it thins out
+and the binding goes red with no commit of its own; and a MEOS-side fix a change here depends
+on only reaches CI once that record is bumped as well.
 
 ## Regenerating by hand
 
