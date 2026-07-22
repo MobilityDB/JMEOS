@@ -17,6 +17,7 @@ import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
 import functions.functions;
+import functions.GeneratedFunctions;
 import utils.ConversionUtils;
 
 import java.time.LocalDateTime;
@@ -730,13 +731,9 @@ public interface TFloat extends TNumber {
             tfloat_value_at_timestamp
 */
 	default float value_at_timestamp(LocalDateTime ts){
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer floatPointer = Memory.allocate(runtime, 4);
-		boolean res= functions.tfloat_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(ts), true, floatPointer);
-		float value= floatPointer.getFloat(Float.BYTES);
-		return value;
+		Pointer value = GeneratedFunctions.tfloat_value_at_timestamptz(
+				this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(ts), true);
+		return (float) value.getDouble(0);
 	}
 /**
         Returns the derivative of `self`.

@@ -1,5 +1,6 @@
 package types.basic.tint;
 import functions.functions;
+import functions.GeneratedFunctions;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
@@ -295,13 +296,9 @@ public interface TInt extends TNumber {
 */
 
 	default int value_at_timestamp(LocalDateTime timestamp){
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(runtime, 4);
-		boolean x= functions.tint_value_at_timestamptz(this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true, intPointer);
-		int num= intPointer.getInt(Integer.BYTES);
-		return num;
+		Pointer value = GeneratedFunctions.tint_value_at_timestamptz(
+				this.getNumberInner(), ConversionUtils.datetimeToTimestampTz(timestamp), true);
+		return value.getInt(0);
 	}
 
     /* ------------------------- Ever and Always Comparisons ------------------- */
