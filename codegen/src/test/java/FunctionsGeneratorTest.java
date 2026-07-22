@@ -129,6 +129,8 @@ class FunctionsGeneratorTest {
         @Test void int_() throws Exception         { assertEquals("int",     mapJava("int")); }
         @Test void int32_t() throws Exception      { assertEquals("int",     mapJava("int32_t")); }
         @Test void uint32_t() throws Exception     { assertEquals("int",     mapJava("uint32_t")); }
+        /** Oid is an unsigned int passed by value, so it maps like one rather than to Pointer. */
+        @Test void oid() throws Exception          { assertEquals("int",     mapJava("Oid")); }
         @Test void long_() throws Exception        { assertEquals("long",    mapJava("long")); }
         @Test void int64_t() throws Exception      { assertEquals("long",    mapJava("int64_t")); }
         @Test void uint64_t() throws Exception     { assertEquals("long",    mapJava("uint64_t")); }
