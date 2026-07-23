@@ -6,7 +6,6 @@ import org.locationtech.jts.triangulate.ConstraintVertex;
 import types.basic.tfloat.TFloat;
 import types.basic.tint.TInt;
 import types.basic.tnumber.TNumber;
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.collections.base.Span;
 import types.collections.number.FloatSpan;

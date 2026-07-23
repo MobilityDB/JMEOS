@@ -1,5 +1,4 @@
 package types.collections.geo;
-import functions.functions;
 import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 

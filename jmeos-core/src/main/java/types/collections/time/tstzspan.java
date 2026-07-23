@@ -12,7 +12,6 @@ import types.collections.base.Base;
 import types.collections.base.Span;
 import types.temporal.Temporal;
 import utils.ConversionUtils;
-import functions.functions;
 import functions.GeneratedFunctions;
 
 import javax.naming.OperationNotSupportedException;

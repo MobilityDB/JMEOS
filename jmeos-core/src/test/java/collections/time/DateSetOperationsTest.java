@@ -1,8 +1,9 @@
 package collections.time;
 
+import functions.GeneratedFunctions;
+
 import functions.error_handler;
 import functions.error_handler_fn;
-import functions.functions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import types.collections.time.Time;
@@ -23,7 +24,7 @@ class DateSetOperationsTest {
     static error_handler_fn errorHandler = new error_handler();
 
     DateSetOperationsTest() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
     }
 
     @Test

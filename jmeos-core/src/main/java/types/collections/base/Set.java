@@ -6,7 +6,6 @@ import org.locationtech.jts.io.ParseException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import functions.functions;
 import functions.GeneratedFunctions;
 
 /**

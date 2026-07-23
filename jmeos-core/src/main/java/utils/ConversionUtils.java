@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import functions.functions;
 
 /**
  * Class based on the manually-defined functions from PyMeos.

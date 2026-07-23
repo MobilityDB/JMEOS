@@ -32,7 +32,7 @@ public class FloatSetTest {
 //            }
 //        };
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(5.0f, false ),
                 Arguments.of(new FloatSet("{5, 10}"), false )
@@ -41,7 +41,7 @@ public class FloatSetTest {
 
     static Stream<Arguments> FloatSet_distances() throws SQLException {
         error_handler_fn errorHandler = new error_handler();
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(5.0f, 2.0f ),
                 Arguments.of(new FloatSet("{5, 10}"), 2.0f )
@@ -97,7 +97,7 @@ public class FloatSetTest {
     public void testElementN() throws Exception {
         System.out.println(floatset.toString(15));
         System.out.println(floatset.elements());
-//        System.out.println(Objects.requireNonNull(functions.floatset_value_n(floatset.get_inner(), 2)).getDouble(2*Double.BYTES));
+//        System.out.println(Objects.requireNonNull(GeneratedFunctions.floatset_value_n(floatset.get_inner(), 2)).getDouble(2*Double.BYTES));
         assertEquals(2.0f,floatset.element_n(1));
     }
 

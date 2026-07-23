@@ -1,6 +1,5 @@
 package collections.time;
 
-import functions.functions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,7 +28,7 @@ class DateSpanSetTest {
     private final datespanset dsset2;
 
     DateSpanSetTest() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         dsset = new datespanset("{[2019-09-08, 2019-09-10], [2019-09-11, 2019-09-12]}");
         dsset2 = new datespanset("{[2020-09-08, 2020-09-10], [2020-09-11, 2020-09-12]}");
     }

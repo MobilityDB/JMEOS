@@ -1,6 +1,5 @@
 package types.basic.tint;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;

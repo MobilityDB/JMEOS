@@ -9,7 +9,6 @@ import jnr.ffi.Pointer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import functions.functions;
 import functions.GeneratedFunctions;
 
 /**

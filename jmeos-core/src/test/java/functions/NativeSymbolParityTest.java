@@ -30,10 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(TestLogger.class)
 class NativeSymbolParityTest {
 
+    /** The library the generated surface binds. */
+    private static final String LIBRARY_PATH = "libmeos.so";
+
     /** The FFI interfaces whose methods are 1:1 with C symbols. */
     private static List<Class<?>> ffiInterfaces() {
         List<Class<?>> interfaces = new ArrayList<>();
-        interfaces.add(functions.MeosLibrary.class);
         for (Class<?> nested : GeneratedFunctions.class.getDeclaredClasses()) {
             if (nested.isInterface()) {
                 interfaces.add(nested);
@@ -45,7 +47,7 @@ class NativeSymbolParityTest {
     @Test
     @DisplayName("every declared FFI method resolves to an exported libmeos symbol")
     void everyDeclaredNativeSymbolIsExported() {
-        Library library = Library.getCachedInstance(functions.MeosLibrary.libraryPath,
+        Library library = Library.getCachedInstance(LIBRARY_PATH,
                 Library.LAZY | Library.GLOBAL);
         assertTrue(library != null, "libmeos could not be loaded: " + Library.getLastError());
 

@@ -1,6 +1,5 @@
 package types.basic.tint;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.basic.tfloat.TFloatInst;
