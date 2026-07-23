@@ -7,6 +7,7 @@ import jnr.ffi.Runtime;
 import org.junit.jupiter.api.Test;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tint.TIntSeq;
+import types.collections.number.FloatSpan;
 import types.temporal.Temporal;
 import types.temporal.TemporalType;
 import utils.ConversionUtils;
@@ -109,6 +110,33 @@ public class GeneratedConcreteNumberParityTest {
         OffsetDateTime t = OffsetDateTime.parse("2019-09-02T00:00:00Z");
         Pointer r2 = GeneratedFunctions.tint_value_at_timestamptz(p, t, true);
         assertEquals(r2 == null ? null : Integer.valueOf(r2.getInt(0)), g.valueAtTimestamptz(t, true));
+    }
+
+    @Test
+    void floatValueCollectionsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 3@2019-09-02, 2@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTFloat g = genFloat(a);
+        Runtime rt = Runtime.getSystemRuntime();
+        int spanBytes = 24; // sizeof(Span) on the 64-bit targets
+
+        // getValues: the value range as a concrete float span set, derived from the type-relation registry.
+        assertEquals(GeneratedFunctions.spanset_out(GeneratedFunctions.tnumber_valuespans(p), 15),
+                GeneratedFunctions.spanset_out(g.valuespans().get_inner(), 15));
+
+        // toSpan: the value extent as a concrete float span.
+        assertEquals(GeneratedFunctions.span_out(GeneratedFunctions.tnumber_to_span(p), 15),
+                GeneratedFunctions.span_out(g.toSpan().get_inner(), 15));
+
+        // valueBins: the value span array folded into a List<FloatSpan>.
+        Pointer c = Memory.allocate(rt, Integer.BYTES);
+        Pointer arr = GeneratedFunctions.tfloat_value_bins(p, 2.0, 0.0, c);
+        List<FloatSpan> bins = g.valueBins(2.0, 0.0);
+        assertEquals(c.getInt(0), bins.size());
+        for (int i = 0; i < bins.size(); i++) {
+            assertEquals(GeneratedFunctions.span_out(arr.slice((long) i * spanBytes), 15),
+                    GeneratedFunctions.span_out(bins.get(i).get_inner(), 15));
+        }
     }
 
     @Test

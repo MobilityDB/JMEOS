@@ -53,6 +53,15 @@ public class ObjectLayerGenerator {
     /** The interface this run emits. */
     private ClassSpec spec;
 
+    /** Base type name to its {@code {role -> collection type name}} map, from the catalog typeRelations. */
+    private final Map<String, Map<String, String>> typeRelByBase = new HashMap<>();
+
+    /** Temporal type name to its base type name, inverted from the typeRelations registry. */
+    private final Map<String, String> tempToBase = new HashMap<>();
+
+    /** The base type name of the class this run emits, or {@code null} for an abstract or time surface. */
+    private String valueBase;
+
     /** The object-model roles this surface generates. */
     private static final Set<String> ROLES =
             Set.of("accessor", "conversion", "predicate", "restriction", "output", "constructor");
@@ -101,7 +110,7 @@ public class ObjectLayerGenerator {
         }
     }
 
-    /** Index the catalog once: enum names, functions, and the struct strides the folds read. */
+    /** Index the catalog once: enum names, functions, the struct strides and the type-relation registry. */
     private void init(JsonNode root) {
         collectEnumNames(root);
         indexFunctions(root);
@@ -109,10 +118,23 @@ public class ObjectLayerGenerator {
         matchFields = structFields(root, "Match");
         matchStride = structSize(root, "Match");
         tboxStride = structSize(root, "TBox");
+        JsonNode byBase = root.path("typeRelations").path("byBase");
+        byBase.fields().forEachRemaining(e -> {
+            Map<String, String> roles = new HashMap<>();
+            e.getValue().fields().forEachRemaining(r -> roles.put(r.getKey(), r.getValue().asText()));
+            typeRelByBase.put(e.getKey(), roles);
+            String temporal = roles.get("temporal");
+            if (temporal != null) {
+                tempToBase.put(temporal, e.getKey());
+            }
+        });
     }
 
     private void run(ClassSpec spec, JsonNode root, Path out, String inputPath) throws IOException {
         this.spec = spec;
+        // The base type this surface is over, when it is a concrete value type. A value-domain collection
+        // return then resolves to its concrete wrapper through the type-relation registry.
+        this.valueBase = tempToBase.get(spec.objectKey().toLowerCase());
         deferred.clear();
         System.out.println("--- " + spec.interfaceName() + " (objectModel.classes." + spec.objectKey() + ") ---");
 
@@ -136,6 +158,29 @@ public class ObjectLayerGenerator {
             }
             if (seen.add(method.ooName)) {
                 methods.add(method);
+            }
+        }
+        // A value-domain collection return (a value span or span set) is base-generic on the abstract
+        // superclass — its concrete wrapper is unknowable there — so it is emitted on this concrete
+        // surface, where the base resolves the wrapper. Pull those superclass methods down.
+        if (valueBase != null && spec.superInterface() != null) {
+            String superKey = spec.superInterface().replace("Generated", "");
+            for (JsonNode m : root.path("objectModel").path("classes").path(superKey).path("methods")) {
+                if (m.path("ooExclude").asBoolean(false) || !ROLES.contains(m.path("role").asText(""))) {
+                    continue;
+                }
+                JsonNode fn = functions.get(m.path("function").asText());
+                if (fn == null) {
+                    continue;
+                }
+                String retC = cleanType(fn.path("returnType").path("c").asText());
+                if (!retC.equals("Span *") && !retC.equals("SpanSet *") && !retC.equals("Set *")) {
+                    continue; // only the base-generic value-collection returns are specialised here
+                }
+                Method method = classify(m);
+                if (method != null && seen.add(method.ooName)) {
+                    methods.add(method);
+                }
             }
         }
         methods.sort(Comparator.comparing(x -> x.ooName));
@@ -403,6 +448,7 @@ public class ObjectLayerGenerator {
         String arrayKind = arrayElement != null ? "objectArray"
                 : retC.equals("TimestampTz *") ? "scalarArray"
                 : retC.equals("Span *") && spec.spanReturnsAreTime() ? "spanArray"
+                : retC.equals("Span *") && valueWrapper("span") != null ? "valueSpanArray"
                 : retC.equals("TBox *") ? "tboxArray"
                 : retC.equals("Match *") ? "matchArray"
                 : null;
@@ -422,7 +468,9 @@ public class ObjectLayerGenerator {
                 foldArgs.add(a);
             }
             if (marshalled) {
-                String rt = switch (arrayKind) {
+                String rt = arrayKind.equals("valueSpanArray")
+                        ? "java.util.List<" + valueWrapper("span") + ">"
+                        : switch (arrayKind) {
                     case "objectArray" -> "java.util.List<Temporal>";
                     case "scalarArray" -> "java.util.List<java.time.OffsetDateTime>";
                     case "spanArray"   -> "java.util.List<types.collections.time.tstzspan>";
@@ -541,6 +589,18 @@ public class ObjectLayerGenerator {
             // A Temporal's spanset is its time domain, a tstzspanset; a value spanset waits for the subclass.
             returnType = "types.collections.time.tstzspanset";
             returnKind = "tstzspanset";
+        } else if (retC.equals("Span *") && valueWrapper("span") != null) {
+            // A value temporal's span is its value extent, a base-typed span (an intspan, a floatspan).
+            returnType = valueWrapper("span");
+            returnKind = "valueCollection";
+        } else if (retC.equals("SpanSet *") && valueWrapper("spanset") != null) {
+            // getValues: a value temporal's range is its value span set (an intspanset, a floatspanset).
+            returnType = valueWrapper("spanset");
+            returnKind = "valueCollection";
+        } else if (retC.equals("Set *") && valueWrapper("set") != null) {
+            // A value temporal's distinct-value set (an intset, a floatset).
+            returnType = valueWrapper("set");
+            returnKind = "valueCollection";
         } else if (retC.equals("TBox *")) {
             // A number temporal's bounding box over its value and time extents.
             returnType = "types.boxes.TBox";
@@ -703,6 +763,40 @@ public class ObjectLayerGenerator {
     }
 
     /**
+     * The concrete value-collection wrapper class for a role ({@code span}, {@code spanset} or
+     * {@code set}) of the base type this surface is over, or {@code null} when the base has no such
+     * collection or the layer has no wrapper for it. The collection type name comes from the catalog
+     * type-relation registry; the wrapper is derived by the value-collection naming convention and used
+     * only when the hand layer actually provides it, so a base without a wrapper defers rather than
+     * dangling on a class that does not exist.
+     */
+    private String valueWrapper(String role) {
+        if (valueBase == null) {
+            return null;
+        }
+        Map<String, String> roles = typeRelByBase.get(valueBase);
+        return roles == null ? null : wrapperClass(roles.get(role));
+    }
+
+    /** The Java wrapper for a value-collection type name (floatspanset -> FloatSpanSet), if it exists. */
+    private static String wrapperClass(String typeName) {
+        if (typeName == null) {
+            return null;
+        }
+        String suffix = typeName.endsWith("spanset") ? "SpanSet"
+                : typeName.endsWith("span") ? "Span"
+                : typeName.endsWith("set") ? "Set"
+                : null;
+        if (suffix == null) {
+            return null;
+        }
+        String cls = capitalize(typeName.substring(0, typeName.length() - suffix.length())) + suffix;
+        Path file = Paths.get(System.getProperty("user.dir"),
+                "jmeos-core/src/main/java/types/collections/number", cls + ".java");
+        return Files.exists(file) ? "types.collections.number." + cls : null;
+    }
+
+    /**
      * The record component for one split bin-start out-parameter, or {@code null} if this slice does not
      * model that dimension. A bin out-parameter is a pointer to an array of the bin-start values
      * ({@code T **}); the reader dereferences the array pointer ({@code $arr}) and reads element
@@ -822,6 +916,10 @@ public class ObjectLayerGenerator {
             case "tstzspan" -> "\t\treturn new types.collections.time.tstzspan(" + invocation + ");\n";
             case "tstzspanset" -> "\t\treturn new types.collections.time.tstzspanset(" + invocation + ");\n";
             case "tbox" -> "\t\treturn new types.boxes.TBox(" + invocation + ");\n";
+            case "valueCollection" -> "\t\treturn new " + m.returnType + "(" + invocation + ");\n";
+            case "valueSpanArray" -> arrayFoldBody(m, "new " + m.returnType.substring(
+                    m.returnType.indexOf('<') + 1, m.returnType.lastIndexOf('>'))
+                    + "(GeneratedFunctions.span_copy(_array.slice((long) _i * " + spanSize + ")))");
             case "objectArray" -> arrayFoldBody(m, "Factory.create_temporal(_array.getPointer("
                     + "(long) _i * Long.BYTES), getCustomType(), " + m.returnSubtype + ")");
             case "scalarArray" -> arrayFoldBody(m, "utils.TimestampTzConverter.toOffsetDateTime("
