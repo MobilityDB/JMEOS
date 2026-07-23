@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Proves the generated {@link GeneratedTemporal} surface is wired correctly and behaves like the hand
@@ -282,5 +283,19 @@ public class GeneratedTemporalParityTest {
                 id(g.atValues(values)));
         assertEquals(id(GeneratedFunctions.temporal_minus_values(p, values.get_inner())),
                 id(g.minusValues(values)));
+    }
+
+    @Test
+    void outputMatchesTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        Pointer p = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // The hex-WKB and MF-JSON strings match the direct call; the size_out is folded by the wrapper.
+        assertEquals(GeneratedFunctions.temporal_as_hexwkb(p, (byte) 4), g.asHEXWKB((byte) 4));
+        assertEquals(GeneratedFunctions.temporal_as_mfjson(p, true, 3, 6, null),
+                g.asMFJSON(true, 3, 6, null));
+        // The WKB buffer is returned as a raw pointer.
+        assertNotNull(g.asWKB((byte) 4));
     }
 }

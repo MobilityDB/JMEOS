@@ -36,7 +36,8 @@ public class ObjectLayerGenerator {
     private static final String CLASS = "Temporal";
 
     /** The object-model roles this surface generates. */
-    private static final Set<String> ROLES = Set.of("accessor", "conversion", "predicate", "restriction");
+    private static final Set<String> ROLES =
+            Set.of("accessor", "conversion", "predicate", "restriction", "output");
 
     /** Enum type names from the catalog; a param of one of these maps to a Java int in the surface. */
     private final Set<String> enumNames = new HashSet<>();
@@ -191,8 +192,16 @@ public class ObjectLayerGenerator {
             return new Method(ooName, fnName, rt, scalarArray ? "scalarArray" : "objectArray",
                     arrayElement, List.of());
         }
-        if (!outParams.isEmpty()) {
-            defer(ooName, "out-parameter(s) " + outParams + " — array/bool+result folding");
+        // A size_t* out-parameter is the throwaway byte-count of the *_as_wkb / *_as_hexwkb family; the
+        // wrapper allocates, forwards and discards it, so the generated method never passes it.
+        List<String> unfolded = new ArrayList<>();
+        for (String o : outParams) {
+            if (!isSizeOut(params, o)) {
+                unfolded.add(o);
+            }
+        }
+        if (!unfolded.isEmpty()) {
+            defer(ooName, "out-parameter(s) " + unfolded + " — array/bool+result folding");
             return null;
         }
 
@@ -216,6 +225,10 @@ public class ObjectLayerGenerator {
             // A Temporal's spanset is its time domain, a tstzspanset.
             returnType = "types.collections.time.tstzspanset";
             returnKind = "tstzspanset";
+        } else if (retC.equals("uint8_t *")) {
+            // The WKB byte buffer, returned as a raw pointer (its length is folded away by the wrapper).
+            returnType = "Pointer";
+            returnKind = "direct";
         } else {
             defer(ooName, "return type " + retC + " needs collection/box/struct wrapping");
             return null;
@@ -229,6 +242,9 @@ public class ObjectLayerGenerator {
         List<Arg> args = new ArrayList<>();
         for (int i = 1; i < params.size(); i++) {
             JsonNode p = params.get(i);
+            if (outParams.contains(p.path("name").asText())) {
+                continue; // a folded size_t* out-param the wrapper supplies itself
+            }
             String pC = cleanType(p.path("cType").asText());
             String name = sanitize(p.path("name").asText());
             if ((name.equals("n") || name.equals("i")) && ooName.endsWith("N")) {
@@ -304,6 +320,8 @@ public class ObjectLayerGenerator {
     private static Arg marshalArg(String pC, String name, String fnName) {
         String scalar = switch (pC) {
             case "bool"                              -> "boolean";
+            case "int8", "int8_t",
+                 "uint8", "uint8_t"                  -> "byte";
             case "int", "int32", "int32_t",
                  "uint32", "uint32_t"                -> "int";
             case "long", "int64", "int64_t",
@@ -340,6 +358,16 @@ public class ObjectLayerGenerator {
 
     private void defer(String ooName, String reason) {
         deferred.add(ooName + " — " + reason);
+    }
+
+    /** Whether the named parameter is a {@code size_t *} out-parameter the wrapper folds internally. */
+    private static boolean isSizeOut(JsonNode params, String name) {
+        for (JsonNode p : params) {
+            if (p.path("name").asText().equals(name)) {
+                return cleanType(p.path("cType").asText()).contains("size_t");
+            }
+        }
+        return false;
     }
 
     private static String cleanType(String c) {
