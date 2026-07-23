@@ -58,19 +58,22 @@ public class ConversionUtils {
 
 
 	public static Pointer timedelta_to_interval(Duration td){
-		int years = 0;
-		int month = 0;
-		int weeks = 0;
-		int days = (int)td.toDays();
-		int hours = (int)td.toHours();
-		int minutes = (int)td.toMinutes();
-		double seconds = (double)td.toSeconds();
-		return GeneratedFunctions.interval_make(years,month,weeks,days,hours,minutes,seconds);
+		// Build the interval from a canonical, locale-independent text form parsed by MEOS. Each
+		// component carries only its own part of the duration (whole days, then the hours, minutes
+		// and seconds remaining within the last day). This avoids interval_make, whose trailing
+		// double seconds argument mis-marshals across the FFI and yields a corrupt interval.
+		long days = td.toDaysPart();
+		int hours = td.toHoursPart();
+		int minutes = td.toMinutesPart();
+		int seconds = td.toSecondsPart();
+		int micros = td.toNanosPart() / 1000;
+		String text = String.format("%d days %d hours %d minutes %d.%06d seconds",
+				days, hours, minutes, seconds, micros);
+		return GeneratedFunctions.interval_in(text, -1);
 	}
 
 	public static Duration interval_to_timedelta(Pointer p){
 		String res= GeneratedFunctions.interval_out(p);
-		System.out.println(res);
 		Pattern pattern = Pattern.compile("(\\d+)\\s+days(?:\\s+(\\d{2}):(\\d{2}):(\\d{2}))?");
 		Matcher matcher = pattern.matcher(res);
 
@@ -93,7 +96,6 @@ public class ConversionUtils {
 			// Calculate the total duration in seconds
 			long totalSeconds = days * 86400L + hours * 3600L + minutes * 60L + seconds;
 
-			System.out.println(Duration.ofSeconds(totalSeconds));
 			// Create and return the Duration object
 			return Duration.ofSeconds(totalSeconds);
 		} else {
