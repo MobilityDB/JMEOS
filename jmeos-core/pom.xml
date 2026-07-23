@@ -268,6 +268,26 @@
                             </arguments>
                         </configuration>
                     </execution>
+
+                    <!-- Generate the OO accessor surface (types.temporal.generated.GeneratedTemporal)
+                         from the same MEOS object model, alongside the low-level facade. -->
+                    <execution>
+                        <id>generate-oo-layer</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ObjectLayerGenerator</mainClass>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.basedir}/../codegen/target/classes</additionalClasspathElement>
+                            </additionalClasspathElements>
+                            <arguments>
+                                <argument>${project.basedir}/../codegen/input/meos-idl.json</argument>
+                                <argument>${project.build.directory}/generated-sources/jmeos/types/temporal/generated/GeneratedTemporal.java</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
