@@ -411,4 +411,33 @@ public class GeneratedTemporalParityTest {
         GeneratedFunctions.temporal_dyntimewarp_path(pa, b.getInner(), c2);
         assertEquals(c2.getInt(0), g.dyntimewarpPath(b).size());
     }
+
+    @Test
+    void timeSplitMatchesTheLibrary() {
+        TFloatSeqSet ss = new TFloatSeqSet(
+                "{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}");
+        Pointer p = ss.getInner();
+        GeneratedTemporal g = gen(ss);
+        Runtime rt = Runtime.getSystemRuntime();
+
+        Duration size = Duration.ofDays(1);
+        OffsetDateTime origin = OffsetDateTime.parse("2019-09-01T00:00:00Z");
+
+        // timeSplit folds the fragment array (the return) and the parallel bins array (the out-parameter)
+        // into (time, fragment) records — the SQL table function's composite rows. Compare each fragment
+        // by content and each bin start to the raw arrays the wrapper fills.
+        Pointer bins = Memory.allocate(rt, Long.BYTES);
+        Pointer count = Memory.allocate(rt, Integer.BYTES);
+        Pointer frags = GeneratedFunctions.temporal_time_split(p,
+                ConversionUtils.timedelta_to_interval(size), origin, bins, count);
+        Pointer binsArr = bins.getPointer(0);
+        List<GeneratedTemporal.TimeSplit> split = g.timeSplit(size, origin);
+
+        assertEquals(count.getInt(0), split.size());
+        for (int i = 0; i < split.size(); i++) {
+            assertEquals(utils.TimestampTzConverter.toOffsetDateTime(binsArr.getLong((long) i * Long.BYTES)),
+                    split.get(i).time());
+            assertEquals(id(frags.getPointer((long) i * Long.BYTES)), id(split.get(i).fragment()));
+        }
+    }
 }
