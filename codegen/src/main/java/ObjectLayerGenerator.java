@@ -288,7 +288,10 @@ public class ObjectLayerGenerator {
                 unfolded.add(o);
             }
         }
-        if (!unfolded.isEmpty()) {
+        // bool+result: a boolean function with a single value out-parameter folds to that value (or null
+        // when the boolean is false); the wrapper allocates the buffer, forwards it and returns it.
+        String resultOut = retC.equals("bool") && unfolded.size() == 1 ? unfolded.get(0) : null;
+        if (resultOut == null && !unfolded.isEmpty()) {
             defer(ooName, "out-parameter(s) " + unfolded + " — array/bool+result folding");
             return null;
         }
@@ -296,7 +299,15 @@ public class ObjectLayerGenerator {
         String returnType;
         String returnKind;
         String returnSubtype = temporalReturn(retC);
-        if (returnSubtype != null) {
+        if (resultOut != null) {
+            if (!paramCType(params, resultOut).equals("TimestampTz *")) {
+                defer(ooName, "bool+result of " + paramCType(params, resultOut) + " needs a converter");
+                return null;
+            }
+            returnType = "java.time.OffsetDateTime";
+            returnKind = "boolResult";
+            returnSubtype = "utils.TimestampTzConverter.toOffsetDateTime(_r.getLong(0))";
+        } else if (returnSubtype != null) {
             returnType = "Temporal";
             returnKind = "temporal";
         } else if (retC.equals("Interval *")) {
@@ -454,6 +465,16 @@ public class ObjectLayerGenerator {
         return false;
     }
 
+    /** The cleaned C type of the named parameter, or an empty string when it is absent. */
+    private static String paramCType(JsonNode params, String name) {
+        for (JsonNode p : params) {
+            if (p.path("name").asText().equals(name)) {
+                return cleanType(p.path("cType").asText());
+            }
+        }
+        return "";
+    }
+
     private static String cleanType(String c) {
         return c.replace("const ", "").trim();
     }
@@ -522,6 +543,8 @@ public class ObjectLayerGenerator {
                     + "(" + factoryCall + "), getCustomType(), getTemporalType());\n";
             case "temporal" -> "\t\treturn Factory.create_temporal(" + invocation
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
+            case "boolResult" -> "\t\tPointer _r = " + invocation + ";\n"
+                    + "\t\treturn _r == null ? null : " + m.returnSubtype + ";\n";
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
             case "tstzspan" -> "\t\treturn new types.collections.time.tstzspan(" + invocation + ");\n";
             case "tstzspanset" -> "\t\treturn new types.collections.time.tstzspanset(" + invocation + ");\n";

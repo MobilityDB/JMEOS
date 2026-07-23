@@ -359,4 +359,16 @@ public class GeneratedTemporalParityTest {
         Pointer wkb = g.asWKB((byte) 4);
         assertEquals(id(p), id(g.fromWKB(wkb, hex.length() / 2)));
     }
+
+    @Test
+    void timestamptzNMatchesTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02, 3@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // The bool+result accessor folds to the timestamp; zero-based n reaches the one-based accessor.
+        Pointer r = GeneratedFunctions.temporal_timestamptz_n(p, 1);
+        assertEquals(utils.TimestampTzConverter.toOffsetDateTime(r.getLong(0)), g.timestamptzN(0));
+        assertEquals(g.startTimestamptz(), g.timestamptzN(0));
+    }
 }
