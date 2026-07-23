@@ -1,7 +1,9 @@
 package types.temporal.generated;
 
 import functions.GeneratedFunctions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import org.junit.jupiter.api.Test;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
@@ -13,6 +15,7 @@ import utils.ConversionUtils;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -151,5 +154,43 @@ public class GeneratedTemporalParityTest {
         assertEquals(id(GeneratedFunctions.temporal_tsample(p,
                         ConversionUtils.timedelta_to_interval(d1), origin, TInterpolation.LINEAR.getValue())),
                 id(g.tsample(d1, origin, TInterpolation.LINEAR)));
+    }
+
+    /** The length the count out-parameter reports for one of the array accessors. */
+    private static int directCount(Pointer array, Pointer count) {
+        return array == null ? 0 : count.getInt(0);
+    }
+
+    @Test
+    void arrayAccessorsMatchTheLibrary() {
+        TFloatSeqSet ss = new TFloatSeqSet(
+                "{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}");
+        Pointer p = ss.getInner();
+        GeneratedTemporal g = gen(ss);
+        Runtime rt = Runtime.getSystemRuntime();
+
+        // Object array (TInstant **) folds to List<Temporal>; compare length and element identity.
+        Pointer c = Memory.allocate(rt, Integer.BYTES);
+        Pointer arr = GeneratedFunctions.temporal_instants(p, c);
+        List<Temporal> instants = g.instants();
+        assertEquals(directCount(arr, c), instants.size());
+        for (int i = 0; i < instants.size(); i++) {
+            assertEquals(id(arr.getPointer((long) i * Long.BYTES)), id(instants.get(i)));
+        }
+
+        Pointer c2 = Memory.allocate(rt, Integer.BYTES);
+        assertEquals(directCount(GeneratedFunctions.temporal_segments(p, c2), c2), g.segments().size());
+        Pointer c3 = Memory.allocate(rt, Integer.BYTES);
+        assertEquals(directCount(GeneratedFunctions.temporal_sequences(p, c3), c3), g.sequences().size());
+
+        // Scalar array (TimestampTz *) folds to List<OffsetDateTime>; the values are the converted int64s.
+        Pointer c4 = Memory.allocate(rt, Integer.BYTES);
+        Pointer tsArr = GeneratedFunctions.temporal_timestamps(p, c4);
+        List<OffsetDateTime> timestamps = g.timestamps();
+        assertEquals(directCount(tsArr, c4), timestamps.size());
+        for (int i = 0; i < timestamps.size(); i++) {
+            assertEquals(utils.TimestampTzConverter.toOffsetDateTime(tsArr.getLong((long) i * Long.BYTES)),
+                    timestamps.get(i));
+        }
     }
 }

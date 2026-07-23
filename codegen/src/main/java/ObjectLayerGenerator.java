@@ -170,13 +170,32 @@ public class ObjectLayerGenerator {
             defer(ooName, "receiver is " + recv + ", not Temporal *");
             return null;
         }
-        JsonNode shape = fn.path("shape");
-        if (shape.path("outParams").isArray() && shape.path("outParams").size() > 0) {
-            defer(ooName, "has out-parameter(s) — array/bool+result folding");
+        List<String> outParams = new ArrayList<>();
+        for (JsonNode o : fn.path("shape").path("outParams")) {
+            outParams.add(o.asText());
+        }
+        String retC = cleanType(fn.path("returnType").path("c").asText());
+
+        // Array-fold: a `count` out-parameter alongside an array return folds to a List. Emit the clean
+        // shape only — the sole out-parameter is `count` and the sole non-receiver parameter is that
+        // count — so the fold needs nothing but the receiver. A second out-parameter (timeSplit's bins),
+        // extra arguments, or a struct-array element (Span *) stays for a later slice.
+        String arrayElement = arrayElementSubtype(retC);
+        boolean scalarArray = retC.equals("TimestampTz *");
+        if ((arrayElement != null || scalarArray)
+                && outParams.equals(List.of("count"))
+                && params.size() == 2 && params.get(1).path("name").asText().equals("count")) {
+            String rt = scalarArray
+                    ? "java.util.List<java.time.OffsetDateTime>"
+                    : "java.util.List<Temporal>";
+            return new Method(ooName, fnName, rt, scalarArray ? "scalarArray" : "objectArray",
+                    arrayElement, List.of());
+        }
+        if (!outParams.isEmpty()) {
+            defer(ooName, "out-parameter(s) " + outParams + " — array/bool+result folding");
             return null;
         }
 
-        String retC = cleanType(fn.path("returnType").path("c").asText());
         String returnType;
         String returnKind;
         String returnSubtype = temporalReturn(retC);
@@ -228,6 +247,20 @@ public class ObjectLayerGenerator {
             case "TInstant *"       -> "TEMPORAL_INSTANT";
             case "TSequence *"      -> "TEMPORAL_SEQUENCE";
             case "TSequenceSet *"   -> "TEMPORAL_SEQUENCE_SET";
+            default                 -> null;
+        };
+    }
+
+    /**
+     * The {@code TemporalType} constant for the elements of a temporal-array return ({@code T **}), or
+     * {@code null} if the return is not such an array.
+     */
+    private static String arrayElementSubtype(String retC) {
+        return switch (retC) {
+            case "Temporal **"      -> "getTemporalType()";
+            case "TInstant **"      -> "TEMPORAL_INSTANT";
+            case "TSequence **"     -> "TEMPORAL_SEQUENCE";
+            case "TSequenceSet **"  -> "TEMPORAL_SEQUENCE_SET";
             default                 -> null;
         };
     }
@@ -346,11 +379,34 @@ public class ObjectLayerGenerator {
             case "temporal" -> "\t\treturn Factory.create_temporal(" + invocation
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
+            case "objectArray" -> arrayFoldBody(m, "Factory.create_temporal(_array.getPointer("
+                    + "(long) _i * Long.BYTES), getCustomType(), " + m.returnSubtype + ")");
+            case "scalarArray" -> arrayFoldBody(m, "utils.TimestampTzConverter.toOffsetDateTime("
+                    + "_array.getLong((long) _i * Long.BYTES))");
             default         -> "\t\treturn " + invocation + ";\n";
         };
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
                 + body
                 + "\t}\n\n";
+    }
+
+    /**
+     * The body of an array-fold method: allocate the count buffer, call the wrapper (which writes the
+     * count and returns the array), then read each element with {@code elementExpr} into a List. The
+     * count out-parameter gives the length, so the loop never over-reads.
+     */
+    private static String arrayFoldBody(Method m, String elementExpr) {
+        String elementType = m.returnType.substring(
+                m.returnType.indexOf('<') + 1, m.returnType.lastIndexOf('>'));
+        return "\t\tjnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();\n"
+                + "\t\tPointer _count = jnr.ffi.Memory.allocate(_rt, Integer.BYTES);\n"
+                + "\t\tPointer _array = GeneratedFunctions." + m.fnName + "(getInner(), _count);\n"
+                + "\t\tint _n = _count.getInt(0);\n"
+                + "\t\tjava.util.List<" + elementType + "> _out = new java.util.ArrayList<>(_n);\n"
+                + "\t\tfor (int _i = 0; _i < _n; _i++) {\n"
+                + "\t\t\t_out.add(" + elementExpr + ");\n"
+                + "\t\t}\n"
+                + "\t\treturn _out;\n";
     }
 
     // -------------------------------------------------------------------------
