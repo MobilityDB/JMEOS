@@ -12,7 +12,6 @@ import types.collections.time.tstzspan;
 import types.collections.time.Time;
 import types.collections.time.tstzspanset;
 import types.temporal.*;
-import functions.functions;
 import functions.GeneratedFunctions;
 import utils.ConversionUtils;
 

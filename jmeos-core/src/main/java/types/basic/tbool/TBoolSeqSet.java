@@ -1,6 +1,5 @@
 package types.basic.tbool;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.temporal.TSequenceSet;

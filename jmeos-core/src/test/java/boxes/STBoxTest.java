@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import functions.functions;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -32,7 +31,7 @@ public class STBoxTest {
 	static error_handler_fn errorHandler = new error_handler();
 
     public STBoxTest() throws SQLException {
-		functions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_timezone("UTC");
 		stbx = new STBox("STBOX X((1, 1),(2, 2))");
 		stbz = new STBox("STBOX Z((1, 1, 1),(2, 2, 2))");
 		stbt = new STBox("STBOX T([2019-09-01,2019-09-02])");
@@ -41,7 +40,7 @@ public class STBoxTest {
     }
 
 	static Stream<Arguments> STBox_sources() throws SQLException {
-		functions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_timezone("UTC");
 		return Stream.of(
 				Arguments.of(new STBox("STBOX X((1, 1),(2, 2))"), "STBOX X((1, 1),(2, 2))" ),
 				Arguments.of(new STBox("STBOX Z((1, 1, 1),(2, 2, 2))"), "STBOX Z((1, 1, 1),(2, 2, 2))" ),
@@ -59,7 +58,7 @@ public class STBoxTest {
 	}, delimiter = ';')
 	@DisplayName("Test String Constructor")
 	public void testStringConstructor(String source, String type, String expected) throws SQLException {
-		//functions.meos_initialize("UTC");
+		//GeneratedFunctions.meos_initialize("UTC");
 		STBox stb = new STBox(source);
 		assertEquals(stb.toString(15),expected);
 		assertEquals(type,stb.getClass().getSimpleName());
@@ -88,7 +87,7 @@ public class STBoxTest {
 	}, delimiter = ';')
 	@DisplayName("Test Time Constructor")
 	public void testFromTimeConstructor(String type, String source, String expected) throws SQLException {
-		//functions.meos_initialize("UTC");
+		//GeneratedFunctions.meos_initialize("UTC");
 		if (type == "TSet"){
 			STBox stb = STBox.from_time(new tstzspanset(source));
 			assertEquals("STBox", stb.getClass().getSimpleName());
@@ -109,7 +108,7 @@ public class STBoxTest {
 	@ParameterizedTest(name = "box={0}, str={1}")
 	@MethodSource("STBox_sources")
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_timezone("UTC");
 		STBox stb = new STBox(str);
 		assertTrue(stb.eq(box));
 	}
@@ -118,7 +117,7 @@ public class STBoxTest {
 	@ParameterizedTest(name = "box={0}, str={1}")
 	@MethodSource("STBox_sources")
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
-		functions.meos_initialize_timezone("UTC");
+		GeneratedFunctions.meos_initialize_timezone("UTC");
 		STBox stb = box.copy();
 		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());
@@ -164,7 +163,7 @@ public class STBoxTest {
 			"STBox XT(((1, 1),(2, 2)),[2019-09-01,2019-09-02]); [2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]",
 	}, delimiter = ';')
 	public void testToPeriod(String stbox, String expected) throws SQLException, ParseException {
-		//functions.meos_initialize("UTC");
+		//GeneratedFunctions.meos_initialize("UTC");
 		STBox stb = new STBox(stbox);
 		System.out.println(stb.to_period());
 		tstzspan p = stb.to_period();

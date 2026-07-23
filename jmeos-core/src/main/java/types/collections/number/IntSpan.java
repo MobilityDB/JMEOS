@@ -2,7 +2,6 @@ package types.collections.number;
 import types.collections.base.Base;
 import types.collections.base.Span;
 import jnr.ffi.Pointer;
-import functions.functions;
 import functions.GeneratedFunctions;
 
 /**

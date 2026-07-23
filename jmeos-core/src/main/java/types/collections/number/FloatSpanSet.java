@@ -6,7 +6,6 @@ import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
 import types.collections.base.Base;
 import types.collections.base.SpanSet;
-import functions.functions;
 import functions.GeneratedFunctions;
 import java.util.ArrayList;
 import java.util.List;

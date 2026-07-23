@@ -2,7 +2,6 @@ package types.basic.tpoint.tgeog;
 
 import jnr.ffi.Pointer;
 import types.basic.tpoint.TPointInst;
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.temporal.TemporalType;
 

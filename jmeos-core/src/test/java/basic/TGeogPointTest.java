@@ -1,6 +1,5 @@
 package basic;
 
-import functions.functions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,7 +54,7 @@ public class TGeogPointTest {
     static error_handler_fn errorHandler = new error_handler();
 
     private static Stream<Arguments> fromtemporal() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1.5 1.5)@2019-09-01"), "TGeogPointInst",TInterpolation.NONE, "POINT(1 1)@2019-09-01 00:00:00+00"),
                 Arguments.of(new TGeogPointSeq("{Point(1.5 1.5)@2019-09-01, Point(2.5 2.5)@2019-09-02}"), "TGeogPointSeq",TInterpolation.DISCRETE, "{POINT(1 1)@2019-09-01 00:00:00+00, POINT(2 2)@2019-09-02 00:00:00+00}"),
@@ -67,7 +66,7 @@ public class TGeogPointTest {
 
 
     static Stream<Arguments> from_time() throws SQLException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new tstzset("{2019-09-01, 2019-09-02}"), "TGeogPointSeq", TInterpolation.DISCRETE),
                 Arguments.of(new tstzspan("[2019-09-01, 2019-09-02]"), "TGeogPointSeqSet", TInterpolation.STEPWISE),
@@ -78,7 +77,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> fromstring() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst",TInterpolation.NONE, "POINT(1 1)@2019-09-01 00:00:00+00"),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq",TInterpolation.DISCRETE, "{POINT(1 1)@2019-09-01 00:00:00+00, POINT(2 2)@2019-09-02 00:00:00+00}"),
@@ -89,7 +88,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> bounding() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", new STBox("GEODSTBOX XT(((1, 1),(1, 1)),[2019-09-01, 2019-09-01])")    ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", new STBox("GEODSTBOX XT(((1, 1),(2, 2)),[2019-09-01, 2019-09-02])")  ),
@@ -100,7 +99,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> fromstart() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", "POINT (1 1)"    ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", "POINT (1 1)" ),
@@ -111,7 +110,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> endstart() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", "POINT (1 1)"    ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", "POINT (2 2)" ),
@@ -122,7 +121,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> test_time() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", new tstzspanset("{[2019-09-01, 2019-09-01]}") ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", new tstzspanset("{[2019-09-01, 2019-09-01], [2019-09-02, 2019-09-02]}") ),
@@ -133,7 +132,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> period() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", new tstzspan("[2019-09-01, 2019-09-01]") ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", new tstzspan("[2019-09-01, 2019-09-02]") ),
@@ -143,7 +142,7 @@ public class TGeogPointTest {
     }
 
     private static Stream<Arguments> num_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", 1 ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", 2 ),
@@ -154,7 +153,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> start_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of("Point(1 1)@2019-09-01", "TGeogPointInst", new TGeogPointInst("Point(1 1)@2019-09-01") ),
                 Arguments.of("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}", "TGeogPointSeq", new TGeogPointInst("Point(1 1)@2019-09-01") ),
@@ -167,7 +166,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> end_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of("Point(1 1)@2019-09-01", "TGeogPointInst", new TGeogPointInst("Point(1 1)@2019-09-01") ),
                 Arguments.of("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}", "TGeogPointSeq", new TGeogPointInst("Point(2 2)@2019-09-02") ),
@@ -178,7 +177,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> asmfjson() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         String jsonString1 = "{\n" +
                 "  \"type\": \"MovingGeomPoint\",\n" +
                 "  \"bbox\": [\n" +
@@ -357,7 +356,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> min_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", new TGeogPointInst("Point(1 1)@2019-09-01") ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", new TGeogPointInst("Point(1 1)@2019-09-01") ),
@@ -368,7 +367,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> max_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", new TGeogPointInst("Point(1 1)@2019-09-01") ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq", new TGeogPointInst("Point(2 2)@2019-09-02") ),
@@ -379,7 +378,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> instantn() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), 0, new TGeogPointInst("Point(1 1)@2019-09-01") ),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), 1, new TGeogPointInst("Point(2 2)@2019-09-02") ),
@@ -390,7 +389,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> num_timestamps() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), 1),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), 2),
@@ -402,7 +401,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> start_timestamps() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), LocalDateTime.of(2019, 9, 1, 0, 0,0)),
@@ -413,7 +412,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> end_timestamps() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), LocalDateTime.of(2019, 9, 1, 0, 0,0)),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), LocalDateTime.of(2019, 9, 2, 0, 0,0)),
@@ -425,7 +424,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> hash() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
 //                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), 382694564),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), 1545137628),
@@ -436,7 +435,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> lower_inc() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), true),
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), true)
@@ -446,7 +445,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> length() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), 0),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), 0),
@@ -457,7 +456,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> cumullength() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), new TFloatInst("0@2019-09-01")),
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), new TFloatSeq("[0@2019-09-01, 156876.14940188668@2019-09-02]")),
@@ -467,7 +466,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> speed() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), null),
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), new TFloatSeq("[1.8157@2019-09-01, 1.8157@2019-09-02]")),
@@ -477,7 +476,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> xy() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), new TFloatInst("1@2019-09-01")),
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), new TFloatSeq("[1@2019-09-01, 2@2019-09-02]")),
@@ -487,7 +486,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> xyz() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1 1)@2019-09-01"), new TFloatInst("1@2019-09-01")),
                 Arguments.of(new TGeogPointSeq("[Point(1 1 1)@2019-09-01, Point(2 2 2)@2019-09-02]"), new TFloatSeq("[1@2019-09-01, 2@2019-09-02]")),
@@ -497,7 +496,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> hasz() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), false),
                 Arguments.of(new TGeogPointSeq("[Point(1 1 1)@2019-09-01, Point(2 2 2)@2019-09-02]"), true),
@@ -507,7 +506,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> is_simple() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), true),
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), true),
@@ -517,7 +516,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> angular_difference() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TFloatSeqSet("{0@2019-09-01,0@2019-09-02}"))
         );
@@ -526,7 +525,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> togeom() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), new TGeomPointInst("Point(1 1)@2019-09-01"))
                 //Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}")),
@@ -537,7 +536,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> to_instant() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), new TGeogPointInst("Point(1 1)@2019-09-01")),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01}"), new TGeogPointInst("Point(1 1)@2019-09-01")),
@@ -549,7 +548,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> to_sequence() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeq("[Point(1 1)@2019-09-01]")),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}")),
@@ -560,7 +559,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> to_sequenceset() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01]}")),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), TInterpolation.LINEAR, new TGeogPointSeqSet("{[Point(1 1)@2019-09-01], [Point(2 2)@2019-09-02]}")),
@@ -572,7 +571,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> set_interp() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), "TGeogPointInst", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01}")),
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"),"TGeogPointSeq", TInterpolation.DISCRETE, new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}")),
@@ -583,7 +582,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> round() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointInst("Point(1.123456789 1.123456789)@2019-09-01"), "TGeogPointInst", new TGeogPointInst("Point(1.12 1.12)@2019-09-01")),
                 Arguments.of(new TGeogPointSeq("{Point(1.123456789 1.123456789)@2019-09-01, Point(2.123456789 2.123456789)@2019-09-02}"),"TGeogPointSeq", new TGeogPointSeq("{Point(1.12 1.12)@2019-09-01,Point(2.12 2.12)@2019-09-02}")),
@@ -594,7 +593,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> insert() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq",new TGeogPointSeq("{Point(1 1)@2019-09-03}"), new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02, Point(1 1)@2019-09-03}")  ),
                 Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05],[Point(1 1)@2019-09-06]}"))
@@ -604,7 +603,7 @@ public class TGeogPointTest {
 
 
     private static Stream<Arguments> append_sequence() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"),"TGeogPointSeq", new TGeogPointSeq("[Point(1 1)@2019-09-03]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03]}")),
                 Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05],[Point(1 1)@2019-09-06]}"))
@@ -637,7 +636,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromtemporal")
     void testFromTemporalConstructor(TGeogPoint source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             GeometryFactory factory4326 = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 4326);
             Point point = factory4326.createPoint(new Coordinate(1, 1));
@@ -663,7 +662,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}")
     @MethodSource("from_time")
     void testFromBaseTimeConstructor(Time source, String type, TInterpolation interpolation) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             GeometryFactory factory4326 = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 4326);
             Point p = factory4326.createPoint(new Coordinate(1, 1));
@@ -685,7 +684,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testFromStringConstructor(TGeogPoint source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             TGeogPointInst ti = new TGeogPointInst(expected);
             assertTrue(ti instanceof TGeogPointInst);
@@ -708,7 +707,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testCopyConstructor(Temporal source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             TGeogPointInst ti = (TGeogPointInst) source.copy();
             assertTrue(ti instanceof TGeogPointInst);
@@ -731,7 +730,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("bounding")
     void testBounding(TGeogPoint source, String type, STBox expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             //assertEquals(source.bounding_box_point().toString(15), expected.toString(15));
         } else if (type == "TGeogPointSeq") {
@@ -746,7 +745,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, expected={3}")
     @MethodSource("fromstring")
     void testInterpolation(Temporal source, String type, TInterpolation interpolation, String expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             assertEquals(source.interpolation(),interpolation);
         } else if (type == "TGeogPointSeq") {
@@ -761,7 +760,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("asmfjson")
     void testAsmfjson(Temporal source, String type, String expected) {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         System.out.println(source.as_mfjson());
 //        assertEquals(source.as_mfjson(), expected);
     }
@@ -770,7 +769,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("fromstart")
     void testStartvalue(TGeogPoint source, String type,  String expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.start_value(15).toString(), expected);
     }
 
@@ -778,7 +777,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("endstart")
     void testEndvalue(TGeogPoint source, String type,  String expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.end_value(15).toString(), expected);
     }
 
@@ -786,7 +785,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("test_time")
     void testTime(TGeogPoint source, String type,  tstzspanset expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((Temporal)source).time().toString(), expected.toString());
     }
 
@@ -795,7 +794,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testtstzspan(TGeogPoint source, String type,  tstzspan expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((Temporal)source).period().toString(), expected.toString());
     }
 
@@ -803,14 +802,14 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("period")
     void testTimeSpan(TGeogPoint source, String type,  tstzspan expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((Temporal)source).period().toString(), expected.toString());
     }
 
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("num_instant")
     void testNumInst(TGeogPoint source, String type,  int expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((Temporal)source).num_instants(), expected);
     }
 
@@ -818,7 +817,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("start_instant")
     void testStartInstant(String source, String type,  TGeogPoint expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             TGeogPointInst tg = new TGeogPointInst(source);
             TGeogPointInst new_tg = (TGeogPointInst) tg.start_instant();
@@ -839,7 +838,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("end_instant")
     void testEndInstant(String source, String type,  TGeogPoint expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst") {
             TGeogPointInst tg = new TGeogPointInst(source);
             TGeogPointInst new_tg = (TGeogPointInst) tg.end_instant();
@@ -859,7 +858,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("min_instant")
     void testMinInst(Temporal source, String type,  TGeogPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((TGeogPointInst)source.min_instant()).to_string(), expected.to_string());
     }
 
@@ -868,7 +867,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, expected={2}")
     @MethodSource("max_instant")
     void testMaxInst(Temporal source, String type,  TGeogPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((TGeogPointInst)source.max_instant()).to_string(), expected.to_string());
     }
 
@@ -876,7 +875,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, n={1}, expected={2}")
     @MethodSource("instantn")
     void testInstN(Temporal source, int n,  TGeogPointInst expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((TGeogPointInst)source.instant_n(n)).to_string(), expected.to_string());
     }
 
@@ -884,7 +883,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, n={1}")
     @MethodSource("num_timestamps")
     void testNumTimestamps(Temporal source, int n) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.num_timestamps(), n);
     }
 
@@ -892,7 +891,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, local={1}")
     @MethodSource("start_timestamps")
     void testStartTimestamps(Temporal source, LocalDateTime local) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.start_timestamp(), local);
     }
 
@@ -900,7 +899,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, local={1}")
     @MethodSource("end_timestamps")
     void testEndTimestamps(Temporal source, LocalDateTime local) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.end_timestamp(), local);
     }
 
@@ -908,7 +907,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, hash={1}")
     @MethodSource("hash")
     void testHash(Temporal source, long hash) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.hash(), hash);
     }
 
@@ -916,7 +915,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, hash={1}")
     @MethodSource("length")
     void testLength(TGeogPoint source, double hash) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(((TPoint)source).length(), hash);
     }
 
@@ -924,7 +923,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("cumullength")
     void testCumulLength(TGeogPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals((source).cumulative_length().to_string(15), tfloat.to_string(15));
     }
 
@@ -932,7 +931,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("xy")
     void testXY(TGeogPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.x().to_string(15), tfloat.to_string(15));
         assertEquals(source.y().to_string(15), tfloat.to_string(15));
     }
@@ -941,7 +940,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, tfloat={1}")
     @MethodSource("xyz")
     void testXYZ(TGeogPoint source, TFloat tfloat) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.x().to_string(15), tfloat.to_string(15));
         assertEquals(source.y().to_string(15), tfloat.to_string(15));
         assertEquals(source.z().to_string(15), tfloat.to_string(15));
@@ -951,7 +950,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("hasz")
     void testHasz(TGeogPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.has_z(), val);
     }
 
@@ -959,7 +958,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("is_simple")
     void testIsSimple(TGeogPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.is_simple(), val);
     }
 
@@ -967,7 +966,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, val={1}")
     @MethodSource("is_simple")
     void testSRID(TGeogPoint source, boolean val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         assertEquals(source.srid(), 4326);
     }
 
@@ -976,7 +975,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, val={2}")
     @MethodSource("angular_difference")
     void testAngula(TGeogPoint source, String type, TFloat val) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointSeq"){
             TFloatSeqSet tf = (TFloatSeqSet) source.angular_difference().to_degrees(true);
             assertEquals(tf.to_string(15), val.to_string(15));
@@ -991,7 +990,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, tgeog={1}")
     @MethodSource("to_instant")
     void testToInstant(Temporal source, TGeogPointInst tgeog) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         TGeogPointInst tmp = (TGeogPointInst) source.to_instant();
         assertTrue(tmp instanceof TGeogPointInst);
         assertEquals(tmp.to_string(),tgeog.to_string());
@@ -1001,7 +1000,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, interpolation={1}, tgeog={2}")
     @MethodSource("to_sequence")
     void testToSequence(Temporal source, TInterpolation interpolation, TGeogPointSeq tgeog) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         TGeogPointSeq tmp = (TGeogPointSeq) source.to_sequence(interpolation);
         assertTrue(tmp instanceof TGeogPointSeq);
         assertEquals(tmp.to_string(),tgeog.to_string());
@@ -1011,7 +1010,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, interpolation={1}, tgeog={2}")
     @MethodSource("to_sequenceset")
     void testToSequenceSet(Temporal source, TInterpolation interpolation, TGeogPointSeqSet tgeog) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         TGeogPointSeqSet tmp = (TGeogPointSeqSet) source.to_sequenceset(interpolation);
         assertTrue(tmp instanceof TGeogPointSeqSet);
         assertEquals(tmp.to_string(),tgeog.to_string());
@@ -1021,7 +1020,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, interpolation={2}, tgeog={3}")
     @MethodSource("set_interp")
     void testSetInterp(Temporal source, String type, TInterpolation interpolation, TGeogPointSeq tgeog) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointInst"){
             TGeogPointInst tmp = (TGeogPointInst) source.set_interpolation(interpolation);
             assertTrue(tmp instanceof TGeogPointInst);
@@ -1043,7 +1042,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, tgeog={2}")
     @MethodSource("round")
     void testRound(TPoint source, String type, TPoint tgeog) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if(type == "TGeogPointInst" ){
             assertTrue(source instanceof TGeogPointInst);
             assertEquals(source.round(2).to_string(),tgeog.to_string());
@@ -1060,7 +1059,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, add={2}, expected={3}")
     @MethodSource("insert")
     void testInsert(Temporal source, String type, Temporal add, Temporal expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
         if (type == "TGeogPointSeq"){
             TGeogPointSeq tgeog = (TGeogPointSeq) source.insert(add);
             assertEquals(tgeog.to_string(), ((TGeogPointSeq) expected).to_string());
@@ -1074,7 +1073,7 @@ public class TGeogPointTest {
     @ParameterizedTest(name="source={0}, type={1}, tgeoseq={2}, expected={3}")
     @MethodSource("append_sequence")
     void testAppendSequence(Temporal source, String type, TGeogPointSeq tgeoseq, Temporal expected) throws ParseException {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
 
         if (type == "TGeogPointSeq"){
             TGeogPointSeq tseq = (TGeogPointSeq) source.append_sequence(tgeoseq);

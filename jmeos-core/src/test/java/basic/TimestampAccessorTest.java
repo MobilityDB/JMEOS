@@ -1,8 +1,9 @@
 package basic;
 
+import functions.GeneratedFunctions;
+
 import functions.error_handler;
 import functions.error_handler_fn;
-import functions.functions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ class TimestampAccessorTest {
 
     @BeforeAll
     static void init() {
-        functions.meos_initialize_timezone("UTC");
+        GeneratedFunctions.meos_initialize_timezone("UTC");
     }
 
     private static LocalDateTime day(int d) {

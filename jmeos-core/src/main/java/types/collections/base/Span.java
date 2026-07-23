@@ -1,7 +1,6 @@
 package types.collections.base;
 
 import jnr.ffi.Pointer;
-import functions.functions;
 import functions.GeneratedFunctions;
 
 import java.lang.reflect.Constructor;

@@ -1,6 +1,5 @@
 package types.temporal;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;

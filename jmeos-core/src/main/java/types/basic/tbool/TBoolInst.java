@@ -2,7 +2,6 @@ package types.basic.tbool;
 
 import types.temporal.TInstant;
 import jnr.ffi.Pointer;
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.temporal.TemporalType;
 

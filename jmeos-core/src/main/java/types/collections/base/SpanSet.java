@@ -5,7 +5,6 @@ import jnr.ffi.Runtime;
 import jnr.ffi.Memory;
 import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.collections.number.FloatSpan;
 import types.collections.number.FloatSpanSet;

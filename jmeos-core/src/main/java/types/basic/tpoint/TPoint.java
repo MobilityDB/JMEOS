@@ -20,7 +20,6 @@ import types.collections.geo.GeoSet;
 import types.collections.time.Time;
 import types.collections.time.tstzset;
 import types.temporal.*;
-import functions.functions;
 import functions.GeneratedFunctions;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;

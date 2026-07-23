@@ -1,6 +1,5 @@
 package types.basic.tfloat;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.temporal.TSequenceSet;
 import jnr.ffi.Pointer;

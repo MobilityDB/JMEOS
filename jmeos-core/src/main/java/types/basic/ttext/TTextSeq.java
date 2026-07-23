@@ -1,6 +1,5 @@
 package types.basic.ttext;
 
-import functions.functions;
 import functions.GeneratedFunctions;
 import types.temporal.TSequence;
 
