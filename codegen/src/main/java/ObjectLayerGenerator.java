@@ -133,11 +133,14 @@ public class ObjectLayerGenerator {
     // -------------------------------------------------------------------------
 
     /** A method the surface emits: its canonical name, the backing function, and how to marshal it. */
-    private record Method(String ooName, String fnName, String returnType, String returnSubtype,
-                          List<Arg> args) {}
+    private record Method(String ooName, String fnName, String returnType, String returnKind,
+                          String returnSubtype, List<Arg> args) {}
 
-    /** One argument passed straight through to the wrapper (scalar only in this slice). */
-    private record Arg(String javaType, String name) {}
+    /**
+     * One argument of an emitted method: the Java type the caller passes, its name, and the
+     * expression forwarded to the wrapper (the name itself for a pass-through, or a conversion).
+     */
+    private record Arg(String javaType, String name, String callExpr) {}
 
     /**
      * Classifies one object-model method. Returns a {@link Method} the slice can emit, or {@code null}
@@ -174,12 +177,22 @@ public class ObjectLayerGenerator {
         }
 
         String retC = cleanType(fn.path("returnType").path("c").asText());
-        String returnType = temporalReturn(retC) != null ? "Temporal" : scalarReturn(retC);
-        if (returnType == null) {
+        String returnType;
+        String returnKind;
+        String returnSubtype = temporalReturn(retC);
+        if (returnSubtype != null) {
+            returnType = "Temporal";
+            returnKind = "temporal";
+        } else if (retC.equals("Interval *")) {
+            returnType = "java.time.Duration";
+            returnKind = "interval";
+        } else if (scalarReturn(retC) != null) {
+            returnType = scalarReturn(retC);
+            returnKind = "direct";
+        } else {
             defer(ooName, "return type " + retC + " needs collection/box/struct wrapping");
             return null;
         }
-        String returnSubtype = temporalReturn(retC);
 
         // 1-based index adjustment (instant_n/sequence_n): the hand layer presents 0-based indexing
         // by adding one before the call. That is a semantic decision, not a mechanical marshal, so it
@@ -194,18 +207,18 @@ public class ObjectLayerGenerator {
             if ((name.equals("n") || name.equals("i")) && ooName.endsWith("N")) {
                 indexed = true;
             }
-            String javaType = scalarArg(pC);
-            if (javaType == null) {
-                defer(ooName, "argument " + name + " of type " + pC + " is not a scalar");
+            Arg arg = marshalArg(pC, name);
+            if (arg == null) {
+                defer(ooName, "argument " + name + " of type " + pC + " needs object/collection marshalling");
                 return null;
             }
-            args.add(new Arg(javaType, name));
+            args.add(arg);
         }
         if (indexed) {
             defer(ooName, "1-based index argument needs a base decision");
             return null;
         }
-        return new Method(ooName, fnName, returnType, returnSubtype, args);
+        return new Method(ooName, fnName, returnType, returnKind, returnSubtype, args);
     }
 
     /** The {@code TemporalType} constant for a temporal return, or {@code null} if not a temporal. */
@@ -239,9 +252,14 @@ public class ObjectLayerGenerator {
         };
     }
 
-    /** The Java type of a scalar argument passed straight to the wrapper, or {@code null} otherwise. */
-    private static String scalarArg(String pC) {
-        return switch (pC) {
+    /**
+     * How to marshal one argument to the wrapper, or {@code null} if it needs a pattern this slice does
+     * not emit (an object/collection pointer). A scalar and a {@code TimestampTz} pass straight through
+     * (the wrapper takes the primitive resp. the {@code OffsetDateTime}); an {@code interpType} and an
+     * {@code Interval *} convert through the same helpers the hand layer uses.
+     */
+    private static Arg marshalArg(String pC, String name) {
+        String scalar = switch (pC) {
             case "bool"                              -> "boolean";
             case "int", "int32", "int32_t",
                  "uint32", "uint32_t"                -> "int";
@@ -250,6 +268,16 @@ public class ObjectLayerGenerator {
             case "double", "float8"                  -> "double";
             case "float"                             -> "float";
             default                                  -> null;
+        };
+        if (scalar != null) {
+            return new Arg(scalar, name, name);
+        }
+        return switch (pC) {
+            case "interpType"  -> new Arg("TInterpolation", name, name + ".getValue()");
+            case "Interval *"  -> new Arg("java.time.Duration", name,
+                    "utils.ConversionUtils.timedelta_to_interval(" + name + ")");
+            case "TimestampTz" -> new Arg("java.time.OffsetDateTime", name, name);
+            default            -> null;
         };
     }
 
@@ -275,6 +303,7 @@ public class ObjectLayerGenerator {
                 import types.temporal.Factory;
                 import types.temporal.Temporal;
                 import types.temporal.TemporalType;
+                import types.temporal.TInterpolation;
 
                 import static types.temporal.TemporalType.*;
 
@@ -310,16 +339,15 @@ public class ObjectLayerGenerator {
         call.add("getInner()");
         for (Arg a : m.args) {
             sig.add(a.javaType + " " + a.name);
-            call.add(a.name);
+            call.add(a.callExpr);
         }
         String invocation = "GeneratedFunctions." + m.fnName + "(" + call + ")";
-        String body;
-        if (m.returnType.equals("Temporal")) {
-            body = "\t\treturn Factory.create_temporal(" + invocation
+        String body = switch (m.returnKind) {
+            case "temporal" -> "\t\treturn Factory.create_temporal(" + invocation
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
-        } else {
-            body = "\t\treturn " + invocation + ";\n";
-        }
+            case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
+            default         -> "\t\treturn " + invocation + ";\n";
+        };
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
                 + body
                 + "\t}\n\n";

@@ -8,6 +8,11 @@ import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
 import types.temporal.Temporal;
 import types.temporal.TemporalType;
+import types.temporal.TInterpolation;
+import utils.ConversionUtils;
+
+import java.time.Duration;
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -111,5 +116,40 @@ public class GeneratedTemporalParityTest {
         assertEquals(id(ss.end_instant()), id(g.endInstant()));
         assertEquals(id(ss.min_instant()), id(g.minInstant()));
         assertEquals(id(ss.max_instant()), id(g.maxInstant()));
+    }
+
+    @Test
+    void transformArgumentsAndIntervalReturnMatchTheLibrary() {
+        TFloatSeq sq = new TFloatSeq("[1@2019-09-01, 2@2019-09-02, 4@2019-09-04]");
+        Pointer p = sq.getInner();
+        GeneratedTemporal g = gen(sq);
+
+        Duration d1 = Duration.ofDays(1);
+        Duration d2 = Duration.ofDays(2);
+        OffsetDateTime origin = OffsetDateTime.parse("2019-09-01T00:00:00Z");
+
+        // Interval return → Duration.
+        assertEquals(ConversionUtils.interval_to_timedelta(GeneratedFunctions.temporal_duration(p, false)),
+                g.duration(false));
+
+        // Interval arguments → Duration, converted through the shared helper.
+        assertEquals(id(GeneratedFunctions.temporal_shift_time(p, ConversionUtils.timedelta_to_interval(d1))),
+                id(g.shiftTime(d1)));
+        assertEquals(id(GeneratedFunctions.temporal_scale_time(p, ConversionUtils.timedelta_to_interval(d2))),
+                id(g.scaleTime(d2)));
+        assertEquals(id(GeneratedFunctions.temporal_shift_scale_time(p,
+                        ConversionUtils.timedelta_to_interval(d1), ConversionUtils.timedelta_to_interval(d2))),
+                id(g.shiftScaleTime(d1, d2)));
+
+        // interpType argument → TInterpolation.
+        assertEquals(id(GeneratedFunctions.temporal_set_interp(p, TInterpolation.LINEAR.getValue())),
+                id(g.setInterp(TInterpolation.LINEAR)));
+        assertEquals(id(GeneratedFunctions.temporal_as_tsequenceset(p, TInterpolation.LINEAR.getValue())),
+                id(g.asTsequenceset(TInterpolation.LINEAR)));
+
+        // TimestampTz argument → OffsetDateTime, alongside the interval and interpolation arguments.
+        assertEquals(id(GeneratedFunctions.temporal_tsample(p,
+                        ConversionUtils.timedelta_to_interval(d1), origin, TInterpolation.LINEAR.getValue())),
+                id(g.tsample(d1, origin, TInterpolation.LINEAR)));
     }
 }
