@@ -48,6 +48,9 @@ public class ObjectLayerGenerator {
     /** Methods left out of this slice, with the reason, reported at the end. */
     private final List<String> deferred = new ArrayList<>();
 
+    /** Size in bytes of the {@code Span} struct, the stride of a {@code Span *} array. */
+    private int spanSize;
+
     // -------------------------------------------------------------------------
     // Entry point
     // -------------------------------------------------------------------------
@@ -70,6 +73,7 @@ public class ObjectLayerGenerator {
         JsonNode root = mapper.readTree(new File(inputPath));
         collectEnumNames(root);
         indexFunctions(root);
+        spanSize = structSize(root, "Span");
 
         JsonNode classNode = root.path("objectModel").path("classes").path(CLASS);
         if (classNode.isMissingNode()) {
@@ -129,6 +133,52 @@ public class ObjectLayerGenerator {
         }
     }
 
+    /**
+     * Size in bytes of a catalog struct laid out by the C rules on the 64-bit targets the binding ships
+     * for: each field sits at a multiple of its own alignment, and the whole is padded to a multiple of
+     * its widest field. This is the stride of an array of that struct.
+     */
+    private static int structSize(JsonNode root, String name) {
+        for (JsonNode s : root.path("structs")) {
+            if (!s.path("name").asText().equals(name)) {
+                continue;
+            }
+            int offset = 0;
+            int widest = 1;
+            for (JsonNode f : s.path("fields")) {
+                String cType = f.path("cType").asText().trim();
+                int size;
+                int align;
+                int bracket = cType.indexOf('[');
+                if (bracket >= 0) { // a fixed-size array field, e.g. char[4]
+                    int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
+                    align = scalarBytes(cType.substring(0, bracket).trim());
+                    size = count * align;
+                } else {
+                    size = align = scalarBytes(cType);
+                }
+                widest = Math.max(widest, align);
+                offset = (offset + align - 1) / align * align + size;
+            }
+            return (offset + widest - 1) / widest * widest;
+        }
+        throw new IllegalStateException("struct " + name + " not found in the catalog");
+    }
+
+    /** Size in bytes of a scalar C type (a pointer, or the default, is eight). */
+    private static int scalarBytes(String cType) {
+        cType = cType.replace("const ", "").trim();
+        if (cType.endsWith("*")) {
+            return 8;
+        }
+        return switch (cType) {
+            case "bool", "char", "int8", "int8_t", "uint8", "uint8_t" -> 1;
+            case "short", "int16", "int16_t", "uint16", "uint16_t" -> 2;
+            case "int", "int32", "int32_t", "uint32", "uint32_t", "float", "Oid", "DateADT" -> 4;
+            default -> 8;
+        };
+    }
+
     // -------------------------------------------------------------------------
     // Classification: which methods this slice can emit, and how
     // -------------------------------------------------------------------------
@@ -177,20 +227,38 @@ public class ObjectLayerGenerator {
         }
         String retC = cleanType(fn.path("returnType").path("c").asText());
 
-        // Array-fold: a `count` out-parameter alongside an array return folds to a List. Emit the clean
-        // shape only — the sole out-parameter is `count` and the sole non-receiver parameter is that
-        // count — so the fold needs nothing but the receiver. A second out-parameter (timeSplit's bins),
-        // extra arguments, or a struct-array element (Span *) stays for a later slice.
+        // Array-fold: a trailing `count` out-parameter alongside an array return folds to a List. The
+        // fold forwards the receiver, the visible arguments and the count buffer, then reads each element
+        // by the array's kind — a pointer to a temporal, a timestamp value, or a span struct at its
+        // stride. A second out-parameter (timeSplit's bins) still stays for a later slice.
         String arrayElement = arrayElementSubtype(retC);
-        boolean scalarArray = retC.equals("TimestampTz *");
-        if ((arrayElement != null || scalarArray)
-                && outParams.equals(List.of("count"))
-                && params.size() == 2 && params.get(1).path("name").asText().equals("count")) {
-            String rt = scalarArray
-                    ? "java.util.List<java.time.OffsetDateTime>"
-                    : "java.util.List<Temporal>";
-            return new Method(ooName, fnName, rt, scalarArray ? "scalarArray" : "objectArray",
-                    arrayElement, List.of());
+        String arrayKind = arrayElement != null ? "objectArray"
+                : retC.equals("TimestampTz *") ? "scalarArray"
+                : retC.equals("Span *") ? "spanArray"
+                : null;
+        int last = params.size() - 1;
+        if (arrayKind != null && outParams.equals(List.of("count"))
+                && last >= 1 && params.get(last).path("name").asText().equals("count")) {
+            List<Arg> foldArgs = new ArrayList<>();
+            boolean marshalled = true;
+            for (int i = 1; i < last; i++) {
+                JsonNode p = params.get(i);
+                Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                        sanitize(p.path("name").asText()), fnName);
+                if (a == null) {
+                    marshalled = false;
+                    break;
+                }
+                foldArgs.add(a);
+            }
+            if (marshalled) {
+                String rt = switch (arrayKind) {
+                    case "objectArray" -> "java.util.List<Temporal>";
+                    case "scalarArray" -> "java.util.List<java.time.OffsetDateTime>";
+                    default            -> "java.util.List<types.collections.time.tstzspan>";
+                };
+                return new Method(ooName, fnName, rt, arrayKind, arrayElement, foldArgs);
+            }
         }
         // A size_t* out-parameter is the throwaway byte-count of the *_as_wkb / *_as_hexwkb family; the
         // wrapper allocates, forwards and discards it, so the generated method never passes it.
@@ -430,6 +498,8 @@ public class ObjectLayerGenerator {
                     + "(long) _i * Long.BYTES), getCustomType(), " + m.returnSubtype + ")");
             case "scalarArray" -> arrayFoldBody(m, "utils.TimestampTzConverter.toOffsetDateTime("
                     + "_array.getLong((long) _i * Long.BYTES))");
+            case "spanArray" -> arrayFoldBody(m, "new types.collections.time.tstzspan("
+                    + "GeneratedFunctions.span_copy(_array.slice((long) _i * " + spanSize + ")))");
             default         -> "\t\treturn " + invocation + ";\n";
         };
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
@@ -445,9 +515,15 @@ public class ObjectLayerGenerator {
     private static String arrayFoldBody(Method m, String elementExpr) {
         String elementType = m.returnType.substring(
                 m.returnType.indexOf('<') + 1, m.returnType.lastIndexOf('>'));
+        StringJoiner call = new StringJoiner(", ");
+        call.add("getInner()");
+        for (Arg a : m.args) {
+            call.add(a.callExpr);
+        }
+        call.add("_count");
         return "\t\tjnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();\n"
                 + "\t\tPointer _count = jnr.ffi.Memory.allocate(_rt, Integer.BYTES);\n"
-                + "\t\tPointer _array = GeneratedFunctions." + m.fnName + "(getInner(), _count);\n"
+                + "\t\tPointer _array = GeneratedFunctions." + m.fnName + "(" + call + ");\n"
                 + "\t\tint _n = _count.getInt(0);\n"
                 + "\t\tjava.util.List<" + elementType + "> _out = new java.util.ArrayList<>(_n);\n"
                 + "\t\tfor (int _i = 0; _i < _n; _i++) {\n"
