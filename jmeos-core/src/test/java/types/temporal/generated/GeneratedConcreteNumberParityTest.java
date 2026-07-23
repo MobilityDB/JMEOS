@@ -1,12 +1,19 @@
 package types.temporal.generated;
 
 import functions.GeneratedFunctions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import org.junit.jupiter.api.Test;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tint.TIntSeq;
 import types.temporal.Temporal;
 import types.temporal.TemporalType;
+import utils.ConversionUtils;
+
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -86,5 +93,55 @@ public class GeneratedConcreteNumberParityTest {
         assertEquals(id(GeneratedFunctions.tfloat_to_tint(p)), id(g.toTint()));
 
         assertEquals(GeneratedFunctions.tfloat_out(p, 6), g.out(6));
+    }
+
+    @Test
+    void intValueSplitMatchesTheLibrary() {
+        TIntSeq a = new TIntSeq("[1@2019-09-01, 3@2019-09-02, 5@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTInt g = genInt(a);
+        Runtime rt = Runtime.getSystemRuntime();
+
+        // valueSplit folds the fragment array and the parallel int bins into (number, fragment) records.
+        Pointer bins = Memory.allocate(rt, Long.BYTES);
+        Pointer count = Memory.allocate(rt, Integer.BYTES);
+        Pointer frags = GeneratedFunctions.tint_value_split(p, 2, 0, bins, count);
+        Pointer binsArr = bins.getPointer(0);
+        List<GeneratedTInt.ValueSplit> split = g.valueSplit(2, 0);
+
+        assertEquals(count.getInt(0), split.size());
+        for (int i = 0; i < split.size(); i++) {
+            assertEquals(binsArr.getInt((long) i * Integer.BYTES), split.get(i).number());
+            assertEquals(id(frags.getPointer((long) i * Long.BYTES)), id(split.get(i).fragment()));
+        }
+    }
+
+    @Test
+    void floatValueTimeSplitMatchesTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 3@2019-09-02, 5@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTFloat g = genFloat(a);
+        Runtime rt = Runtime.getSystemRuntime();
+
+        Duration duration = Duration.ofDays(1);
+        OffsetDateTime torigin = OffsetDateTime.parse("2019-09-01T00:00:00Z");
+
+        // valueTimeSplit is 2-D: the fragment array zips with a value-bin array and a time-bin array.
+        Pointer vbins = Memory.allocate(rt, Long.BYTES);
+        Pointer tbins = Memory.allocate(rt, Long.BYTES);
+        Pointer count = Memory.allocate(rt, Integer.BYTES);
+        Pointer frags = GeneratedFunctions.tfloat_value_time_split(p, 2.0,
+                ConversionUtils.timedelta_to_interval(duration), 0.0, torigin, vbins, tbins, count);
+        Pointer vbinsArr = vbins.getPointer(0);
+        Pointer tbinsArr = tbins.getPointer(0);
+        List<GeneratedTFloat.ValueTimeSplit> split = g.valueTimeSplit(2.0, duration, 0.0, torigin);
+
+        assertEquals(count.getInt(0), split.size());
+        for (int i = 0; i < split.size(); i++) {
+            assertEquals(vbinsArr.getDouble((long) i * Double.BYTES), split.get(i).number());
+            assertEquals(utils.TimestampTzConverter.toOffsetDateTime(tbinsArr.getLong((long) i * Long.BYTES)),
+                    split.get(i).time());
+            assertEquals(id(frags.getPointer((long) i * Long.BYTES)), id(split.get(i).fragment()));
+        }
     }
 }
