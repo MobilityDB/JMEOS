@@ -298,4 +298,18 @@ public class GeneratedTemporalParityTest {
         // The WKB buffer is returned as a raw pointer.
         assertNotNull(g.asWKB((byte) 4));
     }
+
+    @Test
+    void indexedAccessorsAndCopyMatchTheLibrary() {
+        TFloatSeqSet ss = new TFloatSeqSet(
+                "{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}");
+        Pointer p = ss.getInner();
+        GeneratedTemporal g = gen(ss);
+
+        assertEquals(id(GeneratedFunctions.temporal_copy(p)), id(g.copy()));
+        // Zero-based indexing maps to the one-based MEOS accessor.
+        assertEquals(id(GeneratedFunctions.temporal_instant_n(p, 1)), id(g.instantN(0)));
+        assertEquals(id(GeneratedFunctions.temporal_instant_n(p, 2)), id(g.instantN(1)));
+        assertEquals(id(GeneratedFunctions.temporal_sequence_n(p, 1)), id(g.sequenceN(0)));
+    }
 }
