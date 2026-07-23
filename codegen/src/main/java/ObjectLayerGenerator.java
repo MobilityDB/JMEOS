@@ -246,13 +246,30 @@ public class ObjectLayerGenerator {
 
     /** A method the surface emits: its canonical name, the backing function, and how to marshal it. */
     private record Method(String ooName, String fnName, String returnType, String returnKind,
-                          String returnSubtype, List<Arg> args) {}
+                          String returnSubtype, List<Arg> args, List<SplitKey> splitKeys) {
+        /** A method with no split-key out-parameters (every kind but {@code split}). */
+        Method(String ooName, String fnName, String returnType, String returnKind,
+               String returnSubtype, List<Arg> args) {
+            this(ooName, fnName, returnType, returnKind, returnSubtype, args, List.of());
+        }
+    }
 
     /**
      * One argument of an emitted method: the Java type the caller passes, its name, and the
      * expression forwarded to the wrapper (the name itself for a pass-through, or a conversion).
      */
     private record Arg(String javaType, String name, String callExpr) {}
+
+    /**
+     * One bin dimension of a split. A split's backing function fills one bin-start out-parameter array
+     * per grouping dimension (value, space, time), all parallel to the {@code Temporal **} fragment
+     * array, so a split of D dimensions yields a record of D bin components plus the fragment.
+     * {@code fieldName} and {@code javaType} are the record component's name and type — aligned to the
+     * SQL composite the PostgreSQL table function returns ({@code time_tX(time, temp)},
+     * {@code number_time_tX(number, time, tnumber)}, {@code point_tgeo(point, tgeo)}) — and
+     * {@code readerExpr} reads element {@code _i} of the bin array whose pointer is spelled {@code $arr}.
+     */
+    private record SplitKey(String fieldName, String javaType, String readerExpr) {}
 
     /**
      * Classifies one object-model method. Returns a {@link Method} the slice can emit, or {@code null}
@@ -351,6 +368,56 @@ public class ObjectLayerGenerator {
                 };
                 return new Method(ooName, fnName, rt, arrayKind, arrayElement, foldArgs);
             }
+        }
+        // Split-fold: a temporal-array return with one or more bin-start out-parameters before the
+        // trailing `count` folds to a List of records, each pairing the per-fragment bin start(s) with
+        // the fragment. This is the split family: the backing function fills one bin array per grouping
+        // dimension (value, space, time), all parallel to the fragment array. This slice supports the
+        // time dimension (timeSplit, the only split on the generic Temporal); the value and space
+        // dimensions of the numeric/spatial subclasses extend the bin-type map in splitKey.
+        if (arrayElement != null && outParams.size() >= 2
+                && outParams.get(outParams.size() - 1).equals("count")) {
+            List<String> binOut = outParams.subList(0, outParams.size() - 1);
+            // The out-parameters must be the trailing parameters, so the wrapper call is receiver +
+            // visible arguments + bin buffers + count, in order.
+            int minOut = params.size();
+            int maxVisible = 0;
+            for (int i = 1; i < params.size(); i++) {
+                if (outParams.contains(params.get(i).path("name").asText())) {
+                    minOut = Math.min(minOut, i);
+                } else {
+                    maxVisible = Math.max(maxVisible, i);
+                }
+            }
+            List<SplitKey> keys = new ArrayList<>();
+            for (String o : binOut) {
+                SplitKey k = splitKey(paramCType(params, o));
+                if (k == null) {
+                    keys = null;
+                    break;
+                }
+                keys.add(k);
+            }
+            if (maxVisible < minOut && keys != null) {
+                List<Arg> foldArgs = new ArrayList<>();
+                boolean marshalled = true;
+                for (int i = 1; i < minOut; i++) {
+                    JsonNode p = params.get(i);
+                    Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                            sanitize(p.path("name").asText()), fnName);
+                    if (a == null) {
+                        marshalled = false;
+                        break;
+                    }
+                    foldArgs.add(a);
+                }
+                if (marshalled) {
+                    return new Method(ooName, fnName, "java.util.List<" + capitalize(ooName) + ">",
+                            "split", arrayElement, foldArgs, keys);
+                }
+            }
+            defer(ooName, "split bins " + binOut + " — unsupported bin dimension / non-trailing / argument marshalling");
+            return null;
         }
         // A size_t* out-parameter is the throwaway byte-count of the *_as_wkb / *_as_hexwkb family; the
         // wrapper allocates, forwards and discards it, so the generated method never passes it.
@@ -551,6 +618,29 @@ public class ObjectLayerGenerator {
         return c.replace("const ", "").trim();
     }
 
+    /**
+     * The record component for one split bin-start out-parameter, or {@code null} if this slice does not
+     * model that dimension. A bin out-parameter is a pointer to an array of the bin-start values
+     * ({@code T **}); the reader dereferences the array pointer ({@code $arr}) and reads element
+     * {@code _i}. This slice supports the time dimension (a {@code TimestampTz} array → an
+     * {@code OffsetDateTime}, the {@code time} column of the SQL composite); the value dimension of the
+     * numeric subclasses (an {@code int}/{@code double} array → the {@code number} column) and the space
+     * dimension of the spatial subclasses (a {@code GSERIALIZED} array → the {@code point} column) extend
+     * this map when those classes are generated.
+     */
+    private static SplitKey splitKey(String outParamCType) {
+        return switch (outParamCType) {
+            case "TimestampTz **" -> new SplitKey("time", "java.time.OffsetDateTime",
+                    "utils.TimestampTzConverter.toOffsetDateTime($arr.getLong((long) _i * Long.BYTES))");
+            default -> null;
+        };
+    }
+
+    /** The first letter upper-cased, for deriving a split record name from its camelCase method name. */
+    private static String capitalize(String s) {
+        return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
     // -------------------------------------------------------------------------
     // Emission
     // -------------------------------------------------------------------------
@@ -589,6 +679,11 @@ public class ObjectLayerGenerator {
 
                 """);
         sb.append(matchRecord());
+        for (Method m : methods) {
+            if (m.returnKind().equals("split")) {
+                sb.append(splitRecord(m));
+            }
+        }
         for (Method m : methods) {
             sb.append(generateMethod(m));
         }
@@ -629,6 +724,7 @@ public class ObjectLayerGenerator {
             case "spanArray" -> arrayFoldBody(m, "new types.collections.time.tstzspan("
                     + "GeneratedFunctions.span_copy(_array.slice((long) _i * " + spanSize + ")))");
             case "matchArray" -> arrayFoldBody(m, matchElementExpr());
+            case "split" -> splitFoldBody(m);
             default         -> "\t\treturn " + invocation + ";\n";
         };
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
@@ -653,6 +749,65 @@ public class ObjectLayerGenerator {
         }
         return "\t/** A matched pair of instant positions on a similarity path. */\n"
                 + "\trecord Match(" + components + ") {}\n\n";
+    }
+
+    /**
+     * The record one split fragment folds into: one component per bin dimension (the bin-start value)
+     * followed by the temporal fragment. The bin components and their types come from the split's
+     * {@link SplitKey}s (aligned to the SQL composite the table function returns); the fragment is the
+     * temporal piece restricted to that bin.
+     */
+    private String splitRecord(Method m) {
+        StringJoiner components = new StringJoiner(", ");
+        for (SplitKey k : m.splitKeys()) {
+            components.add(k.javaType() + " " + k.fieldName());
+        }
+        components.add("Temporal fragment");
+        String plural = m.splitKeys().size() > 1 ? "s" : "";
+        return "\t/** One " + m.ooName() + " fragment with its bin start" + plural + ". */\n"
+                + "\trecord " + capitalize(m.ooName()) + "(" + components + ") {}\n\n";
+    }
+
+    /**
+     * The body of a split-fold: allocate the count buffer and one bin buffer per grouping dimension, call
+     * the wrapper (which writes the count and each bin array and returns the fragment array), then read
+     * each fragment and its parallel bin start(s) into a record. Each bin out-parameter is a {@code T **},
+     * so its buffer holds the array pointer, dereferenced once before the loop.
+     */
+    private String splitFoldBody(Method m) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t\tjnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();\n");
+        sb.append("\t\tPointer _count = jnr.ffi.Memory.allocate(_rt, Integer.BYTES);\n");
+        for (int k = 0; k < m.splitKeys().size(); k++) {
+            sb.append("\t\tPointer _bin").append(k).append(" = jnr.ffi.Memory.allocate(_rt, Long.BYTES);\n");
+        }
+        StringJoiner call = new StringJoiner(", ");
+        call.add("getInner()");
+        for (Arg a : m.args()) {
+            call.add(a.callExpr());
+        }
+        for (int k = 0; k < m.splitKeys().size(); k++) {
+            call.add("_bin" + k);
+        }
+        call.add("_count");
+        sb.append("\t\tPointer _frags = GeneratedFunctions.").append(m.fnName()).append("(").append(call).append(");\n");
+        sb.append("\t\tint _n = _count.getInt(0);\n");
+        for (int k = 0; k < m.splitKeys().size(); k++) {
+            sb.append("\t\tPointer _bin").append(k).append("Arr = _bin").append(k).append(".getPointer(0);\n");
+        }
+        String rec = capitalize(m.ooName());
+        sb.append("\t\tjava.util.List<").append(rec).append("> _out = new java.util.ArrayList<>(_n);\n");
+        sb.append("\t\tfor (int _i = 0; _i < _n; _i++) {\n");
+        StringJoiner ctor = new StringJoiner(", ");
+        for (int k = 0; k < m.splitKeys().size(); k++) {
+            ctor.add(m.splitKeys().get(k).readerExpr().replace("$arr", "_bin" + k + "Arr"));
+        }
+        ctor.add("Factory.create_temporal(_frags.getPointer((long) _i * Long.BYTES), getCustomType(), "
+                + m.returnSubtype() + ")");
+        sb.append("\t\t\t_out.add(new ").append(rec).append("(").append(ctor).append("));\n");
+        sb.append("\t\t}\n");
+        sb.append("\t\treturn _out;\n");
+        return sb.toString();
     }
 
     /**
