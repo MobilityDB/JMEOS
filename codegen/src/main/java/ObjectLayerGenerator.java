@@ -692,15 +692,17 @@ public class ObjectLayerGenerator {
      * model that dimension. A bin out-parameter is a pointer to an array of the bin-start values
      * ({@code T **}); the reader dereferences the array pointer ({@code $arr}) and reads element
      * {@code _i}. This slice supports the time dimension (a {@code TimestampTz} array → an
-     * {@code OffsetDateTime}, the {@code time} column of the SQL composite); the value dimension of the
-     * numeric subclasses (an {@code int}/{@code double} array → the {@code number} column) and the space
-     * dimension of the spatial subclasses (a {@code GSERIALIZED} array → the {@code point} column) extend
+     * {@code OffsetDateTime}, the {@code time} column of the SQL composite) and the value dimension of the
+     * numeric subclasses (an {@code int}/{@code double} array → the {@code number} column); the space
+     * dimension of the spatial subclasses (a {@code GSERIALIZED} array → the {@code point} column) extends
      * this map when those classes are generated.
      */
     private static SplitKey splitKey(String outParamCType) {
         return switch (outParamCType) {
             case "TimestampTz **" -> new SplitKey("time", "java.time.OffsetDateTime",
                     "utils.TimestampTzConverter.toOffsetDateTime($arr.getLong((long) _i * Long.BYTES))");
+            case "int **"    -> new SplitKey("number", "int", "$arr.getInt((long) _i * Integer.BYTES)");
+            case "double **" -> new SplitKey("number", "double", "$arr.getDouble((long) _i * Double.BYTES)");
             default -> null;
         };
     }
