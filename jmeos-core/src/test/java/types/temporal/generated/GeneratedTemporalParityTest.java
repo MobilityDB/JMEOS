@@ -235,4 +235,26 @@ public class GeneratedTemporalParityTest {
         assertEquals(id(GeneratedFunctions.temporal_delete_tstzspan(p, period.get_inner(), false)),
                 id(g.deleteTstzspan(period, false)));
     }
+
+    @Test
+    void comparisonPredicatesMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        TFloatSeq b = new TFloatSeq("[3@2019-09-03, 4@2019-09-04]");
+        TFloatSeq aCopy = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        Pointer pa = a.getInner();
+        Pointer pb = b.getInner();
+        GeneratedTemporal g = gen(a);
+
+        assertEquals(GeneratedFunctions.temporal_cmp(pa, pb), g.cmp(b));
+        assertEquals(GeneratedFunctions.temporal_eq(pa, pb), g.eq(b));
+        assertEquals(GeneratedFunctions.temporal_ne(pa, pb), g.ne(b));
+        assertEquals(GeneratedFunctions.temporal_lt(pa, pb), g.lt(b));
+        assertEquals(GeneratedFunctions.temporal_le(pa, pb), g.le(b));
+        assertEquals(GeneratedFunctions.temporal_gt(pa, pb), g.gt(b));
+        assertEquals(GeneratedFunctions.temporal_ge(pa, pb), g.ge(b));
+
+        // Equal temporals compare equal; ordering is strict against a greater one.
+        assertEquals(true, g.eq(aCopy));
+        assertEquals(true, g.lt(b));
+    }
 }
