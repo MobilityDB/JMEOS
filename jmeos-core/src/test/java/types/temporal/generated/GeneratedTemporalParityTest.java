@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
+import types.collections.number.FloatSet;
 import types.collections.time.tstzspan;
 import types.temporal.Temporal;
 import types.temporal.TemporalType;
@@ -256,5 +257,30 @@ public class GeneratedTemporalParityTest {
         // Equal temporals compare equal; ordering is strict against a greater one.
         assertEquals(true, g.eq(aCopy));
         assertEquals(true, g.lt(b));
+    }
+
+    @Test
+    void restrictionsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02, 3@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // No-argument and timestamp restrictions.
+        assertEquals(id(GeneratedFunctions.temporal_at_max(p)), id(g.atMax()));
+        assertEquals(id(GeneratedFunctions.temporal_at_min(p)), id(g.atMin()));
+        OffsetDateTime t = OffsetDateTime.parse("2019-09-02T00:00:00Z");
+        assertEquals(id(GeneratedFunctions.temporal_at_timestamptz(p, t)), id(g.atTimestamptz(t)));
+
+        // Time-collection restriction (tstz wrapper).
+        tstzspan period = new tstzspan("[2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]");
+        assertEquals(id(GeneratedFunctions.temporal_at_tstzspan(p, period.get_inner())),
+                id(g.atTstzspan(period)));
+
+        // Value-collection restriction (a value set of floats, marshalled through the generic base Set).
+        FloatSet values = new FloatSet("{1, 2}");
+        assertEquals(id(GeneratedFunctions.temporal_at_values(p, values.get_inner())),
+                id(g.atValues(values)));
+        assertEquals(id(GeneratedFunctions.temporal_minus_values(p, values.get_inner())),
+                id(g.minusValues(values)));
     }
 }
