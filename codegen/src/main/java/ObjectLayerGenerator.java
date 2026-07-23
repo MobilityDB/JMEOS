@@ -36,7 +36,7 @@ public class ObjectLayerGenerator {
     private static final String CLASS = "Temporal";
 
     /** The object-model roles this surface generates. */
-    private static final Set<String> ROLES = Set.of("accessor", "conversion", "predicate");
+    private static final Set<String> ROLES = Set.of("accessor", "conversion", "predicate", "restriction");
 
     /** Enum type names from the catalog; a param of one of these maps to a Java int in the surface. */
     private final Set<String> enumNames = new HashSet<>();
@@ -234,7 +234,7 @@ public class ObjectLayerGenerator {
             if ((name.equals("n") || name.equals("i")) && ooName.endsWith("N")) {
                 indexed = true;
             }
-            Arg arg = marshalArg(pC, name);
+            Arg arg = marshalArg(pC, name, fnName);
             if (arg == null) {
                 defer(ooName, "argument " + name + " of type " + pC + " needs object/collection marshalling");
                 return null;
@@ -297,9 +297,11 @@ public class ObjectLayerGenerator {
      * How to marshal one argument to the wrapper, or {@code null} if it needs a pattern this slice does
      * not emit (an object/collection pointer). A scalar and a {@code TimestampTz} pass straight through
      * (the wrapper takes the primitive resp. the {@code OffsetDateTime}); an {@code interpType} and an
-     * {@code Interval *} convert through the same helpers the hand layer uses.
+     * {@code Interval *} convert through the same helpers the hand layer uses. A set/span/spanset
+     * argument is a time wrapper when the method restricts by time (its backing function names the tstz
+     * type) and the generic collection over the base value otherwise.
      */
-    private static Arg marshalArg(String pC, String name) {
+    private static Arg marshalArg(String pC, String name, String fnName) {
         String scalar = switch (pC) {
             case "bool"                              -> "boolean";
             case "int", "int32", "int32_t",
@@ -313,20 +315,25 @@ public class ObjectLayerGenerator {
         if (scalar != null) {
             return new Arg(scalar, name, name);
         }
+        boolean time = fnName.contains("tstz");
         return switch (pC) {
             case "interpType"  -> new Arg("TInterpolation", name, name + ".getValue()");
             case "Interval *"  -> new Arg("java.time.Duration", name,
                     "utils.ConversionUtils.timedelta_to_interval(" + name + ")");
             case "TimestampTz" -> new Arg("java.time.OffsetDateTime", name, name);
+            case "char *"      -> new Arg("String", name, name);
             // A temporal object argument is passed as a Temporal and forwarded as its inner pointer;
             // MEOS validates the concrete subtype (a TInstant *, a TSequence *) at the boundary.
             case "Temporal *", "TInstant *", "TSequence *", "TSequenceSet *"
                                -> new Arg("Temporal", name, name + ".getInner()");
-            // A Temporal's time domain is always the tstz family, so its set/span/spanset arguments are
-            // the time wrappers, forwarded as their inner pointer.
-            case "Set *"       -> new Arg("types.collections.time.tstzset", name, name + ".get_inner()");
-            case "Span *"      -> new Arg("types.collections.time.tstzspan", name, name + ".get_inner()");
-            case "SpanSet *"   -> new Arg("types.collections.time.tstzspanset", name, name + ".get_inner()");
+            // A time restriction takes the tstz wrapper; a value restriction takes the generic
+            // collection over the base value. Both are forwarded as their inner pointer.
+            case "Set *"       -> new Arg(time ? "types.collections.time.tstzset"
+                                               : "types.collections.base.Set<?>", name, name + ".get_inner()");
+            case "Span *"      -> new Arg(time ? "types.collections.time.tstzspan"
+                                               : "types.collections.base.Span<?>", name, name + ".get_inner()");
+            case "SpanSet *"   -> new Arg(time ? "types.collections.time.tstzspanset"
+                                               : "types.collections.base.SpanSet<?>", name, name + ".get_inner()");
             default            -> null;
         };
     }
