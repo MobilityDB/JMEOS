@@ -312,4 +312,35 @@ public class GeneratedTemporalParityTest {
         assertEquals(id(GeneratedFunctions.temporal_instant_n(p, 2)), id(g.instantN(1)));
         assertEquals(id(GeneratedFunctions.temporal_sequence_n(p, 1)), id(g.sequenceN(0)));
     }
+
+    @Test
+    void spanArraysMatchTheLibrary() {
+        TFloatSeqSet ss = new TFloatSeqSet(
+                "{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}");
+        Pointer p = ss.getInner();
+        GeneratedTemporal g = gen(ss);
+        Runtime rt = Runtime.getSystemRuntime();
+        int spanBytes = 24; // sizeof(Span) on the 64-bit targets
+
+        // spans() folds the Span array into tstzspan wrappers; compare each to the raw array element.
+        Pointer c = Memory.allocate(rt, Integer.BYTES);
+        Pointer arr = GeneratedFunctions.temporal_spans(p, c);
+        List<tstzspan> spans = g.spans();
+        assertEquals(c.getInt(0), spans.size());
+        for (int i = 0; i < spans.size(); i++) {
+            assertEquals(GeneratedFunctions.span_out(arr.slice((long) i * spanBytes), 15),
+                    GeneratedFunctions.span_out(spans.get(i).get_inner(), 15));
+        }
+
+        // The split and time-bin variants fold with their extra arguments.
+        Pointer c2 = Memory.allocate(rt, Integer.BYTES);
+        GeneratedFunctions.temporal_split_n_spans(p, 2, c2);
+        assertEquals(c2.getInt(0), g.splitNSpans(2).size());
+
+        OffsetDateTime origin = OffsetDateTime.parse("2019-09-01T00:00:00Z");
+        Pointer c3 = Memory.allocate(rt, Integer.BYTES);
+        GeneratedFunctions.temporal_time_bins(p,
+                ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), origin, c3);
+        assertEquals(c3.getInt(0), g.timeBins(Duration.ofDays(1), origin).size());
+    }
 }
