@@ -15,5 +15,6 @@ types.collections.number
 types.collections.text
 types.collections.time
 types.temporal
+types.temporal.generated
 utils
 utils.meosCatalog
