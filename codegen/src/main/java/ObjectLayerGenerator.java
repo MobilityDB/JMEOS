@@ -37,7 +37,7 @@ public class ObjectLayerGenerator {
 
     /** The object-model roles this surface generates. */
     private static final Set<String> ROLES =
-            Set.of("accessor", "conversion", "predicate", "restriction", "output");
+            Set.of("accessor", "conversion", "predicate", "restriction", "output", "constructor");
 
     /** Enum type names from the catalog; a param of one of these maps to a Java int in the surface. */
     private final Set<String> enumNames = new HashSet<>();
@@ -234,11 +234,6 @@ public class ObjectLayerGenerator {
             return null;
         }
 
-        // 1-based index adjustment (instant_n/sequence_n): the hand layer presents 0-based indexing
-        // by adding one before the call. That is a semantic decision, not a mechanical marshal, so it
-        // is deferred rather than guessed here.
-        boolean indexed = false;
-
         List<Arg> args = new ArrayList<>();
         for (int i = 1; i < params.size(); i++) {
             JsonNode p = params.get(i);
@@ -247,19 +242,17 @@ public class ObjectLayerGenerator {
             }
             String pC = cleanType(p.path("cType").asText());
             String name = sanitize(p.path("name").asText());
-            if ((name.equals("n") || name.equals("i")) && ooName.endsWith("N")) {
-                indexed = true;
-            }
             Arg arg = marshalArg(pC, name, fnName);
             if (arg == null) {
                 defer(ooName, "argument " + name + " of type " + pC + " needs object/collection marshalling");
                 return null;
             }
+            // The *_n accessors index from one in MEOS; the surface exposes zero-based indexing, like
+            // the hand layer, by forwarding the argument plus one.
+            if ((name.equals("n") || name.equals("i")) && ooName.endsWith("N")) {
+                arg = new Arg(arg.javaType(), arg.name(), arg.name() + " + 1");
+            }
             args.add(arg);
-        }
-        if (indexed) {
-            defer(ooName, "1-based index argument needs a base decision");
-            return null;
         }
         return new Method(ooName, fnName, returnType, returnKind, returnSubtype, args);
     }
