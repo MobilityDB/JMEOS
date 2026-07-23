@@ -218,6 +218,26 @@ public class ObjectLayerGenerator {
         // is an array, not a receiver.
         String recv = cleanType(params.get(0).path("cType").asText());
         if (!recv.equals("Temporal *")) {
+            // A constructor builds a Temporal from other inputs (a hex string, a WKB buffer) rather than
+            // from a receiver, so every parameter is an argument, the call omits getInner(), and the
+            // result is wrapped with the type contract — symmetric to the as* output methods. It stays
+            // an instance method (the mergeArray array constructor still needs array-input marshalling).
+            if (cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
+                List<Arg> ctorArgs = new ArrayList<>();
+                boolean marshalled = true;
+                for (JsonNode p : params) {
+                    Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                            sanitize(p.path("name").asText()), fnName);
+                    if (a == null) {
+                        marshalled = false;
+                        break;
+                    }
+                    ctorArgs.add(a);
+                }
+                if (marshalled) {
+                    return new Method(ooName, fnName, "Temporal", "factory", null, ctorArgs);
+                }
+            }
             defer(ooName, "receiver is " + recv + ", not Temporal *");
             return null;
         }
@@ -386,7 +406,8 @@ public class ObjectLayerGenerator {
             case "int", "int32", "int32_t",
                  "uint32", "uint32_t"                -> "int";
             case "long", "int64", "int64_t",
-                 "uint64", "uint64_t"                -> "long";
+                 "uint64", "uint64_t",
+                 "size_t", "uintptr_t"               -> "long";
             case "double", "float8"                  -> "double";
             case "float"                             -> "float";
             default                                  -> null;
@@ -397,6 +418,8 @@ public class ObjectLayerGenerator {
         boolean time = fnName.contains("tstz");
         return switch (pC) {
             case "interpType"  -> new Arg("TInterpolation", name, name + ".getValue()");
+            // A raw byte buffer (a WKB) is passed as the pointer it already is.
+            case "uint8_t *"   -> new Arg("Pointer", name, name);
             case "Interval *"  -> new Arg("java.time.Duration", name,
                     "utils.ConversionUtils.timedelta_to_interval(" + name + ")");
             case "TimestampTz" -> new Arg("java.time.OffsetDateTime", name, name);
@@ -488,7 +511,15 @@ public class ObjectLayerGenerator {
             call.add(a.callExpr);
         }
         String invocation = "GeneratedFunctions." + m.fnName + "(" + call + ")";
+        // A factory has no receiver in the call; every argument is its own, and the result is wrapped
+        // with the type contract.
+        StringJoiner factoryCall = new StringJoiner(", ");
+        for (Arg a : m.args) {
+            factoryCall.add(a.callExpr);
+        }
         String body = switch (m.returnKind) {
+            case "factory" -> "\t\treturn Factory.create_temporal(GeneratedFunctions." + m.fnName
+                    + "(" + factoryCall + "), getCustomType(), getTemporalType());\n";
             case "temporal" -> "\t\treturn Factory.create_temporal(" + invocation
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
