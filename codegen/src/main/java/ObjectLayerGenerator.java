@@ -310,6 +310,10 @@ public class ObjectLayerGenerator {
             case "Interval *"  -> new Arg("java.time.Duration", name,
                     "utils.ConversionUtils.timedelta_to_interval(" + name + ")");
             case "TimestampTz" -> new Arg("java.time.OffsetDateTime", name, name);
+            // A temporal object argument is passed as a Temporal and forwarded as its inner pointer;
+            // MEOS validates the concrete subtype (a TInstant *, a TSequence *) at the boundary.
+            case "Temporal *", "TInstant *", "TSequence *", "TSequenceSet *"
+                               -> new Arg("Temporal", name, name + ".getInner()");
             default            -> null;
         };
     }

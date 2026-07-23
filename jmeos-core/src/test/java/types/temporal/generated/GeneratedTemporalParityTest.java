@@ -193,4 +193,27 @@ public class GeneratedTemporalParityTest {
                     timestamps.get(i));
         }
     }
+
+    @Test
+    void objectArgumentsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        TFloatSeq b = new TFloatSeq("[3@2019-09-03, 4@2019-09-04]");
+        TFloatInst inst = new TFloatInst("5@2019-09-05");
+        Pointer pa = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // A temporal object argument is forwarded as its inner pointer.
+        assertEquals(id(GeneratedFunctions.temporal_merge(pa, b.getInner())), id(g.merge(b)));
+        assertEquals(GeneratedFunctions.temporal_frechet_distance(pa, b.getInner()), g.frechetDistance(b));
+        assertEquals(id(GeneratedFunctions.temporal_insert(pa, b.getInner(), true)), id(g.insert(b, true)));
+        assertEquals(id(GeneratedFunctions.temporal_append_tsequence(pa, b.getInner(), false)),
+                id(g.appendTsequence(b, false)));
+
+        // appendTinstant mixes an object, an interpolation, an interval and scalar arguments.
+        assertEquals(
+                id(GeneratedFunctions.temporal_append_tinstant(pa, inst.getInner(),
+                        TInterpolation.LINEAR.getValue(), 0.0,
+                        ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), false)),
+                id(g.appendTinstant(inst, TInterpolation.LINEAR, 0.0, Duration.ofDays(1), false)));
+    }
 }
