@@ -387,4 +387,28 @@ public class GeneratedTemporalParityTest {
 
         assertEquals(id(direct), id(g.mergeArray(List.of(a, b))));
     }
+
+    @Test
+    void similarityPathsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02, 3@2019-09-03]");
+        TFloatSeq b = new TFloatSeq("[1@2019-09-01, 3@2019-09-02, 2@2019-09-03]");
+        Pointer pa = a.getInner();
+        GeneratedTemporal g = gen(a);
+        Runtime rt = Runtime.getSystemRuntime();
+
+        // frechetPath folds the Match array into records; compare each to the raw {i, j} pair.
+        Pointer c = Memory.allocate(rt, Integer.BYTES);
+        Pointer arr = GeneratedFunctions.temporal_frechet_path(pa, b.getInner(), c);
+        List<GeneratedTemporal.Match> path = g.frechetPath(b);
+        assertEquals(c.getInt(0), path.size());
+        for (int i = 0; i < path.size(); i++) {
+            assertEquals(arr.getInt((long) i * 8), path.get(i).i());
+            assertEquals(arr.getInt((long) i * 8 + 4), path.get(i).j());
+        }
+
+        // The dynamic-time-warp path folds the same way.
+        Pointer c2 = Memory.allocate(rt, Integer.BYTES);
+        GeneratedFunctions.temporal_dyntimewarp_path(pa, b.getInner(), c2);
+        assertEquals(c2.getInt(0), g.dyntimewarpPath(b).size());
+    }
 }

@@ -51,6 +51,10 @@ public class ObjectLayerGenerator {
     /** Size in bytes of the {@code Span} struct, the stride of a {@code Span *} array. */
     private int spanSize;
 
+    /** The {@code Match} struct's fields and stride, folded into a record over a {@code Match *} array. */
+    private List<StructField> matchFields;
+    private int matchStride;
+
     // -------------------------------------------------------------------------
     // Entry point
     // -------------------------------------------------------------------------
@@ -74,6 +78,8 @@ public class ObjectLayerGenerator {
         collectEnumNames(root);
         indexFunctions(root);
         spanSize = structSize(root, "Span");
+        matchFields = structFields(root, "Match");
+        matchStride = structSize(root, "Match");
 
         JsonNode classNode = root.path("objectModel").path("classes").path(CLASS);
         if (classNode.isMissingNode()) {
@@ -139,33 +145,64 @@ public class ObjectLayerGenerator {
      * its widest field. This is the stride of an array of that struct.
      */
     private static int structSize(JsonNode root, String name) {
-        for (JsonNode s : root.path("structs")) {
-            if (!s.path("name").asText().equals(name)) {
+        int offset = 0;
+        int widest = 1;
+        for (JsonNode f : structOf(root, name).path("fields")) {
+            String cType = f.path("cType").asText().trim();
+            int bracket = cType.indexOf('[');
+            int size;
+            int align;
+            if (bracket >= 0) { // a fixed-size array field, e.g. char[4]
+                int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
+                align = scalarBytes(cType.substring(0, bracket).trim());
+                size = count * align;
+            } else {
+                size = align = scalarBytes(cType);
+            }
+            widest = Math.max(widest, align);
+            offset = (offset + align - 1) / align * align + size;
+        }
+        return (offset + widest - 1) / widest * widest;
+    }
+
+    /**
+     * The scalar fields of a catalog struct with their byte offsets, for folding an array of that struct
+     * into a record. A fixed-size array field (padding) contributes to the offsets but is not a record
+     * field; a scalar field whose type the record cannot model is an error, never a silent skip.
+     */
+    private static List<StructField> structFields(JsonNode root, String name) {
+        List<StructField> fields = new ArrayList<>();
+        int offset = 0;
+        for (JsonNode f : structOf(root, name).path("fields")) {
+            String cType = f.path("cType").asText().trim();
+            int bracket = cType.indexOf('[');
+            if (bracket >= 0) { // a fixed-size array field (padding); contributes to the offset only
+                int base = scalarBytes(cType.substring(0, bracket).trim());
+                int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
+                offset = (offset + base - 1) / base * base + base * count;
                 continue;
             }
-            int offset = 0;
-            int widest = 1;
-            for (JsonNode f : s.path("fields")) {
-                String cType = f.path("cType").asText().trim();
-                int size;
-                int align;
-                int bracket = cType.indexOf('[');
-                if (bracket >= 0) { // a fixed-size array field, e.g. char[4]
-                    int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
-                    align = scalarBytes(cType.substring(0, bracket).trim());
-                    size = count * align;
-                } else {
-                    size = align = scalarBytes(cType);
-                }
-                widest = Math.max(widest, align);
-                offset = (offset + align - 1) / align * align + size;
+            int align = scalarBytes(cType);
+            offset = (offset + align - 1) / align * align;
+            fields.add(new StructField(f.path("name").asText(), fieldJavaType(cType), fieldGetter(cType), offset));
+            offset += align;
+        }
+        return fields;
+    }
+
+    private static JsonNode structOf(JsonNode root, String name) {
+        for (JsonNode s : root.path("structs")) {
+            if (s.path("name").asText().equals(name)) {
+                return s;
             }
-            return (offset + widest - 1) / widest * widest;
         }
         throw new IllegalStateException("struct " + name + " not found in the catalog");
     }
 
-    /** Size in bytes of a scalar C type (a pointer, or the default, is eight). */
+    /** One scalar struct field: its name, the Java type it maps to, its jnr reader, and its byte offset. */
+    private record StructField(String name, String javaType, String getter, int offset) {}
+
+    /** Size in bytes of a scalar C type; an unhandled type is an error. */
     private static int scalarBytes(String cType) {
         cType = cType.replace("const ", "").trim();
         if (cType.endsWith("*")) {
@@ -175,7 +212,31 @@ public class ObjectLayerGenerator {
             case "bool", "char", "int8", "int8_t", "uint8", "uint8_t" -> 1;
             case "short", "int16", "int16_t", "uint16", "uint16_t" -> 2;
             case "int", "int32", "int32_t", "uint32", "uint32_t", "float", "Oid", "DateADT" -> 4;
-            default -> 8;
+            case "long", "int64", "int64_t", "uint64", "uint64_t", "double", "float8",
+                 "Datum", "Timestamp", "TimestampTz", "TimeADT", "size_t", "uintptr_t" -> 8;
+            default -> throw new IllegalStateException("unhandled struct field type: " + cType);
+        };
+    }
+
+    /** The Java type of a scalar struct field; an unhandled type is an error. */
+    private static String fieldJavaType(String cType) {
+        return switch (cType.replace("const ", "").trim()) {
+            case "int", "int32", "int32_t", "uint32", "uint32_t" -> "int";
+            case "long", "int64", "int64_t", "uint64", "uint64_t" -> "long";
+            case "double", "float8" -> "double";
+            case "float" -> "float";
+            default -> throw new IllegalStateException("unmodelled record field type: " + cType);
+        };
+    }
+
+    /** The jnr {@code Pointer} reader for a scalar struct field; an unhandled type is an error. */
+    private static String fieldGetter(String cType) {
+        return switch (cType.replace("const ", "").trim()) {
+            case "int", "int32", "int32_t", "uint32", "uint32_t" -> "getInt";
+            case "long", "int64", "int64_t", "uint64", "uint64_t" -> "getLong";
+            case "double", "float8" -> "getDouble";
+            case "float" -> "getFloat";
+            default -> throw new IllegalStateException("unmodelled record field type: " + cType);
         };
     }
 
@@ -264,6 +325,7 @@ public class ObjectLayerGenerator {
         String arrayKind = arrayElement != null ? "objectArray"
                 : retC.equals("TimestampTz *") ? "scalarArray"
                 : retC.equals("Span *") ? "spanArray"
+                : retC.equals("Match *") ? "matchArray"
                 : null;
         int last = params.size() - 1;
         if (arrayKind != null && outParams.equals(List.of("count"))
@@ -284,7 +346,8 @@ public class ObjectLayerGenerator {
                 String rt = switch (arrayKind) {
                     case "objectArray" -> "java.util.List<Temporal>";
                     case "scalarArray" -> "java.util.List<java.time.OffsetDateTime>";
-                    default            -> "java.util.List<types.collections.time.tstzspan>";
+                    case "spanArray"   -> "java.util.List<types.collections.time.tstzspan>";
+                    default            -> "java.util.List<Match>";
                 };
                 return new Method(ooName, fnName, rt, arrayKind, arrayElement, foldArgs);
             }
@@ -525,6 +588,7 @@ public class ObjectLayerGenerator {
                 \tTemporalType getTemporalType();
 
                 """);
+        sb.append(matchRecord());
         for (Method m : methods) {
             sb.append(generateMethod(m));
         }
@@ -564,11 +628,31 @@ public class ObjectLayerGenerator {
                     + "_array.getLong((long) _i * Long.BYTES))");
             case "spanArray" -> arrayFoldBody(m, "new types.collections.time.tstzspan("
                     + "GeneratedFunctions.span_copy(_array.slice((long) _i * " + spanSize + ")))");
+            case "matchArray" -> arrayFoldBody(m, matchElementExpr());
             default         -> "\t\treturn " + invocation + ";\n";
         };
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
                 + body
                 + "\t}\n\n";
+    }
+
+    /** The expression that reads one {@code Match} struct at the array cursor into a record. */
+    private String matchElementExpr() {
+        StringJoiner reads = new StringJoiner(", ");
+        for (StructField f : matchFields) {
+            reads.add("_array." + f.getter() + "((long) _i * " + matchStride + " + " + f.offset() + ")");
+        }
+        return "new Match(" + reads + ")";
+    }
+
+    /** The {@code Match} record declaration, its components derived from the catalog struct fields. */
+    private String matchRecord() {
+        StringJoiner components = new StringJoiner(", ");
+        for (StructField f : matchFields) {
+            components.add(f.javaType() + " " + f.name());
+        }
+        return "\t/** A matched pair of instant positions on a similarity path. */\n"
+                + "\trecord Match(" + components + ") {}\n\n";
     }
 
     /**
