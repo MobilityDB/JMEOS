@@ -35,8 +35,8 @@ public class ObjectLayerGenerator {
     /** The class whose OO surface this run emits. */
     private static final String CLASS = "Temporal";
 
-    /** Roles included in this slice. */
-    private static final Set<String> ROLES = Set.of("accessor", "conversion");
+    /** The object-model roles this surface generates. */
+    private static final Set<String> ROLES = Set.of("accessor", "conversion", "predicate");
 
     /** Enum type names from the catalog; a param of one of these maps to a Java int in the surface. */
     private final Set<String> enumNames = new HashSet<>();
