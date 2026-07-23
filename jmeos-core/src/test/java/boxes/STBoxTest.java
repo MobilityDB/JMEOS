@@ -33,7 +33,6 @@ public class STBoxTest {
 
     public STBoxTest() throws SQLException {
 		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
 		stbx = new STBox("STBOX X((1, 1),(2, 2))");
 		stbz = new STBox("STBOX Z((1, 1, 1),(2, 2, 2))");
 		stbt = new STBox("STBOX T([2019-09-01,2019-09-02])");
@@ -43,7 +42,6 @@ public class STBoxTest {
 
 	static Stream<Arguments> STBox_sources() throws SQLException {
 		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
 		return Stream.of(
 				Arguments.of(new STBox("STBOX X((1, 1),(2, 2))"), "STBOX X((1, 1),(2, 2))" ),
 				Arguments.of(new STBox("STBOX Z((1, 1, 1),(2, 2, 2))"), "STBOX Z((1, 1, 1),(2, 2, 2))" ),
@@ -112,7 +110,6 @@ public class STBoxTest {
 	@MethodSource("STBox_sources")
 	public void testFromAsConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
 		STBox stb = new STBox(str);
 		assertTrue(stb.eq(box));
 	}
@@ -122,7 +119,6 @@ public class STBoxTest {
 	@MethodSource("STBox_sources")
 	public void testCopyConstructor(STBox box, String str) throws SQLException {
 		functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
 		STBox stb = box.copy();
 		assertTrue(stb.eq(box));
 		assertFalse(stb.get_inner() == box.get_inner());

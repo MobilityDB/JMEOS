@@ -1213,9 +1213,6 @@ public class STBox implements Box {
 
 	@Override
 	public tstzspan to_period(){
-		error_handler_fn errorHandler = new error_handler();
-		GeneratedFunctions.meos_initialize_timezone("UTC");
-		GeneratedFunctions.meos_initialize_error_handler(errorHandler);
 		return new tstzspan(GeneratedFunctions.stbox_to_tstzspan(this._inner));
 	}
 

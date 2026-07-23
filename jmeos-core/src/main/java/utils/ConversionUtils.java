@@ -40,9 +40,6 @@ public class ConversionUtils {
 	 * @return offsetDateTime
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
-		error_handler handler= new error_handler();
-		GeneratedFunctions.meos_initialize_timezone("UTC");
-		GeneratedFunctions.meos_initialize_error_handler(handler);
 		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		return GeneratedFunctions.timestamptz_in(formattedDt, -1);
 	}

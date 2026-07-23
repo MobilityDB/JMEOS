@@ -1,5 +1,7 @@
 package functions;
 
+import functions.GeneratedFunctions;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import types.basic.tfloat.TFloatInst;
@@ -35,8 +37,7 @@ class MeosArgumentErrorBranchTest {
 
     @BeforeAll
     static void initMeos() {
-        functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(HANDLER);
+        GeneratedFunctions.meos_initialize_timezone("UTC");
     }
 
     @BeforeEach
@@ -146,14 +147,14 @@ class MeosArgumentErrorBranchTest {
             @DisplayName("intspan_make(300, 100) catchable as MeosArgumentError")
             void invertedSpan_catchableAsMeosArgumentError() {
                 assertThrows(MeosArgumentError.class,
-                        () -> functions.intspan_make(300, 100, true, true));
+                        () -> GeneratedFunctions.intspan_make(300, 100, true, true));
             }
 
             @Test
             @DisplayName("intspan_make(300, 100) catchable as MeosException")
             void invertedSpan_catchableAsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.intspan_make(300, 100, true, true));
+                        () -> GeneratedFunctions.intspan_make(300, 100, true, true));
             }
         }
     }
@@ -261,14 +262,14 @@ class MeosArgumentErrorBranchTest {
             @DisplayName("creating a sequence from no instants and 0 counts: MeosInvalidArgError")
             void sequenceFromNull_throwsMeosInvalidArgError() {
                 assertThrows(MeosInvalidArgError.class,
-                        () -> functions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
+                        () -> GeneratedFunctions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
             }
 
             @Test
             @DisplayName("creating a sequence from no instants and 0 counts: MeosException")
             void sequenceFromNull_throwsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
+                        () -> GeneratedFunctions.tsequence_make(null, 0, true, true, TInterpolation.LINEAR.getValue(), false));
             }
         }
     }
@@ -494,21 +495,21 @@ class MeosArgumentErrorBranchTest {
             @DisplayName("intspan_make(300, 100): MeosInvalidArgValueError (inverted bounds)")
             void invertedSpan_throwsMeosInvalidArgValueError() {
                 assertThrows(MeosInvalidArgValueError.class,
-                        () -> functions.intspan_make(300, 100, true, true));
+                        () -> GeneratedFunctions.intspan_make(300, 100, true, true));
             }
 
             @Test
             @DisplayName("intspan_make(300, 100) catchable as MeosArgumentError")
             void invertedSpan_catchableAsMeosArgumentError() {
                 assertThrows(MeosArgumentError.class,
-                        () -> functions.intspan_make(300, 100, true, true));
+                        () -> GeneratedFunctions.intspan_make(300, 100, true, true));
             }
 
             @Test
             @DisplayName("intspan_make(300, 100) catchable as MeosException")
             void invertedSpan_catchableAsMeosException() {
                 assertThrows(MeosException.class,
-                        () -> functions.intspan_make(300, 100, true, true));
+                        () -> GeneratedFunctions.intspan_make(300, 100, true, true));
             }
         }
     }

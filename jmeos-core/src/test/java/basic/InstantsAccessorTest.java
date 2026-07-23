@@ -22,7 +22,6 @@ class InstantsAccessorTest {
     @BeforeAll
     static void init() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(errorHandler);
     }
 
     private static LocalDateTime day(int d) {

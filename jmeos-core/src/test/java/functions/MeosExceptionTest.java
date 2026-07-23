@@ -26,7 +26,6 @@ class MeosExceptionTest {
     @BeforeAll
     static void initMeos() {
         functions.meos_initialize_timezone("UTC");
-        functions.meos_initialize_error_handler(HANDLER);
     }
 
     @BeforeEach
