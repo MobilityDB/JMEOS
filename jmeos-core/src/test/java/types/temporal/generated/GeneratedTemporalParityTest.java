@@ -371,4 +371,20 @@ public class GeneratedTemporalParityTest {
         assertEquals(utils.TimestampTzConverter.toOffsetDateTime(r.getLong(0)), g.timestamptzN(0));
         assertEquals(g.startTimestamptz(), g.timestamptzN(0));
     }
+
+    @Test
+    void mergeArrayMatchesTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        TFloatSeq b = new TFloatSeq("[3@2019-09-03, 4@2019-09-04]");
+        GeneratedTemporal g = gen(a);
+
+        // The array constructor writes each element's inner pointer into a buffer, like the direct call.
+        Runtime rt = Runtime.getSystemRuntime();
+        Pointer arr = Memory.allocate(rt, 2 * Long.BYTES);
+        arr.putPointer(0, a.getInner());
+        arr.putPointer(Long.BYTES, b.getInner());
+        Pointer direct = GeneratedFunctions.temporal_merge_array(arr, 2);
+
+        assertEquals(id(direct), id(g.mergeArray(List.of(a, b))));
+    }
 }

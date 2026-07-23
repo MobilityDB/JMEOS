@@ -218,10 +218,19 @@ public class ObjectLayerGenerator {
         // is an array, not a receiver.
         String recv = cleanType(params.get(0).path("cType").asText());
         if (!recv.equals("Temporal *")) {
+            // A constructor over an array of temporals (merge_array) takes a List, writes each element's
+            // inner pointer into a buffer and passes the size as the count.
+            if (recv.equals("Temporal **") && params.size() == 2
+                    && params.get(1).path("name").asText().equals("count")
+                    && cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
+                Arg list = new Arg("java.util.List<Temporal>",
+                        sanitize(params.get(0).path("name").asText()), null);
+                return new Method(ooName, fnName, "Temporal", "arrayInput", null, List.of(list));
+            }
             // A constructor builds a Temporal from other inputs (a hex string, a WKB buffer) rather than
             // from a receiver, so every parameter is an argument, the call omits getInner(), and the
             // result is wrapped with the type contract — symmetric to the as* output methods. It stays
-            // an instance method (the mergeArray array constructor still needs array-input marshalling).
+            // an instance method.
             if (cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
                 List<Arg> ctorArgs = new ArrayList<>();
                 boolean marshalled = true;
@@ -545,6 +554,7 @@ public class ObjectLayerGenerator {
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
             case "boolResult" -> "\t\tPointer _r = " + invocation + ";\n"
                     + "\t\treturn _r == null ? null : " + m.returnSubtype + ";\n";
+            case "arrayInput" -> arrayInputBody(m);
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
             case "tstzspan" -> "\t\treturn new types.collections.time.tstzspan(" + invocation + ");\n";
             case "tstzspanset" -> "\t\treturn new types.collections.time.tstzspanset(" + invocation + ");\n";
@@ -559,6 +569,21 @@ public class ObjectLayerGenerator {
         return "\tdefault " + m.returnType + " " + m.ooName + "(" + sig + ") {\n"
                 + body
                 + "\t}\n\n";
+    }
+
+    /**
+     * The body of an array-input constructor: write each list element's inner pointer into a buffer and
+     * pass the size as the count, then wrap the result with the type contract.
+     */
+    private static String arrayInputBody(Method m) {
+        String list = m.args.get(0).name();
+        return "\t\tjnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();\n"
+                + "\t\tPointer _arr = jnr.ffi.Memory.allocate(_rt, " + list + ".size() * Long.BYTES);\n"
+                + "\t\tfor (int _i = 0; _i < " + list + ".size(); _i++) {\n"
+                + "\t\t\t_arr.putPointer((long) _i * Long.BYTES, " + list + ".get(_i).getInner());\n"
+                + "\t\t}\n"
+                + "\t\treturn Factory.create_temporal(GeneratedFunctions." + m.fnName + "(_arr, "
+                + list + ".size()), getCustomType(), getTemporalType());\n";
     }
 
     /**
