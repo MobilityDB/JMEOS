@@ -32,8 +32,23 @@ import java.util.*;
  */
 public class ObjectLayerGenerator {
 
-    /** The class whose OO surface this run emits. */
-    private static final String CLASS = "Temporal";
+    /**
+     * One generated interface: the object-model class it projects, the interface name it emits, the
+     * interface it extends (a subclass surface extends its superclass surface, so inherited methods are
+     * not re-emitted), and whether a {@code Span}/{@code SpanSet} return is a time extent. A Temporal's
+     * span is its time domain (a tstz span); a TNumber's is its value domain, whose concrete span type
+     * is base-dependent, so those value-span returns belong to the concrete subclass surfaces.
+     */
+    private record ClassSpec(String objectKey, String interfaceName, String superInterface,
+                             boolean spanReturnsAreTime) {}
+
+    /** The interfaces this generator emits, superclass before subclass. */
+    private static final List<ClassSpec> SPECS = List.of(
+            new ClassSpec("Temporal", "GeneratedTemporal", null, true),
+            new ClassSpec("TNumber", "GeneratedTNumber", "GeneratedTemporal", false));
+
+    /** The interface this run emits. */
+    private ClassSpec spec;
 
     /** The object-model roles this surface generates. */
     private static final Set<String> ROLES =
@@ -63,27 +78,40 @@ public class ObjectLayerGenerator {
         String base = System.getProperty("user.dir");
         String inputPath  = args.length > 0 ? args[0]
                 : base + "/codegen/input/meos-idl.json";
-        String outputPath = args.length > 1 ? args[1]
-                : base + "/jmeos-core/src/main/java/types/temporal/generated/GeneratedTemporal.java";
-        new ObjectLayerGenerator().run(inputPath, outputPath);
-    }
-
-    private void run(String inputPath, String outputPath) throws IOException {
-        System.out.println("=== ObjectLayerGenerator (" + CLASS + ") ===");
+        // The second argument names the GeneratedTemporal.java output; its parent directory receives every
+        // generated interface (one file per ClassSpec).
+        Path outDir = args.length > 1 ? Paths.get(args[1]).getParent()
+                : Paths.get(base, "jmeos-core/src/main/java/types/temporal/generated");
+        System.out.println("=== ObjectLayerGenerator ===");
         System.out.println("Input : " + inputPath);
-        System.out.println("Output: " + outputPath);
+        System.out.println("Output: " + outDir);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(new File(inputPath));
+        ObjectLayerGenerator generator = new ObjectLayerGenerator();
+        generator.init(root);
+        for (ClassSpec s : SPECS) {
+            generator.run(s, root, outDir.resolve(s.interfaceName() + ".java"), inputPath);
+        }
+    }
+
+    /** Index the catalog once: enum names, functions, and the struct strides the folds read. */
+    private void init(JsonNode root) {
         collectEnumNames(root);
         indexFunctions(root);
         spanSize = structSize(root, "Span");
         matchFields = structFields(root, "Match");
         matchStride = structSize(root, "Match");
+    }
 
-        JsonNode classNode = root.path("objectModel").path("classes").path(CLASS);
+    private void run(ClassSpec spec, JsonNode root, Path out, String inputPath) throws IOException {
+        this.spec = spec;
+        deferred.clear();
+        System.out.println("--- " + spec.interfaceName() + " (objectModel.classes." + spec.objectKey() + ") ---");
+
+        JsonNode classNode = root.path("objectModel").path("classes").path(spec.objectKey());
         if (classNode.isMissingNode()) {
-            throw new IllegalStateException("objectModel.classes." + CLASS + " not found in " + inputPath);
+            throw new IllegalStateException("objectModel.classes." + spec.objectKey() + " not found in " + inputPath);
         }
 
         List<Method> methods = new ArrayList<>();
@@ -106,15 +134,13 @@ public class ObjectLayerGenerator {
         methods.sort(Comparator.comparing(x -> x.ooName));
 
         String content = generateInterface(methods);
-        Path out = Paths.get(outputPath);
         Files.createDirectories(out.getParent());
         Files.writeString(out, content);
 
         System.out.println("Methods emitted: " + methods.size());
-        System.out.println("Deferred to the next slice (" + deferred.size() + "):");
+        System.out.println("Deferred (" + deferred.size() + "):");
         deferred.stream().sorted().forEach(d -> System.out.println("   " + d));
         System.out.println("Written: " + out.toAbsolutePath());
-        System.out.println("=== Done ===");
     }
 
     // -------------------------------------------------------------------------
@@ -455,14 +481,18 @@ public class ObjectLayerGenerator {
         } else if (scalarReturn(retC) != null) {
             returnType = scalarReturn(retC);
             returnKind = "direct";
-        } else if (retC.equals("Span *")) {
-            // A Temporal's span is its time extent, a tstzspan.
+        } else if (retC.equals("Span *") && spec.spanReturnsAreTime()) {
+            // A Temporal's span is its time extent, a tstzspan; a value span waits for the concrete subclass.
             returnType = "types.collections.time.tstzspan";
             returnKind = "tstzspan";
-        } else if (retC.equals("SpanSet *")) {
-            // A Temporal's spanset is its time domain, a tstzspanset.
+        } else if (retC.equals("SpanSet *") && spec.spanReturnsAreTime()) {
+            // A Temporal's spanset is its time domain, a tstzspanset; a value spanset waits for the subclass.
             returnType = "types.collections.time.tstzspanset";
             returnKind = "tstzspanset";
+        } else if (retC.equals("TBox *")) {
+            // A number temporal's bounding box over its value and time extents.
+            returnType = "types.boxes.TBox";
+            returnKind = "tbox";
         } else if (retC.equals("uint8_t *")) {
             // The WKB byte buffer, returned as a raw pointer (its length is folded away by the wrapper).
             returnType = "Pointer";
@@ -578,6 +608,8 @@ public class ObjectLayerGenerator {
             // MEOS validates the concrete subtype (a TInstant *, a TSequence *) at the boundary.
             case "Temporal *", "TInstant *", "TSequence *", "TSequenceSet *"
                                -> new Arg("Temporal", name, name + ".getInner()");
+            // A number-box restriction takes the TBox wrapper, forwarded as its inner pointer.
+            case "TBox *"      -> new Arg("types.boxes.TBox", name, name + ".get_inner()");
             // A time restriction takes the tstz wrapper; a value restriction takes the generic
             // collection over the base value. Both are forwarded as their inner pointer.
             case "Set *"       -> new Arg(time ? "types.collections.time.tstzset"
@@ -646,49 +678,67 @@ public class ObjectLayerGenerator {
     // -------------------------------------------------------------------------
 
     private String generateInterface(List<Method> methods) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("""
-                package types.temporal.generated;
-
-                import functions.GeneratedFunctions;
-                import jnr.ffi.Pointer;
-                import types.temporal.Factory;
-                import types.temporal.Temporal;
-                import types.temporal.TemporalType;
-                import types.temporal.TInterpolation;
-
-                import static types.temporal.TemporalType.*;
-
-                /**
-                 * Generated OO accessor/conversion surface for {@link Temporal}.
-                 *
-                 * <p>Derived from the MEOS object model (objectModel.classes.Temporal, roles accessor and
-                 * conversion) by ObjectLayerGenerator — do not edit by hand. Each method carries the
-                 * canonical camelCase name from the object model and delegates to the matching
-                 * GeneratedFunctions wrapper, supplying the receiver through getInner() and wrapping a
-                 * temporal result back through Factory. A class adopts the surface by implementing this
-                 * interface; the hand Temporal already provides the three contract methods.
-                 */
-                public interface GeneratedTemporal {
-
-                \tPointer getInner();
-
-                \tString getCustomType();
-
-                \tTemporalType getTemporalType();
-
-                """);
-        sb.append(matchRecord());
+        // Body first, so the imports it needs can be read back from it. A superclass surface declares the
+        // three contract methods; a subclass surface inherits them from the interface it extends.
+        StringBuilder body = new StringBuilder();
+        if (spec.superInterface() == null) {
+            body.append("\tPointer getInner();\n\n");
+            body.append("\tString getCustomType();\n\n");
+            body.append("\tTemporalType getTemporalType();\n\n");
+        }
+        if (methods.stream().anyMatch(m -> m.returnKind().equals("matchArray"))) {
+            body.append(matchRecord());
+        }
         for (Method m : methods) {
             if (m.returnKind().equals("split")) {
-                sb.append(splitRecord(m));
+                body.append(splitRecord(m));
             }
         }
         for (Method m : methods) {
-            sb.append(generateMethod(m));
+            body.append(generateMethod(m));
         }
+        String b = body.toString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("package types.temporal.generated;\n\n");
+        for (String[] imp : CANDIDATE_IMPORTS) {
+            if (references(b, imp[0])) {
+                sb.append(imp[1]).append("\n");
+            }
+        }
+        if (b.contains("TEMPORAL_")) {
+            sb.append("\nimport static types.temporal.TemporalType.*;\n");
+        }
+        sb.append("\n/**\n");
+        sb.append(" * Generated OO surface for {@link ").append(spec.objectKey()).append("}.\n");
+        sb.append(" *\n");
+        sb.append(" * <p>Derived from the MEOS object model (objectModel.classes.").append(spec.objectKey());
+        sb.append(") by ObjectLayerGenerator. Each method carries the canonical camelCase name from the\n");
+        sb.append(" * object model and delegates to the matching GeneratedFunctions wrapper, supplying the\n");
+        sb.append(" * receiver through getInner() and wrapping the result back into the object layer. A class\n");
+        sb.append(" * adopts the surface by implementing this interface; the hand class provides the contract\n");
+        sb.append(" * methods getInner, getCustomType and getTemporalType.\n");
+        sb.append(" */\n");
+        String ext = spec.superInterface() == null ? "" : " extends " + spec.superInterface();
+        sb.append("public interface ").append(spec.interfaceName()).append(ext).append(" {\n\n");
+        sb.append(b);
         sb.append("}\n");
         return sb.toString();
+    }
+
+    /** The candidate single-type imports, each emitted only when the interface body references the type. */
+    private static final String[][] CANDIDATE_IMPORTS = {
+            {"GeneratedFunctions", "import functions.GeneratedFunctions;"},
+            {"Pointer",            "import jnr.ffi.Pointer;"},
+            {"Factory",            "import types.temporal.Factory;"},
+            {"Temporal",           "import types.temporal.Temporal;"},
+            {"TemporalType",       "import types.temporal.TemporalType;"},
+            {"TInterpolation",     "import types.temporal.TInterpolation;"},
+    };
+
+    /** Whether the body uses {@code name} as a whole word — the boundary keeps Temporal out of TemporalType. */
+    private static boolean references(String body, String name) {
+        return java.util.regex.Pattern.compile("\\b" + name + "\\b").matcher(body).find();
     }
 
     private String generateMethod(Method m) {
@@ -717,6 +767,7 @@ public class ObjectLayerGenerator {
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
             case "tstzspan" -> "\t\treturn new types.collections.time.tstzspan(" + invocation + ");\n";
             case "tstzspanset" -> "\t\treturn new types.collections.time.tstzspanset(" + invocation + ");\n";
+            case "tbox" -> "\t\treturn new types.boxes.TBox(" + invocation + ");\n";
             case "objectArray" -> arrayFoldBody(m, "Factory.create_temporal(_array.getPointer("
                     + "(long) _i * Long.BYTES), getCustomType(), " + m.returnSubtype + ")");
             case "scalarArray" -> arrayFoldBody(m, "utils.TimestampTzConverter.toOffsetDateTime("
