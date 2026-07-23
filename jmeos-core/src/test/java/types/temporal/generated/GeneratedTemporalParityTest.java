@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import types.basic.tfloat.TFloatInst;
 import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
+import types.collections.time.tstzspan;
 import types.temporal.Temporal;
 import types.temporal.TemporalType;
 import types.temporal.TInterpolation;
@@ -215,5 +216,23 @@ public class GeneratedTemporalParityTest {
                         TInterpolation.LINEAR.getValue(), 0.0,
                         ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), false)),
                 id(g.appendTinstant(inst, TInterpolation.LINEAR, 0.0, Duration.ofDays(1), false)));
+    }
+
+    @Test
+    void timeCollectionsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02, 3@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // Collection returns are wrapped in the time types; compare their output text to the direct call.
+        assertEquals(GeneratedFunctions.span_out(GeneratedFunctions.temporal_to_tstzspan(p), 15),
+                GeneratedFunctions.span_out(g.toTstzspan().get_inner(), 15));
+        assertEquals(GeneratedFunctions.spanset_out(GeneratedFunctions.temporal_time(p), 15),
+                GeneratedFunctions.spanset_out(g.time().get_inner(), 15));
+
+        // A collection argument is forwarded as its inner pointer.
+        tstzspan period = new tstzspan("[2019-09-02 00:00:00+00, 2019-09-03 00:00:00+00]");
+        assertEquals(id(GeneratedFunctions.temporal_delete_tstzspan(p, period.get_inner(), false)),
+                id(g.deleteTstzspan(period, false)));
     }
 }
