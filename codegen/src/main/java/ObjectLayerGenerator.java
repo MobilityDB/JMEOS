@@ -45,7 +45,10 @@ public class ObjectLayerGenerator {
     /** The interfaces this generator emits, superclass before subclass. */
     private static final List<ClassSpec> SPECS = List.of(
             new ClassSpec("Temporal", "GeneratedTemporal", null, true),
-            new ClassSpec("TNumber", "GeneratedTNumber", "GeneratedTemporal", false));
+            new ClassSpec("TNumber", "GeneratedTNumber", "GeneratedTemporal", false),
+            new ClassSpec("TInt", "GeneratedTInt", "GeneratedTNumber", false),
+            new ClassSpec("TFloat", "GeneratedTFloat", "GeneratedTNumber", false),
+            new ClassSpec("TBigint", "GeneratedTBigint", "GeneratedTNumber", false));
 
     /** The interface this run emits. */
     private ClassSpec spec;
@@ -399,7 +402,7 @@ public class ObjectLayerGenerator {
         String arrayElement = arrayElementSubtype(retC);
         String arrayKind = arrayElement != null ? "objectArray"
                 : retC.equals("TimestampTz *") ? "scalarArray"
-                : retC.equals("Span *") ? "spanArray"
+                : retC.equals("Span *") && spec.spanReturnsAreTime() ? "spanArray"
                 : retC.equals("TBox *") ? "tboxArray"
                 : retC.equals("Match *") ? "matchArray"
                 : null;
