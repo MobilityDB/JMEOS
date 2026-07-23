@@ -502,13 +502,28 @@ public class ObjectLayerGenerator {
         String returnKind;
         String returnSubtype = temporalReturn(retC);
         if (resultOut != null) {
-            if (!paramCType(params, resultOut).equals("TimestampTz *")) {
-                defer(ooName, "bool+result of " + paramCType(params, resultOut) + " needs a converter");
+            String outT = paramCType(params, resultOut);
+            // A boxed return type carries the null the boolean-false case folds to; the reader pulls the
+            // value out of the single-element buffer.
+            returnType = switch (outT) {
+                case "TimestampTz *"                 -> "java.time.OffsetDateTime";
+                case "int *", "int32 *", "int32_t *" -> "Integer";
+                case "double *", "float8 *"          -> "Double";
+                case "int64 *", "int64_t *"          -> "Long";
+                default                              -> null;
+            };
+            returnSubtype = switch (outT) {
+                case "TimestampTz *"                 -> "utils.TimestampTzConverter.toOffsetDateTime(_r.getLong(0))";
+                case "int *", "int32 *", "int32_t *" -> "_r.getInt(0)";
+                case "double *", "float8 *"          -> "_r.getDouble(0)";
+                case "int64 *", "int64_t *"          -> "_r.getLong(0)";
+                default                              -> null;
+            };
+            if (returnType == null) {
+                defer(ooName, "bool+result of " + outT + " needs a converter");
                 return null;
             }
-            returnType = "java.time.OffsetDateTime";
             returnKind = "boolResult";
-            returnSubtype = "utils.TimestampTzConverter.toOffsetDateTime(_r.getLong(0))";
         } else if (returnSubtype != null) {
             returnType = "Temporal";
             returnKind = "temporal";

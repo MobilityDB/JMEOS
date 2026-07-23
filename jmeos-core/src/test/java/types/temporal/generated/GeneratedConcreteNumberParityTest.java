@@ -96,6 +96,22 @@ public class GeneratedConcreteNumberParityTest {
     }
 
     @Test
+    void intValueAccessorsMatchTheLibrary() {
+        TIntSeq a = new TIntSeq("[1@2019-09-01, 3@2019-09-02, 2@2019-09-03]");
+        Pointer p = a.getInner();
+        GeneratedTInt g = genInt(a);
+
+        // valueN folds the bool+result to the base value; zero-based n reaches the one-based accessor.
+        Pointer r = GeneratedFunctions.tint_value_n(p, 2);
+        assertEquals(r == null ? null : Integer.valueOf(r.getInt(0)), g.valueN(1));
+
+        // valueAtTimestamptz folds the bool+result to the base value at a time.
+        OffsetDateTime t = OffsetDateTime.parse("2019-09-02T00:00:00Z");
+        Pointer r2 = GeneratedFunctions.tint_value_at_timestamptz(p, t, true);
+        assertEquals(r2 == null ? null : Integer.valueOf(r2.getInt(0)), g.valueAtTimestamptz(t, true));
+    }
+
+    @Test
     void intValueSplitMatchesTheLibrary() {
         TIntSeq a = new TIntSeq("[1@2019-09-01, 3@2019-09-02, 5@2019-09-03]");
         Pointer p = a.getInner();
