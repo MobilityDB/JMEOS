@@ -70,6 +70,9 @@ public class ObjectLayerGenerator {
     private List<StructField> matchFields;
     private int matchStride;
 
+    /** Size in bytes of the {@code TBox} struct, the stride of a {@code TBox *} array. */
+    private int tboxStride;
+
     // -------------------------------------------------------------------------
     // Entry point
     // -------------------------------------------------------------------------
@@ -102,6 +105,7 @@ public class ObjectLayerGenerator {
         spanSize = structSize(root, "Span");
         matchFields = structFields(root, "Match");
         matchStride = structSize(root, "Match");
+        tboxStride = structSize(root, "TBox");
     }
 
     private void run(ClassSpec spec, JsonNode root, Path out, String inputPath) throws IOException {
@@ -174,21 +178,49 @@ public class ObjectLayerGenerator {
         int offset = 0;
         int widest = 1;
         for (JsonNode f : structOf(root, name).path("fields")) {
-            String cType = f.path("cType").asText().trim();
-            int bracket = cType.indexOf('[');
-            int size;
-            int align;
-            if (bracket >= 0) { // a fixed-size array field, e.g. char[4]
-                int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
-                align = scalarBytes(cType.substring(0, bracket).trim());
-                size = count * align;
-            } else {
-                size = align = scalarBytes(cType);
-            }
-            widest = Math.max(widest, align);
-            offset = (offset + align - 1) / align * align + size;
+            int[] sa = sizeAlign(root, f.path("cType").asText().trim());
+            widest = Math.max(widest, sa[1]);
+            offset = (offset + sa[1] - 1) / sa[1] * sa[1] + sa[0];
         }
         return (offset + widest - 1) / widest * widest;
+    }
+
+    /** The alignment in bytes of a catalog struct: the widest alignment among its fields. */
+    private static int structAlign(JsonNode root, String name) {
+        int widest = 1;
+        for (JsonNode f : structOf(root, name).path("fields")) {
+            widest = Math.max(widest, sizeAlign(root, f.path("cType").asText().trim())[1]);
+        }
+        return widest;
+    }
+
+    /**
+     * The {@code {size, alignment}} in bytes of a struct field's C type: a scalar, a fixed-size array, or
+     * a nested catalog struct (a TBox nests two Spans), resolved recursively.
+     */
+    private static int[] sizeAlign(JsonNode root, String cType) {
+        cType = cType.replace("const ", "").trim();
+        int bracket = cType.indexOf('[');
+        if (bracket >= 0) { // a fixed-size array field, e.g. char[4]
+            int[] base = sizeAlign(root, cType.substring(0, bracket).trim());
+            int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
+            return new int[]{base[0] * count, base[1]};
+        }
+        if (isStruct(root, cType)) {
+            return new int[]{structSize(root, cType), structAlign(root, cType)};
+        }
+        int size = scalarBytes(cType);
+        return new int[]{size, size};
+    }
+
+    /** Whether the catalog defines a struct of this name. */
+    private static boolean isStruct(JsonNode root, String name) {
+        for (JsonNode s : root.path("structs")) {
+            if (s.path("name").asText().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -368,6 +400,7 @@ public class ObjectLayerGenerator {
         String arrayKind = arrayElement != null ? "objectArray"
                 : retC.equals("TimestampTz *") ? "scalarArray"
                 : retC.equals("Span *") ? "spanArray"
+                : retC.equals("TBox *") ? "tboxArray"
                 : retC.equals("Match *") ? "matchArray"
                 : null;
         int last = params.size() - 1;
@@ -390,6 +423,7 @@ public class ObjectLayerGenerator {
                     case "objectArray" -> "java.util.List<Temporal>";
                     case "scalarArray" -> "java.util.List<java.time.OffsetDateTime>";
                     case "spanArray"   -> "java.util.List<types.collections.time.tstzspan>";
+                    case "tboxArray"   -> "java.util.List<types.boxes.TBox>";
                     default            -> "java.util.List<Match>";
                 };
                 return new Method(ooName, fnName, rt, arrayKind, arrayElement, foldArgs);
@@ -774,6 +808,8 @@ public class ObjectLayerGenerator {
                     + "_array.getLong((long) _i * Long.BYTES))");
             case "spanArray" -> arrayFoldBody(m, "new types.collections.time.tstzspan("
                     + "GeneratedFunctions.span_copy(_array.slice((long) _i * " + spanSize + ")))");
+            case "tboxArray" -> arrayFoldBody(m, "new types.boxes.TBox("
+                    + "GeneratedFunctions.tbox_copy(_array.slice((long) _i * " + tboxStride + ")))");
             case "matchArray" -> arrayFoldBody(m, matchElementExpr());
             case "split" -> splitFoldBody(m);
             default         -> "\t\treturn " + invocation + ";\n";
