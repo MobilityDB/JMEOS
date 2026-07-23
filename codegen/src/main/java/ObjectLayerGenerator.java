@@ -208,6 +208,14 @@ public class ObjectLayerGenerator {
         } else if (scalarReturn(retC) != null) {
             returnType = scalarReturn(retC);
             returnKind = "direct";
+        } else if (retC.equals("Span *")) {
+            // A Temporal's span is its time extent, a tstzspan.
+            returnType = "types.collections.time.tstzspan";
+            returnKind = "tstzspan";
+        } else if (retC.equals("SpanSet *")) {
+            // A Temporal's spanset is its time domain, a tstzspanset.
+            returnType = "types.collections.time.tstzspanset";
+            returnKind = "tstzspanset";
         } else {
             defer(ooName, "return type " + retC + " needs collection/box/struct wrapping");
             return null;
@@ -314,6 +322,11 @@ public class ObjectLayerGenerator {
             // MEOS validates the concrete subtype (a TInstant *, a TSequence *) at the boundary.
             case "Temporal *", "TInstant *", "TSequence *", "TSequenceSet *"
                                -> new Arg("Temporal", name, name + ".getInner()");
+            // A Temporal's time domain is always the tstz family, so its set/span/spanset arguments are
+            // the time wrappers, forwarded as their inner pointer.
+            case "Set *"       -> new Arg("types.collections.time.tstzset", name, name + ".get_inner()");
+            case "Span *"      -> new Arg("types.collections.time.tstzspan", name, name + ".get_inner()");
+            case "SpanSet *"   -> new Arg("types.collections.time.tstzspanset", name, name + ".get_inner()");
             default            -> null;
         };
     }
@@ -383,6 +396,8 @@ public class ObjectLayerGenerator {
             case "temporal" -> "\t\treturn Factory.create_temporal(" + invocation
                     + ", getCustomType(), " + m.returnSubtype + ");\n";
             case "interval" -> "\t\treturn utils.ConversionUtils.interval_to_timedelta(" + invocation + ");\n";
+            case "tstzspan" -> "\t\treturn new types.collections.time.tstzspan(" + invocation + ");\n";
+            case "tstzspanset" -> "\t\treturn new types.collections.time.tstzspanset(" + invocation + ");\n";
             case "objectArray" -> arrayFoldBody(m, "Factory.create_temporal(_array.getPointer("
                     + "(long) _i * Long.BYTES), getCustomType(), " + m.returnSubtype + ")");
             case "scalarArray" -> arrayFoldBody(m, "utils.TimestampTzConverter.toOffsetDateTime("
