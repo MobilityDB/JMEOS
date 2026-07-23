@@ -343,4 +343,20 @@ public class GeneratedTemporalParityTest {
                 ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), origin, c3);
         assertEquals(c3.getInt(0), g.timeBins(Duration.ofDays(1), origin).size());
     }
+
+    @Test
+    void inputConstructorsMatchTheLibrary() {
+        TFloatSeq a = new TFloatSeq("[1@2019-09-01, 2@2019-09-02]");
+        Pointer p = a.getInner();
+        GeneratedTemporal g = gen(a);
+
+        // fromHEXWKB is the input constructor symmetric to asHEXWKB; it round-trips the output.
+        String hex = g.asHEXWKB((byte) 4);
+        assertEquals(id(GeneratedFunctions.temporal_from_hexwkb(hex)), id(g.fromHEXWKB(hex)));
+        assertEquals(id(p), id(g.fromHEXWKB(hex)));
+
+        // fromWKB round-trips the WKB buffer; its byte length is half the hex string's length.
+        Pointer wkb = g.asWKB((byte) 4);
+        assertEquals(id(p), id(g.fromWKB(wkb, hex.length() / 2)));
+    }
 }
