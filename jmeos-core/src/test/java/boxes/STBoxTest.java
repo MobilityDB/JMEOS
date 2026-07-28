@@ -287,6 +287,22 @@ public class STBoxTest {
 
 
 
+	@ParameterizedTest(name = "Test Expand STBox method with stbox={0}, other={1}, expected={2}")
+	@CsvSource(value = {
+			"STBox X((1, 1),(2, 2)); STBox X((0, 0),(3, 3)); STBox X((0, 0),(3, 3))",
+			"STBox X((1, 1),(2, 2)); STBox X((3, 3),(4, 4)); STBox X((1, 1),(4, 4))",
+			"STBox Z((1, 1, 1),(2, 2, 2)); STBox Z((0, 0, 0),(3, 3, 3)); STBox Z((0, 0, 0),(3, 3, 3))",
+			"STBox XT(((1, 1),(2, 2)),[2019-09-02,2019-09-03]); STBox XT(((3, 3),(4, 4)),[2019-09-01,2019-09-04]); STBox XT(((1, 1),(4, 4)),[2019-09-01,2019-09-04])",
+	}, delimiter = ';')
+	public void testExpandStbox(String stbox, String other, String expected) throws SQLException {
+		STBox stb = new STBox(stbox);
+		STBox new_stb = stb.expand_stbox(new STBox(other));
+		STBox res = new STBox(expected);
+		assertEquals(new_stb.toString(15),res.toString(15));
+	}
+
+
+
 	@ParameterizedTest(name = "Test adjacent method with stbox={0}, expected={1}")
 	@CsvSource(value = {
 			"STBox X((1, 1),(2, 2)); STBox X((1, 1),(3, 3)); false",

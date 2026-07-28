@@ -610,25 +610,19 @@ public class STBox implements Box {
 
 
 	/**
-	 * Expands "this" with "other".
-	 *         If "other" is a {@link Integer} or a {@link Float}, the result is equal
-	 *         to "this" but with the spatial dimensions expanded by "other" in all
-	 *         directions. If "other" is a {@link java.time.Duration}, the result is equal to
-	 *         "this"  but with the temporal dimension expanded by `other` in both
-	 *         directions.
+	 * Returns "this" expanded with "other", that is, the smallest box containing
+	 * both.
 	 *
 	 * <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>stbox_expand_space</li>
-	 *             <li>stbox_expand_time</li>
-	 * @param stbox The object to expand "this" with.
-	 * @param other The object to expand "this" with.
+	 *             <li>stbox_expand</li>
+	 * @param other The box to expand "this" with.
 	 * @return A new {@link STBox} instance.
 	 */
-	public STBox expand_stbox(STBox stbox, STBox other) {
+	public STBox expand_stbox(STBox other) {
 		Pointer result = GeneratedFunctions.stbox_copy(this._inner);
-//		GeneratedFunctions.stbox_expand_space(other._inner, result);
+		GeneratedFunctions.stbox_expand(other._inner, result);
 		return new STBox(result);
 	}
 
