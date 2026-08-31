@@ -1,0 +1,6 @@
+# The image copies this tree in, so it takes the sources and leaves everything a
+# build produces — the container builds its own.
+.git
+target
+jar
+*.so
