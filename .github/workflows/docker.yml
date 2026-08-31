@@ -1,0 +1,51 @@
+name: Docker image
+
+# Nothing else in this repository builds the image, so its clone refs and its cmake
+# flags go stale unnoticed — which is exactly how it came to pin a branch nobody
+# updates. Building it IS the test.
+#
+# It runs on a change to the image or to this workflow, on a push to main, and
+# weekly. The weekly run is the one that matters: the image tracks MobilityDB
+# master, so it can start failing with nothing in this repository having changed.
+
+on:
+  pull_request:
+    paths: [Dockerfile, .dockerignore, .github/workflows/docker.yml]
+  push:
+    branches: [main]
+    paths: [Dockerfile, .dockerignore, .github/workflows/docker.yml]
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  image:
+    name: Build the image and check what it carries
+    runs-on: ubuntu-latest
+    # The image compiles MobilityDB from source with every family on.
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build --progress=plain -t jmeos-ci:${{ github.sha }} .
+
+      # A build that succeeds still proves nothing about WHICH library the image
+      # holds, and a narrower one is the failure this guards: a libmeos configured
+      # without -DALL=ON carries no S2CELL and no POSECHAIN entry, while the jar
+      # generated from the catalog of master names both. `temporal_merge` is the
+      # positive control — were it missing too, the check would be reading the
+      # wrong file rather than a narrow build.
+      - name: The image carries the tree and an all-families libmeos
+        run: |
+          docker run --rm jmeos-ci:${{ github.sha }} bash -euc '
+            test -f /usr/local/jmeos/pom.xml
+            test -f /usr/local/jmeos/jmeos-core/src/libmeos.so
+            L=/usr/local/lib/libmeos.so
+            for s in ts2cell_in tposechain_in temporal_merge; do
+              n=$(grep -ac "$s" "$L" || true)
+              echo "$s: $n"
+              [ "${n:-0}" -ge 1 ] || { echo "::error::$L carries no $s"; exit 1; }
+            done
+          '
