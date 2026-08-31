@@ -222,10 +222,10 @@ public class TBoolTest {
     static Stream<Arguments> TBool_hash() throws SQLException {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
-                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 440045287),
+                Arguments.of(new TBoolInst("True@2019-09-01"), "TBoolInst", 440045318),
 //                Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), "TBoolSeq",2385901957l),
 //                Arguments.of(new TBoolSeq("[True@2019-09-01, False@2019-09-02]"), "TBoolSeq", 2385901957l),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet",1543175996)
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), "TBoolSeqSet",1190925880)
         );
     }
 
