@@ -129,10 +129,10 @@ mvn clean compile -pl codegen -am
 
 ```bash
 # Build all modules
-mvn clean package -DskipTests
+mvn clean package
 
 # Build only jmeos-core (normal jar + fat jar)
-mvn package -pl jmeos-core -am -DskipTests
+mvn package -pl jmeos-core -am
 ```
 
 The generated JARs are placed in the `jar/` folder at the root:

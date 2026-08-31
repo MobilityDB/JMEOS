@@ -40,7 +40,7 @@ jobs:
           cp "${{ steps.provision.outputs.catalog-path }}" codegen/input/meos-idl.json
 
       - name: Build sources
-        run: mvn -B -DskipTests compile
+        run: mvn -B compile
         # Compiles the codegen module and generates functions/GeneratedFunctions.java, so the
         # generate-meos-facade step invoked by javadoc:javadoc finds the FunctionsGenerator class.
 

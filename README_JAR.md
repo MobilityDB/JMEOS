@@ -12,7 +12,7 @@
   you don't have to manage them yourself (e.g. when creating a Jupyter Notebook using JMEOS).
   This command will generate a Fat Jar in the /jar directory alongside the classic Jar  
 ```console
-  example@john:~$ mvn package -DskipTests
+  example@john:~$ mvn package
   ```
 
   Here's an article explaining everything about Fat/Uber, Thin, Skinny and Hollow JARs: https://dzone.com/articles/the-skinny-on-fat-thin-hollow-and-uber
@@ -112,7 +112,7 @@ COPY pom.xml .
 # dependencies cache
 RUN mvn dependency:go-offline -q   
 COPY src ./src
-RUN mvn package -DskipTests
+RUN mvn package
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 

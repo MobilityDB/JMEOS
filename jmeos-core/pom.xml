@@ -98,7 +98,6 @@
                     <!--                    <forkCount>4</forkCount>-->
                     <!--                    <reuseForks>true</reuseForks>-->
                     <!--                    <argLine>-Xmx4096m -XX:MaxMetaspaceSize=512m</argLine>-->
-                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
 
