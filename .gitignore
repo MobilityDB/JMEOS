@@ -50,8 +50,11 @@ build/
 ### Ignore pid error log files ###
 *.log
 
-### Ignore Fat Jar generated with mvn package ####
-jar/JMEOS-fat.jar
+### The jars mvn package writes. Both are build output: the plain JMEOS.jar the
+### JVM consumers install as org.jmeos:meos, and the fat jar beside it. Neither
+### belongs in the tree, and ignoring the directory is what keeps a jar built in
+### a working copy from being committed back.
+jar/
 
 ### ignore maven-shade-plugin generated dependendcy-reduced-pom.xml ###
 dependency-reduced-pom.xml
