@@ -8,7 +8,12 @@
 #   env     LIBMEOS = all-families libmeos.so built from master (for tests; optional)
 #
 # The JVM consumers regenerate their own projections from the same catalog, so the whole JVM
-# tier tracks master with no hand-written surface.
+# tier tracks master with no hand-written surface. The generator they do it with is
+# `codegen_jvm.py` beside this script — one file with an arm per engine (spark, flink, kafka),
+# emitting Java that calls the `functions.GeneratedFunctions` this script produces. It lives
+# here because that is the surface it binds: a fold or a widened return in GeneratedFunctions
+# changes what the generator must emit, and the two move together. `codegen_spark_udfs.py` is
+# beside it too, loaded by the spark arm from the generator's own directory.
 set -euo pipefail
 CATALOG="${1:-${CATALOG:?set CATALOG (or pass the catalog path) to the meos-idl.json from MEOS-API run.py over MobilityDB master}}"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
