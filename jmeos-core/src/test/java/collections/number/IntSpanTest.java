@@ -162,8 +162,8 @@ public class IntSpanTest {
         IntSpan intspan2 = new IntSpan("(1, 20)");
         IntSpanSet intspanset = new IntSpanSet("{(1, 20), (31, 41)}");
 
-        assertTrue(intspan.is_adjacent(value));
-        assertTrue(intspan.is_adjacent(intspan2));
+        assertFalse(intspan.is_adjacent(value));
+        assertFalse(intspan.is_adjacent(intspan2));
         assertFalse(intspan.is_adjacent(intspanset));
 
         assertTrue(intspan.is_contained_in(intspan2));
@@ -225,7 +225,7 @@ public class IntSpanTest {
         assertTrue(intspan2.notEquals(other));
         assertTrue(intspan2.lessThan(other));
         assertTrue(intspan2.lessThanOrEqual(other));
-        assertTrue(intspan2.greaterThan(other));
+        assertFalse(intspan2.greaterThan(other));
         assertFalse(intspan2.greaterThanOrEqual(other));
     }
 

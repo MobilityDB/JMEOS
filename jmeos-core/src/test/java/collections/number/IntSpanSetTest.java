@@ -219,7 +219,7 @@ public class IntSpanSetTest {
         IntSpan intspan2 = new IntSpan("[13, 15]");
         IntSpanSet intspanset = new IntSpanSet("{(1, 20), (31, 41)}");
 
-        assertTrue(intSpanSet.is_adjacent(value));
+        assertFalse(intSpanSet.is_adjacent(value));
         assertTrue(intSpanSet.is_adjacent(intspan2));
         assertFalse(intSpanSet.is_adjacent(intspanset));
 

@@ -184,7 +184,7 @@ public class FloatSetTest {
         assertTrue(floatset.notEquals(other));
         assertTrue(floatset.lessThan(other));
         assertTrue(floatset.lessThanOrEqual(other));
-        assertTrue(floatset.greaterThan(other));
+        assertFalse(floatset.greaterThan(other));
         assertFalse(floatset.greaterThanOrEqual(other));
     }
 
