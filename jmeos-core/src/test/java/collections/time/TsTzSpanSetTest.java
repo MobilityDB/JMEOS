@@ -408,7 +408,7 @@ class TsTzSpanSetTest {
 	@MethodSource("other")
 	public void testGreaterThan(Time t) throws SQLException, OperationNotSupportedException {
 		GeneratedFunctions.meos_initialize_timezone("UTC");
-		assertTrue(this.pset.greaterThan(t));
+		assertFalse(this.pset.greaterThan(t));
 	}
 
 	@ParameterizedTest(name="t={0}")

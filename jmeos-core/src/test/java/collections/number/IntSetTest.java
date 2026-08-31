@@ -171,7 +171,7 @@ public class IntSetTest {
         assertTrue(intset.notEquals(other));
         assertTrue(intset.lessThan(other));
         assertTrue(intset.lessThanOrEqual(other));
-        assertTrue(intset.greaterThan(other));
+        assertFalse(intset.greaterThan(other));
         assertFalse(intset.greaterThanOrEqual(other));
     }
 }

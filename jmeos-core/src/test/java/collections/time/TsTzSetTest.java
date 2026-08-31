@@ -230,7 +230,7 @@ class TsTzSetTest {
         assertTrue(first.notEquals(second));
         assertTrue(first.lessThan(second));
         assertTrue(first.lessThanOrEqual(second));
-        assertTrue(first.greaterThan(second));
+        assertFalse(first.greaterThan(second));
         assertFalse(first.greaterThanOrEqual(second));
     }
 }

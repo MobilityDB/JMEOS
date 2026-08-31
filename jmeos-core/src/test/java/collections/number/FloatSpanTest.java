@@ -223,7 +223,7 @@ public class FloatSpanTest {
         assertTrue(floatSpan2.notEquals(other));
         assertTrue(floatSpan2.lessThan(other));
         assertTrue(floatSpan2.lessThanOrEqual(other));
-        assertTrue(floatSpan2.greaterThan(other));
+        assertFalse(floatSpan2.greaterThan(other));
         assertFalse(floatSpan2.greaterThanOrEqual(other));
     }
 

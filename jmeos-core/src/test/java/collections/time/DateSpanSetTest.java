@@ -209,7 +209,7 @@ class DateSpanSetTest {
     @ParameterizedTest(name="other={0}, expected={1}")
     @CsvSource({
             "2019-09-13, true",
-            "'[2020-01-01, 2020-01-31]', true",
+            "'[2020-01-01, 2020-01-31]', false",
             "'{[2019-03-23, 2019-05-09), [2019-09-07, 2019-10-09]}', false"
     })
     public void testAdjacent(Object other, boolean expected) throws Exception {

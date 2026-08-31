@@ -847,7 +847,17 @@ public class FunctionsGenerator {
                 FunctionDef fn = functions.get(i);
                 // Owned char* returns bind as Pointer so the wrapper can free
                 // the native allocation after copying the string.
-                String ifaceRet = isOwnedCharReturn(fn.retCType) ? "Pointer" : fn.returnType;
+                // A C `bool` return defines only the low byte of the return register: the
+                // psABI leaves the bits above it unspecified, and a MEOS function that
+                // returns the value of a comparison does leave them holding whatever the
+                // call before it left there. Bound as a Java boolean, JNR reads the wider
+                // register and answers true for a false a caller in C reads correctly, so
+                // the whole boolean surface is only as right as the code the compiler
+                // happened to emit. Bind the byte the ABI defines and let the wrapper,
+                // whose signature stays boolean, test it.
+                String ifaceRet = isOwnedCharReturn(fn.retCType) ? "Pointer"
+                        : isBoolReturn(fn.retCType) ? "@jnr.ffi.types.u_int8_t byte"
+                        : fn.returnType;
                 sb.append("\t\t")
                         .append(ifaceRet).append(" ")
                         .append(fn.name).append("(")
@@ -1069,7 +1079,9 @@ public class FunctionsGenerator {
 
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {
-            sb.append("\t\tout = ").append(call).append("\n");
+            // the same ABI-defined byte, here deciding whether the out-param holds a value
+            sb.append("\t\tout = ").append(call.substring(0, call.length() - 1))
+              .append(" != 0;\n");
 
             if (resultStrategy.isPointer()) {
                 // pointer result (Span*, STBox*, …):
@@ -1113,6 +1125,9 @@ public class FunctionsGenerator {
                 sb.append("\t\treturn utils.TimestampTzConverter.toOffsetDateTime(_result);\n");
             } else if (wrapperReturnType.equals("LocalDateTime")) {
                 sb.append("\t\treturn utils.TimestampTzConverter.toLocalDateTime(_result);\n");
+            } else if (wrapperReturnType.equals("boolean") && isBoolReturn(fn.retCType)) {
+                // the interface hands back the byte the ABI defines (see the interface emit)
+                sb.append("\t\treturn _result != 0;\n");
             } else {
                 sb.append("\t\treturn _result;\n");
             }
@@ -1127,6 +1142,11 @@ public class FunctionsGenerator {
     /**
      * Interface-level param list: uses the low-level JNR type (int/long).
      */
+    /** Whether the C return type is `bool`, of which the ABI defines only the low byte. */
+    private static boolean isBoolReturn(String retCType) {
+        return retCType != null && retCType.trim().equals("bool");
+    }
+
     private String buildInterfaceParamList(List<ParamDef> params) {
         if (params.isEmpty()) return "";
         StringJoiner sj = new StringJoiner(", ");
