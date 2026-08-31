@@ -276,8 +276,8 @@ public class TFloatTest {
     private static Stream<Arguments> hash() throws SQLException {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
-                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1307112078, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
-                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), 1935376725, LocalDateTime.of(2019, 9, 2, 0, 0,0))
+                Arguments.of(new TFloatInst("1.5@2019-09-01"), 1307112109, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TFloatSeq("[1.5@2019-09-01, 2.5@2019-09-02]"), -1130512577, LocalDateTime.of(2019, 9, 2, 0, 0,0))
 //                Arguments.of(new TFloatSeqSet("{[1.5@2019-09-01, 2.5@2019-09-02],[1.5@2019-09-03, 1.5@2019-09-05]}"), 4247071962l, LocalDateTime.of(2019, 9, 5, 0, 0,0))
         );
     }

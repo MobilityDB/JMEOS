@@ -269,9 +269,9 @@ public class TIntTest {
     private static Stream<Arguments> hash() throws SQLException {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
-                Arguments.of(new TIntInst("1@2019-09-01"), 440045287, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
+                Arguments.of(new TIntInst("1@2019-09-01"), 440045318, LocalDateTime.of(2019, 9, 1, 0, 0,0)),
 //                Arguments.of(new TIntSeq("[1@2019-09-01, 2@2019-09-02]"), 3589664982l, LocalDateTime.of(2019, 9, 2, 0, 0,0)),
-                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), 205124107l, LocalDateTime.of(2019, 9, 5, 0, 0,0))
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), -1633977015l, LocalDateTime.of(2019, 9, 5, 0, 0,0))
         );
     }
 

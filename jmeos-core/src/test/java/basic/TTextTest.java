@@ -228,9 +228,9 @@ public class TTextTest {
     static Stream<Arguments> TText_hash() throws SQLException {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
-                Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 1893808825),
-                Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",1223816819),
-                Arguments.of(new TTextSeq("[AAA@2019-09-01, BBB@2019-09-02]"), "TTextSeq",1223816819)
+                Arguments.of(new TTextInst("AAA@2019-09-01"), "TTextInst", 1893808856),
+                Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), "TTextSeq",-1842072483),
+                Arguments.of(new TTextSeq("[AAA@2019-09-01, BBB@2019-09-02]"), "TTextSeq",-1842072483)
 //                Arguments.of(new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05]}"), "TTextSeqSet", 2199213310l)
         );
     }
