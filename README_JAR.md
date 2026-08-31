@@ -81,10 +81,10 @@ RUN apt-get update \
   && apt-get install -y java-21-amazon-corretto-jdk
 
 # Compile MobilityDB with MEOS (generates libmeos.so)
-RUN git clone https://github.com/MobilityDB/MobilityDB.git -b stable-1.3 /usr/local/src/MobilityDB
+RUN git clone https://github.com/MobilityDB/MobilityDB.git -b master /usr/local/src/MobilityDB
 RUN mkdir -p /usr/local/src/MobilityDB/build
 RUN cd /usr/local/src/MobilityDB/build && \
-    cmake -DMEOS=ON .. && \
+    cmake -DMEOS=ON -DALL=ON .. && \
     make -j$(nproc) && \
     make install && \
     ldconfig
@@ -121,8 +121,9 @@ CMD ["java", "--add-opens", "java.base/java.lang=ALL-UNNAMED", "-Djava.library.p
 ```
 
 Note:
-- when cloning MobilityDB in the Dockerfile, you might want to change its version, e.g. "-b stable-1.3" instead of "-b master" depending on your needs (functions such as geom_in only available in meos_geo.h):  
-  ```Ln 16: RUN git clone https://github.com/MobilityDB/MobilityDB.git -b master```
+- build MobilityDB from `master` with `-DALL=ON`, as above. The jar's `GeneratedFunctions` is emitted from the catalog of master with every family on, so a library built from a release branch, or without the family flag, lacks symbols the jar names — the call fails at run time rather than at build time:  
+  ```RUN git clone https://github.com/MobilityDB/MobilityDB.git -b master```  
+  ```    cmake -DMEOS=ON -DALL=ON .. && \```
 - do not forget to adapt the entrypoint parameters to your project:
   - the parameters of target/ here depending on the artifactId and version of your pom, here:   
   ```target/untitled-1.0-SNAPSHOT.jar:/tmp/JMEOS-fat.jar"```

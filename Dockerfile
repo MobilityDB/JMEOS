@@ -14,12 +14,14 @@ RUN apt-get update \
   && apt-get update \
   && apt-get install -y java-21-amazon-corretto-jdk 
 
-# BUILD MobilityDB
+# BUILD MobilityDB. GeneratedFunctions is emitted from the catalog of master
+# with every family on, so the library has to answer for that same surface:
+# -DALL=ON is the flag CMakeLists.txt turns into the family list, and without it
+# the jar names symbols libmeos does not carry.
 RUN git clone --depth 1 https://github.com/MobilityDB/MobilityDB.git -b master /usr/local/src/MobilityDB
-#RUN git clone --depth 1 https://github.com/estebanzimanyi/MobilityDB.git -b tpoint_fix /usr/local/src/MobilityDB
 RUN mkdir -p /usr/local/src/MobilityDB/build
 RUN cd /usr/local/src/MobilityDB/build && \
-    cmake -DMEOS=ON .. && \
+    cmake -DMEOS=ON -DALL=ON .. && \
     make -j$(nproc) && \
     make install && \
     ldconfig
@@ -34,8 +36,10 @@ COPY --from=maven:3.9.6-eclipse-temurin-11 /usr/share/maven/ref/settings-docker.
 
 RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
 
-# ADD PROJECT MobilityDB-JMEOS
-RUN git clone --branch fix-tests-using-docker https://github.com/MobilityDB/JMEOS /usr/local/jmeos
+# ADD PROJECT MobilityDB-JMEOS. The image carries the tree it is built from
+# rather than cloning this repository into itself: a clone names a ref, and a ref
+# named here is one nothing updates.
+COPY . /usr/local/jmeos
 
 # Copy libmeos.so to src/ (used by JarLibraryLoader on Linux)
 RUN cp /usr/local/lib/libmeos.so /usr/local/jmeos/src/libmeos.so
