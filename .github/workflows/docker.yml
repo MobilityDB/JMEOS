@@ -33,7 +33,7 @@ jobs:
 
       # A build that succeeds still proves nothing about WHICH library the image
       # holds, and a narrower one is the failure this guards: a libmeos configured
-      # without -DALL=ON carries no S2CELL and no POSECHAIN entry, while the jar
+      # without -DALL=ON carries no S2CELL and no POSE entry, while the jar
       # generated from the catalog of master names both. `temporal_merge` is the
       # positive control — were it missing too, the check would be reading the
       # wrong file rather than a narrow build.
