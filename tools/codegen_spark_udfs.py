@@ -269,9 +269,15 @@ HIDE_DEFAULT = {"bool": "false", "unsigned char": "(byte) 4", "int": "0",
 
 
 def _java_bound(v, ctype):
-    """Translate a C `shape.boundArgs` literal to a Java literal for `ctype`, or None if
-    it has no direct Java form (an enum/macro or NULL — the caller then falls back to the
-    generic type default)."""
+    """Translate a C `boundArgs` literal or SQL default to a Java literal for `ctype`, or
+    None if it has no direct Java form (NULL, or a name the catalog gives no value). A
+    macro or enum member name stands for the value the catalog states for it."""
+    v = CONST.get(v, v)
+    v = ("true" if v else "false") if isinstance(v, bool) else str(v)
+    if ctype == "bool":
+        if re.fullmatch(r"-?\d+", v):
+            return "true" if int(v) else "false"
+        return v if v in ("true", "false") else None
     if v in ("true", "false"):
         return v
     if re.fullmatch(r"-?\d+", v):
@@ -285,18 +291,49 @@ def _java_bound(v, ctype):
     return None
 
 
-def hidden_arg(f, p):
+def _omitted(f, p, vis):
+    """The values MobilityDB gives parameter `p` of `f` when a SQL call states `vis`
+    arguments: the literal the wrapper passes for a signature of that arity (per-signature
+    `boundArgs`), and the SQL DEFAULT of a signature whose arguments from `vis` on all have
+    one. A signature's SQL arguments pair in order with the visible C parameters it does not
+    bind."""
+    fbound = f.get("shape", {}).get("boundArgs", {})
+    params = classify(f)[0]
+    vals = []
+    for s in f.get("sqlSignatures") or []:
+        sb = {**fbound, **(s.get("boundArgs") or {})}
+        args = s.get("args") or []
+        if len(args) == vis and p["name"] in sb:
+            vals.append(sb[p["name"]])
+            continue
+        free = [q["name"] for q in params if q["name"] not in sb]
+        if len(args) > vis and p["name"] in free:
+            i = free.index(p["name"])
+            dflt = (list(s.get("argDefaults") or []) + [None] * len(args))[:len(args)]
+            if vis <= i < len(args) and all(d is not None for d in dflt[vis:]):
+                vals.append(dflt[i])
+    return vals
+
+
+def hidden_arg(f, p, vis=None):
     """The literal a generated UDF supplies for a SQL-hidden trailing param. When the
     catalog records the value the MobilityDB wrapper binds (`shape.boundArgs`, e.g.
-    valueAtTimestamp binds strict=true), emit THAT; otherwise fall back to the generic
-    type default. Without boundArgs the generic default silently diverged from MobilityDB
-    (valueAtTimestamp returned the value at an exclusive bound instead of NULL)."""
+    valueAtTimestamp binds strict=true), emit THAT; for a UDF exposing `vis` arguments,
+    the one value every signature of the name gives the parameter at that arity
+    (`_omitted`); otherwise fall back to the generic type default. Without boundArgs the
+    generic default silently diverged from MobilityDB (valueAtTimestamp returned the value
+    at an exclusive bound instead of NULL, asEWKT passed 0 decimal digits, which MEOS
+    refuses)."""
     ct = base(p["canonical"])
     bound = f.get("shape", {}).get("boundArgs", {}).get(p["name"])
     if bound is not None:
         lit = _java_bound(bound, ct)
         if lit is not None:
             return lit
+    if vis is not None:
+        lits = {_java_bound(v, ct) for v in _omitted(f, p, vis)}
+        if len(lits) == 1 and None not in lits:
+            return lits.pop()
     return HIDE_DEFAULT[ct]
 
 
@@ -351,7 +388,7 @@ def emit_single(name, f, vis_arity=None):
     # supply the wrapper-bound literal (shape.boundArgs) — or the generic type default —
     # for the SQL-hidden trailing flags (sqlArity..C-arity)
     for p in hidden:
-        callargs.append(hidden_arg(f, p))
+        callargs.append(hidden_arg(f, p, len(params)))
     call = f"GeneratedFunctions.{f['name']}(" + ", ".join(callargs) + ")"
     L.append("        try {")
     if ret_out:
@@ -466,6 +503,9 @@ def _famrank(f):
 # that concrete temporal type, so the dispatcher can tell it apart from a sibling overload
 # by the WKB type byte instead of guessing.
 TEMPTYPE_CODE = {}
+# The value of each macro and enum member the catalog states, which is what a bound
+# literal or SQL default naming one passes. Filled from the catalog before any emit pass.
+CONST = {}
 
 
 def _expected_temptype(f):
@@ -560,7 +600,7 @@ def emit_dispatch(name, cands, vis_arity=None):
         # generic default (zip above paired only the first `vis` exposed args; the
         # candidate's remaining params are the flags).
         for p in cps[vis:]:
-            callargs.append(hidden_arg(f, p))
+            callargs.append(hidden_arg(f, p, vis))
         cond = " && ".join("%s != null" % p for p in ptrs) if ptrs else "true"
         free = " ".join("MeosMemory.free(%s);" % p for p in ptrs)
         call = "GeneratedFunctions.%s(%s)" % (f["name"], ", ".join(callargs))
@@ -1065,6 +1105,12 @@ def main():
         _val = _v.get("value") if isinstance(_v, dict) else None
         if _val is not None and _nm and _nm.startswith("T_T") and "BOX" not in _nm:
             TEMPTYPE_CODE[_nm[2:].lower()] = _val
+    # The value of each macro and enum member a wrapper binds or a SQL default names.
+    CONST.update({x["name"]: x["value"] for x in cat.get("macros", [])
+                  if isinstance(x.get("value"), (int, float))})
+    CONST.update({v["name"]: v["value"] for e in cat.get("enums", [])
+                  for v in e.get("values") or []
+                  if isinstance(v, dict) and isinstance(v.get("value"), int)})
     fns = cat["functions"]
 
     # The catalog is the raw extern parse of the MobilityDB headers; JMEOS curates
