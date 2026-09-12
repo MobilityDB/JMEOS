@@ -121,12 +121,20 @@ public class ObjectLayerGenerator {
         JsonNode byBase = root.path("typeRelations").path("byBase");
         byBase.fields().forEachRemaining(e -> {
             Map<String, String> roles = new HashMap<>();
-            e.getValue().fields().forEachRemaining(r -> roles.put(r.getKey(), r.getValue().asText()));
+            e.getValue().fields().forEachRemaining(r -> {
+                if (!r.getKey().equals("temporal")) {
+                    roles.put(r.getKey(), r.getValue().asText());
+                    return;
+                }
+                // The registry lists every temporal type over a base (geometry has tgeompoint and
+                // tgeometry), and each of them maps back to that base.
+                if (!r.getValue().isArray()) {
+                    throw new IllegalStateException("typeRelations.byBase." + e.getKey()
+                            + ".temporal is not a list: " + r.getValue());
+                }
+                r.getValue().forEach(t -> tempToBase.put(t.asText(), e.getKey()));
+            });
             typeRelByBase.put(e.getKey(), roles);
-            String temporal = roles.get("temporal");
-            if (temporal != null) {
-                tempToBase.put(temporal, e.getKey());
-            }
         });
     }
 

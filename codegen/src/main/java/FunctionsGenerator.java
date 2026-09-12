@@ -655,26 +655,17 @@ public class FunctionsGenerator {
 
     // bool+result strategy: driven by the pointed-to C type
     //
-    // The original version always generated:
-    //   Pointer result = Memory.allocateDirect(runtime, Long.BYTES);
-    //   Pointer new_result = result.getPointer(0);   <-- ERROR for scalar types
-    //   return out ? new_result : null;
+    // The C function reports whether it wrote a value and writes it through its one flagged
+    // out-parameter. The wrapper hides that parameter, allocates a buffer sized from the
+    // pointed-to C type (Double.BYTES for double*, Long.BYTES for TimestampTz*,
+    // Integer.BYTES for int*, etc.) and returns a Pointer, or null when nothing was written:
+    //   - for SCALAR types, the buffer itself, so callers read the value with
+    //     .getDouble(0), .getLong(0), etc. (e.g. functions.stbox_xmin(inner).getDouble(0));
+    //   - for POINTER types, the address the buffer holds, read with getPointer(0): the
+    //     Span*, STBox*, etc. MEOS returned. A scalar's bits are never read as an address.
     //
-    // This is correct for pointer results (Span*, STBox*, …) but crashes
-    // at runtime for scalar results (double*, TimestampTz*, int*, bool*, …)
-    // because result.getPointer(0) interprets the scalar's bit-pattern as a
-    // native memory address which is unmapped.
-    //
-    // Fix: inspect the C type of the result param, strip the trailing *, and:
-    //   - allocate the correct size (Double.BYTES for double*, Long.BYTES for
-    //     TimestampTz*, Integer.BYTES for int*, etc.)
-    //   - for SCALAR types: return the buffer (result) directly so callers can
-    //     do result.getDouble(0), result.getLong(0), etc. matching the existing
-    //     call sites (e.g. functions.stbox_xmin(inner).getDouble(0))
-    //   - for POINTER types: dereference with result.getPointer(0) to
-    //     obtain the actual Span*, STBox*, etc.
-    //
-    // In both cases the wrapper return type stays Pointer for backward compatibility.
+    // Every local the wrapper declares starts with an underscore (_found, _runtime, _buffer,
+    // _value), a spelling no MEOS parameter uses, so no local shadows a visible parameter.
 
     /**
      * Describes how to generate the allocation and return for a hidden bool+result
@@ -1018,27 +1009,25 @@ public class FunctionsGenerator {
         boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult || isStructResult;
 
         if (isBoolResultPattern) {
-            // Emit the "boolean out" sentinel variable first,
-            // mirroring the exact pattern in old_functions.txt.
-            sb.append("\t\tboolean out;\n");
+            // Whether MEOS wrote a value through the out-parameter.
+            sb.append("\t\tboolean _found;\n");
         }
 
         if (needsRuntime) {
-            sb.append("\t\tRuntime runtime = Runtime.getSystemRuntime();\n");
+            sb.append("\t\tRuntime _runtime = Runtime.getSystemRuntime();\n");
         }
 
-        // Allocate the hidden result pointer.
-        // Use strategy.allocExpr() instead of hardcoded Long.BYTES:
+        // Allocate the hidden out-parameter buffer, sized from the pointed-to C type:
         //   double* → Double.BYTES, int* → Integer.BYTES, Span* → Long.BYTES, etc.
         if (hasInternalResult) {
-            sb.append("\t\tPointer result = Memory.allocateDirect(runtime, ")
+            sb.append("\t\tPointer _buffer = Memory.allocateDirect(_runtime, ")
                     .append(resultStrategy.allocExpr()).append(");\n");
         }
 
         // Back the struct with memory of its own layout and hand MEOS that address.
         if (isStructResult) {
             sb.append("\t\t").append(resultStructClass).append(" _result = new ")
-                    .append(resultStructClass).append("(runtime);\n");
+                    .append(resultStructClass).append("(_runtime);\n");
             sb.append("\t\tPointer ").append(RESULT_PARAM)
                     .append(" = jnr.ffi.Struct.getMemory(_result);\n");
         }
@@ -1046,7 +1035,7 @@ public class FunctionsGenerator {
         // Allocate hidden size_out pointer(s).
         for (String paramName : internalSizeParams) {
             sb.append("\t\tPointer ").append(paramName)
-                    .append(" = Memory.allocateDirect(runtime, Long.BYTES);\n");
+                    .append(" = Memory.allocateDirect(_runtime, Long.BYTES);\n");
         }
 
         // --- Conversion variables (OffsetDateTime/LocalDateTime → long) ---
@@ -1061,11 +1050,11 @@ public class FunctionsGenerator {
         }
 
         // --- Build argument list for the interface call ---
-        // Hidden params (size_out, result) are still forwarded by their local name.
+        // Hidden params are forwarded by their local name: the out-parameter as `_buffer`.
         StringJoiner args = new StringJoiner(", ");
         for (ParamDef p : fn.params) {
             if (isBoolResultPattern && isResultOut(p)) {
-                args.add("result"); // the hidden buffer allocated as `result`
+                args.add("_buffer");
             } else if (isSizeOut(p)) {
                 args.add(p.name); // size_out buffer is allocated under its own name
             } else {
@@ -1080,24 +1069,21 @@ public class FunctionsGenerator {
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {
             // the same ABI-defined byte, here deciding whether the out-param holds a value
-            sb.append("\t\tout = ").append(call.substring(0, call.length() - 1))
+            sb.append("\t\t_found = ").append(call.substring(0, call.length() - 1))
               .append(" != 0;\n");
 
             if (resultStrategy.isPointer()) {
                 // pointer result (Span*, STBox*, …):
                 // the buffer holds a native address --> dereference to get the actual pointer.
-                sb.append("\t\tPointer new_result = result.getPointer(0);\n");
+                sb.append("\t\tPointer _value = _buffer.getPointer(0);\n");
                 sb.append("\t\tMeosErrorHandler.checkError();\n");
-                sb.append("\t\treturn out ? new_result : null;\n");
+                sb.append("\t\treturn _found ? _value : null;\n");
             } else {
                 // Scalar result (double*, TimestampTz*, int*, bool*, …):
-                // the buffer holds the value itself and NOT a pointer address.
-                // Return the buffer (result) directly so callers can read the typed
-                // value: result.getDouble(0), result.getLong(0), etc.
-                // Previously: result.getPointer(0) → interpreted scalar bits as an
-                // address causing SIGSEGV.
+                // the buffer holds the value itself, not an address, so it is returned as is
+                // and the caller reads the typed value: .getDouble(0), .getLong(0), etc.
                 sb.append("\t\tMeosErrorHandler.checkError();\n");
-                sb.append("\t\treturn out ? result : null;\n");
+                sb.append("\t\treturn _found ? _buffer : null;\n");
             }
         } else if (isStructResult) {
             // MEOS fills the memory backing _result and returns that same address.

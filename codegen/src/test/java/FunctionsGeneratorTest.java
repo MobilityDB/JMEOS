@@ -510,10 +510,10 @@ class FunctionsGeneratorTest {
             // Wrapper signature should NOT include result
             assertTrue(out.contains("public static Pointer stbox_xmax(Pointer box)"));
             // result is allocated internally
-            assertTrue(out.contains("Memory.allocateDirect(runtime, Double.BYTES)"));
+            assertTrue(out.contains("Memory.allocateDirect(_runtime, Double.BYTES)"));
             // scalar strategy: no getPointer(0) dereference
-            assertFalse(out.contains("result.getPointer(0)"));
-            assertTrue(out.contains("return out ? result : null"));
+            assertFalse(out.contains("_buffer.getPointer(0)"));
+            assertTrue(out.contains("return _found ? _buffer : null"));
         }
 
         @Test
@@ -533,9 +533,9 @@ class FunctionsGeneratorTest {
                 }
                 """;
             String out = generateFromJson(json);
-            assertTrue(out.contains("Memory.allocateDirect(runtime, Long.BYTES)"));
-            assertTrue(out.contains("result.getPointer(0)"));
-            assertTrue(out.contains("return out ? new_result : null"));
+            assertTrue(out.contains("Memory.allocateDirect(_runtime, Long.BYTES)"));
+            assertTrue(out.contains("_buffer.getPointer(0)"));
+            assertTrue(out.contains("return _found ? _value : null"));
         }
 
         @Test
@@ -558,7 +558,7 @@ class FunctionsGeneratorTest {
             // size_out must not appear in wrapper signature
             assertTrue(out.contains("public static Pointer set_as_wkb(Pointer s)"));
             // but is still allocated internally
-            assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(runtime, Long.BYTES)"));
+            assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(_runtime, Long.BYTES)"));
         }
 
 
@@ -584,8 +584,35 @@ class FunctionsGeneratorTest {
             // hidden from the signature, allocated internally, and returned.
             assertTrue(out.contains(
                 "public static Pointer tint_value_at_timestamptz(Pointer temp, boolean strict)"));
-            assertTrue(out.contains("Pointer result = Memory.allocateDirect(runtime, Integer.BYTES)"));
-            assertTrue(out.contains("return out ? result : null"));
+            assertTrue(out.contains("Pointer _buffer = Memory.allocateDirect(_runtime, Integer.BYTES)"));
+            assertTrue(out.contains("return _found ? _buffer : null"));
+        }
+
+        @Test
+        @DisplayName("a visible parameter named like a wrapper local keeps its name and its value")
+        void visibleParamNamedResultIsNotShadowed() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "index_result_id",
+                    "returnType": {"c": "bool"},
+                    "shape": {"outParams": ["id"]},
+                    "params": [
+                      {"name": "result", "cType": "const MeosArray *"},
+                      {"name": "n",      "cType": "int"},
+                      {"name": "id",     "cType": "int64_t *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            // `result` is an input here: it stays in the signature and reaches MEOS unchanged,
+            // while the folded `id` travels in the wrapper's own `_buffer`.
+            assertTrue(out.contains("public static Pointer index_result_id(Pointer result, int n)"));
+            assertTrue(out.contains("index_result_id(result, n, _buffer)"));
+            assertFalse(out.contains("Pointer result ="));
+            assertFalse(out.contains("boolean out;"));
+            assertFalse(out.contains("Runtime runtime ="));
         }
 
         @Test
