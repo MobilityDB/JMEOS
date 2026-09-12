@@ -549,8 +549,22 @@ SQL_DATATYPE = {
 # The WKB variant the hex encoders write: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
 
+# A SQL array MEOS reads as a contiguous C array of scalars, keyed by the SQL element type
+# and the C element type together: the Flink-side element class and the MeosSqlRuntime
+# helper writing the C array.
+SQL_ARRAY_SCALAR = {
+    ('integer', 'int'): ('Integer', 'ints'),
+    ('bigint', 'int64'): ('Long', 'longs'), ('bigint', 'int64_t'): ('Long', 'longs'),
+    ('float', 'double'): ('Double', 'doubles'),
+    ('double precision', 'double'): ('Double', 'doubles'),
+    ('date', 'DateADT'): ('java.time.LocalDate', 'dates'),
+    ('timestamptz', 'TimestampTz'): ('java.time.Instant', 'timestamps'),
+}
+
 
 def _datatype(cls):
+    if cls.endswith('[]'):
+        return f'DataTypes.ARRAY({_datatype(cls[:-2])})'
     return SQL_DATATYPE.get(cls, f'{cls}.TYPE')
 
 
@@ -701,11 +715,11 @@ def _arg(m, sql, p, jt, name, temps):
     b = _base(p['canonical'])
     if sql in m.codec and jt == 'jnr.ffi.Pointer':
         t = f'_p{len(temps)}'
-        temps.append(f'Pointer {t} = {name}.decode();')
+        temps.append((t, f'{name}.decode()', 'value'))
         return t
     if sql == 'interval' and jt == 'jnr.ffi.Pointer' and b == 'Interval':
         t = f'_p{len(temps)}'
-        temps.append(f'Pointer {t} = MeosSqlRuntime.interval({name});')
+        temps.append((t, f'MeosSqlRuntime.interval({name})', 'value'))
         return t
     if sql == 'boolean' and jt == 'boolean':
         return name
@@ -784,24 +798,77 @@ def _flink_class(m, sql):
     return SQL_SCALAR.get(sql)
 
 
+def _array_arg(m, elem, a, p, jt, name, temps):
+    """(Flink class, Java expression) passing the SQL array `name` of `elem` to the jar
+    parameter shape.inputArrays pairs it with (entry `a`), or None.
+
+    An array of MEOS values reaches MEOS as a C array of the pointers its elements decode
+    to, released after the call as MobilityDuck's ListToTemporalArr and FreeTemporalArr
+    release them: MEOS copies what it keeps of an array.  An array of scalars reaches it as
+    the contiguous C array it reads."""
+    if jt != 'jnr.ffi.Pointer':
+        return None
+    c = _norm(p['canonical'])
+    el = a['element']
+    t = f'_p{len(temps)}'
+    if elem in m.value_class and c.count('*') == 2 \
+            and _base(el['canonical']) == m.sql_cbase.get(elem):
+        temps.append((t, name, 'values'))
+        return f'{SQL_PKG}.types.{m.value_class[elem]}[]', t
+    hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
+        or SQL_ARRAY_SCALAR.get((elem, _base(el['canonical'])))
+    if hit and c.count('*') == 1:
+        temps.append((t, f'MeosSqlRuntime.{hit[1]}({name})', 'buffer'))
+        return f'{hit[0]}[]', t
+    return None
+
+
 def _overload(m, f, args, ret, jsig):
-    """The eval method for one signature, or (None, reason)."""
+    """The eval method for one signature, or (None, reason).
+
+    The SQL arguments pair with the visible C parameters in order, except that a SQL array
+    stands for the C array shape.inputArrays names together with the count its lengthFrom
+    names, which the eval passes as the length of the Flink array."""
     vis, outs = m.visible(f)
     outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
     if len(jsig['arg_types']) != len(vis):
         return None, 'arity:jmeos'
-    if len(args) != len(vis):
+    arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []}
+    counts = {}
+    for a in arrays.values():
+        lf = a.get('lengthFrom') or {}
+        if lf.get('kind') != 'param' or lf.get('name') not in {p['name'] for p in vis}:
+            return None, 'array:length'
+        counts[lf['name']] = a['param']
+    walk = [i for i, p in enumerate(vis) if p['name'] not in counts]
+    if len(args) != len(walk):
         return None, 'arity:sql'
-    params, call, temps = [], [], []
-    for i, (sql, p, jt) in enumerate(zip(args, vis, jsig['arg_types'])):
-        fc = _flink_class(m, sql)
-        if fc is None:
-            return None, f'sqltype:{sql}'
-        e = _arg(m, sql, p, jt, f'a{i}', temps)
-        if e is None:
-            return None, f'arg:{sql}/{_norm(p["canonical"])}'
-        params.append((fc, f'a{i}'))
-        call.append(e)
+    params, temps, passed = [], [], {}
+    call = [None] * len(vis)
+    for k, (i, sql) in enumerate(zip(walk, args)):
+        p, jt, name = vis[i], jsig['arg_types'][i], f'a{k}'
+        if sql.endswith('[]') != (p['name'] in arrays):
+            return None, f'array:{sql}/{_norm(p["canonical"])}'
+        if p['name'] in arrays:
+            r = _array_arg(m, sql[:-2], arrays[p['name']], p, jt, name, temps)
+            if r is None:
+                return None, f'arrayarg:{sql}/{_norm(p["canonical"])}'
+            fc, e = r
+        else:
+            fc = _flink_class(m, sql)
+            if fc is None:
+                return None, f'sqltype:{sql}'
+            e = _arg(m, sql, p, jt, name, temps)
+            if e is None:
+                return None, f'arg:{sql}/{_norm(p["canonical"])}'
+        params.append((fc, name))
+        call[i] = e
+        passed[p['name']] = name
+    for i, p in enumerate(vis):
+        if p['name'] in counts:
+            if jsig['arg_types'][i] not in ('int', 'long'):
+                return None, f'arraycount:{jsig["arg_types"][i]}'
+            call[i] = f'{passed[counts[p["name"]]]}.length'
     r = _ret(m, ret, f, jsig['ret'], outs)
     if r is None:
         return None, f'ret:{ret}/{_norm(f["returnType"]["canonical"])}'
@@ -817,16 +884,28 @@ def _emit_eval(ov, defaults=None):
     # An argument left to its SQL default is that default, converted like any other.
     for (t, n), lit in zip(params[len(shown):], defaults or []):
         L.append(f'        {t} {n} = {lit};')
-    for t in temps:
-        L.append(f'        {t}')
-    ins = [t.split()[1] for t in temps]
-    L.append(f'        Pointer[] _in = {{{", ".join(ins)}}};')
     jr = _jshort(jret)
-    L.append('        try {')
-    L.append(f'            {jr} _r = GeneratedFunctions.{cname}({", ".join(call)});')
-    L += [f'            {s}' for s in rstmts]
-    L.append('        } finally {')
-    L.append('            MeosSqlRuntime.free(_in);')
+    body = [f'{jr} _r = GeneratedFunctions.{cname}({", ".join(call)});'] + rstmts
+    if all(kind == 'value' for _, _, kind in temps):
+        for t, e, _ in temps:
+            L.append(f'        Pointer {t} = {e};')
+        L.append(f'        Pointer[] _in = {{{", ".join(t for t, _, _ in temps)}}};')
+        L.append('        try {')
+        L += [f'            {s}' for s in body]
+        L.append('        } finally {')
+        L.append('            MeosSqlRuntime.free(_in);')
+    else:
+        # An array decodes element by element and a null element raises, so what the call
+        # takes is gathered as it is built, inside the try that releases it.
+        L.append('        MeosSqlRuntime.Inputs _in = new MeosSqlRuntime.Inputs();')
+        L.append('        try {')
+        for t, e, kind in temps:
+            v = {'value': f'_in.value({e})', 'values': f'_in.values({e})',
+                 'buffer': f'_in.hold({e})'}[kind]
+            L.append(f'            Pointer {t} = {v};')
+        L += [f'            {s}' for s in body]
+        L.append('        } finally {')
+        L.append('            _in.free();')
     L += ['        }', '    }', '']
     return L
 
@@ -896,6 +975,8 @@ public final class {cls} extends MeosValue {{
 SQL_SUPPORT = {
     'MeosValue': f'''package {SQL_PKG};
 
+import jnr.ffi.Pointer;
+
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
  * A MEOS value as Flink holds it: the serialized form its catalog codec writes. */
 public abstract class MeosValue {{
@@ -905,6 +986,9 @@ public abstract class MeosValue {{
     protected MeosValue(String form) {{
         this.form = form;
     }}
+
+    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
+    public abstract Pointer decode();
 
     @Override
     public boolean equals(Object o) {{
@@ -967,6 +1051,7 @@ public abstract class MeosValueSerializer<T extends MeosValue> extends TypeSeria
 import functions.GeneratedFunctions;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.table.types.inference.ArgumentTypeStrategy;
@@ -983,6 +1068,9 @@ public final class MeosSqlRuntime {{
 
     private static final long PG_EPOCH_DAY = 10957L;
     private static final long PG_EPOCH_SECOND = 946684800L;
+
+    private static final jnr.ffi.Runtime RUNTIME = jnr.ffi.Runtime.getSystemRuntime();
+    private static final String NULL_ELEMENT = "null array element not allowed in this context";
 
     private static final sun.misc.Unsafe UNSAFE;
 
@@ -1039,6 +1127,130 @@ public final class MeosSqlRuntime {{
             }}
         }}
         UNSAFE.freeMemory(r.address());
+    }}
+
+    /** Free a result unless it is one of the inputs, which the caller frees. */
+    public static void freeResult(Pointer r, Inputs in) {{
+        if (!in.holds(r)) {{
+            UNSAFE.freeMemory(r.address());
+        }}
+    }}
+
+    /** What an eval taking an array hands MEOS, gathered as it is built: the values MEOS
+     * allocated, released by {{@link #free}}, and the C arrays, kept reachable until then. */
+    public static final class Inputs {{
+
+        private Pointer[] owned = new Pointer[8];
+        private int n;
+        private final java.util.ArrayList<Pointer> held = new java.util.ArrayList<>();
+
+        /** Keep p for release and pass it on. */
+        public Pointer value(Pointer p) {{
+            if (n == owned.length) {{
+                owned = java.util.Arrays.copyOf(owned, 2 * n);
+            }}
+            owned[n++] = p;
+            return p;
+        }}
+
+        /** Keep the C array b reachable until the call returns and pass it on. */
+        public Pointer hold(Pointer b) {{
+            held.add(b);
+            return b;
+        }}
+
+        /** The values decoded one by one into the C array of pointers MEOS reads.  A null
+         * element raises, as it does in PostgreSQL. */
+        public Pointer values(MeosValue[] vs) {{
+            int w = RUNTIME.addressSize();
+            Pointer b = hold(buffer(vs.length, w));
+            for (int i = 0; i < vs.length; i++) {{
+                Pointer p = value(element(vs, i).decode());
+                if (p == null) {{
+                    throw new IllegalArgumentException("an array element does not decode");
+                }}
+                b.putPointer((long) i * w, p);
+            }}
+            return b;
+        }}
+
+        boolean holds(Pointer r) {{
+            for (int i = 0; i < n; i++) {{
+                if (owned[i] != null && owned[i].address() == r.address()) {{
+                    return true;
+                }}
+            }}
+            return false;
+        }}
+
+        /** Free each value kept. */
+        public void free() {{
+            for (int i = 0; i < n; i++) {{
+                if (owned[i] != null) {{
+                    UNSAFE.freeMemory(owned[i].address());
+                }}
+            }}
+            n = 0;
+            held.clear();
+        }}
+    }}
+
+    private static <T> T element(T[] xs, int i) {{
+        if (xs[i] == null) {{
+            throw new IllegalArgumentException(NULL_ELEMENT);
+        }}
+        return xs[i];
+    }}
+
+    /** Memory for n elements of the given width, which the garbage collector releases. */
+    private static Pointer buffer(int n, int width) {{
+        return Memory.allocateDirect(RUNTIME, Math.max(1, n) * width);
+    }}
+
+    public static Pointer ints(Integer[] xs) {{
+        Pointer b = buffer(xs.length, 4);
+        for (int i = 0; i < xs.length; i++) {{
+            b.putInt(4L * i, element(xs, i));
+        }}
+        return b;
+    }}
+
+    public static Pointer longs(Long[] xs) {{
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {{
+            b.putLongLong(8L * i, element(xs, i));
+        }}
+        return b;
+    }}
+
+    public static Pointer doubles(Double[] xs) {{
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {{
+            b.putDouble(8L * i, element(xs, i));
+        }}
+        return b;
+    }}
+
+    public static Pointer dates(java.time.LocalDate[] xs) {{
+        Pointer b = buffer(xs.length, 4);
+        for (int i = 0; i < xs.length; i++) {{
+            b.putInt(4L * i, dateAdt(element(xs, i)));
+        }}
+        return b;
+    }}
+
+    public static Pointer timestamps(java.time.Instant[] xs) {{
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {{
+            b.putLongLong(8L * i, micros(element(xs, i)));
+        }}
+        return b;
+    }}
+
+    /** Microseconds from the PostgreSQL epoch, the TimestampTz MEOS reads. */
+    public static long micros(java.time.Instant t) {{
+        return Math.addExact(Math.multiplyExact(t.getEpochSecond() - PG_EPOCH_SECOND, 1000000L),
+                t.getNano() / 1000);
     }}
 
     public static int dateAdt(java.time.LocalDate d) {{
