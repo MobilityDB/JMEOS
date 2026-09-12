@@ -601,6 +601,12 @@ class SqlModel:
         self.by_name = {f['name']: f for f in self.fns}
         self.enc = cat.get('typeEncodings', {})
         self.enums = {e['name'] for e in cat.get('enums', [])}
+        # The value of each macro and enum member a wrapper binds by name.
+        self.consts = {x['name']: x['value'] for x in cat.get('macros', [])
+                       if isinstance(x.get('value'), (int, float))}
+        self.consts.update({v['name']: v['value'] for e in cat.get('enums', [])
+                            for v in e.get('values') or []
+                            if isinstance(v, dict) and isinstance(v.get('value'), int)})
         self._align()
         self._codecs()
         self._enum_parsers()
@@ -611,10 +617,13 @@ class SqlModel:
                [p for p in f['params'] if p['name'] in outs]
 
     def signatures(self, f):
-        """(sqlName, args, ret, argDefaults) for every SQL signature of f."""
+        """(sqlName, args, ret, argDefaults, boundArgs) for every SQL signature of f, where
+        boundArgs are the literals the wrapper passes for the C parameters the signature
+        does not state: those of the whole function and those of the signature."""
+        fbound = (f.get('shape') or {}).get('boundArgs') or {}
         for s in f.get('sqlSignatures') or []:
             yield (s.get('sqlName') or f['sqlfn'], s.get('args') or [], s.get('ret'),
-                   s.get('argDefaults') or [])
+                   s.get('argDefaults') or [], {**fbound, **(s.get('boundArgs') or {})})
 
     def _align(self):
         """The C base type each SQL type stands for, read off the signatures that
@@ -627,7 +636,7 @@ class SqlModel:
             if not f.get('sqlfn'):
                 continue
             vis, outs = self.visible(f)
-            for _, args, ret, _ in self.signatures(f):
+            for _, args, ret, _, _ in self.signatures(f):
                 if len(args) == len(vis):
                     for a, p in zip(args, vis):
                         if _single_pointer(p['canonical']):
@@ -823,12 +832,38 @@ def _array_arg(m, elem, a, p, jt, name, temps):
     return None
 
 
-def _overload(m, f, args, ret, jsig):
+def _bound_literal(m, v, jt):
+    """The Java literal passing the value a wrapper binds (boundArgs) to a jar parameter of
+    type `jt`, or None.  A macro or enum member name stands for its catalog value."""
+    v = m.consts.get(v, v)
+    if v in ('true', 'false'):
+        return v if jt == 'boolean' else None
+    if v == 'NULL':
+        return 'null' if jt == 'jnr.ffi.Pointer' else None
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    if jt == 'double':
+        return repr(x)
+    if x != int(x):
+        return None
+    if jt == 'int':
+        return str(int(x))
+    if jt == 'long':
+        return f'{int(x)}L'
+    if jt in ('short', 'byte'):
+        return f'({jt}) {int(x)}'
+    return None
+
+
+def _overload(m, f, args, ret, jsig, bound=None):
     """The eval method for one signature, or (None, reason).
 
     The SQL arguments pair with the visible C parameters in order, except that a SQL array
     stands for the C array shape.inputArrays names together with the count its lengthFrom
-    names, which the eval passes as the length of the Flink array."""
+    names, which the eval passes as the length of the Flink array, and that a parameter
+    the signature's wrapper binds (`bound`, from boundArgs) takes that literal."""
     vis, outs = m.visible(f)
     outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
     if len(jsig['arg_types']) != len(vis):
@@ -840,11 +875,18 @@ def _overload(m, f, args, ret, jsig):
         if lf.get('kind') != 'param' or lf.get('name') not in {p['name'] for p in vis}:
             return None, 'array:length'
         counts[lf['name']] = a['param']
-    walk = [i for i, p in enumerate(vis) if p['name'] not in counts]
+    bound = {k: v for k, v in (bound or {}).items()
+             if k in {p['name'] for p in vis} and k not in counts}
+    walk = [i for i, p in enumerate(vis) if p['name'] not in counts and p['name'] not in bound]
     if len(args) != len(walk):
         return None, 'arity:sql'
     params, temps, passed = [], [], {}
     call = [None] * len(vis)
+    for i, p in enumerate(vis):
+        if p['name'] in bound:
+            call[i] = _bound_literal(m, bound[p['name']], jsig['arg_types'][i])
+            if call[i] is None:
+                return None, f'bound:{bound[p["name"]]}/{jsig["arg_types"][i]}'
     for k, (i, sql) in enumerate(zip(walk, args)):
         p, jt, name = vis[i], jsig['arg_types'][i], f'a{k}'
         if sql.endswith('[]') != (p['name'] in arrays):
@@ -1304,8 +1346,8 @@ def run_flink_sql(args):
         if jsig is None:
             skipped['not in jar'] += 1
             continue
-        for sqlname, sargs, sret, sdef in m.signatures(f):
-            ov, why = _overload(m, f, sargs, sret, jsig)
+        for sqlname, sargs, sret, sdef, sbound in m.signatures(f):
+            ov, why = _overload(m, f, sargs, sret, jsig, sbound)
             if ov is None:
                 skipped[why.split('/')[0]] += 1
                 continue
