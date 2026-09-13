@@ -291,16 +291,19 @@ def _java_bound(v, ctype):
     return None
 
 
-def _omitted(f, p, vis):
-    """The values MobilityDB gives parameter `p` of `f` when a SQL call states `vis`
-    arguments: the literal the wrapper passes for a signature of that arity (per-signature
-    `boundArgs`), and the SQL DEFAULT of a signature whose arguments from `vis` on all have
-    one. A signature's SQL arguments pair in order with the visible C parameters it does not
-    bind."""
+def _omitted(f, p, vis, name):
+    """The values MobilityDB gives parameter `p` of `f` when a call of the SQL name `name`
+    states `vis` arguments: the literal the wrapper passes for a signature of that arity
+    (per-signature `boundArgs`), and the SQL DEFAULT of a signature whose arguments from `vis`
+    on all have one. Only the signatures of `name` count, since one C function backs several
+    names binding different literals (`shift`, `scale`, `shiftScale`). A signature's SQL
+    arguments pair in order with the visible C parameters it does not bind."""
     fbound = f.get("shape", {}).get("boundArgs", {})
     params = classify(f)[0]
     vals = []
     for s in f.get("sqlSignatures") or []:
+        if (s.get("sqlName") or f.get("sqlfn")) != name:
+            continue
         sb = {**fbound, **(s.get("boundArgs") or {})}
         args = s.get("args") or []
         if len(args) == vis and p["name"] in sb:
@@ -315,11 +318,11 @@ def _omitted(f, p, vis):
     return vals
 
 
-def hidden_arg(f, p, vis=None):
+def hidden_arg(f, p, vis=None, name=None):
     """The literal a generated UDF supplies for a SQL-hidden trailing param. When the
     catalog records the value the MobilityDB wrapper binds (`shape.boundArgs`, e.g.
-    valueAtTimestamp binds strict=true), emit THAT; for a UDF exposing `vis` arguments,
-    the one value every signature of the name gives the parameter at that arity
+    valueAtTimestamp binds strict=true), emit THAT; for the UDF `name` exposing `vis`
+    arguments, the one value every signature of that name gives the parameter at that arity
     (`_omitted`); otherwise fall back to the generic type default. Without boundArgs the
     generic default silently diverged from MobilityDB (valueAtTimestamp returned the value
     at an exclusive bound instead of NULL, asEWKT passed 0 decimal digits, which MEOS
@@ -331,7 +334,7 @@ def hidden_arg(f, p, vis=None):
         if lit is not None:
             return lit
     if vis is not None:
-        lits = {_java_bound(v, ct) for v in _omitted(f, p, vis)}
+        lits = {_java_bound(v, ct) for v in _omitted(f, p, vis, name)}
         if len(lits) == 1 and None not in lits:
             return lits.pop()
     return HIDE_DEFAULT[ct]
@@ -388,7 +391,7 @@ def emit_single(name, f, vis_arity=None):
     # supply the wrapper-bound literal (shape.boundArgs) — or the generic type default —
     # for the SQL-hidden trailing flags (sqlArity..C-arity)
     for p in hidden:
-        callargs.append(hidden_arg(f, p, len(params)))
+        callargs.append(hidden_arg(f, p, len(params), name))
     call = f"GeneratedFunctions.{f['name']}(" + ", ".join(callargs) + ")"
     L.append("        try {")
     if ret_out:
@@ -600,7 +603,7 @@ def emit_dispatch(name, cands, vis_arity=None):
         # generic default (zip above paired only the first `vis` exposed args; the
         # candidate's remaining params are the flags).
         for p in cps[vis:]:
-            callargs.append(hidden_arg(f, p, vis))
+            callargs.append(hidden_arg(f, p, vis, name))
         cond = " && ".join("%s != null" % p for p in ptrs) if ptrs else "true"
         free = " ".join("MeosMemory.free(%s);" % p for p in ptrs)
         call = "GeneratedFunctions.%s(%s)" % (f["name"], ", ".join(callargs))
