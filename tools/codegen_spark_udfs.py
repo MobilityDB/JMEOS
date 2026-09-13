@@ -274,6 +274,10 @@ def _java_bound(v, ctype):
     macro or enum member name stands for the value the catalog states for it."""
     v = CONST.get(v, v)
     v = ("true" if v else "false") if isinstance(v, bool) else str(v)
+    # SQL spells a boolean literal in any case (a DEFAULT TRUE reaches the catalog as it is
+    # written), Java in lower case
+    if v.lower() in ("true", "false"):
+        v = v.lower()
     if ctype == "bool":
         if re.fullmatch(r"-?\d+", v):
             return "true" if int(v) else "false"
