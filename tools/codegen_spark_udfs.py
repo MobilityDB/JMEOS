@@ -1054,9 +1054,12 @@ __WKB_KINDS__
 
     // Time-restrict polymorphism (atTime / minusTime): MobilityDB resolves the time arg
     // by type (timestamptz / tstzspan / tstzset / tstzspanset), but Spark cannot overload
-    // a UDF name. The arg arrives as a String — classify it by its first char (a period
-    // "[..]", a set "{..}", a span set "{[..],..}", else a bare timestamp) and route to
-    // the matching MEOS overload, returning the restricted temporal as hex-WKB.
+    // a UDF name. The arg arrives as a String: a span, set or span set in hex-WKB, the form
+    // the generated functions return one in (tstzspan_make, span ...), read by the
+    // type-checked readers, which refuse any other string; else a literal, classified by its
+    // first char (a period "[..]", a set "{..}", a span set "{[..],..}", else a bare
+    // timestamp). It routes to the matching MEOS overload, returning the restricted temporal
+    // as hex-WKB.
     static String restrictTime(Pointer t, String arg,
             BiFunction<Pointer, java.time.OffsetDateTime, Pointer> byTs,
             BiFunction<Pointer, Pointer, Pointer> bySpan,
@@ -1064,7 +1067,14 @@ __WKB_KINDS__
             BiFunction<Pointer, Pointer, Pointer> bySpanset) {
         String s = arg.trim();
         Pointer r;
-        if (s.startsWith("{")) {
+        Pointer h;
+        if ((h = spanFromHex(s)) != null) {
+            try { r = bySpan.apply(t, h); } finally { MeosMemory.free(h); }
+        } else if ((h = setFromHex(s)) != null) {
+            try { r = bySet.apply(t, h); } finally { MeosMemory.free(h); }
+        } else if ((h = spansetFromHex(s)) != null) {
+            try { r = bySpanset.apply(t, h); } finally { MeosMemory.free(h); }
+        } else if (s.startsWith("{")) {
             boolean spanset = s.indexOf('[') >= 0 || s.indexOf('(') >= 0;
             Pointer p = spanset ? GeneratedFunctions.tstzspanset_in(s) : GeneratedFunctions.tstzset_in(s);
             if (p == null) return null;
