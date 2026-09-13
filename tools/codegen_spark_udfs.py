@@ -484,6 +484,25 @@ def _safe_dispatch(f):
     return True
 
 
+def _dispatchable(group):
+    """The overloads of one @sqlfn signature group a parse-based dispatcher can hold.
+
+    A text *_in parser cannot be what tells two overloads apart (see _safe_dispatch), but at a
+    position where every overload of the group takes the same kind no overload is chosen:
+    each reads the value with the same parser, and the dispatcher routes on the other
+    positions. So an overload is left out only when it takes a text-parsed argument at a
+    position where the group's overloads differ. atStbox's overloads differ only by the
+    temporal they restrict, and all of them read the box with stbox_in."""
+    kinds = [_argkinds(f) for f in group]
+
+    def text_parsed(k):
+        return k and k[0] == "ptr" and "FromHex" not in k[1] and "geoFromText" not in k[1]
+
+    return [f for f, ks in zip(group, kinds)
+            if not any(text_parsed(k) and any(i >= len(o) or o[i] != k for o in kinds)
+                       for i, k in enumerate(ks))]
+
+
 def _parsetuple(f):
     """The arg KINDS that a runtime parse can actually DISTINGUISH, over the SQL-visible
     parameters: K_TEMPORAL / K_GEO / K_SPAN ... for pointer args, a constant marker for
@@ -1371,12 +1390,13 @@ def main():
             continue
         group = max(bysig.values(), key=len)
         # A multi-overload @sqlfn needs a runtime parse dispatcher, which is only sound
-        # when every overload discriminates via hex-WKB / WKT — drop the text-*_in ones
-        # (stbox/tbox/cbuffer/npoint/pose), so e.g. nearestApproachDistance keeps just its
-        # tgeo_tgeo / tgeo_geo overloads. A name left with no safe overload is skipped
+        # when the overloads discriminate via hex-WKB / WKT — drop an overload whose text-*_in
+        # argument (stbox/tbox/cbuffer/npoint/pose) sits where the overloads differ, so e.g.
+        # nearestApproachDistance keeps just its tgeo_tgeo / tgeo_geo overloads while atStbox
+        # keeps every temporal it restricts. A name left with no safe overload is skipped
         # (still reachable under its C names), never emitted as a fragile guess.
         if len(group) > 1:
-            group = [f for f in group if _safe_dispatch(f)]
+            group = _dispatchable(group)
         if not group:
             nskip += 1
             continue
