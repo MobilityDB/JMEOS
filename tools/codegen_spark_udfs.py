@@ -1013,36 +1013,6 @@ final class UdfMarshal {
         return o;
     }
 
-    // True iff a hex-WKB temporal pointer is a tnumber (tint/tfloat): only those have
-    // a TBox value extent. Used SOLELY to select which existing backing to delegate to
-    // for the axis-ambiguous space-X operators — never to compute a result.
-    private static boolean isTnumber(Pointer p) {
-        Pointer box = GeneratedFunctions.tnumber_to_tbox(p);
-        if (box == null) return false;
-        MeosMemory.free(box);
-        return true;
-    }
-
-    // Space-X (<<, >>, &<, &>): the value-axis (tnumber) and the X-axis (tspatial) are
-    // distinct C operators. Parse both args once, then dispatch to the tnumber backing
-    // for a tnumber left arg, else the tspatial backing. Both delegates are the
-    // operator's own existing MEOS symbols — no operator logic here.
-    static Boolean axisBool(String s1, String s2,
-            BiFunction<Pointer, Pointer, Boolean> tnumber,
-            BiFunction<Pointer, Pointer, Boolean> tspatial) {
-        if (s1 == null || s2 == null) return null;
-        Pointer p1 = tFromHex(s1);
-        if (p1 == null) return null;
-        Pointer p2 = tFromHex(s2);
-        if (p2 == null) { MeosMemory.free(p1); return null; }
-        try {
-            return isTnumber(p1) ? tnumber.apply(p1, p2) : tspatial.apply(p1, p2);
-        } finally {
-            MeosMemory.free(p1);
-            MeosMemory.free(p2);
-        }
-    }
-
     // ── Type-SAFE hex-WKB parsing ────────────────────────────────────────────────
     // A *_from_hexwkb parser reads the MEOS WKB structure for ONE type family and
     // SEGV-crashes on a valid-hex buffer of a different family (a tstzspan hex fed to
@@ -1195,28 +1165,25 @@ def main():
     # ── DISPATCH PASS: portable bare names from the contract families ──
     # Spark cannot overload by name, but MEOS exposes SUPERCLASS entrypoints that
     # dispatch every concrete temporal type internally from the type-erased hex-WKB
-    # string. So a portable bare name (eEq, tLt, aGe — RFC #920 / contract #19) wraps its
-    # superclass *_temporal_temporal C symbol for ALL temporal subtypes. But some eEq/eNe
-    # overloads have a NON-temporal first arg — eEq(geo, tgeo), and the th3 cell-set
-    # prefilter eEq(h3indexset, th3index) whose first arg is a Set* — which the Temporal*
-    # superclass cannot reach. Gather those (same 2-pointer-Boolean signature, distinct
+    # string. So a portable comparison name (eEqual, tLessThan, aGreaterEqual) wraps the
+    # superclass *_temporal_temporal function whose @sqlfn it is (ever_eq_, tlt_,
+    # always_ge_temporal_temporal) for ALL temporal subtypes. But some eEqual/eNotEqual
+    # overloads have a NON-temporal first arg — eEqual(geo, tgeo), and the th3 cell-set
+    # prefilter eEqual(h3indexset, th3index) whose first arg is a Set* — which the Temporal*
+    # superclass cannot reach. Gather those (same 2-pointer signature, distinct
     # parse-tuple, dispatch-safe) and emit ONE parse-dispatching UDF so they resolve too.
     by_name = {f["name"]: f for f in fns}
     fams = (cat.get("portableAliases") or {}).get("families", {})
-    SUF = {"Eq": "eq", "Ne": "ne", "Lt": "lt", "Le": "le", "Gt": "gt", "Ge": "ge"}
-    DISPATCH = [("everComparison", "ever_%s_temporal_temporal"),
-                ("alwaysComparison", "always_%s_temporal_temporal"),
-                ("temporalComparison", "temporal_%s")]
     ndisp = 0
-    for fam, pat in DISPATCH:
+    for fam in ("everComparison", "alwaysComparison", "temporalComparison"):
         for e in fams.get(fam, []):
             bare = e["bareName"]
-            suf = next((v for k, v in SUF.items() if bare.endswith(k)), None)
-            backing = by_name.get(pat % suf) if suf else None
+            backing = next((f for f in fns if f.get("sqlfn") == bare
+                            and f["name"].endswith("_temporal_temporal")), None)
             if not (backing and supported(backing) is None):
                 continue
             # Non-temporal overloads under the SAME @sqlfn bare name (geo/set first arg),
-            # sharing the superclass's (P,P)->Boolean signature, each parse-distinct.
+            # sharing the superclass's 2-pointer signature, each parse-distinct.
             rep_sig = _sig(backing)
             cands, seen = [backing], {_parsetuple(backing)}
             extras = [f for f in fns
@@ -1234,16 +1201,14 @@ def main():
             cov += 1
     print("  dispatch bare names (comparison)  : %d" % ndisp, file=sys.stderr)
 
-    # ── bare-name-IS-prefix families: topology / same / time / space Y,Z ──
+    # ── bare-name-IS-prefix families: same / topology ──
     # Each contract bareName IS the MEOS C operator prefix, and the superclass
-    # entrypoint *_temporal_temporal (time/topology) or *_tspatial_tspatial (spatial
-    # position) dispatches every concrete subtype internally from the type-erased
-    # hex-WKB — so one emit covers all six type families. Same emit machinery as the
-    # comparison dispatch; only the backing-name pattern differs.
-    PREFIX = [("same",         "%s_temporal_temporal"),
-              ("timePosition", "%s_temporal_temporal"),
-              ("spaceY",       "%s_tspatial_tspatial"),
-              ("spaceZ",       "%s_tspatial_tspatial")]
+    # entrypoint *_temporal_temporal dispatches every concrete subtype internally from
+    # the type-erased hex-WKB — so one emit covers all six type families. Same emit
+    # machinery as the comparison dispatch; only the backing-name pattern differs.
+    # The position operators have no bare name: they take their names by class
+    # (stboxLeft, tboxBefore, spanOverleft), which the @sqlfn pass below registers.
+    PREFIX = [("same", "%s_temporal_temporal")]
     nbare = 0
     for fam, pat in PREFIX:
         for e in fams.get(fam, []):
@@ -1274,26 +1239,6 @@ def main():
     # carry @sqlfn tags (tDistance / nearestApproachDistance) with several typed C
     # overloads, so the @sqlfn pass below emits them with full arg-kind dispatch — a
     # single tgeo_geo backing here would wrongly null a trip-vs-trip call.)
-
-    # ── space X (<<, >>, &<, &>): the ONE axis-ambiguous family ──
-    # left/right/overleft/overright resolve to DIFFERENT C symbols by argument class
-    # — the tnumber value-axis (left_tnumber_tnumber) vs. the tspatial X-axis
-    # (left_tspatial_tspatial). A thin runtime classifier (UdfMarshal.axisBool, which
-    # inspects whether arg1 is a tnumber) SELECTS between the two existing backings;
-    # it contains no operator logic, so equivalence-by-construction holds. This is the
-    # only family that needs a per-arg type inspection, exactly as the contract notes.
-    naxis = 0
-    for e in fams.get("spaceX", []):
-        bare = e["bareName"]
-        tnum, tspat = by_name.get("%s_tnumber_tnumber" % bare), by_name.get("%s_tspatial_tspatial" % bare)
-        if tnum and tspat and supported(tnum) is None and supported(tspat) is None:
-            grouped.setdefault("GeneratedUdfs_portable_operator", []).append(
-                '        spark.udf().register("%s", (UDF2<String, String, Boolean>) (s1, s2) ->\n'
-                '            UdfMarshal.axisBool(s1, s2, GeneratedFunctions::%s, GeneratedFunctions::%s),\n'
-                '            DataTypes.BooleanType);' % (bare, tnum["name"], tspat["name"]))
-            naxis += 1
-            cov += 1
-    print("  dispatch bare names (space-axis)  : %d" % naxis, file=sys.stderr)
 
     # ── NxN array (tgeoarr) pass: array-in + SETOF/array-of-struct UDFs ──
     # The *_tgeoarr_tgeoarr kernels take Temporal** array args, so the 1:1 and @sqlfn
