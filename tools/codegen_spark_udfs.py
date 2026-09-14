@@ -1125,7 +1125,7 @@ def main():
     # what JMEOS exposes, so a generated UDF can never call an absent jar symbol.
     jar_syms = None
     if args.jar and os.path.exists(args.jar):
-        import subprocess, re
+        import subprocess
         jv = subprocess.run(["javap", "-p", "-cp", args.jar, "functions.GeneratedFunctions"],
                             capture_output=True, text=True).stdout
         jar_syms = set(re.findall(r"\b([a-z][A-Za-z0-9_]+)\(", jv))
