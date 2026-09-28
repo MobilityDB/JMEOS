@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -355,9 +356,10 @@ public class GeneratedTemporalParityTest {
         assertEquals(id(GeneratedFunctions.temporal_from_hexwkb(hex)), id(g.fromHEXWKB(hex)));
         assertEquals(id(p), id(g.fromHEXWKB(hex)));
 
-        // fromWKB round-trips the WKB buffer; its byte length is half the hex string's length.
-        Pointer wkb = g.asWKB((byte) 4);
-        assertEquals(id(p), id(g.fromWKB(wkb, hex.length() / 2)));
+        // fromWKB round-trips the WKB bytes, which are the hex string decoded.
+        byte[] wkb = g.asWKB((byte) 4);
+        assertArrayEquals(java.util.HexFormat.of().parseHex(hex), wkb);
+        assertEquals(id(p), id(g.fromWKB(wkb)));
     }
 
     @Test

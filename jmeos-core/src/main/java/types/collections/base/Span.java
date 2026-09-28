@@ -88,8 +88,8 @@ public abstract class Span<T extends Object> implements Collection, Base{
      * Returns a `TsTzSpan` from its WKB representation.
      * @return Pointer type
      */
-    public <T> T from_wkb(Pointer wkb, long size, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Pointer spanPointer = GeneratedFunctions.span_from_wkb(wkb, size);
+    public <T> T from_wkb(byte[] wkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Pointer spanPointer = GeneratedFunctions.span_from_wkb(wkb);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
     }
@@ -110,9 +110,9 @@ public abstract class Span<T extends Object> implements Collection, Base{
 
     /**
      * Returns the WKB representation
-     * @return Pointer type
+     * @return byte[] type
      */
-    public Pointer as_wkb() {
+    public byte[] as_wkb() {
         return GeneratedFunctions.span_as_wkb(this._inner, (byte) 4);
     }
 

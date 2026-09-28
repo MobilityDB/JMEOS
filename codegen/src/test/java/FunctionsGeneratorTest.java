@@ -555,10 +555,58 @@ class FunctionsGeneratorTest {
                 }
                 """;
             String out = generateFromJson(json);
-            // size_out must not appear in wrapper signature
-            assertTrue(out.contains("public static Pointer set_as_wkb(Pointer s)"));
+            // size_out must not appear in wrapper signature, and the bytes come back as byte[]
+            assertTrue(out.contains("public static byte[] set_as_wkb(Pointer s)"));
             // but is still allocated internally
             assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(_runtime, Long.BYTES)"));
+        }
+
+        @Test
+        @DisplayName("a returned WKB buffer comes back as byte[] sized by size_out")
+        void byteResultReturnsBytes() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "temporal_as_wkb",
+                    "returnType": {"c": "uint8_t *"},
+                    "shape": {"outParams": ["size_out"]},
+                    "params": [
+                      {"name": "temp",     "cType": "const Temporal *"},
+                      {"name": "variant",  "cType": "uint8_t"},
+                      {"name": "size_out", "cType": "size_t *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertTrue(out.contains("public static byte[] temporal_as_wkb(Pointer temp, byte variant)"));
+            assertTrue(out.contains("byte[] _bytes = new byte[(int) size_out.getLong(0)];"));
+            assertTrue(out.contains("_result.get(0, _bytes, 0, _bytes.length);"));
+            assertTrue(out.contains("return _bytes;"));
+        }
+
+        @Test
+        @DisplayName("an input WKB buffer and its length are one byte[] argument")
+        void byteInputTakesBytes() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "temporal_from_wkb",
+                    "returnType": {"c": "Temporal *"},
+                    "params": [
+                      {"name": "wkb",  "cType": "const uint8_t *"},
+                      {"name": "size", "cType": "size_t"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertTrue(out.contains("public static Pointer temporal_from_wkb(byte[] wkb)"));
+            assertTrue(out.contains("wkb_buf.put(0, wkb, 0, wkb.length);"));
+            int call = out.indexOf("_meos_a.temporal_from_wkb(wkb_buf, (long) wkb.length);");
+            int fence = out.indexOf("java.lang.ref.Reference.reachabilityFence(wkb_buf);");
+            assertTrue(call > 0, "the wrapper passes the copied buffer and its length");
+            assertTrue(fence > call, "the copied buffer stays reachable across the call");
         }
 
         @Test

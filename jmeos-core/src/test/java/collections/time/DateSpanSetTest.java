@@ -71,7 +71,7 @@ class DateSpanSetTest {
     @Test
     public void testFromAsConstructor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         assertEquals(dsset.toString(), new datespanset(dsset.toString()).toString());
-        String wkb= dsset.from_wkb(dsset.as_wkb(), dsset.toString().length(), datespanset.class).toString();
+        String wkb= dsset.from_wkb(dsset.as_wkb(), datespanset.class).toString();
         System.out.println(wkb);
         String hexwkb= SpanSet.from_hexwkb(dsset.as_hexwkb(), datespanset.class).toString();
         System.out.println(hexwkb);
