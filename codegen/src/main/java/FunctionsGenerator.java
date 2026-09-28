@@ -912,6 +912,19 @@ public class FunctionsGenerator {
         return p.out() && p.javaType().equals("Pointer") && !p.cType().contains("size_t");
     }
 
+    // A byte buffer of MEOS is a uint8_t* whose length travels beside it: an input buffer is
+    // followed by its by-value size_t length, a returned buffer reports its length through the
+    // size_t out-parameter. The wrapper carries either as a Java byte[], so a binding holds WKB
+    // as bytes without a hex round trip.
+    private static boolean isByteCType(String cType) {
+        return cType.replace("const ", "").trim().equals("uint8_t *");
+    }
+
+    private static boolean isByteInput(List<ParamDef> ps, int i) {
+        return i + 1 < ps.size() && !ps.get(i).out() && isByteCType(ps.get(i).cType())
+                && ps.get(i + 1).cType().replace("const ", "").trim().equals("size_t");
+    }
+
     private String generateStaticMethod(FunctionDef fn, int partIndex) {
         StringBuilder sb = new StringBuilder();
 
@@ -964,9 +977,18 @@ public class FunctionsGenerator {
                 ? structClassName(fn.retCType().replace("const ", "").trim())
                 : null;
 
-        for (ParamDef p : fn.params) {
+        List<String> byteInputs = new ArrayList<>();
+        for (int i = 0; i < fn.params.size(); i++) {
+            ParamDef p = fn.params.get(i);
             if (isStructResult && p.name().equals(RESULT_PARAM)) {
                 continue; // hide from signature; the struct below owns the memory
+            }
+            if (isByteInput(fn.params, i)) {
+                // one byte[] stands for the buffer and its length, which is hidden
+                wparams.add(new WrapperParam(p.name, "byte[]", p.javaType, false));
+                byteInputs.add(p.name);
+                i++;
+                continue;
             }
             if (isSizeOut(p)) {
                 internalSizeParams.add(p.name);
@@ -989,9 +1011,12 @@ public class FunctionsGenerator {
         // The wrapper always returns Pointer for the bool+result pattern:
         // callers receive the buffer and read the typed value themselves
         // (.getDouble(0), .getLong(0), etc.), matching existing call sites.
+        boolean isByteResult = !isBoolResultPattern && !isStructResult
+                && isByteCType(fn.retCType) && internalSizeParams.size() == 1;
         String wrapperReturnType = isBoolResultPattern
                 ? "Pointer"
-                : isStructResult ? resultStructClass : mapCTypeToJavaWrapper(fn.retCType);
+                : isStructResult ? resultStructClass
+                : isByteResult ? "byte[]" : mapCTypeToJavaWrapper(fn.retCType);
 
         // --- Method signature (only visible params) ---
         sb.append("\t@SuppressWarnings(\"unused\")\n");
@@ -1006,7 +1031,8 @@ public class FunctionsGenerator {
 
         // --- Internal allocations ---
         // Determine if we need a Runtime (needed for any Memory.allocateDirect call).
-        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult || isStructResult;
+        boolean needsRuntime = !internalSizeParams.isEmpty() || hasInternalResult || isStructResult
+                || !byteInputs.isEmpty();
 
         if (isBoolResultPattern) {
             // Whether MEOS wrote a value through the out-parameter.
@@ -1038,6 +1064,14 @@ public class FunctionsGenerator {
                     .append(" = Memory.allocateDirect(_runtime, Long.BYTES);\n");
         }
 
+        // Copy each byte[] into native memory MEOS reads during the call.
+        for (String paramName : byteInputs) {
+            sb.append("\t\tPointer ").append(paramName).append("_buf = Memory.allocateDirect(_runtime, Math.max(1, ")
+                    .append(paramName).append(".length));\n");
+            sb.append("\t\t").append(paramName).append("_buf.put(0, ").append(paramName).append(", 0, ")
+                    .append(paramName).append(".length);\n");
+        }
+
         // --- Conversion variables (OffsetDateTime/LocalDateTime → long) ---
         // Emit epoch-second conversion for each temporal param.
         for (WrapperParam wp : wparams) {
@@ -1052,8 +1086,13 @@ public class FunctionsGenerator {
         // --- Build argument list for the interface call ---
         // Hidden params are forwarded by their local name: the out-parameter as `_buffer`.
         StringJoiner args = new StringJoiner(", ");
-        for (ParamDef p : fn.params) {
-            if (isBoolResultPattern && isResultOut(p)) {
+        for (int i = 0; i < fn.params.size(); i++) {
+            ParamDef p = fn.params.get(i);
+            if (isByteInput(fn.params, i)) {
+                args.add(p.name + "_buf");
+                args.add("(long) " + p.name + ".length");
+                i++;
+            } else if (isBoolResultPattern && isResultOut(p)) {
                 args.add("_buffer");
             } else if (isSizeOut(p)) {
                 args.add(p.name); // size_out buffer is allocated under its own name
@@ -1073,6 +1112,9 @@ public class FunctionsGenerator {
         StringBuilder fence = new StringBuilder();
         for (String paramName : internalSizeParams) {
             fence.append("\t\tjava.lang.ref.Reference.reachabilityFence(").append(paramName).append(");\n");
+        }
+        for (String paramName : byteInputs) {
+            fence.append("\t\tjava.lang.ref.Reference.reachabilityFence(").append(paramName).append("_buf);\n");
         }
 
         // --- Delegate + error check + return ---
@@ -1102,6 +1144,17 @@ public class FunctionsGenerator {
         } else if (fn.returnType.equals("void")) {
             sb.append("\t\t").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
+        } else if (isByteResult) {
+            // Interface returns Pointer (owned uint8_t*) whose length MEOS wrote into size_out.
+            // Copy the bytes, free the native allocation, and return the Java byte[].
+            String sizeOut = internalSizeParams.get(0);
+            sb.append("\t\tPointer _result = ").append(call).append("\n").append(fence);
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\tif (_result == null) return null;\n");
+            sb.append("\t\tbyte[] _bytes = new byte[(int) ").append(sizeOut).append(".getLong(0)];\n");
+            sb.append("\t\t_result.get(0, _bytes, 0, _bytes.length);\n");
+            sb.append("\t\t_freeCStr(_result);\n");
+            sb.append("\t\treturn _bytes;\n");
         } else if (isOwnedCharReturn(fn.retCType)) {
             // Interface returns Pointer (owned char*). Copy the string, free the
             // native allocation, and return the Java String — no leak.

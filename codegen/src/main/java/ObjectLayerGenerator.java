@@ -426,7 +426,14 @@ public class ObjectLayerGenerator {
             if (cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
                 List<Arg> ctorArgs = new ArrayList<>();
                 boolean marshalled = true;
-                for (JsonNode p : params) {
+                for (int i = 0; i < params.size(); i++) {
+                    JsonNode p = params.get(i);
+                    if (isByteInput(params, i)) {
+                        ctorArgs.add(new Arg("byte[]", sanitize(p.path("name").asText()),
+                                sanitize(p.path("name").asText())));
+                        i++;
+                        continue;
+                    }
                     Arg a = marshalArg(cleanType(p.path("cType").asText()),
                             sanitize(p.path("name").asText()), fnName);
                     if (a == null) {
@@ -614,8 +621,8 @@ public class ObjectLayerGenerator {
             returnType = "types.boxes.TBox";
             returnKind = "tbox";
         } else if (retC.equals("uint8_t *")) {
-            // The WKB byte buffer, returned as a raw pointer (its length is folded away by the wrapper).
-            returnType = "Pointer";
+            // The WKB bytes, which the wrapper returns as a byte[] sized by the folded size_t* out-param.
+            returnType = "byte[]";
             returnKind = "direct";
         } else {
             defer(ooName, "return type " + retC + " needs collection/box/struct wrapping");
@@ -630,6 +637,11 @@ public class ObjectLayerGenerator {
             }
             String pC = cleanType(p.path("cType").asText());
             String name = sanitize(p.path("name").asText());
+            if (isByteInput(params, i)) {
+                args.add(new Arg("byte[]", name, name));
+                i++;
+                continue;
+            }
             Arg arg = marshalArg(pC, name, fnName);
             if (arg == null) {
                 defer(ooName, "argument " + name + " of type " + pC + " needs object/collection marshalling");
@@ -744,6 +756,16 @@ public class ObjectLayerGenerator {
 
     private void defer(String ooName, String reason) {
         deferred.add(ooName + " — " + reason);
+    }
+
+    /**
+     * Whether parameter {@code i} is a byte buffer followed by its {@code size_t} length, which the
+     * wrapper takes as one {@code byte[]} (FunctionsGenerator.isByteInput), so the method does too.
+     */
+    private static boolean isByteInput(JsonNode params, int i) {
+        return i + 1 < params.size()
+                && cleanType(params.get(i).path("cType").asText()).equals("uint8_t *")
+                && cleanType(params.get(i + 1).path("cType").asText()).equals("size_t");
     }
 
     /** Whether the named parameter is a {@code size_t *} out-parameter the wrapper folds internally. */

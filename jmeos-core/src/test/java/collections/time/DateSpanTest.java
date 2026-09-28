@@ -54,7 +54,7 @@ class DateSpanTest {
     @Test
     public void testFromAsConstructor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         assertEquals(dspan.toString(), new datespan(dspan.toString()).toString());
-        String wkb= dspan.from_wkb(dspan.as_wkb(), dspan.toString().length(), datespan.class).toString();
+        String wkb= dspan.from_wkb(dspan.as_wkb(), datespan.class).toString();
         System.out.println(wkb);
         String hexwkb= Span.from_hexwkb(dspan.as_hexwkb(), datespan.class).toString();
         System.out.println(hexwkb);

@@ -93,8 +93,8 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
             temporal_from_wkb
 */
 
-    public Temporal from_wkb(Pointer wkb, long size){
-        Pointer result= GeneratedFunctions.temporal_from_wkb(wkb, size);
+    public Temporal from_wkb(byte[] wkb){
+        Pointer result= GeneratedFunctions.temporal_from_wkb(wkb);
         return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
     }
 
@@ -122,9 +122,8 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         MEOS Functions:
             temporal_as_wkb
 */
-    public Pointer as_wkb(){
-        Pointer result= GeneratedFunctions.temporal_as_wkb(this.inner, (byte) 4);
-        return result;
+    public byte[] as_wkb(){
+        return GeneratedFunctions.temporal_as_wkb(this.inner, (byte) 4);
     }
 
     /**

@@ -65,7 +65,7 @@ class DateSetTest {
     @Test
     public void testFromAsConstructor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         assertEquals(dset.toString(), new dateset(dset.toString()).toString());
-        String wkb= dset.from_wkb(dset.as_wkb(), dset.toString().length(), dateset.class).toString();
+        String wkb= dset.from_wkb(dset.as_wkb(), dateset.class).toString();
         String hexwkb= dset.from_hexwkb(dset.as_hexwkb(), dateset.class).toString();
         assertEquals(dset.toString(), wkb);
         System.out.println(wkb);
