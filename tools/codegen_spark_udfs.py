@@ -751,6 +751,8 @@ def emit_tgeoarr(name, f, shape):
             L.append("            return UdfMarshal.readPairs(_res, _c);")
     L.append("        } finally {")
     for i in range(nA):
+        # the native array is read by MEOS during the call and by nothing after it (codegen_jvm.py)
+        L.append("            java.lang.ref.Reference.reachabilityFence(arr%d);" % i)
         L.append("            UdfMarshal.freeArr(e%d);" % i)
     L.append("        }")
     L.append("        }, %s);" % ret_dt)
