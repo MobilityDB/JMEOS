@@ -230,7 +230,7 @@ def emit_folded(r, fold, prop):
          f'                "{fname} requires libmeos — set -D{prop}=true");',
          '        }']
     guard = ' || '.join('%s == null' % a for a in fold['arrays'])
-    empty = 'new PairsAndPeriods(new int[0][], new String[0])' if fold['periods'] \
+    empty = 'new PairsAndPeriods(new int[0][], new byte[0][])' if fold['periods'] \
         else 'new int[0][]'
     L += [f'        if ({guard}) {{',
           f'            return {empty};',
@@ -271,11 +271,11 @@ PAIRS_HOLDER = [
     '    /** Index pairs and, for the temporal relationships, when each pair holds. */',
     '    public static final class PairsAndPeriods {',
     '        public final int[][] pairs;',
-    '        public final String[] periodsHexwkb;',
+    '        public final byte[][] periodsWkb;',
     '',
-    '        PairsAndPeriods(int[][] pairs, String[] periodsHexwkb) {',
+    '        PairsAndPeriods(int[][] pairs, byte[][] periodsWkb) {',
     '            this.pairs = pairs;',
-    '            this.periodsHexwkb = periodsHexwkb;',
+    '            this.periodsWkb = periodsWkb;',
     '        }',
     '    }',
     '',
@@ -436,15 +436,15 @@ public final class MeosOpsRuntime {{
     }}
 
     /* The temporal relationships also answer, through a parallel SpanSet ** out-array,
-     * the times when each resulting pair holds; each is rendered as hex-WKB.  Frees the
+     * the times when each resulting pair holds; each is rendered as its WKB.  Frees the
      * pairs, the span-set array and every span set in it. */
-    public static String[] readPeriods(jnr.ffi.Pointer ssArr, int count) {{
-        String[] out = new String[Math.max(0, count)];
+    public static byte[][] readPeriods(jnr.ffi.Pointer ssArr, int count) {{
+        byte[][] out = new byte[Math.max(0, count)][];
         for (int k = 0; k < out.length; k++) {{
             jnr.ffi.Pointer ss = ssArr == null
                     ? null : ssArr.getPointer((long) k * 8L);
             out[k] = ss == null
-                    ? null : GeneratedFunctions.spanset_as_hexwkb(ss, (byte) 0);
+                    ? null : GeneratedFunctions.spanset_as_wkb(ss, (byte) {WKB_VARIANT});
             free(ss);
         }}
         free(ssArr);
@@ -546,7 +546,7 @@ SQL_DATATYPE = {
     'java.time.Duration': 'DataTypes.INTERVAL(DataTypes.SECOND(3))',
 }
 
-# The WKB variant the hex encoders write: the extended form, which keeps the SRID.
+# The WKB variant the WKB writers take: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
 
 # A SQL array MEOS reads as a contiguous C array of scalars, keyed by the SQL element type
@@ -650,10 +650,12 @@ class SqlModel:
     def _codecs(self):
         """Value types and the codec each crosses Flink with.
 
-        WKB where the catalog states a WKB decoder and an asHexWKB encoder for the C
-        type: the WKB carries the value's own type, so one codec serves every SQL type
-        the C type stands for.  Text otherwise, and only for a C type a single SQL type
-        stands for, since a text decoder cannot tell those SQL types apart."""
+        The WKB bytes where the catalog states the byte codec of the C type, and its
+        hex WKB where it states a WKB decoder and an asHexWKB encoder: a C type has one
+        WKB reader, so one codec serves every SQL type the C type stands for.  Text
+        otherwise, and only for a C type a single SQL type stands for, since a text
+        decoder cannot tell those SQL types apart.  The Spark generator chooses by the
+        same rule (#derive_codecs in codegen_spark_udfs.py)."""
         hexwkb = {}
         for f in self.fns:
             if f.get('sqlfn') == 'asHexWKB' and f['params'] and f['name'] in self.jmeos:
@@ -668,7 +670,10 @@ class SqlModel:
             e = self.enc.get(cb) or {}
             dec = (e.get('decoders') or {})
             encd = (e.get('encoders') or {})
-            if dec.get('wkb') in self.jmeos and cb in hexwkb:
+            byt = (e.get('bytes') or {})
+            if byt.get('decoder') in self.jmeos and byt.get('encoder') in self.jmeos:
+                self.codec[sql] = ('bytes', byt['decoder'], byt['encoder'], [], [])
+            elif dec.get('wkb') in self.jmeos and cb in hexwkb:
                 self.codec[sql] = ('wkb', dec['wkb'], hexwkb[cb], [], [])
             elif len(by_cbase[cb]) == 1 and dec.get('text') in self.jmeos \
                     and encd.get('text') in self.jmeos:
@@ -956,11 +961,23 @@ def _value_class_src(m, sql):
     cls = m.value_class[sql]
     kind, dec, enc, in_aux, out_aux = m.codec[sql]
     daux = ''.join(', ' + str(a.get('default', 0)) for a in in_aux)
-    eaux = f', (byte) {WKB_VARIANT}' if kind == 'wkb' \
+    eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') \
         else ''.join(', ' + str(a.get('default', 0)) for a in out_aux)
+    # The form is bytes whatever the codec: the WKB itself, or the UTF-8 of a string form.
+    if kind == 'bytes':
+        decode = f'GeneratedFunctions.{dec}(form)'
+        encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
+                  f'        return b == null ? null : new {cls}(b);')
+        render = 'MeosValue.hex(form)'
+    else:
+        decode = f'GeneratedFunctions.{dec}(new String(form, StandardCharsets.UTF_8){daux})'
+        encode = (f'String s = GeneratedFunctions.{enc}(p{eaux});\n'
+                  f'        return s == null ? null : new {cls}(s.getBytes(StandardCharsets.UTF_8));')
+        render = 'new String(form, StandardCharsets.UTF_8)'
     return f'''package {SQL_PKG}.types;
 
 import functions.GeneratedFunctions;
+import java.nio.charset.StandardCharsets;
 import jnr.ffi.Pointer;
 import org.apache.flink.api.common.typeutils.SimpleTypeSerializerSnapshot;
 import org.apache.flink.api.common.typeutils.TypeSerializerSnapshot;
@@ -978,24 +995,28 @@ public final class {cls} extends MeosValue {{
     /** The Flink SQL type of this value. */
     public static final DataType TYPE = DataTypes.RAW({cls}.class, new Serializer());
 
-    public {cls}(String form) {{
+    public {cls}(byte[] form) {{
         super(form);
     }}
 
     /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
     public Pointer decode() {{
-        return GeneratedFunctions.{dec}(form{daux});
+        return {decode};
     }}
 
     /** The value MEOS holds at p, in the form this type carries. */
     public static {cls} encode(Pointer p) {{
-        String s = GeneratedFunctions.{enc}(p{eaux});
-        return s == null ? null : new {cls}(s);
+        {encode}
+    }}
+
+    @Override
+    public String toString() {{
+        return {render};
     }}
 
     public static final class Serializer extends MeosValueSerializer<{cls}> {{
         @Override
-        protected {cls} make(String form) {{
+        protected {cls} make(byte[] form) {{
             return new {cls}(form);
         }}
 
@@ -1017,34 +1038,40 @@ public final class {cls} extends MeosValue {{
 SQL_SUPPORT = {
     'MeosValue': f'''package {SQL_PKG};
 
+import java.util.Arrays;
 import jnr.ffi.Pointer;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * A MEOS value as Flink holds it: the serialized form its catalog codec writes. */
+ * A MEOS value as Flink holds it: the serialized form its catalog codec writes, as bytes —
+ * the WKB itself, or the UTF-8 of a string form. */
 public abstract class MeosValue {{
 
-    public final String form;
+    public final byte[] form;
 
-    protected MeosValue(String form) {{
+    protected MeosValue(byte[] form) {{
         this.form = form;
     }}
 
     /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
     public abstract Pointer decode();
 
+    /** The hex text of bytes, the readable form of a WKB. */
+    public static String hex(byte[] b) {{
+        StringBuilder s = new StringBuilder(2 * b.length);
+        for (byte x : b) {{
+            s.append(Character.forDigit((x >> 4) & 0xF, 16)).append(Character.forDigit(x & 0xF, 16));
+        }}
+        return s.toString().toUpperCase();
+    }}
+
     @Override
     public boolean equals(Object o) {{
-        return o != null && o.getClass() == getClass() && form.equals(((MeosValue) o).form);
+        return o != null && o.getClass() == getClass() && Arrays.equals(form, ((MeosValue) o).form);
     }}
 
     @Override
     public int hashCode() {{
-        return form.hashCode();
-    }}
-
-    @Override
-    public String toString() {{
-        return form;
+        return Arrays.hashCode(form);
     }}
 }}
 ''',
@@ -1056,25 +1083,29 @@ import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.DataOutputView;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * Writes a MEOS value as its serialized form; the value is immutable. */
+ * Writes a MEOS value as the length of its form and the form's bytes, so a value of any size
+ * crosses; the value is immutable. */
 public abstract class MeosValueSerializer<T extends MeosValue> extends TypeSerializerSingleton<T> {{
 
-    protected abstract T make(String form);
+    protected abstract T make(byte[] form);
 
     @Override public boolean isImmutableType() {{ return true; }}
-    @Override public T createInstance() {{ return make(""); }}
+    @Override public T createInstance() {{ return make(new byte[0]); }}
     @Override public T copy(T from) {{ return from; }}
     @Override public T copy(T from, T reuse) {{ return from; }}
     @Override public int getLength() {{ return -1; }}
 
     @Override
     public void serialize(T value, DataOutputView out) throws IOException {{
-        out.writeUTF(value.form);
+        out.writeInt(value.form.length);
+        out.write(value.form);
     }}
 
     @Override
     public T deserialize(DataInputView in) throws IOException {{
-        return make(in.readUTF());
+        byte[] b = new byte[in.readInt()];
+        in.readFully(b);
+        return make(b);
     }}
 
     @Override
@@ -1084,7 +1115,9 @@ public abstract class MeosValueSerializer<T extends MeosValue> extends TypeSeria
 
     @Override
     public void copy(DataInputView in, DataOutputView out) throws IOException {{
-        out.writeUTF(in.readUTF());
+        int n = in.readInt();
+        out.writeInt(n);
+        out.write(in, n);
     }}
 }}
 ''',
