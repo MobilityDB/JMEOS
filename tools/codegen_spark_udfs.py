@@ -29,32 +29,25 @@ def norm(c):
 
 
 # ── Pointer-typed args: canonical base -> (GeneratedFunctions parser, KIND) ──
-# parser takes the Java Object Spark hands the UDF, returns a jnr Pointer (freed after the
-# call), or null when the value is not of the parser's kind.
-PARSE = {
-    # Type-SAFE WKB readers: a *_from_wkb / *_from_hexwkb parser CRASHES (SIGSEGV) on a
-    # well-formed buffer of the wrong TYPE (a span fed to temporal_from_wkb). UdfMarshal.tFrom
-    # and its siblings read the WKB type first and only call the C parser when the type
-    # matches, else return null — so a foreign value is rejected, never crashes, and the
-    # arg-kind dispatch can safely try every candidate. Each reads WKB bytes and hex-WKB text.
-    "Temporal":     ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
-    "TInstant":     ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
-    "TSequence":    ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
-    "TSequenceSet": ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
-    "GSERIALIZED":  ("UdfMarshal.geoFromText(%s)", "K_GEO"),
-    "Span":         ("UdfMarshal.spanFrom(%s)",    "K_SPAN"),
-    "SpanSet":      ("UdfMarshal.spansetFrom(%s)", "K_SPANSET"),
-    "Set":          ("UdfMarshal.setFrom(%s)",     "K_SET"),
-    # the text readers take a String and nothing else
-    "STBox":        ("UdfMarshal.textIn(%s, GeneratedFunctions::stbox_in)",    "K_STBOX"),
-    "TBox":         ("UdfMarshal.textIn(%s, GeneratedFunctions::tbox_in)",     "K_TBOX"),
-    "Cbuffer":      ("UdfMarshal.textIn(%s, GeneratedFunctions::cbuffer_in)",  "K_CBUFFER"),
-    "Npoint":       ("UdfMarshal.textIn(%s, GeneratedFunctions::npoint_in)",   "K_NPOINT"),
-    "Nsegment":     ("UdfMarshal.textIn(%s, GeneratedFunctions::nsegment_in)", "K_NSEGMENT"),
-    "Pose":         ("UdfMarshal.textIn(%s, GeneratedFunctions::pose_in)",     "K_POSE"),
-    "Jsonb":        ("UdfMarshal.textIn(%s, GeneratedFunctions::jsonb_in)",    "K_JSONB"),
-    "Raquet":       ("UdfMarshal.textIn(%s, GeneratedFunctions::raquet_in)",   "K_RAQUET"),
-    "JsonPath":     ("UdfMarshal.textIn(%s, GeneratedFunctions::jsonpath_in)", "K_JSONPATH"),
+# ── Pointer-typed args and returns, filled from the catalog by derive_codecs ──
+# PARSE: canonical base -> (reader expression over the Object Spark hands the UDF, KIND); the
+# reader returns a jnr Pointer (freed after the call), or null when the value is not of its
+# kind. SERIAL: canonical base -> (Spark type, writer expression).
+PARSE = {}
+SERIAL = {}
+# The WKB variant the byte writers take: the extended form, which keeps the SRID.
+WKB_VARIANT = 4
+# The types whose WKB states its MeosType after the byte-order byte, each with the typed reader
+# UdfMarshal holds for it. A *_from_wkb / *_from_hexwkb parser CRASHES (SIGSEGV) on a
+# well-formed buffer of the wrong TYPE (a span fed to temporal_from_wkb); a typed reader reads
+# the type first and calls the C parser only when it matches, else returns null, so a foreign
+# value is refused and the arg-kind dispatch can safely try every candidate. The other byte
+# codecs (boxes, circular buffers, network points, poses) state no type in their WKB.
+TYPED_READER = {
+    "Temporal": ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
+    "Span":     ("UdfMarshal.spanFrom(%s)",    "K_SPAN"),
+    "SpanSet":  ("UdfMarshal.spansetFrom(%s)", "K_SPANSET"),
+    "Set":      ("UdfMarshal.setFrom(%s)",     "K_SET"),
 }
 # The readers that check the kind of what they read, so an overload using them can be told
 # apart from its siblings at run time. The one test #_safe_dispatch and #_dispatchable both ask.
@@ -66,27 +59,65 @@ def type_checked(parse):
     return parse.startswith(TYPE_CHECKED)
 
 
-# ── Pointer-typed returns: canonical base -> (Spark type, GeneratedFunctions serializer) ──
-# The extended WKB variant (4) keeps the SRID.
-SERIAL = {
-    "Temporal":     ("BinaryType", "GeneratedFunctions.temporal_as_wkb(%s, (byte) 4)"),
-    "TInstant":     ("BinaryType", "GeneratedFunctions.temporal_as_wkb(%s, (byte) 4)"),
-    "TSequence":    ("BinaryType", "GeneratedFunctions.temporal_as_wkb(%s, (byte) 4)"),
-    "TSequenceSet": ("BinaryType", "GeneratedFunctions.temporal_as_wkb(%s, (byte) 4)"),
-    "GSERIALIZED":  ("StringType", "GeneratedFunctions.geo_as_text(%s, 15)"),
-    "Span":         ("BinaryType", "GeneratedFunctions.span_as_wkb(%s, (byte) 4)"),
-    "SpanSet":      ("BinaryType", "GeneratedFunctions.spanset_as_wkb(%s, (byte) 4)"),
-    "Set":          ("BinaryType", "GeneratedFunctions.set_as_wkb(%s, (byte) 4)"),
-    "STBox":        ("StringType", "GeneratedFunctions.stbox_out(%s, 15)"),
-    "TBox":         ("StringType", "GeneratedFunctions.tbox_out(%s, 15)"),
-    "Cbuffer":      ("StringType", "GeneratedFunctions.cbuffer_out(%s, 15)"),
-    "Npoint":       ("StringType", "GeneratedFunctions.npoint_out(%s, 15)"),
-    "Nsegment":     ("StringType", "GeneratedFunctions.nsegment_out(%s, 15)"),
-    "Pose":         ("StringType", "GeneratedFunctions.pose_out(%s, 15)"),
-    "Jsonb":        ("StringType", "GeneratedFunctions.jsonb_out(%s)"),
-    "Raquet":       ("StringType", "GeneratedFunctions.raquet_out(%s)"),
-    "JsonPath":     ("StringType", "GeneratedFunctions.jsonpath_out(%s)"),
-}
+def _fn_ref(name, aux):
+    """A java.util.function.Function<String, Pointer> calling `name` on the text, the catalog's
+    default passed for each trailing formatting argument, as #_value_class_src passes them."""
+    if not aux:
+        return "GeneratedFunctions::%s" % name
+    return "s -> GeneratedFunctions.%s(s, %s)" % (name, ", ".join(str(a["default"]) for a in aux))
+
+
+# The types whose functions share a SQL name with those of a type already marshalled, where no
+# reader tells the two apart: hasZ/xMin.. of TPCBox and STBox, point of PoseChain and Cbuffer,
+# bandPixelType/height.. of Raster and Raquet. Marshalling them would leave each such name with
+# overloads no dispatcher can choose between (#_dispatchable), and the name would go; they wait
+# for the class-prefixed names that separate them. Read by #derive_codecs beside INTERNAL.
+DEFERRED_TYPES = {"TPCBox", "PoseChain", "Raster"}
+
+
+def derive_codecs(cat, have):
+    """Fill PARSE and SERIAL from the catalog's typeEncodings, the codec each value travels in:
+    the Spark twin of #_codecs in codegen_jvm.py, which chooses the Flink codec the same way.
+
+    A type whose byte codec the catalog states travels as its WKB bytes, a BinaryType column,
+    and is read from those bytes, from its hex-WKB text, and from its text form when its text
+    reader is the generic <type>_in; any other type travels in its text form. The subtypes
+    the object model's subtype axis lists (TInstant, TSequence, TSequenceSet) take the codec of
+    Temporal. A geometry reads through UdfMarshal.geoFromText, which accepts the EWKT the
+    geometry writer geo_as_ewkt answers, where the catalog's text reader geo_from_text takes
+    WKT alone."""
+    for base, e in (cat.get("typeEncodings") or {}).items():
+        if base in DEFERRED_TYPES or base in INTERNAL:
+            continue
+        dec = e.get("decoders") or {}
+        byt = e.get("bytes") or {}
+        kind = "K_" + base.upper()
+        if byt and have(byt.get("decoder")) and have(byt.get("encoder")):
+            SERIAL[base] = ("BinaryType", "GeneratedFunctions.%s(%%s, (byte) %d)"
+                            % (byt["encoder"], WKB_VARIANT))
+            if base in TYPED_READER:
+                PARSE[base] = TYPED_READER[base]
+                continue
+            hexr = dec.get("wkb") if have(dec.get("wkb")) else None
+            text = e.get("in") if (e.get("in") == base.lower() + "_in" and have(e.get("in"))
+                                   and not e.get("in_aux")) else None
+            PARSE[base] = ("UdfMarshal.read(%%s, null, GeneratedFunctions::%s, %s, %s)"
+                           % (byt["decoder"],
+                              "GeneratedFunctions::%s" % hexr if hexr else "null",
+                              "GeneratedFunctions::%s" % text if text else "null"), kind)
+        elif have(e.get("in")) and have(e.get("out")):
+            out_aux = "".join(", %s" % a["default"] for a in e.get("out_aux") or [])
+            SERIAL[base] = ("StringType", "GeneratedFunctions.%s(%%s%s)" % (e["out"], out_aux))
+            PARSE[base] = ("UdfMarshal.textIn(%%s, %s)" % _fn_ref(e["in"], e.get("in_aux")),
+                           kind)
+    if "GSERIALIZED" in PARSE:
+        PARSE["GSERIALIZED"] = ("UdfMarshal.geoFromText(%s)", "K_GSERIALIZED")
+    axis = ((cat.get("objectModel") or {}).get("axes") or {}).get("subtype") or {}
+    for v in axis.get("values") or []:
+        sub = v.get("class")
+        if sub and sub != "Temporal" and "Temporal" in PARSE:
+            PARSE[sub] = PARSE["Temporal"]
+            SERIAL[sub] = SERIAL["Temporal"]
 # ── Scalar args: canonical -> (Spark DataType, Java boxed type, "parse expr") ──
 SCALAR_ARG = {
     "int":         ("IntegerType", "Integer", "%s"),
@@ -520,7 +551,7 @@ def _dispatchable(group):
 
 def _parsetuple(f):
     """The arg KINDS that a runtime parse can actually DISTINGUISH, over the SQL-visible
-    parameters: K_TEMPORAL / K_GEO / K_SPAN ... for pointer args, a constant marker for
+    parameters: K_TEMPORAL / K_GSERIALIZED / K_SPAN ... for pointer args, a constant marker for
     scalars and timestamps, and K_TEMPORAL:<type> where the overload names a concrete
     temporal type the WKB byte identifies. Two overloads with the SAME _parsetuple cannot
     be told apart by parsing, so only one of them may go into a parse-based dispatcher;
@@ -1065,17 +1096,27 @@ __WKB_KINDS__
     private static int hexByte(String s, int i) {
         return Character.digit(s.charAt(2 * i), 16) * 16 + Character.digit(s.charAt(2 * i + 1), 16);
     }
-    // One family's reader: `bytes` reads WKB bytes, `hex` reads hex-WKB text.
-    private static Pointer read(Object o, java.util.Set<Integer> family,
+    // The reader of a type with a byte codec: `bytes` reads its WKB bytes, `hex` its hex-WKB
+    // text and `text` its text form, a null function standing for a form the type has no
+    // reader of. `family` is the set of MeosTypes its WKB states, or null for a WKB stating
+    // none, whose reader then checks nothing and so tells no overload apart.
+    static Pointer read(Object o, java.util.Set<Integer> family,
             java.util.function.Function<byte[], Pointer> bytes,
-            java.util.function.Function<String, Pointer> hex) {
+            java.util.function.Function<String, Pointer> hex,
+            java.util.function.Function<String, Pointer> text) {
         o = wire(o);
-        if (!family.contains(wkbType(o))) return null;
-        return o instanceof byte[] ? bytes.apply((byte[]) o) : hex.apply((String) o);
+        if (o instanceof byte[])
+            return family == null || family.contains(wkbType(o)) ? bytes.apply((byte[]) o) : null;
+        if (!(o instanceof String)) return null;
+        String s = (String) o;
+        if (isHex(s))
+            return hex != null && (family == null || family.contains(wkbType(s)))
+                ? hex.apply(s) : null;
+        return text != null ? text.apply(s) : null;
     }
     static Pointer tFrom(Object o) {
         return read(o, TEMPORAL_WKB, GeneratedFunctions::temporal_from_wkb,
-            GeneratedFunctions::temporal_from_hexwkb);
+            GeneratedFunctions::temporal_from_hexwkb, null);
     }
     // The same parse restricted to ONE temporal type, for an overload named after a
     // concrete type: `code` is that type's MeosType value, which is the WKB type, so
@@ -1083,19 +1124,19 @@ __WKB_KINDS__
     // of reaching a C function that rejects it as the wrong type at run time.
     static Pointer tFromOf(Object o, int code) {
         return read(o, java.util.Set.of(code), GeneratedFunctions::temporal_from_wkb,
-            GeneratedFunctions::temporal_from_hexwkb);
+            GeneratedFunctions::temporal_from_hexwkb, null);
     }
     static Pointer spanFrom(Object o) {
         return read(o, SPAN_WKB, GeneratedFunctions::span_from_wkb,
-            GeneratedFunctions::span_from_hexwkb);
+            GeneratedFunctions::span_from_hexwkb, null);
     }
     static Pointer spansetFrom(Object o) {
         return read(o, SPANSET_WKB, GeneratedFunctions::spanset_from_wkb,
-            GeneratedFunctions::spanset_from_hexwkb);
+            GeneratedFunctions::spanset_from_hexwkb, null);
     }
     static Pointer setFrom(Object o) {
         return read(o, SET_WKB, GeneratedFunctions::set_from_wkb,
-            GeneratedFunctions::set_from_hexwkb);
+            GeneratedFunctions::set_from_hexwkb, null);
     }
 
     // Time-restrict polymorphism (atTime / minusTime): MobilityDB resolves the time arg
@@ -1325,6 +1366,8 @@ def main():
             jret, jname, jargs = m.group(1), m.group(2), m.group(3).strip()
             JSIG[jname] = (jret if "." in jret else jret.lower(),
                            0 if not jargs else len(jargs.split(",")))
+    # The codec each value travels in, from the catalog, before any emit pass reads it.
+    derive_codecs(cat, lambda n: bool(n) and (jar_syms is None or n in jar_syms))
 
     # GOAL: reach the WHOLE JMEOS surface. Every MEOS C function (unique by its C
     # name) becomes a 1:1 UDF named by that C symbol — that is how the ~2254
