@@ -1085,6 +1085,138 @@ __WKB_KINDS__
 }
 """
 
+# A temporal aggregate of MEOS as a Spark Aggregator over hex-WKB temporals, a generated
+# helper written beside UdfMarshal like the MARSHAL template above. The transition and
+# combine functions of the family are handed in per temporal type, and the buffer holds
+# the native state of the partition. When Spark moves a buffer between executors it writes
+# the state as the temporal value temporal_tagg_finalfn returns and reads it back through
+# temporal_to_taggstate, and a combine function answers one of the two states it takes
+# while temporal_tagg_finalfn releases the other.
+AGGREGATE = GEN_NOTE + """\
+package org.mobilitydb.spark.generated;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import jnr.ffi.Pointer;
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.expressions.Aggregator;
+import functions.GeneratedFunctions;
+import org.mobilitydb.spark.MeosMemory;
+
+public final class TemporalAggregate extends Aggregator<String, TemporalAggregate.Buffer, String> {
+    /** A transition or a combine function of the family: (state, value) or (state, state). */
+    public interface Step extends Serializable {
+        Pointer apply(Pointer a, Pointer b);
+    }
+
+    /** The state of a partition, and the index of the temporal type it aggregates. */
+    public static final class Buffer implements Serializable {
+        transient Pointer state;
+        int step = -1;
+
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            out.defaultWriteObject();
+            String hex = null;
+            if (state != null) {
+                Pointer t = GeneratedFunctions.temporal_tagg_finalfn(state);
+                state = null;
+                if (t != null) {
+                    hex = GeneratedFunctions.temporal_as_hexwkb(t, (byte) 4);
+                    state = GeneratedFunctions.temporal_to_taggstate(t);
+                    MeosMemory.free(t);
+                }
+            }
+            out.writeObject(hex);
+        }
+
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            String hex = (String) in.readObject();
+            state = null;
+            if (hex != null) {
+                Pointer t = GeneratedFunctions.temporal_from_hexwkb(hex);
+                state = GeneratedFunctions.temporal_to_taggstate(t);
+                MeosMemory.free(t);
+            }
+        }
+    }
+
+    private final int[] codes;
+    private final Step[] trans;
+    private final Step[] combs;
+
+    /** codes[i] is the WKB type byte trans[i] and combs[i] take, or -1 for every temporal. */
+    public TemporalAggregate(int[] codes, Step[] trans, Step[] combs) {
+        this.codes = codes;
+        this.trans = trans;
+        this.combs = combs;
+    }
+
+    private int pick(String hex) {
+        int type = UdfMarshal.wkbType(hex);
+        for (int i = 0; i < codes.length; i++)
+            if (codes[i] < 0 || codes[i] == type)
+                return i;
+        throw new IllegalArgumentException("the aggregate takes no temporal value of type " + type);
+    }
+
+    @Override public Buffer zero() { return new Buffer(); }
+
+    @Override public Buffer reduce(Buffer b, String hex) {
+        if (hex == null)
+            return b;
+        int i = pick(hex);
+        if (b.step >= 0 && b.step != i)
+            throw new IllegalArgumentException("the aggregate takes values of one temporal type");
+        Pointer t = UdfMarshal.tFromHex(hex);
+        if (t == null)
+            return b;
+        try {
+            b.state = trans[i].apply(b.state, t);
+            b.step = i;
+        } finally {
+            MeosMemory.free(t);
+        }
+        return b;
+    }
+
+    @Override public Buffer merge(Buffer b1, Buffer b2) {
+        if (b2.state == null)
+            return b1;
+        if (b1.state == null)
+            return b2;
+        if (b1.step != b2.step)
+            throw new IllegalArgumentException("the aggregate takes values of one temporal type");
+        Pointer r = combs[b1.step].apply(b1.state, b2.state);
+        Pointer other = r.address() == b1.state.address() ? b2.state : b1.state;
+        MeosMemory.free(GeneratedFunctions.temporal_tagg_finalfn(other));
+        b1.state = r;
+        b2.state = null;
+        return b1;
+    }
+
+    @Override public String finish(Buffer b) {
+        if (b.state == null)
+            return null;
+        Pointer t = GeneratedFunctions.temporal_tagg_finalfn(b.state);
+        b.state = null;
+        if (t == null)
+            return null;
+        try {
+            return GeneratedFunctions.temporal_as_hexwkb(t, (byte) 4);
+        } finally {
+            MeosMemory.free(t);
+        }
+    }
+
+    @Override public Encoder<Buffer> bufferEncoder() { return Encoders.javaSerialization(Buffer.class); }
+    @Override public Encoder<String> outputEncoder() { return Encoders.STRING(); }
+}
+"""
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -1377,6 +1509,66 @@ def main():
     print("  @sqlfn canonical names      : %d  (%d arg-kind-dispatched, %d subtype-siblings + %d unsafe-overload names to C-name)" %
           (nsql, nsqldisp, ndropped, nskip), file=sys.stderr)
 
+    # ── temporal aggregate pass: the catalog's sqlAgg families as Spark aggregators ──
+    # An aggregate is the group of functions the catalog tags with one sqlAgg name. It is
+    # emitted when each transition function takes (SkipList *, Temporal *), has the combine
+    # function of the same stem, and the final function of the family is the generic
+    # temporal_tagg_finalfn: then a partial aggregate travels between executors as the
+    # temporal value that final function returns, and temporal_to_taggstate rebuilds the
+    # state from it (TemporalAggregate.java). A family whose own final function reads more
+    # than the temporal values (tAvg, tCentroid) keeps a state that value cannot carry, so it
+    # is left out and reported. The typed transition functions of one family are chosen by
+    # the WKB type byte of the value, like the typed overloads of a dispatcher; the generic
+    # ones (temporal_tcount_transfn) take every temporal. Spark resolves function names
+    # regardless of case and holds one function per name, so an aggregate whose name a
+    # scalar of the catalog or of this surface carries takes the `Agg` suffix of its
+    # canonical name (mergeAgg, tMinAgg), and the scalar keeps the bare name.
+    registered = {m.lower() for part in grouped.values() for code in part
+                  for m in re.findall(r'register\("([^"]+)"', code)}
+    registered |= {f["sqlfn"].lower() for f in fns
+                   if isinstance(f.get("sqlfn"), str) and not f.get("sqlAgg")}
+    have = lambda n: n in by_name and (jar_syms is None or n in jar_syms)
+    aggs = {}
+    for f in fns:
+        for a in f.get("sqlAgg") or []:
+            aggs.setdefault(a, []).append(f)
+    state_canon = lambda p: norm(p["canonical"]) == "SkipList *"
+    nagg, agg_left = 0, []
+    for a in sorted(aggs):
+        grp = {f["name"]: f for f in aggs[a]}
+        finals = [n for n in grp if n.endswith("_finalfn")]
+        steps = []
+        for n in sorted(grp):
+            f = grp[n]
+            ps = f.get("params") or []
+            if not (n.endswith("_transfn") and len(ps) == 2 and state_canon(ps[0])
+                    and base(ps[1]["canonical"]) == "Temporal"
+                    and norm(f["returnType"]["canonical"]) == "SkipList *"):
+                continue
+            comb = n[:-len("_transfn")] + "_combinefn"
+            t = _expected_temptype(f)
+            steps.append((TEMPTYPE_CODE[t] if t else -1, n, comb))
+        if (not steps or any(n != "temporal_tagg_finalfn" for n in finals)
+                or not all(have(n) and have(c) for _, n, c in steps)
+                or not (have("temporal_tagg_finalfn") and have("temporal_to_taggstate"))):
+            agg_left.append(a)
+            continue
+        sname = a + "Agg" if a.lower() in registered else a
+        codes = ", ".join(str(c) for c, _, _ in steps)
+        trans = ", ".join("GeneratedFunctions::%s" % n for _, n, _ in steps)
+        combs = ", ".join("GeneratedFunctions::%s" % c for _, _, c in steps)
+        grouped.setdefault("GeneratedUdfs_aggregate", []).append(
+            '        spark.udf().register("%s", org.apache.spark.sql.functions.udaf(\n'
+            '            new TemporalAggregate(new int[] {%s},\n'
+            '                new TemporalAggregate.Step[] {%s},\n'
+            '                new TemporalAggregate.Step[] {%s}),\n'
+            '            org.apache.spark.sql.Encoders.STRING()));' % (sname, codes, trans, combs))
+        registered.add(sname.lower())
+        nagg += 1
+        cov += 1
+    print("  temporal aggregates               : %d  (left out: %s)"
+          % (nagg, ", ".join(agg_left) or "none"), file=sys.stderr)
+
     # Organize by doxygen module group (@ingroup), one class per group — the SAME
     # structure as the MEOS reference manual / XML docs, so a function is found in the
     # same place across tools. This also keeps every class small, dodging the per-class
@@ -1431,6 +1623,8 @@ def main():
         % (k, ", ".join(str(x) for x in sorted(set(v)))) for k, v in kinds.items())
     with open(os.path.join(args.out, "UdfMarshal.java"), "w") as fh:
         fh.write(MARSHAL.replace("__WKB_KINDS__", wkb_lines))
+    with open(os.path.join(args.out, "TemporalAggregate.java"), "w") as fh:
+        fh.write(AGGREGATE)
 
     main_cls = GEN_NOTE + IMPORTS + "\npublic final class GeneratedSpatioTemporalUDFs {\n"
     main_cls += "    private GeneratedSpatioTemporalUDFs() {}\n"
