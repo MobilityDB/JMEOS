@@ -561,6 +561,32 @@ class FunctionsGeneratorTest {
             assertTrue(out.contains("Pointer size_out = Memory.allocateDirect(_runtime, Long.BYTES)"));
         }
 
+        @Test
+        @DisplayName("size_out stays reachable until MEOS has written the size into it")
+        void sizeOutFencedAfterCall() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "temporal_as_hexwkb",
+                    "returnType": {"c": "char *"},
+                    "shape": {"outParams": ["size_out"]},
+                    "params": [
+                      {"name": "temp",     "cType": "const Temporal *"},
+                      {"name": "variant",  "cType": "uint8_t"},
+                      {"name": "size_out", "cType": "size_t *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            int call = out.indexOf("_meos_a.temporal_as_hexwkb(temp, variant, size_out);");
+            int fence = out.indexOf("java.lang.ref.Reference.reachabilityFence(size_out);");
+            int check = out.indexOf("MeosErrorHandler.checkError();", call);
+            assertTrue(call > 0, "the wrapper calls MEOS with size_out");
+            assertTrue(fence > call, "the fence follows the call");
+            assertTrue(fence < check, "the fence precedes the first statement after the call");
+        }
+
 
         @Test
         @DisplayName("shape.outParams folds by the flag regardless of the param name")

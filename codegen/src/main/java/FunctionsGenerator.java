@@ -1066,11 +1066,20 @@ public class FunctionsGenerator {
         String partField = "_meos_" + (char) ('a' + partIndex);
         String call = partField + "." + fn.name + "(" + args + ");";
 
+        // A size_out buffer is jnr memory nothing reads after the call, so without a fence it can
+        // be collected, and its memory freed, while MEOS is still writing the size into it. The
+        // fence keeps it reachable until the call returns, as tools/codegen_jvm.py does for the
+        // argument arrays of the NxN kernels.
+        StringBuilder fence = new StringBuilder();
+        for (String paramName : internalSizeParams) {
+            fence.append("\t\tjava.lang.ref.Reference.reachabilityFence(").append(paramName).append(");\n");
+        }
+
         // --- Delegate + error check + return ---
         if (isBoolResultPattern) {
             // the same ABI-defined byte, here deciding whether the out-param holds a value
             sb.append("\t\t_found = ").append(call.substring(0, call.length() - 1))
-              .append(" != 0;\n");
+              .append(" != 0;\n").append(fence);
 
             if (resultStrategy.isPointer()) {
                 // pointer result (Span*, STBox*, …):
@@ -1087,23 +1096,23 @@ public class FunctionsGenerator {
             }
         } else if (isStructResult) {
             // MEOS fills the memory backing _result and returns that same address.
-            sb.append("\t\t").append(call).append("\n");
+            sb.append("\t\t").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
             sb.append("\t\treturn _result;\n");
         } else if (fn.returnType.equals("void")) {
-            sb.append("\t\t").append(call).append("\n");
+            sb.append("\t\t").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
         } else if (isOwnedCharReturn(fn.retCType)) {
             // Interface returns Pointer (owned char*). Copy the string, free the
             // native allocation, and return the Java String — no leak.
-            sb.append("\t\tPointer _result = ").append(call).append("\n");
+            sb.append("\t\tPointer _result = ").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
             sb.append("\t\tif (_result == null) return null;\n");
             sb.append("\t\tString _str = _result.getString(0);\n");
             sb.append("\t\t_freeCStr(_result);\n");
             sb.append("\t\treturn _str;\n");
         } else {
-            sb.append("\t\tvar _result = ").append(call).append("\n");
+            sb.append("\t\tvar _result = ").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
 
             // Convert long result back to OffsetDateTime/LocalDateTime.
