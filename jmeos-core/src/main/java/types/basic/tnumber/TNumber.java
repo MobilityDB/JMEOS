@@ -841,33 +841,28 @@ public interface TNumber {
 */
 
     default List<TNumber> value_time_split(Object duration, int value_size, int value_start, Object time_start){
-        OffsetDateTime st= null;
-        Pointer dt= null;
-        if(time_start != null){
+        OffsetDateTime st;
+        if(time_start == null){
             st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
         }
+        else if(time_start instanceof LocalDateTime){
+            st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+        }
         else{
-            if(time_start instanceof LocalDateTime){
-                st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
-            }
-            else{
-                st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
-            }
-
-            if(duration instanceof Duration){
-                dt= ConversionUtils.timedelta_to_interval((Duration) duration);
-            }
-            else{
-                dt= GeneratedFunctions.interval_in(duration.toString(), -1);
-            }
+            st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
+        }
+        Pointer dt;
+        if(duration instanceof Duration){
+            dt= ConversionUtils.timedelta_to_interval((Duration) duration);
+        }
+        else{
+            dt= GeneratedFunctions.interval_in(duration.toString(), -1);
         }
         // Create a JNR-FFI runtime instance
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
-        Pointer valueListPointer = createEmptyPointerArray(runtime, value_size);
-        Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
-        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);
+        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, null, null, intPointer);
         List<TNumber> tempList= new ArrayList<>();
         int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){

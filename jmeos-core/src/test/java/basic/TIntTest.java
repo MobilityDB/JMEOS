@@ -902,4 +902,25 @@ public class TIntTest {
             assertEquals("[1@2019-09-02 00:00:00+00, 5@2019-09-03 00:00:00+00]", ((TInt) fragments.get(1)).to_string());
         }
     }
+
+
+    @org.junit.jupiter.api.Test
+    void testValueTimeSplit() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TIntSeq source = new TIntSeq("[1@2019-09-01, 5@2019-09-03]");
+        java.time.Duration day = java.time.Duration.ofDays(1);
+        for (LocalDateTime start : java.util.Arrays.asList(LocalDateTime.of(2019, 9, 1, 0, 0), null)) {
+            java.util.List<TNumber> fragments = source.value_time_split(day, 2, 0, start);
+            assertEquals(3, fragments.size());
+            assertEquals("{[1@2019-09-01 00:00:00+00, 1@2019-09-02 00:00:00+00)}", ((TInt) fragments.get(0)).to_string());
+            assertEquals("{[1@2019-09-02 00:00:00+00, 1@2019-09-03 00:00:00+00)}", ((TInt) fragments.get(1)).to_string());
+            assertEquals("{[5@2019-09-03 00:00:00+00]}", ((TInt) fragments.get(2)).to_string());
+        }
+        java.util.List<TNumber> fragments = source.value_time_split(day, 2, 0, LocalDateTime.of(2019, 9, 1, 12, 0));
+        assertEquals(4, fragments.size());
+        assertEquals("{[1@2019-09-01 00:00:00+00, 1@2019-09-01 12:00:00+00)}", ((TInt) fragments.get(0)).to_string());
+        assertEquals("{[1@2019-09-01 12:00:00+00, 1@2019-09-02 12:00:00+00)}", ((TInt) fragments.get(1)).to_string());
+        assertEquals("{[1@2019-09-02 12:00:00+00, 1@2019-09-03 00:00:00+00)}", ((TInt) fragments.get(2)).to_string());
+        assertEquals("{[5@2019-09-03 00:00:00+00]}", ((TInt) fragments.get(3)).to_string());
+    }
 }
