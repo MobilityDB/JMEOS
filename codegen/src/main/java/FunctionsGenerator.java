@@ -38,11 +38,6 @@ public class FunctionsGenerator {
     private static final Set<String> DATE_C_TYPES = Set.of("DateADT");
     private static final Set<String> TIMESTAMP_C_TYPES = Set.of("Timestamp", "TimestampTz");
 
-    // The JSON sometimes encodes them as int32_t rather than size_t, producing
-    // "int" in the interface.  old_functions.txt used "long" consistently for these,
-    // so we force long when the interface type resolved to int for these names.
-    private static final Set<String> SIZE_PARAM_NAMES = Set.of("size", "wkb_size");
-
     /** Name of the leading parameter carrying the address of a struct returned through memory. */
     private static final String RESULT_PARAM = "_result_address";
 
@@ -508,12 +503,6 @@ public class FunctionsGenerator {
                     String pName  = sanitizeParamName(rawName);
                     String pCType = p.get("cType").asText();
                     String pJava  = mapCTypeToJava(pCType);
-
-                    // Override int → long for known byte-count parameters.
-                    // The JSON may emit int32_t for these; old_functions.txt used long.
-                    if (SIZE_PARAM_NAMES.contains(pName) && pJava.equals("int")) {
-                        pJava = "long";
-                    }
 
                     params.add(new ParamDef(pName, pJava, pCType, outParams.contains(rawName)));
                 }
@@ -999,10 +988,6 @@ public class FunctionsGenerator {
                 continue; // hide from signature; allocated below
             }
             String wrapperType = mapCTypeToJavaWrapper(p.cType);
-            // Preserve the long override for size params
-            if (SIZE_PARAM_NAMES.contains(p.name) && wrapperType.equals("int")) {
-                wrapperType = "long";
-            }
             boolean needsConversion = isTemporalCType(p.cType);
             wparams.add(new WrapperParam(p.name, wrapperType, p.javaType, needsConversion));
         }
@@ -1199,10 +1184,7 @@ public class FunctionsGenerator {
         if (params.isEmpty()) return "";
         StringJoiner sj = new StringJoiner(", ");
         for (ParamDef p : params) {
-            // Restore long for size params even at interface level
-            String type = SIZE_PARAM_NAMES.contains(p.name) && p.javaType.equals("int")
-                    ? "long" : p.javaType;
-            sj.add(type + " " + p.name);
+            sj.add(p.javaType + " " + p.name);
         }
         return sj.toString();
     }
