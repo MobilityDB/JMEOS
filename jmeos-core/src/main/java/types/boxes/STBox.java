@@ -1236,7 +1236,7 @@ public class STBox implements Box {
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= GeneratedFunctions.stbox_quad_split(this.get_inner(), intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		int count= intPointer.getInt(0);
 		List<STBox> stBoxList= new ArrayList<>();
 		for(int i=0;i<count;i++){
 			Pointer p= resPointer.getPointer((long) i *Long.BYTES);

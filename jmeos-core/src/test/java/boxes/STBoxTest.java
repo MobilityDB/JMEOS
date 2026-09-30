@@ -328,4 +328,10 @@ public class STBoxTest {
 		}
 		assertEquals(stb.is_adjacent(stb2),res);
 	}
+
+
+	@org.junit.jupiter.api.Test
+	public void testQuadSplitFlat() {
+		assertEquals(4, new STBox("STBOX X((0,0),(4,4))").quad_split_flat().size());
+	}
 }

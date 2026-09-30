@@ -244,7 +244,7 @@ public interface TGeomPoint extends TPoint {
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= GeneratedFunctions.tgeo_values(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
-		int count= intPointer.getInt(Integer.BYTES);
+		int count= intPointer.getInt(0);
 		StringBuilder sb = null;
 		sb.append("{");
 		for(int i=0;i<count;i++) {

@@ -159,7 +159,7 @@ public class IntSet extends Set<Integer> implements Number{
 
     public Integer element_n(int n) throws Exception {
         super.element_n(n);
-        return Objects.requireNonNull(GeneratedFunctions.intset_value_n(this._inner, n + 1)).getInt(Integer.BYTES);
+        return Objects.requireNonNull(GeneratedFunctions.intset_value_n(this._inner, n + 1)).getInt(0);
     }
 
     public List<Integer> elements(){

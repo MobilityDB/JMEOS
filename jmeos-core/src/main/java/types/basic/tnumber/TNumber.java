@@ -814,7 +814,7 @@ public interface TNumber {
         Pointer listPointer = createEmptyPointerArray(runtime, size);
         Pointer result= GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
         List<TNumber> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
             Pointer res= result.getPointer((long) i *Long.BYTES);
             TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
@@ -869,7 +869,7 @@ public interface TNumber {
         Pointer timeListPointer = createEmptyPointerArray(runtime, value_size);
         Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, valueListPointer, timeListPointer, intPointer);
         List<TNumber> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
             Pointer res= p.getPointer((long) i *Long.BYTES);
             TNumber t= (TNumber) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());

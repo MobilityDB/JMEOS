@@ -138,7 +138,7 @@ public interface TBool {
         Pointer resPointer = GeneratedFunctions.tbool_values(this.getBoolInner(), intPointer);
         StringBuilder sb = null;
         sb.append("{");
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for (int i=0;i<count;i++){
             boolean boolRes= false;
             int res= resPointer.getInt((long) i *Integer.BYTES);
