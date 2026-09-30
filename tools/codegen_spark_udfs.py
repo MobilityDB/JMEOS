@@ -145,8 +145,7 @@ PRED_OPS = {"?=", "?<>", "?<", "?<=", "?>", "?>=",
 # genuinely-internal / non-user-facing base types -> legitimately OUT OF SCOPE.
 INTERNAL = {"Datum", "SkipList", "GBOX", "BOX3D", "void", "meosType", "MeosType",
             "uint8_t", "LWGEOM", "GEOSGeometry", "RTree", "interpType", "json_object",
-            "size_t", "Match", "TimeSplit", "FloatSplit", "FloatTimeSplit",
-            "IntSplit", "IntTimeSplit", "MvtGeom", "unsigned int",
+            "size_t", "Match", "unsigned int",
             "uint32", "Interval", "text", "char"}
 # (Interval/text/char START as harder marshalling — deferred to a follow-up pass;
 #  counted as not-yet-emitted, NOT as a permanent exclusion. DateADT (->int) and
