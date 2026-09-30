@@ -889,4 +889,10 @@ public class TFloatTest {
     }
 
 
+    @org.junit.jupiter.api.Test
+    void testValueSet() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        assertEquals("{1.5, 2.5}", GeneratedFunctions.set_out(new TFloatSeq(
+            "[1.5@2019-09-01, 2.5@2019-09-02, 1.5@2019-09-03]").value_set().get_inner(), 15));
+    }
 }
