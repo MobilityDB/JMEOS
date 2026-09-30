@@ -1287,10 +1287,11 @@ public interface TPoint extends Serializable {
 				gs= GeneratedFunctions.geom_in("Point (0 0 0)", -1);
 			}
 		}
-		GeneratedFunctions.SpaceSplit split= GeneratedFunctions.tgeo_space_split(
-				this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border);
-		int count= split.count.get();
-		Pointer fragments= split.fragments.get();
+		Pointer countPointer= Memory.allocate(Runtime.getSystemRuntime(), Integer.BYTES);
+		Pointer fragments= GeneratedFunctions.tgeo_space_split(
+				this.getPointInner(), xsize, ysz, zsz, gs, bitmatrix, include_border,
+				null, countPointer);
+		int count= countPointer.getInt(0);
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
 			Pointer p= fragments.getPointer((long) i *Long.BYTES);
@@ -1346,22 +1347,21 @@ public interface TPoint extends Serializable {
 		}
 
 		OffsetDateTime st= null;
-		if(time_start!=null){
+		if(time_start==null){
 			st= GeneratedFunctions.timestamptz_in("2000-01-03", -1);
 		}
+		else if(time_start instanceof LocalDateTime){
+			st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
+		}
 		else{
-			if(time_start instanceof LocalDateTime){
-				st= ConversionUtils.datetimeToTimestampTz((LocalDateTime) time_start);
-			}
-			else{
-				st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
-			}
+			st= GeneratedFunctions.timestamptz_in(time_start.toString(), -1);
 		}
 
-		GeneratedFunctions.SpaceTimeSplit split= GeneratedFunctions.tgeo_space_time_split(
-				this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border);
-		int count= split.count.get();
-		Pointer fragments= split.fragments.get();
+		Pointer countPointer= Memory.allocate(Runtime.getSystemRuntime(), Integer.BYTES);
+		Pointer fragments= GeneratedFunctions.tgeo_space_time_split(
+				this.getPointInner(), xsize, ysz, zsz, dt, gs, st, bitmatrix, include_border,
+				null, null, countPointer);
+		int count= countPointer.getInt(0);
 		List<Temporal> tempList= new ArrayList<>();
 		for(int i=0;i<count;i++){
 			Pointer p= fragments.getPointer((long) i *Long.BYTES);

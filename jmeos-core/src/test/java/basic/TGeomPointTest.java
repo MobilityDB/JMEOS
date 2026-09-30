@@ -1083,4 +1083,48 @@ public class TGeomPointTest {
 
 
     }
+
+    @org.junit.jupiter.api.Test
+    void testSpaceSplit() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeomPointSeq source = new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(3 1)@2019-09-03]");
+        java.util.List<Temporal> fragments = source.space_split(2f, null, null, null, false, false);
+        assertEquals(2, fragments.size());
+        assertEquals("{[POINT(1 1)@2019-09-01 00:00:00+00, POINT(2 1)@2019-09-02 00:00:00+00)}",
+            ((TPoint) fragments.get(0)).to_string());
+        assertEquals("{[POINT(2 1)@2019-09-02 00:00:00+00, POINT(3 1)@2019-09-03 00:00:00+00]}",
+            ((TPoint) fragments.get(1)).to_string());
+    }
+
+
+    @org.junit.jupiter.api.Test
+    void testSpaceTimeSplit() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeomPointSeq source = new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(3 1)@2019-09-03]");
+        java.util.List<Temporal> fragments = source.space_time_split(10f, java.time.Duration.ofDays(1),
+            null, null, null, LocalDateTime.of(2019, 9, 1, 0, 0), false, false);
+        assertEquals(2, fragments.size());
+        assertEquals("{[POINT(1 1)@2019-09-01 00:00:00+00, POINT(2 1)@2019-09-02 00:00:00+00)}",
+            ((TPoint) fragments.get(0)).to_string());
+        assertEquals("{[POINT(2 1)@2019-09-02 00:00:00+00, POINT(3 1)@2019-09-03 00:00:00+00)}",
+            ((TPoint) fragments.get(1)).to_string());
+    }
+
+
+    @org.junit.jupiter.api.Test
+    void testSpaceTimeSplitTimeOrigin() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeomPointSeq source = new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(3 1)@2019-09-03]");
+        java.util.List<Temporal> fragments = source.space_time_split(10f, java.time.Duration.ofDays(1),
+            null, null, null, LocalDateTime.of(2019, 9, 1, 12, 0), false, false);
+        assertEquals(3, fragments.size());
+        assertEquals("{[POINT(1 1)@2019-09-01 00:00:00+00, POINT(1.5 1)@2019-09-01 12:00:00+00)}",
+            ((TPoint) fragments.get(0)).to_string());
+        assertEquals("{[POINT(1.5 1)@2019-09-01 12:00:00+00, POINT(2.5 1)@2019-09-02 12:00:00+00)}",
+            ((TPoint) fragments.get(1)).to_string());
+        assertEquals("{[POINT(2.5 1)@2019-09-02 12:00:00+00, POINT(3 1)@2019-09-03 00:00:00+00]}",
+            ((TPoint) fragments.get(2)).to_string());
+        assertEquals(2, source.space_time_split(10f, java.time.Duration.ofDays(1),
+            null, null, null, null, false, false).size());
+    }
 }
