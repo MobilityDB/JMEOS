@@ -806,27 +806,28 @@ class FunctionsGeneratorTest {
         }
 
         @Test
-        @DisplayName("size/wkb_size params use long in interface")
-        void sizeLongOverride() throws Exception {
+        @DisplayName("a parameter takes the Java type of its C type whatever its name")
+        void paramTypeFollowsCTypeNotName() throws Exception {
             String json = """
                 {
                   "functions": [{
-                    "name": "tsequence_make",
-                    "returnType": {"c": "TSequence *"},
+                    "name": "tint_value_split",
+                    "returnType": {"c": "Temporal **"},
                     "params": [
-                      {"name": "instants", "cType": "TInstant **"},
-                      {"name": "size",     "cType": "int32_t"},
-                      {"name": "lower_inc","cType": "bool"},
-                      {"name": "upper_inc","cType": "bool"},
-                      {"name": "interp",   "cType": "interpType"},
-                      {"name": "normalize","cType": "bool"}
+                      {"name": "temp",     "cType": "const Temporal *"},
+                      {"name": "size",     "cType": "int"},
+                      {"name": "wkb_size", "cType": "int32_t"},
+                      {"name": "vsize",    "cType": "size_t"}
                     ]
                   }]
                 }
                 """;
             String out = generateFromJson(json);
-            // 'size' must be long even though cType is int32_t
-            assertTrue(out.contains("long size"));
+            assertTrue(out.contains("int size"));
+            assertTrue(out.contains("int wkb_size"));
+            assertTrue(out.contains("long vsize"));
+            assertFalse(out.contains("long size"));
+            assertFalse(out.contains("long wkb_size"));
         }
 
         @Test
