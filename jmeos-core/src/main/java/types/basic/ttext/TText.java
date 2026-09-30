@@ -151,7 +151,7 @@ public interface TText {
         Pointer resPointer= GeneratedFunctions.ttext_values(this.getTextInner(), intPointer);
         StringBuilder sb= null;
         sb.append("{");
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for(int i=0; i<count; i++){
             Pointer res= resPointer.getPointer((long) i *Long.BYTES);
             String resString= GeneratedFunctions.text_to_cstring(res);

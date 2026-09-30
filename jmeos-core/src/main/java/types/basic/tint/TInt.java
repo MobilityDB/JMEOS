@@ -241,7 +241,7 @@ public interface TInt extends TNumber {
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer res= GeneratedFunctions.tint_values(this.getNumberInner(), intPointer);
-		int count= intPointer.getInt(Integer.BYTES);
+		int count= intPointer.getInt(0);
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		for(int i=0;i<count;i++){

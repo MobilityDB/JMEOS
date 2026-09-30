@@ -1387,7 +1387,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         Pointer listPointer = createEmptyPointerArray(runtime);
         Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
             Pointer res= p.getPointer((long) i *Long.BYTES);
             Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
@@ -1452,7 +1452,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         Pointer listPointer = createEmptyPointerArray(runtime);
         Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();
-        int count= intPointer.getInt(Integer.BYTES);
+        int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
             Pointer res= p.getPointer((long) i *Long.BYTES);
             Temporal t= Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());

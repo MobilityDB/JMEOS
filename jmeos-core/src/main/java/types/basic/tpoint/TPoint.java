@@ -164,7 +164,7 @@ public interface TPoint extends Serializable {
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= GeneratedFunctions.temporal_instants(this.getPointInner(), intPointer);
 		List<TPoint> pointList= new ArrayList<>();
-		int count= intPointer.getInt(Integer.BYTES);
+		int count= intPointer.getInt(0);
 		for(int i=0; i<count; i++){
 			Pointer res= resPointer.getPointer((long) i *Long.BYTES);
 			TPoint t= (TPoint) Factory.create_temporal(res, this.getCustomType(), this.getTemporalType());
@@ -389,7 +389,7 @@ public interface TPoint extends Serializable {
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= GeneratedFunctions.tgeo_stboxes(this.getPointInner(), intPointer);
 		List<STBox> stBoxList= new ArrayList<>();
-		int length= intPointer.getInt(Integer.BYTES);
+		int length= intPointer.getInt(0);
 		for(int i=0; i<length; i++){
 			Pointer p= resPointer.getPointer((long) i *Long.BYTES);
 			STBox b= new STBox(p);
@@ -550,7 +550,7 @@ public interface TPoint extends Serializable {
 		// Allocate memory for an integer (4 bytes) but do not set a value
 		Pointer intPointer = Memory.allocate(runtime, 4);
 		Pointer resPointer= GeneratedFunctions.tpoint_make_simple(this.getPointInner(), intPointer);
-		int length= intPointer.getInt(Integer.BYTES);
+		int length= intPointer.getInt(0);
 		List<TPoint> tPointList= new ArrayList<>();
 		TemporalType temporalType= getTemporalType();
 		String customType= getCustomType();

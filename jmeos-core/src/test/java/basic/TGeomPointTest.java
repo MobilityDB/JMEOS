@@ -1127,4 +1127,23 @@ public class TGeomPointTest {
         assertEquals(2, source.space_time_split(10f, java.time.Duration.ofDays(1),
             null, null, null, null, false, false).size());
     }
+
+
+    @org.junit.jupiter.api.Test
+    void testValuesStboxesMakeSimple() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeomPointSeq source = new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]");
+        java.util.List<TPoint> values = source.values(6);
+        assertEquals(2, values.size());
+        assertEquals("POINT(1 1)@2019-09-01 00:00:00+00", values.get(0).to_string());
+        assertEquals("POINT(2 2)@2019-09-02 00:00:00+00", values.get(1).to_string());
+        assertEquals(1, source.stboxes().size());
+        java.util.List<TPoint> simple = new TGeomPointSeq("[Point(0 0)@2019-09-01, Point(2 2)@2019-09-02, "
+            + "Point(2 0)@2019-09-03, Point(0 2)@2019-09-04]").make_simple();
+        assertEquals(2, simple.size());
+        assertEquals("[POINT(0 0)@2019-09-01 00:00:00+00, POINT(2 2)@2019-09-02 00:00:00+00, "
+            + "POINT(2 0)@2019-09-03 00:00:00+00)", simple.get(0).to_string());
+        assertEquals("[POINT(2 0)@2019-09-03 00:00:00+00, POINT(0 2)@2019-09-04 00:00:00+00]",
+            simple.get(1).to_string());
+    }
 }

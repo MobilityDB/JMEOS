@@ -242,7 +242,7 @@ public interface TFloat extends TNumber {
 		Pointer resPointer = GeneratedFunctions.tfloat_values(this.getNumberInner(), intPointer);
 		StringBuilder sb = null;
 		sb.append("{");
-		int count= intPointer.getInt(Integer.BYTES);
+		int count= intPointer.getInt(0);
 		for (int i=0;i<count;i++){
 			double res= resPointer.getDouble((long) i *Double.BYTES);
 			sb.append(res);
