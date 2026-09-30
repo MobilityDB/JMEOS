@@ -1086,4 +1086,13 @@ public class TGeogPointTest {
 
 
     }
+
+
+    @org.junit.jupiter.api.Test
+    void testValueSet() throws ParseException {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeogPointSeq source = new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]");
+        assertEquals("SRID=4326;{\"POINT(1 1)\", \"POINT(2 2)\"}",
+            GeneratedFunctions.spatialset_as_ewkt(source.value_set(6).get_inner(), 6));
+    }
 }

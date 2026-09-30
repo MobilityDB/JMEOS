@@ -238,25 +238,10 @@ public interface TGeomPoint extends TPoint {
 	}
 
 	default GeometrySet value_set(int precision) throws ParseException {
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(runtime, 4);
-		Pointer resPointer= GeneratedFunctions.tgeo_values(this.getPointInner(), intPointer);
-		List<TPoint> pointList= new ArrayList<>();
-		int count= intPointer.getInt(0);
-		StringBuilder sb = null;
-		sb.append("{");
-		for(int i=0;i<count;i++) {
-			Point p= ConversionUtils.gserialized_to_shapely_point(resPointer.getPointer((long) i *Long.BYTES), precision);
-			sb.append(p);
-			if(i<count-1){
-				sb.append(", ");
-			}
-		}
-		sb.append("}");
-		System.out.println(sb.toString());
-		return new GeometrySet(sb.toString());
+		Pointer countPointer = Memory.allocate(Runtime.getSystemRuntime(), Integer.BYTES);
+		Pointer values = GeneratedFunctions.tgeo_values(this.getPointInner(), countPointer);
+		return new GeometrySet(GeneratedFunctions.set_round(
+			GeneratedFunctions.geoset_make(values, countPointer.getInt(0)), precision));
 	}
 
 

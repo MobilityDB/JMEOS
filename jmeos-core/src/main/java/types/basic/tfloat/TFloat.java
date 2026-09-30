@@ -235,24 +235,9 @@ public interface TFloat extends TNumber {
             tint_values
 */
 	default FloatSet value_set(){
-		// Create a JNR-FFI runtime instance
-		Runtime runtime = Runtime.getSystemRuntime();
-		// Allocate memory for an integer (4 bytes) but do not set a value
-		Pointer intPointer = Memory.allocate(runtime, 4);
-		Pointer resPointer = GeneratedFunctions.tfloat_values(this.getNumberInner(), intPointer);
-		StringBuilder sb = null;
-		sb.append("{");
-		int count= intPointer.getInt(0);
-		for (int i=0;i<count;i++){
-			double res= resPointer.getDouble((long) i *Double.BYTES);
-			sb.append(res);
-			if(i<count-1){
-				sb.append(", ");
-			}
-		}
-		sb.append("}");
-		System.out.println(sb.toString());
-		return new FloatSet(sb.toString());
+		Pointer countPointer = Memory.allocate(Runtime.getSystemRuntime(), Integer.BYTES);
+		Pointer values = GeneratedFunctions.tfloat_values(this.getNumberInner(), countPointer);
+		return new FloatSet(GeneratedFunctions.floatset_make(values, countPointer.getInt(0)));
 	}
 
 	/**

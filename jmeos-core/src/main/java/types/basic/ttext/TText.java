@@ -10,6 +10,7 @@ import types.basic.tfloat.TFloatSeq;
 import types.basic.tfloat.TFloatSeqSet;
 import types.basic.tpoint.TPoint;
 import types.collections.base.Set;
+import types.collections.text.TextSet;
 import types.collections.time.tstzset;
 import types.collections.time.tstzspan;
 import types.collections.time.Time;
@@ -144,49 +145,9 @@ public interface TText {
      */
 
     default Set<String> value_set(){
-        // Create a JNR-FFI runtime instance
-        Runtime runtime = Runtime.getSystemRuntime();
-        // Allocate memory for an integer (4 bytes) but do not set a value
-        Pointer intPointer = Memory.allocate(runtime, 4);
-        Pointer resPointer= GeneratedFunctions.ttext_values(this.getTextInner(), intPointer);
-        StringBuilder sb= null;
-        sb.append("{");
-        int count= intPointer.getInt(0);
-        for(int i=0; i<count; i++){
-            Pointer res= resPointer.getPointer((long) i *Long.BYTES);
-            String resString= GeneratedFunctions.text_to_cstring(res);
-            sb.append(resString);
-            if(i<count-1){
-                sb.append(", ");
-            }
-        }
-        sb.append("}");
-        return new Set<String>() {
-            @Override
-            public Pointer get_inner() {
-                return resPointer;
-            }
-
-            @Override
-            public Pointer createInner(Pointer inner) {
-                return inner;
-            }
-
-            @Override
-            public Pointer createStringInner(String str) {
-                return GeneratedFunctions.ttext_in(str);
-            }
-
-            @Override
-            public String start_element() throws ParseException {
-                return GeneratedFunctions.text_to_cstring(GeneratedFunctions.ttext_min_value(getTextInner()));
-            }
-
-            @Override
-            public String end_element() throws ParseException {
-                return GeneratedFunctions.text_to_cstring(GeneratedFunctions.ttext_max_value(getTextInner()));
-            }
-        };
+        Pointer countPointer = Memory.allocate(Runtime.getSystemRuntime(), Integer.BYTES);
+        Pointer values = GeneratedFunctions.ttext_values(this.getTextInner(), countPointer);
+        return new TextSet(GeneratedFunctions.textset_make(values, countPointer.getInt(0)));
     }
 
     /**

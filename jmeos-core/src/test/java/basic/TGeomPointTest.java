@@ -1146,4 +1146,14 @@ public class TGeomPointTest {
         assertEquals("[POINT(2 0)@2019-09-03 00:00:00+00, POINT(0 2)@2019-09-04 00:00:00+00]",
             simple.get(1).to_string());
     }
+
+
+    @org.junit.jupiter.api.Test
+    void testValueSet() throws ParseException {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        TGeomPointSeq source = new TGeomPointSeq(
+            "SRID=3812;[Point(1.123456 1)@2019-09-01, Point(2 2)@2019-09-02, Point(1.123456 1)@2019-09-03]");
+        assertEquals("SRID=3812;{\"POINT(1.12 1)\", \"POINT(2 2)\"}",
+            GeneratedFunctions.spatialset_as_ewkt(source.value_set(2).get_inner(), 6));
+    }
 }

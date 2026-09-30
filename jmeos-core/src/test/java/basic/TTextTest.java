@@ -603,4 +603,12 @@ public class TTextTest {
             assertEquals(((TTextSeqSet)base.append_sequence(base2)).to_string(), ((TTextSeqSet) tseq).to_string());
         }
     }
+
+
+    @org.junit.jupiter.api.Test
+    void testValueSet() {
+        GeneratedFunctions.meos_initialize_timezone("UTC");
+        assertEquals("{\"AAA\", \"BBB\"}",
+            new TTextSeq("[BBB@2019-09-01, AAA@2019-09-02, BBB@2019-09-03]").value_set().toString());
+    }
 }
