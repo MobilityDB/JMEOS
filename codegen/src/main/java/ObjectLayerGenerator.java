@@ -888,7 +888,7 @@ public class ObjectLayerGenerator {
             sb.append("\nimport static types.temporal.TemporalType.*;\n");
         }
         sb.append("\n/**\n");
-        sb.append(" * Generated OO surface for {@link ").append(spec.objectKey()).append("}.\n");
+        sb.append(" * Generated OO surface for {@code ").append(spec.objectKey()).append("}.\n");
         sb.append(" *\n");
         sb.append(" * <p>Derived from the MEOS object model (objectModel.classes.").append(spec.objectKey());
         sb.append(") by ObjectLayerGenerator. Each method carries the canonical camelCase name from the\n");
