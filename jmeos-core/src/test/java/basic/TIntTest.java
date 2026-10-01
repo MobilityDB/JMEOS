@@ -897,9 +897,12 @@ public class TIntTest {
         for (java.util.List<Temporal> fragments : java.util.List.of(
                 source.time_split(java.time.Duration.ofDays(1), LocalDateTime.of(2019, 9, 1, 0, 0)),
                 source.time_split_n(2))) {
-            assertEquals(2, fragments.size());
+            // The upper border lies on a bucket boundary and, the border included, holds its
+            // own fragment, so the fragments cover the whole value.
+            assertEquals(3, fragments.size());
             assertEquals("[1@2019-09-01 00:00:00+00, 1@2019-09-02 00:00:00+00)", ((TInt) fragments.get(0)).to_string());
-            assertEquals("[1@2019-09-02 00:00:00+00, 5@2019-09-03 00:00:00+00]", ((TInt) fragments.get(1)).to_string());
+            assertEquals("[1@2019-09-02 00:00:00+00, 1@2019-09-03 00:00:00+00)", ((TInt) fragments.get(1)).to_string());
+            assertEquals("[5@2019-09-03 00:00:00+00]", ((TInt) fragments.get(2)).to_string());
         }
     }
 

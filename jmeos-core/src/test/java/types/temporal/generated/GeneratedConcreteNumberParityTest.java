@@ -130,8 +130,8 @@ public class GeneratedConcreteNumberParityTest {
 
         // valueBins: the value span array folded into a List<FloatSpan>.
         Pointer c = Memory.allocate(rt, Integer.BYTES);
-        Pointer arr = GeneratedFunctions.tfloat_value_bins(p, 2.0, 0.0, c);
-        List<FloatSpan> bins = g.valueBins(2.0, 0.0);
+        Pointer arr = GeneratedFunctions.tfloat_value_bins(p, 2.0, 0.0, true, c);
+        List<FloatSpan> bins = g.valueBins(2.0, 0.0, true);
         assertEquals(c.getInt(0), bins.size());
         for (int i = 0; i < bins.size(); i++) {
             assertEquals(GeneratedFunctions.span_out(arr.slice((long) i * spanBytes), 15),
@@ -149,9 +149,9 @@ public class GeneratedConcreteNumberParityTest {
         // valueSplit folds the fragment array and the parallel int bins into (number, fragment) records.
         Pointer bins = Memory.allocate(rt, Long.BYTES);
         Pointer count = Memory.allocate(rt, Integer.BYTES);
-        Pointer frags = GeneratedFunctions.tint_value_split(p, 2, 0, bins, count);
+        Pointer frags = GeneratedFunctions.tint_value_split(p, 2, 0, true, bins, count);
         Pointer binsArr = bins.getPointer(0);
-        List<GeneratedTInt.ValueSplit> split = g.valueSplit(2, 0);
+        List<GeneratedTInt.ValueSplit> split = g.valueSplit(2, 0, true);
 
         assertEquals(count.getInt(0), split.size());
         for (int i = 0; i < split.size(); i++) {
@@ -175,10 +175,10 @@ public class GeneratedConcreteNumberParityTest {
         Pointer tbins = Memory.allocate(rt, Long.BYTES);
         Pointer count = Memory.allocate(rt, Integer.BYTES);
         Pointer frags = GeneratedFunctions.tfloat_value_time_split(p, 2.0,
-                ConversionUtils.timedelta_to_interval(duration), 0.0, torigin, vbins, tbins, count);
+                ConversionUtils.timedelta_to_interval(duration), 0.0, torigin, true, vbins, tbins, count);
         Pointer vbinsArr = vbins.getPointer(0);
         Pointer tbinsArr = tbins.getPointer(0);
-        List<GeneratedTFloat.ValueTimeSplit> split = g.valueTimeSplit(2.0, duration, 0.0, torigin);
+        List<GeneratedTFloat.ValueTimeSplit> split = g.valueTimeSplit(2.0, duration, 0.0, torigin, true);
 
         assertEquals(count.getInt(0), split.size());
         for (int i = 0; i < split.size(); i++) {

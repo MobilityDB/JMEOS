@@ -1385,7 +1385,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime);
-        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, true, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();
         int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
@@ -1450,7 +1450,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime);
-        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, listPointer, intPointer);
+        Pointer p= GeneratedFunctions.temporal_time_split(this.inner, dt, st, true, listPointer, intPointer);
         List<Temporal> tempList= new ArrayList<>();
         int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){

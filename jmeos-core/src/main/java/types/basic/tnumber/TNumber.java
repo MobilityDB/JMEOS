@@ -812,7 +812,7 @@ public interface TNumber {
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
         Pointer listPointer = createEmptyPointerArray(runtime, size);
-        Pointer result= GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start, listPointer, intPointer);
+        Pointer result= GeneratedFunctions.tint_value_split(this.getNumberInner(), size, start, true, listPointer, intPointer);
         List<TNumber> tempList= new ArrayList<>();
         int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
@@ -862,7 +862,7 @@ public interface TNumber {
         Runtime runtime = Runtime.getSystemRuntime();
         // Allocate memory for an integer (4 bytes) but do not set a value
         Pointer intPointer = Memory.allocate(runtime, 4);
-        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, null, null, intPointer);
+        Pointer p= GeneratedFunctions.tint_value_time_split(this.getNumberInner(), value_size, dt, value_start, st, true, null, null, intPointer);
         List<TNumber> tempList= new ArrayList<>();
         int count= intPointer.getInt(0);
         for(int i=0;i<count;i++){
