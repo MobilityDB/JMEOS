@@ -61,10 +61,13 @@ def type_checked(parse):
 
 def _fn_ref(name, aux):
     """A java.util.function.Function<String, Pointer> calling `name` on the text, the catalog's
-    default passed for each trailing formatting argument, as #_value_class_src passes them."""
+    default passed for each trailing formatting argument, as #_value_class_src passes them. The
+    lambda takes the generator's own underscore-led name, which no UDF parameter (a C parameter
+    name) carries, so it never shadows the parameter of the UDF it sits in."""
     if not aux:
         return "GeneratedFunctions::%s" % name
-    return "s -> GeneratedFunctions.%s(s, %s)" % (name, ", ".join(str(a["default"]) for a in aux))
+    return "_txt -> GeneratedFunctions.%s(_txt, %s)" % (
+        name, ", ".join(str(a["default"]) for a in aux))
 
 
 # The types whose functions share a SQL name with those of a type already marshalled, where no
