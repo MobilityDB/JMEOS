@@ -153,10 +153,10 @@ PRED_OPS = {"?=", "?<>", "?<", "?<=", "?>", "?>=",
 INTERNAL = {"Datum", "SkipList", "GBOX", "BOX3D", "void", "meosType", "MeosType",
             "uint8_t", "LWGEOM", "GEOSGeometry", "RTree", "interpType", "json_object",
             "size_t", "Match", "unsigned int",
-            "uint32", "Interval", "text", "char"}
-# (Interval/text/char START as harder marshalling — deferred to a follow-up pass;
-#  counted as not-yet-emitted, NOT as a permanent exclusion. DateADT (->int) and
-#  TimestampTz (->OffsetDateTime) are now handled.)
+            "uint32", "text", "char"}
+# (text/char are counted as not-yet-emitted, NOT as a permanent exclusion. An Interval
+#  travels in the text form its catalog encoding states, like every other type derive_codecs
+#  reads; DateADT (->int) and TimestampTz (->OffsetDateTime) are handled.)
 
 
 # JMEOS actual signatures (name -> (javaRet, nArgs)), parsed from the jar in main().
