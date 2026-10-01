@@ -116,17 +116,23 @@ def object_model_index(cat):
 
 # ───────────────────────── spark back-end ─────────────────────────
 
+def _spark_module():
+    """The sibling codegen_spark_udfs.py as a module, loaded as #run_spark loaded it. Every
+    binding vendors it next to this file, so the import target is always the sibling."""
+    spark_path = Path(__file__).resolve().parent / 'codegen_spark_udfs.py'
+    spec = importlib.util.spec_from_file_location('codegen_spark_udfs', spark_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def run_spark(args):
     """Delegate to the sibling codegen_spark_udfs.py so output is byte-identical.
 
     The reference generator owns the whole catalog+jar front-end and the SQL-UDF
     emit; running its own code (rather than a re-implementation) is what makes the
-    output provably identical to today's. Every binding vendors codegen_spark_udfs.py
-    next to this file, so the import target is always the sibling."""
-    spark_path = Path(__file__).resolve().parent / 'codegen_spark_udfs.py'
-    spec = importlib.util.spec_from_file_location('codegen_spark_udfs', spark_path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    output provably identical to today's. The module comes from #_spark_module."""
+    mod = _spark_module()
     argv = ['codegen_spark_udfs',
             '--catalog', args.catalog,
             '--out', args.out,
@@ -867,16 +873,35 @@ def _bound_literal(m, v, jt):
 
 
 def _overload(m, f, args, ret, jsig, bound=None):
-    """The eval method for one signature, or (None, reason).
+    """The eval of one signature returning one value, or (None, reason): the arguments
+    #_inputs passes and the result #_ret reads, as (params, temps, Flink return class, body,
+    Flink return type)."""
+    vis, outs = m.visible(f)
+    outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
+    if len(jsig['arg_types']) != len(vis):
+        return None, 'arity:jmeos'
+    got, why = _inputs(m, f, args, jsig['arg_types'], bound)
+    if got is None:
+        return None, why
+    params, call, temps = got
+    r = _ret(m, ret, f, jsig['ret'], outs)
+    if r is None:
+        return None, f'ret:{ret}/{_norm(f["returnType"]["canonical"])}'
+    rcls, rstmts = r
+    body = [f'{_jshort(jsig["ret"])} _r = GeneratedFunctions.{f["name"]}({", ".join(call)});']
+    return (params, temps, rcls, body + rstmts, _datatype(rcls)), None
+
+
+def _inputs(m, f, args, jtypes, bound=None):
+    """((params, call, temps), None) passing the SQL arguments `args` of a signature of `f` to
+    its visible C parameters, whose jar types are `jtypes`, or (None, reason).
 
     The SQL arguments pair with the visible C parameters in order, except that a SQL array
     stands for the C array shape.inputArrays names together with the count its lengthFrom
     names, which the eval passes as the length of the Flink array, and that a parameter
     the signature's wrapper binds (`bound`, from boundArgs) takes that literal."""
-    vis, outs = m.visible(f)
-    outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
-    if len(jsig['arg_types']) != len(vis):
-        return None, 'arity:jmeos'
+    vis, _ = m.visible(f)
+    jsig = {'arg_types': jtypes}
     arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []}
     counts = {}
     for a in arrays.values():
@@ -920,14 +945,13 @@ def _overload(m, f, args, ret, jsig, bound=None):
             if jsig['arg_types'][i] not in ('int', 'long'):
                 return None, f'arraycount:{jsig["arg_types"][i]}'
             call[i] = f'{passed[counts[p["name"]]]}.length'
-    r = _ret(m, ret, f, jsig['ret'], outs)
-    if r is None:
-        return None, f'ret:{ret}/{_norm(f["returnType"]["canonical"])}'
-    return (params, call, temps, r, f['name'], jsig['ret']), None
+    return (params, call, temps), None
 
 
 def _emit_eval(ov, defaults=None):
-    params, call, temps, (rcls, rstmts), cname, jret = ov
+    """The Java eval of an overload, #_overload's or #_setret_overload's: the inputs #_inputs
+    decodes, released after the body runs, the body itself and the Flink return class."""
+    params, temps, rcls, body, _ = ov
     shown = params if defaults is None else params[:len(params) - len(defaults)]
     L = [f'    public {rcls} eval({", ".join(f"{t} {n}" for t, n in shown)}) {{']
     if shown:
@@ -935,8 +959,6 @@ def _emit_eval(ov, defaults=None):
     # An argument left to its SQL default is that default, converted like any other.
     for (t, n), lit in zip(params[len(shown):], defaults or []):
         L.append(f'        {t} {n} = {lit};')
-    jr = _jshort(jret)
-    body = [f'{jr} _r = GeneratedFunctions.{cname}({", ".join(call)});'] + rstmts
     if all(kind == 'value' for _, _, kind in temps):
         for t, e, _ in temps:
             L.append(f'        Pointer {t} = {e};')
@@ -959,6 +981,154 @@ def _emit_eval(ov, defaults=None):
         L.append('            _in.free();')
     L += ['        }', '    }', '']
     return L
+
+
+# ── set-returning signatures: one Flink array element per SQL row ──
+# A SQL function returning a set of rows is a MEOS C function returning parallel arrays: its
+# result and its out-parameters, the row count in its `int *` count out-parameter. The catalog
+# names the C value behind each column of the row (sqlSignatures[].columns): `from` is
+# "return", an out-parameter or "ordinal" (the row's 1-based ordinality), `field` reads a
+# member of a struct element, and `element` with `offset` reads one member of a group of
+# shape.arrayReturn.groupSize values. The eval returns ARRAY<value> for a single unnamed
+# column and ARRAY<ROW<columns>> otherwise, which CROSS JOIN UNNEST unfolds into the rows, as
+# the Spark arm returns array<value> and array<struct> (#emit_setret in codegen_spark_udfs.py).
+
+# Contiguous scalar elements, keyed by C element type and SQL column type: the Flink class and
+# the Java read of element {i} of the array at {p}.
+SETRET_SCALAR = {
+    ('int', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
+    ('int32_t', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
+    ('int64', 'bigint'): ('Long', '{p}.getLongLong((long) {i} * 8L)'),
+    ('int64_t', 'bigint'): ('Long', '{p}.getLongLong((long) {i} * 8L)'),
+    ('double', 'float'): ('Double', '{p}.getDouble((long) {i} * 8L)'),
+    ('double', 'double precision'): ('Double', '{p}.getDouble((long) {i} * 8L)'),
+    ('bool', 'boolean'): ('Boolean', '({p}.getByte((long) {i}) != 0)'),
+    ('DateADT', 'date'): ('java.time.LocalDate',
+                          'MeosSqlRuntime.date({p}.getInt((long) {i} * 4L))'),
+    ('TimestampTz', 'timestamptz'): ('java.time.Instant',
+                                     'MeosSqlRuntime.timestamptz({p}.getLongLong((long) {i} * 8L))'),
+}
+
+
+def _setret_column(m, f, col, layout):
+    """How to read one column of a returned row, as #row_column in codegen_spark_udfs.py reads
+    it for Spark: (Flink class, source array, Java read of row `_i` from the array `{a}`,
+    whether each element is a MEOS allocation to free), or None when it cannot be read."""
+    sql, src = col.get('type'), col['from']
+    if src == 'ordinal':
+        return {'integer': ('Integer', None, '(_i + 1)', False),
+                'bigint': ('Long', None, '((long) _i + 1L)', False)}.get(sql)
+    if src == 'return':
+        arr = _norm(f['returnType']['canonical'])
+    else:
+        p = next((p for p in f['params'] if p['name'] == src), None)
+        if p is None or not _norm(p['canonical']).endswith('**'):
+            return None
+        arr = _norm(p['canonical'])[:-1].strip()
+    if not arr.endswith('*'):
+        return None
+    elem = arr[:-1].strip()
+    if 'element' in col:
+        group = ((f.get('shape') or {}).get('arrayReturn') or {}).get('groupSize')
+        hit = SETRET_SCALAR.get((elem, sql))
+        if src != 'return' or not group or not hit:
+            return None
+        read = hit[1].format(p='{a}', i=f'((long) _i * {group} + {col["element"]})')
+        off = col.get('offset') or 0
+        return hit[0], src, f'({read} + {off})' if off else read, False
+    if 'field' in col:
+        lay = layout(elem)
+        if lay is None or col['field'] not in lay[2]:
+            return None
+        off, ctype = lay[2][col['field']]
+        hit = SETRET_SCALAR.get((ctype, sql))
+        if not hit:
+            return None
+        return hit[0], src, hit[1].format(p=f'{{a}}.slice((long) _i * {lay[0]}L + {off}L)',
+                                          i='0'), False
+    vc = m.value_class.get(sql)
+    if elem.endswith('*'):                            # an array of pointers
+        b = elem[:-1].strip()
+        if vc and m.sql_cbase.get(sql) == b:
+            return (f'{SQL_PKG}.types.{vc}', src,
+                    f'{SQL_PKG}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
+        if b == 'text' and sql == 'text' and 'text_out' in m.jmeos:
+            return ('String', src, 'GeneratedFunctions.text_out(MeosSqlRuntime.at({a}, _i))', True)
+        return None
+    hit = SETRET_SCALAR.get((elem, sql))
+    if hit:
+        return hit[0], src, hit[1].format(p='{a}', i='_i'), False
+    lay = layout(elem) if vc and m.sql_cbase.get(sql) == elem else None
+    if lay is not None:                               # contiguous structs: STBox, TBox
+        return (f'{SQL_PKG}.types.{vc}', src,
+                f'{SQL_PKG}.types.{vc}.encode({{a}}.slice((long) _i * {lay[0]}L))', False)
+    return None
+
+
+def _setret_overload(m, f, sig, jsig, bound, layout):
+    """The eval of one set-returning signature, or (None, reason), as #_overload builds the eval
+    of a signature returning one value: the arguments #_inputs passes, a zeroed cell for the row
+    count and for each array out-parameter, and the rows read column by column
+    (#_setret_column). The jar takes the out-parameters, which MEOS writes through."""
+    vis, outs = m.visible(f)
+    if len(jsig['arg_types']) != len(f['params']):
+        return None, 'setret:arity'
+    if jsig['ret'] != 'jnr.ffi.Pointer':
+        return None, 'setret:ret'
+    jt = {p['name']: t for p, t in zip(f['params'], jsig['arg_types'])}
+    counts = [p for p in outs if _norm(p['canonical']) == 'int *'
+              and 'const' not in p['canonical']]
+    if len(counts) != 1:
+        return None, 'setret:count'
+    cols = sig.get('columns') or [{'name': None, 'from': 'return', 'type': sig.get('ret')}]
+    readers = []
+    for col in cols:
+        r = _setret_column(m, f, col, layout)
+        if r is None:
+            return None, f'setret:column/{col["from"]}:{col.get("type")}'
+        readers.append((col['name'], r))
+    sources = {r[1] for _, r in readers} - {None, 'return'}
+    if any(p is not counts[0] and p['name'] not in sources for p in outs):
+        return None, 'setret:out'
+    got, why = _inputs(m, f, sig.get('args') or [], [jt[p['name']] for p in vis], bound)
+    if got is None:
+        return None, why
+    params, call_vis, temps = got
+    vcall = dict(zip([p['name'] for p in vis], call_vis))
+    cells = {p['name']: f'_o{k}' for k, p in enumerate(o for o in outs if o is not counts[0])}
+    call = [vcall.get(p['name']) or cells.get(p['name']) or '_cnt' for p in f['params']]
+    single = len(readers) == 1 and readers[0][0] is None
+    if single:
+        ecls = readers[0][1][0]
+        etype = _datatype(ecls)
+    else:
+        ecls = 'org.apache.flink.types.Row'
+        etype = 'DataTypes.ROW(' + ', '.join(
+            f'DataTypes.FIELD("{n}", {_datatype(r[0])})' for n, r in readers) + ')'
+    arr = {'return': '_r', **{n: f'_a{k}' for n, k in
+                              ((n, cells[n][2:]) for n in cells)}}
+    reads = [r[2] if r[1] is None else r[2].replace('{a}', arr[r[1]]) for _, r in readers]
+    body = ['Pointer _cnt = MeosSqlRuntime.cell(4);']
+    body += [f'Pointer {c} = MeosSqlRuntime.cell(8);' for c in cells.values()]
+    body += ['Pointer _r = null;', 'int _c = 0;', 'try {',
+             f'    _r = GeneratedFunctions.{f["name"]}({", ".join(call)});',
+             '    if (_r == null) return null;',
+             '    _c = _cnt.getInt(0L);']
+    body += [f'    Pointer _a{c[2:]} = {c}.getPointer(0L);' for c in cells.values()]
+    body += [f'    {ecls}[] _rows = new {ecls}[_c];',
+             '    for (int _i = 0; _i < _c; _i++) {',
+             '        _rows[_i] = ' + (reads[0] if single else
+                                       f'org.apache.flink.types.Row.of({", ".join(reads)})') + ';',
+             '    }',
+             '    return _rows;',
+             '} finally {']
+    for (_, r) in readers:
+        if r[3]:
+            src = '_r' if r[1] == 'return' else f'{cells[r[1]]}.getPointer(0L)'
+            body.append(f'    MeosSqlRuntime.freeEach({src}, _c);')
+    body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
+    body += ['    MeosSqlRuntime.free(_r);', '}']
+    return (params, temps, f'{ecls}[]', body, f'DataTypes.ARRAY({etype})'), None
 
 
 def _value_class_src(m, sql):
@@ -1198,6 +1368,33 @@ public final class MeosSqlRuntime {{
         }}
     }}
 
+    /** Free a value MEOS allocated.  Null-safe. */
+    public static void free(Pointer p) {{
+        if (p != null) {{
+            UNSAFE.freeMemory(p.address());
+        }}
+    }}
+
+    /** Free each of the n values MEOS allocated whose pointers the C array a holds.  Null-safe. */
+    public static void freeEach(Pointer a, int n) {{
+        if (a != null) {{
+            for (int i = 0; i < n; i++) {{
+                free(at(a, i));
+            }}
+        }}
+    }}
+
+    /** Element i of the C array of pointers a. */
+    public static Pointer at(Pointer a, int i) {{
+        return a.getPointer((long) i * RUNTIME.addressSize());
+    }}
+
+    /** Zeroed memory for one value of the given width that MEOS writes as an out-parameter,
+     * which the garbage collector releases. */
+    public static Pointer cell(int width) {{
+        return Memory.allocateDirect(RUNTIME, width, true);
+    }}
+
     /** Free a result unless it is one of the inputs, which the caller frees. */
     public static void freeResult(Pointer r, Pointer[] in) {{
         for (Pointer p : in) {{
@@ -1373,9 +1570,16 @@ def run_flink_sql(args):
     for sql in m.value_class:
         (root / 'types' / f'{m.value_class[sql]}.java').write_text(_value_class_src(m, sql))
 
+    # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, the rule the
+    # Spark arm sizes them by.
+    spark = _spark_module()
+    spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
+    layout = lambda name: spark.struct_layout(name) if name in spark.STRUCTS else None  # noqa: E731
+
     names = defaultdict(list)          # SQL name -> eval methods
     seen = defaultdict(set)
     skipped = defaultdict(int)
+    nset = 0
     for f in m.fns:
         if not f.get('sqlfn') or f.get('sqlfnBackingOnly') or f.get('api') == 'internal':
             continue
@@ -1383,8 +1587,13 @@ def run_flink_sql(args):
         if jsig is None:
             skipped['not in jar'] += 1
             continue
-        for sqlname, sargs, sret, sdef, sbound in m.signatures(f):
-            ov, why = _overload(m, f, sargs, sret, jsig, sbound)
+        for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
+                                                             f.get('sqlSignatures') or []):
+            if sig.get('retSet'):
+                ov, why = _setret_overload(m, f, sig, jsig, sbound, layout)
+                nset += ov is not None
+            else:
+                ov, why = _overload(m, f, sargs, sret, jsig, sbound)
             if ov is None:
                 skipped[why.split('/')[0]] += 1
                 continue
@@ -1402,7 +1611,7 @@ def run_flink_sql(args):
                 if key in seen[sqlname]:
                     continue
                 seen[sqlname].add(key)
-                names[sqlname].append((_emit_eval(ov, dv), list(key), ov[3][0]))
+                names[sqlname].append((_emit_eval(ov, dv), list(key), ov[4]))
 
     classes = {}
     taken = set()
@@ -1434,7 +1643,7 @@ def run_flink_sql(args):
         body += ['            {' + ', '.join(_datatype(a) for a in args) + '},'
                  for _, args, _ in sigs]
         body += ['        }, new DataType[] {']
-        body += [f'            {_datatype(r)},' for _, _, r in sigs]
+        body += [f'            {r},' for _, _, r in sigs]
         body += ['        });', '    }']
         body.append('}')
         (root / 'functions' / f'{cls}.java').write_text('\n'.join(body) + '\n')
@@ -1460,8 +1669,8 @@ def run_flink_sql(args):
     (root / 'MobilityFlinkSql.java').write_text('\n'.join(reg) + '\n')
 
     n_ov = sum(len(v) for v in names.values())
-    print(f'flink-sql: {len(classes)} SQL functions ({n_ov} overloads), '
-          f'{len(m.value_class)} value types into {root}')
+    print(f'flink-sql: {len(classes)} SQL functions ({n_ov} overloads, {nset} of them '
+          f'set-returning signatures), {len(m.value_class)} value types into {root}')
     for why, n in sorted(skipped.items(), key=lambda x: -x[1]):
         print(f'  skipped {n:5d}  {why}')
 
