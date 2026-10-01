@@ -105,6 +105,7 @@ ge_timestamp_date	arg:Timestamp
 ge_timestamp_timestamp	arg:Timestamp
 ge_timestamp_timestamptz	arg:Timestamp
 ge_timestamptz_timestamp	arg:Timestamp
+geo_affine	no-decoder:AFFINE
 geo_as_ewkb	array-or-out-param:size; unsupported-return:uint8_t *
 geo_cluster_dbscan	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:uint32_t *
 geo_cluster_intersecting	array-or-out-param:geoms
