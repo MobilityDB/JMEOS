@@ -3,9 +3,9 @@
 # codegen_spark_udfs.py --rebaseline; a function missing from it fails
 # the run. The ledger only shrinks, as types get their mappings.
 above_tpcbox_tpcbox	arg:TPCBox *
-add_timestamp_interval	no-decoder:Timestamp; unsupported-return:Timestamp
-add_timestamptz_interval	no-decoder:TimestampTz; unsupported-return:Timestamp
-add_timestamptz_interval_at_zone	no-decoder:TimestampTz; unsupported-return:Timestamp
+add_timestamp_interval	ret:Timestamp
+add_timestamptz_interval	ret:Timestamp
+add_timestamptz_interval_at_zone	ret:Timestamp
 adjacent_tpcbox_tpcbox	arg:TPCBox *
 adjacent_tpcbox_tpointcloud	arg:TPCBox *
 adjacent_tpointcloud_tpcbox	arg:TPCBox *
@@ -44,11 +44,11 @@ cbufferarr_round	unsupported-return:struct Cbuffer **
 cbufferarr_to_geom	internal
 cbufferset_make	internal
 cbufferset_value_n	internal
-cmp_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-cmp_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-cmp_timestamp_timestamp	no-decoder:Timestamp
-cmp_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-cmp_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+cmp_date_timestamp	arg:Timestamp
+cmp_timestamp_date	arg:Timestamp
+cmp_timestamp_timestamp	arg:Timestamp
+cmp_timestamp_timestamptz	arg:Timestamp
+cmp_timestamptz_timestamp	arg:Timestamp
 contained_posechain_set	arg:PoseChain *
 contained_text_set	internal
 contained_tpcbox_tpcbox	arg:TPCBox *
@@ -60,20 +60,20 @@ contains_tpcbox_tpcbox	arg:TPCBox *
 contains_tpcbox_tpointcloud	arg:TPCBox *
 contains_tpointcloud_tpcbox	arg:TPCBox *
 cstring_to_text	ret:jmeos-kind-mismatch
-date_extract	no-decoder:DateADT
-date_hash	no-decoder:DateADT
-date_time_to_timestamp	no-decoder:DateADT; no-decoder:TimeADT; unsupported-return:Timestamp
-date_to_timestamp	no-decoder:DateADT; unsupported-return:Timestamp
-dateset_make	no-decoder:DateADT
-dateset_value_n	no-decoder:DateADT
-datespan_bins	no-decoder:DateADT; array-or-out-param:count
-datespanset_bins	no-decoder:DateADT; array-or-out-param:count
-datespanset_date_n	no-decoder:DateADT
-eq_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-eq_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-eq_timestamp_timestamp	no-decoder:Timestamp
-eq_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-eq_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+date_extract	internal
+date_hash	ret:uint32_t
+date_time_to_timestamp	ret:Timestamp
+date_to_timestamp	ret:Timestamp
+dateset_make	arg:DateADT *
+dateset_value_n	arg:DateADT *
+datespan_bins	array-or-out-param:count
+datespanset_bins	array-or-out-param:count
+datespanset_date_n	arg:DateADT *
+eq_date_timestamp	arg:Timestamp
+eq_timestamp_date	arg:Timestamp
+eq_timestamp_timestamp	arg:Timestamp
+eq_timestamp_timestamptz	arg:Timestamp
+eq_timestamptz_timestamp	arg:Timestamp
 eraster_value	arg:Raster *
 ever_eq_posechain_tposechain	arg:PoseChain *
 ever_eq_text_ttext	internal
@@ -100,11 +100,11 @@ gbox_in	internal
 gbox_make	internal
 gbox_out	internal
 gbox_to_stbox	internal
-ge_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-ge_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-ge_timestamp_timestamp	no-decoder:Timestamp
-ge_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-ge_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+ge_date_timestamp	arg:Timestamp
+ge_timestamp_date	arg:Timestamp
+ge_timestamp_timestamp	arg:Timestamp
+ge_timestamp_timestamptz	arg:Timestamp
+ge_timestamptz_timestamp	arg:Timestamp
 geo_as_ewkb	array-or-out-param:size; unsupported-return:uint8_t *
 geo_cluster_dbscan	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:uint32_t *
 geo_cluster_intersecting	array-or-out-param:geoms
@@ -125,11 +125,11 @@ geopose_frame	no-encoder:GeoPoseFrame
 geopose_frames	array-or-out-param:count; no-encoder:GeoPoseFrame
 geoset_make	internal
 geoset_value_n	internal
-gt_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-gt_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-gt_timestamp_timestamp	no-decoder:Timestamp
-gt_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-gt_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+gt_date_timestamp	arg:Timestamp
+gt_timestamp_date	arg:Timestamp
+gt_timestamp_timestamp	arg:Timestamp
+gt_timestamp_timestamptz	arg:Timestamp
+gt_timestamptz_timestamp	arg:Timestamp
 h3index_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 h3index_cell_to_parent	arg:uint32_t
 h3index_from_wkb	array-or-out-param:wkb
@@ -148,7 +148,7 @@ intersection_tpcbox_tpcbox	ret:TPCBox *
 interval_extract	internal
 interval_hash	ret:uint32_t
 interval_part	internal
-interval_to_time	unsupported-return:TimeADT
+interval_to_time	ret:TimeADT
 interval_trunc	internal
 intset_make	array-or-out-param:values
 intspan_bins	array-or-out-param:count
@@ -217,34 +217,34 @@ jsonbset_to_floatset	arg:nullHandleType
 jsonbset_to_intset	arg:nullHandleType
 jsonbset_to_textset_key	arg:nullHandleType
 jsonbset_value_n	internal
-le_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-le_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-le_timestamp_timestamp	no-decoder:Timestamp
-le_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-le_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+le_date_timestamp	arg:Timestamp
+le_timestamp_date	arg:Timestamp
+le_timestamp_timestamp	arg:Timestamp
+le_timestamp_timestamptz	arg:Timestamp
+le_timestamptz_timestamp	arg:Timestamp
 left_set_text	internal
 left_text_set	internal
 left_tpcbox_tpcbox	arg:TPCBox *
-lt_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-lt_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-lt_timestamp_timestamp	no-decoder:Timestamp
-lt_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-lt_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+lt_date_timestamp	arg:Timestamp
+lt_timestamp_date	arg:Timestamp
+lt_timestamp_timestamp	arg:Timestamp
+lt_timestamp_timestamptz	arg:Timestamp
+lt_timestamptz_timestamp	arg:Timestamp
 mindistance_tcbufferarr_tcbufferarr	array-or-out-param:arr2
 minus_posechain_set	arg:PoseChain *
 minus_set_posechain	arg:PoseChain *
 minus_set_text	internal
 minus_text_set	internal
-minus_time_interval	no-decoder:TimeADT; unsupported-return:TimeADT
-minus_time_time	no-decoder:TimeADT
-minus_timestamp_interval	no-decoder:Timestamp; unsupported-return:Timestamp
-minus_timestamp_timestamp	no-decoder:Timestamp
-minus_timestamptz_interval_at_zone	no-decoder:TimestampTz; unsupported-return:TimestampTz
-ne_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
-ne_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
-ne_timestamp_timestamp	no-decoder:Timestamp
-ne_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
-ne_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+minus_time_interval	ret:TimeADT
+minus_time_time	arg:TimeADT
+minus_timestamp_interval	ret:Timestamp
+minus_timestamp_timestamp	arg:Timestamp
+minus_timestamptz_interval_at_zone	internal
+ne_date_timestamp	arg:Timestamp
+ne_timestamp_date	arg:Timestamp
+ne_timestamp_timestamp	arg:Timestamp
+ne_timestamp_timestamptz	arg:Timestamp
+ne_timestamptz_timestamp	arg:Timestamp
 npoint_hash	ret:uint32_t
 npointset_make	internal
 npointset_value_n	internal
@@ -283,7 +283,7 @@ pcpoint_make	array-or-out-param:values
 pcpoint_to_tpcbox	no-decoder:PCSCHEMA
 pcpointset_make	internal
 pcpointset_value_n	internal
-plus_time_interval	no-decoder:TimeADT; unsupported-return:TimeADT
+plus_time_interval	ret:TimeADT
 pose_hash	ret:uint32_t
 pose_to_posechain	ret:PoseChain *
 posearr_round	unsupported-return:struct Pose **
@@ -318,7 +318,7 @@ posechain_same	arg:PoseChain *
 posechain_set_srid	ret:PoseChain *
 posechain_srid	arg:PoseChain *
 posechain_start_pose	arg:PoseChain *
-posechain_timestamptz_to_stbox	no-decoder:TimestampTz
+posechain_timestamptz_to_stbox	arg:PoseChain *
 posechain_to_point	arg:PoseChain *
 posechain_to_pose	arg:PoseChain *
 posechain_to_set	arg:PoseChain *
@@ -356,15 +356,15 @@ raster_at_value	arg:Raster *
 raster_band_has_nodata_value	arg:Raster *
 raster_band_nodata_value	arg:Raster *
 raster_band_pixel_type	arg:Raster *
-raster_clip	array-or-out-param:bands; array-or-out-param:nodata; no-encoder:Raster
+raster_clip	array-or-out-param:bands; array-or-out-param:nodata
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
-raster_from_hexwkb	no-encoder:Raster
-raster_from_wkb	array-or-out-param:wkb; no-encoder:Raster
+raster_from_hexwkb	ret:Raster *
+raster_from_wkb	array-or-out-param:wkb
 raster_height	arg:Raster *
 raster_minus_value	arg:Raster *
 raster_num_bands	arg:Raster *
-raster_reclass	no-encoder:Raster
-raster_rescale	no-encoder:Raster
+raster_reclass	ret:Raster *
+raster_rescale	ret:Raster *
 raster_scale_x	arg:Raster *
 raster_scale_y	arg:Raster *
 raster_skew_x	arg:Raster *
@@ -374,9 +374,9 @@ raster_summary_stats	no-encoder:BandStats
 raster_tile_value_array	internal
 raster_tile_value_quadbin	array-or-out-param:pixels
 raster_to_stbox	arg:Raster *
-raster_transform	no-encoder:Raster
-raster_transform_pipeline	no-encoder:Raster
-raster_transform_raster	no-encoder:Raster
+raster_transform	ret:Raster *
+raster_transform_pipeline	ret:Raster *
+raster_transform_raster	ret:Raster *
 raster_upper_left_x	arg:Raster *
 raster_upper_left_y	arg:Raster *
 raster_value	arg:Raster *
@@ -433,22 +433,22 @@ sptree_search_temporal	no-decoder:SPTree; no-decoder:MeosArray
 sptree_search_temporal_dedup	no-decoder:SPTree; no-decoder:MeosArray
 stbox_hash	ret:uint32_t
 stbox_quad_split	array-or-out-param:count
-stbox_tmax	no-decoder:TimestampTz
-stbox_tmin	no-decoder:TimestampTz
+stbox_tmax	arg:TimestampTz *
+stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
-tbigint_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tbigint_time_boxes	array-or-out-param:count
 tbigint_value_bins	array-or-out-param:count
 tbigint_value_boxes	array-or-out-param:count
-tbigint_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tbigint_value_time_boxes	array-or-out-param:count
 tbigint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbool_values	array-or-out-param:count; unsupported-return:bool *
 tbox_hash	ret:uint32_t
-tbox_tmax	no-decoder:TimestampTz
-tbox_tmin	no-decoder:TimestampTz
-tcbuffer_value_at_timestamptz	no-decoder:TimestampTz
+tbox_tmax	arg:TimestampTz *
+tbox_tmin	arg:TimestampTz *
+tcbuffer_value_at_timestamptz	internal
 tcbuffer_value_n	internal
 tcbuffer_values	internal
 tcbufferseq_from_base_tstzspan	internal
@@ -466,10 +466,10 @@ temporal_set_interp	internal
 temporal_spans	array-or-out-param:count
 temporal_split_each_n_spans	array-or-out-param:count
 temporal_split_n_spans	array-or-out-param:count
-temporal_time_bins	no-decoder:TimestampTz; array-or-out-param:count
-temporal_timestamps	array-or-out-param:count; no-encoder:TimestampTz
-temporal_timestamptz_n	no-decoder:TimestampTz
-temporal_tsample	no-decoder:TimestampTz
+temporal_time_bins	array-or-out-param:count
+temporal_timestamps	array-or-out-param:count
+temporal_timestamptz_n	arg:TimestampTz *
+temporal_tsample	internal
 teq_posechain_tposechain	arg:PoseChain *
 teq_text_ttext	internal
 teq_tposechain_posechain	arg:PoseChain *
@@ -502,10 +502,10 @@ textset_end_value	ret:jmeos-kind-mismatch
 textset_make	array-or-out-param:values
 textset_start_value	ret:jmeos-kind-mismatch
 textset_value_n	array-or-out-param:result
-tfloat_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tfloat_time_boxes	array-or-out-param:count
 tfloat_value_bins	array-or-out-param:count
 tfloat_value_boxes	array-or-out-param:count
-tfloat_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tfloat_value_time_boxes	array-or-out-param:count
 tfloat_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
@@ -515,11 +515,11 @@ tge_text_ttext	internal
 tge_ttext_text	internal
 tgeo_affine	no-decoder:AFFINE
 tgeo_space_boxes	array-or-out-param:count
-tgeo_space_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tgeo_space_time_boxes	array-or-out-param:count
 tgeo_split_each_n_stboxes	array-or-out-param:count
 tgeo_split_n_stboxes	array-or-out-param:count
 tgeo_stboxes	array-or-out-param:count
-tgeo_value_at_timestamptz	no-decoder:TimestampTz
+tgeo_value_at_timestamptz	internal
 tgeo_value_n	internal
 tgeo_values	internal
 tgeogpoint_h3index_split	array-or-out-param:cells
@@ -532,71 +532,70 @@ tgeoseq_from_base_tstzspan	internal
 tgeoseqset_from_base_tstzspanset	internal
 tgt_text_ttext	internal
 tgt_ttext_text	internal
-th3index_value_at_timestamptz	no-decoder:TimestampTz
+th3index_value_at_timestamptz	arg:uint64_t *
 th3index_value_n	arg:uint64_t *
-th3indexseq_in	internal
-th3indexseq_make	array-or-out-param:values; no-decoder:TimestampTz
+th3indexseq_make	array-or-out-param:values
 th3indexseqset_make	array-or-out-param:sequences
-time_cmp	no-decoder:TimeADT
-time_eq	no-decoder:TimeADT
-time_extract	no-decoder:TimeADT
-time_ge	no-decoder:TimeADT
-time_gt	no-decoder:TimeADT
-time_hash	no-decoder:TimeADT
-time_hash_extended	no-decoder:TimeADT
-time_in	unsupported-return:TimeADT
-time_larger	no-decoder:TimeADT; unsupported-return:TimeADT
-time_le	no-decoder:TimeADT
-time_lt	no-decoder:TimeADT
-time_make	unsupported-return:TimeADT
-time_ne	no-decoder:TimeADT
+time_cmp	arg:TimeADT
+time_eq	arg:TimeADT
+time_extract	arg:TimeADT
+time_ge	arg:TimeADT
+time_gt	arg:TimeADT
+time_hash	ret:uint32_t
+time_hash_extended	arg:TimeADT
+time_in	ret:TimeADT
+time_larger	ret:TimeADT
+time_le	arg:TimeADT
+time_lt	arg:TimeADT
+time_make	ret:TimeADT
+time_ne	arg:TimeADT
 time_of_day	ret:jmeos-kind-mismatch
-time_out	no-decoder:TimeADT
-time_overlaps	no-decoder:TimeADT
-time_part	no-decoder:TimeADT
-time_scale	no-decoder:TimeADT; unsupported-return:TimeADT
-time_smaller	no-decoder:TimeADT; unsupported-return:TimeADT
-time_to_interval	no-decoder:TimeADT
-time_to_timetz	no-decoder:TimeADT
-timestamp_age	no-decoder:Timestamp
-timestamp_at_local	no-decoder:Timestamp; unsupported-return:TimestampTz
-timestamp_bin	no-decoder:Timestamp; unsupported-return:Timestamp
-timestamp_extract	no-decoder:Timestamp
-timestamp_hash	no-decoder:Timestamp
-timestamp_in	unsupported-return:Timestamp
-timestamp_is_finite	no-decoder:Timestamp
-timestamp_izone	no-decoder:Timestamp; unsupported-return:TimestampTz
-timestamp_larger	no-decoder:Timestamp; unsupported-return:Timestamp
-timestamp_make	unsupported-return:Timestamp
-timestamp_out	no-decoder:Timestamp
-timestamp_overlaps	no-decoder:Timestamp
-timestamp_part	no-decoder:Timestamp
-timestamp_scale	no-decoder:Timestamp; unsupported-return:Timestamp
-timestamp_smaller	no-decoder:Timestamp; unsupported-return:Timestamp
-timestamp_to_date	no-decoder:Timestamp; unsupported-return:DateADT
-timestamp_to_time	no-decoder:Timestamp; unsupported-return:TimeADT
-timestamp_to_timestamptz	no-decoder:Timestamp; unsupported-return:TimestampTz
-timestamp_trunc	no-decoder:Timestamp; unsupported-return:Timestamp
-timestamp_zone	no-decoder:Timestamp; unsupported-return:TimestampTz
-timestamptz_extract	no-decoder:TimestampTz
-timestamptz_izone	no-decoder:TimestampTz; unsupported-return:Timestamp
-timestamptz_make_at_timezone	unsupported-return:TimestampTz
-timestamptz_part	no-decoder:TimestampTz
-timestamptz_tcount_transfn	no-decoder:SkipList; no-decoder:TimestampTz; no-encoder:SkipList
-timestamptz_to_time	no-decoder:TimestampTz; unsupported-return:TimeADT
-timestamptz_to_timestamp	no-decoder:TimestampTz; unsupported-return:Timestamp
-timestamptz_trunc	no-decoder:TimestampTz; unsupported-return:TimestampTz
-timestamptz_trunc_zone	no-decoder:TimestampTz; unsupported-return:TimestampTz
-timestamptz_zone	no-decoder:TimestampTz; unsupported-return:Timestamp
+time_out	arg:TimeADT
+time_overlaps	arg:TimeADT
+time_part	arg:TimeADT
+time_scale	ret:TimeADT
+time_smaller	ret:TimeADT
+time_to_interval	arg:TimeADT
+time_to_timetz	arg:TimeADT
+timestamp_age	arg:Timestamp
+timestamp_at_local	arg:Timestamp
+timestamp_bin	ret:Timestamp
+timestamp_extract	arg:Timestamp
+timestamp_hash	ret:uint32_t
+timestamp_in	ret:Timestamp
+timestamp_is_finite	arg:Timestamp
+timestamp_izone	arg:Timestamp
+timestamp_larger	ret:Timestamp
+timestamp_make	ret:Timestamp
+timestamp_out	arg:Timestamp
+timestamp_overlaps	arg:Timestamp
+timestamp_part	arg:Timestamp
+timestamp_scale	ret:Timestamp
+timestamp_smaller	ret:Timestamp
+timestamp_to_date	arg:Timestamp
+timestamp_to_time	ret:TimeADT
+timestamp_to_timestamptz	arg:Timestamp
+timestamp_trunc	ret:Timestamp
+timestamp_zone	arg:Timestamp
+timestamptz_extract	internal
+timestamptz_izone	ret:Timestamp
+timestamptz_make_at_timezone	internal
+timestamptz_part	internal
+timestamptz_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
+timestamptz_to_time	ret:TimeADT
+timestamptz_to_timestamp	ret:Timestamp
+timestamptz_trunc	internal
+timestamptz_trunc_zone	internal
+timestamptz_zone	ret:Timestamp
 timetz_extract	internal
 timetz_hash	ret:uint32_t
 timetz_part	internal
-timetz_to_time	unsupported-return:TimeADT
+timetz_to_time	ret:TimeADT
 timetz_zone	internal
-tint_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tint_time_boxes	array-or-out-param:count
 tint_value_bins	array-or-out-param:count
 tint_value_boxes	array-or-out-param:count
-tint_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tint_value_time_boxes	array-or-out-param:count
 tint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
@@ -619,7 +618,7 @@ tjsonb_to_tbool	arg:nullHandleType
 tjsonb_to_tfloat	internal
 tjsonb_to_tint	arg:nullHandleType
 tjsonb_to_ttext_key	arg:nullHandleType
-tjsonb_value_at_timestamptz	no-decoder:TimestampTz
+tjsonb_value_at_timestamptz	internal
 tjsonb_value_n	internal
 tjsonb_values	internal
 tle_text_ttext	internal
@@ -632,7 +631,7 @@ tne_tposechain_posechain	arg:PoseChain *
 tne_ttext_text	internal
 tnpoint_positions	internal
 tnpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
-tnpoint_value_at_timestamptz	no-decoder:TimestampTz
+tnpoint_value_at_timestamptz	internal
 tnpoint_value_n	internal
 tnpoint_values	internal
 tnpointseq_from_base_tstzspan	internal
@@ -667,9 +666,9 @@ tpcbox_pcid	ret:uint32_t
 tpcbox_round	ret:TPCBox *
 tpcbox_set_srid	ret:TPCBox *
 tpcbox_srid	arg:TPCBox *
-tpcbox_tmax	no-decoder:TimestampTz
+tpcbox_tmax	arg:TPCBox *
 tpcbox_tmax_inc	arg:TPCBox *
-tpcbox_tmin	no-decoder:TimestampTz
+tpcbox_tmin	arg:TPCBox *
 tpcbox_tmin_inc	arg:TPCBox *
 tpcbox_to_stbox	arg:TPCBox *
 tpcbox_xmax	arg:TPCBox *
@@ -678,10 +677,10 @@ tpcbox_ymax	arg:TPCBox *
 tpcbox_ymin	arg:TPCBox *
 tpcbox_zmax	arg:TPCBox *
 tpcbox_zmin	arg:TPCBox *
-tpcpatch_value_at_timestamptz	no-decoder:TimestampTz
+tpcpatch_value_at_timestamptz	internal
 tpcpatch_value_n	internal
 tpcpatch_values	internal
-tpcpoint_value_at_timestamptz	no-decoder:TimestampTz
+tpcpoint_value_at_timestamptz	internal
 tpcpoint_value_n	internal
 tpcpoint_values	internal
 tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
@@ -690,9 +689,9 @@ tpoint_tcentroid_finalfn	no-decoder:SkipList
 tpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpoint_tfloat_to_geomeas	internal
 tpointseq_from_base_tstzspan	internal
-tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords; no-decoder:TimestampTz
+tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords
 tpointseqset_from_base_tstzspanset	internal
-tpose_value_at_timestamptz	no-decoder:TimestampTz
+tpose_value_at_timestamptz	internal
 tpose_value_n	internal
 tpose_values	internal
 tposechain_from_base_temp	arg:PoseChain *
@@ -701,9 +700,9 @@ tposechain_values	internal
 tposechainarr_as_geopose	internal
 tposeseq_from_base_tstzspan	internal
 tposeseqset_from_base_tstzspanset	internal
-tquadbin_value_at_timestamptz	no-decoder:TimestampTz
+tquadbin_value_at_timestamptz	arg:uint64_t *
 tquadbin_value_n	arg:uint64_t *
-tquadbinseq_make	array-or-out-param:values; no-decoder:TimestampTz
+tquadbinseq_make	array-or-out-param:values
 tquadbinseqset_make	array-or-out-param:sequences
 trgeometry_append_tinstant	internal
 trgeometry_instants	internal
@@ -712,7 +711,7 @@ trgeometry_segments	internal
 trgeometry_sequences	internal
 trgeometry_set_interp	internal
 trgeometry_space_boxes	array-or-out-param:count
-trgeometry_space_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+trgeometry_space_time_boxes	array-or-out-param:count
 trgeometry_split_each_n_stboxes	array-or-out-param:count
 trgeometry_split_n_stboxes	array-or-out-param:count
 trgeometry_stboxes	array-or-out-param:count
@@ -721,21 +720,21 @@ trgeometry_values	internal
 trgeometryseq_make	internal
 trgeometryseqset_make	array-or-out-param:sequences
 trgeometryseqset_make_gaps	internal
-ts2cell_value_at_timestamptz	no-decoder:TimestampTz
+ts2cell_value_at_timestamptz	arg:uint64_t *
 ts2cell_value_n	arg:uint64_t *
-ts2cellseq_make	array-or-out-param:values; no-decoder:TimestampTz
+ts2cellseq_make	array-or-out-param:values
 ts2cellseqset_make	array-or-out-param:sequences
 tsequence_make	internal
 tsequenceset_make	array-or-out-param:sequences
 tsequenceset_make_gaps	internal
-tstzset_make	no-decoder:TimestampTz
+tstzset_make	arg:TimestampTz *
 tstzset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
-tstzset_value_n	no-decoder:TimestampTz
-tstzspan_bins	no-decoder:TimestampTz; array-or-out-param:count
+tstzset_value_n	arg:TimestampTz *
+tstzspan_bins	array-or-out-param:count
 tstzspan_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
-tstzspanset_bins	no-decoder:TimestampTz; array-or-out-param:count
+tstzspanset_bins	array-or-out-param:count
 tstzspanset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
-tstzspanset_timestamptz_n	no-decoder:TimestampTz
+tstzspanset_timestamptz_n	arg:TimestampTz *
 ttext_at_value	internal
 ttext_end_value	ret:jmeos-kind-mismatch
 ttext_from_base_temp	internal
@@ -743,10 +742,10 @@ ttext_max_value	ret:jmeos-kind-mismatch
 ttext_min_value	ret:jmeos-kind-mismatch
 ttext_minus_value	internal
 ttext_start_value	ret:jmeos-kind-mismatch
-ttext_value_at_timestamptz	no-decoder:TimestampTz; array-or-out-param:value
+ttext_value_at_timestamptz	array-or-out-param:value
 ttext_value_n	array-or-out-param:result
 ttext_values	array-or-out-param:count; unsupported-return:text **
-ttextinst_make	no-decoder:TimestampTz
+ttextinst_make	internal
 ttextseq_from_base_tstzset	internal
 ttextseq_from_base_tstzspan	internal
 ttextseqset_from_base_tstzspanset	internal
