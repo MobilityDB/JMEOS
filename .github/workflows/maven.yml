@@ -89,6 +89,15 @@ jobs:
           set -o pipefail
           mvn clean install | tee "$RUNNER_TEMP/build.log"
 
+      # The Spark surface codegen_spark_udfs.py generates from this catalog and this jar
+      # reaches every public function except those tools/spark-udf-gaps.txt lists. A function
+      # it cannot reach and the ledger does not list fails the step: a catalog change that
+      # leaves a type unmapped is refused here instead of dropping its UDFs in silence.
+      - name: Refuse a public function the Spark surface stops reaching
+        run: |
+          python3 tools/codegen_jvm.py --engine spark --catalog codegen/input/meos-idl.json \
+            --jar jar/JMEOS.jar --out "$RUNNER_TEMP/spark" --gaps tools/spark-udf-gaps.txt
+
       # The build's own summary states two things this job's conclusion does
       # not: a test reported SKIPPED asserts nothing while the job still reads
       # success, and a test the run never collects appears in no count at all,
