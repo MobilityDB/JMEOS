@@ -769,24 +769,13 @@ public class FunctionsGenerator {
         sb.append("public class GeneratedFunctions {\n");
         // Native deallocator for char* returned by owning MEOS functions.
         // MEOS standalone allocates with the system malloc (palloc/pfree map to
-        // malloc/free outside PostgreSQL); freeMemory() calls the system free
-        // underneath. Uses sun.misc.Unsafe rather than a JNR-FFI libc binding to
-        // avoid classloader-boundary issues, mirroring MobilitySpark MeosMemory.
+        // malloc/free outside PostgreSQL); jffi's MemoryIO.freeMemory calls that
+        // free. jffi is the native layer jnr-ffi itself runs on, so it shares the
+        // classloader of every JMEOS call and needs no internal JDK API.
         sb.append("""
-                \tprivate static final sun.misc.Unsafe _UNSAFE;
-                \tstatic {
-                \t\ttry {
-                \t\t\tjava.lang.reflect.Field _f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-                \t\t\t_f.setAccessible(true);
-                \t\t\t_UNSAFE = (sun.misc.Unsafe) _f.get(null);
-                \t\t} catch (ReflectiveOperationException _e) {
-                \t\t\tthrow new ExceptionInInitializerError(_e);
-                \t\t}
-                \t}
-
                 \t/** Free a char* returned by an owning (non-const) MEOS function. Null-safe. */
                 \tprivate static void _freeCStr(Pointer _p) {
-                \t\tif (_p != null) _UNSAFE.freeMemory(_p.address());
+                \t\tif (_p != null) com.kenai.jffi.MemoryIO.getInstance().freeMemory(_p.address());
                 \t}
 
                 """);

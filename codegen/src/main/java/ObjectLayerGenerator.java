@@ -119,9 +119,9 @@ public class ObjectLayerGenerator {
         matchStride = structSize(root, "Match");
         tboxStride = structSize(root, "TBox");
         JsonNode byBase = root.path("typeRelations").path("byBase");
-        byBase.fields().forEachRemaining(e -> {
+        byBase.properties().forEach(e -> {
             Map<String, String> roles = new HashMap<>();
-            e.getValue().fields().forEachRemaining(r -> {
+            e.getValue().properties().forEach(r -> {
                 if (!r.getKey().equals("temporal")) {
                     roles.put(r.getKey(), r.getValue().asText());
                     return;
