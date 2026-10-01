@@ -89,8 +89,14 @@ def derive_codecs(cat, have):
     Temporal. A geometry reads through UdfMarshal.geoFromText, which accepts the EWKT the
     geometry writer geo_as_ewkt answers, where the catalog's text reader geo_from_text takes
     WKT alone."""
+    # A class whose reader returns the value itself, not a pointer to it, is a scalar the jar
+    # passes by value (TimestampTz, DateADT, Timestamp, TimeADT): arg_kind and ret_emit carry
+    # it as one, so it takes no pointer codec here.
+    ret_of = {f["name"]: f["returnType"]["canonical"] for f in cat.get("functions") or []}
     for base, e in (cat.get("typeEncodings") or {}).items():
         if base in DEFERRED_TYPES or base in INTERNAL:
+            continue
+        if e.get("in") in ret_of and "*" not in ret_of[e["in"]]:
             continue
         dec = e.get("decoders") or {}
         byt = e.get("bytes") or {}
