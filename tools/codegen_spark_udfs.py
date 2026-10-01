@@ -118,15 +118,19 @@ def derive_codecs(cat, have):
         if sub and sub != "Temporal" and "Temporal" in PARSE:
             PARSE[sub] = PARSE["Temporal"]
             SERIAL[sub] = SERIAL["Temporal"]
+# The catalog spells a 32-bit integer by its definition: `int` where the C source writes int,
+# `int32_t` where it writes int32 or int32_t. JMEOS passes both as a Java int.
+INT32 = ("int", "int32_t")
 # ── Scalar args: canonical -> (Spark DataType, Java boxed type, "parse expr") ──
 SCALAR_ARG = {
     "int":         ("IntegerType", "Integer", "%s"),
+    "int32_t":     ("IntegerType", "Integer", "%s"),
     "bool":        ("BooleanType", "Boolean", "%s"),
     "double":      ("DoubleType",  "Double",  "%s"),
     "int64_t":     ("LongType",    "Long",    "%s"),
     "uint64_t":    ("LongType",    "Long",    "%s"),   # 64-bit (H3Index/hash) <-> jnr long
     "DateADT":     ("IntegerType", "Integer", "%s"),   # JMEOS maps DateADT -> int
-    "unsigned char": ("ByteType",  "Byte",    "%s"),   # the WKB `variant` flag <-> jnr byte
+    "uint8_t":     ("ByteType",    "Byte",    "%s"),   # the WKB `variant` flag <-> jnr byte
 }
 # ── Scalar returns: canonical -> (Spark DataType, Java box, "serialize expr") ──
 SCALAR_RET = {
@@ -236,7 +240,7 @@ def ret_emit(canon, sqlop):
         return ("ptr",) + SERIAL[b]
     if b == "TimestampTz":            # JMEOS maps TimestampTz -> OffsetDateTime
         return ("dt", "StringType", "UdfMarshal.tsOut(%s)")
-    if t == "int" or b == "int":
+    if t in INT32 or b in INT32:
         if sqlop in PRED_OPS:
             return ("scalar", "BooleanType", "%s == 1")
         return ("scalar", "IntegerType", "%s")
@@ -308,7 +312,7 @@ def class_for(group):
 # wider C one — e.g. asHexWKB(temporal) calls temporal_as_hexwkb(p, (byte) 4),
 # trajectory(temporal) calls tpoint_trajectory(p, false). Only scalar flags are
 # defaultable; if a hidden arg isn't here the UDF keeps the full C arity.
-HIDE_DEFAULT = {"bool": "false", "unsigned char": "(byte) 4", "int": "0",
+HIDE_DEFAULT = {"bool": "false", "uint8_t": "(byte) 4", "int": "0", "int32_t": "0",
                 "double": "0.0", "int64_t": "0L", "uint64_t": "0L"}
 
 
@@ -329,7 +333,7 @@ def _java_bound(v, ctype):
     if v in ("true", "false"):
         return v
     if re.fullmatch(r"-?\d+", v):
-        if ctype == "unsigned char":
+        if ctype == "uint8_t":
             return "(byte) %s" % v
         if ctype in ("int64_t", "uint64_t"):
             return "%sL" % v
@@ -1594,7 +1598,7 @@ def main():
         # BooleanType (== 1). Guarded on an int C-return, so atTime/asHexWKB (also a*) —
         # which return a temporal / string — are untouched.
         if re.match(r"[ea][A-Z]", sname):
-            disp = [dict(f, sqlop="?=") if norm(f["returnType"]["canonical"]) == "int" else f
+            disp = [dict(f, sqlop="?=") if norm(f["returnType"]["canonical"]) in INT32 else f
                     for f in disp]
         # expose the SQL-required arity (sqlArity) — default the optional trailing flags
         # so e.g. asHexWKB(temporal) / trajectory(temporal) are 1-arg, matching SQL.
