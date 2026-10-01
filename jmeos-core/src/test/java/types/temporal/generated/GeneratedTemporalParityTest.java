@@ -341,8 +341,8 @@ public class GeneratedTemporalParityTest {
         OffsetDateTime origin = OffsetDateTime.parse("2019-09-01T00:00:00Z");
         Pointer c3 = Memory.allocate(rt, Integer.BYTES);
         GeneratedFunctions.temporal_time_bins(p,
-                ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), origin, c3);
-        assertEquals(c3.getInt(0), g.timeBins(Duration.ofDays(1), origin).size());
+                ConversionUtils.timedelta_to_interval(Duration.ofDays(1)), origin, true, c3);
+        assertEquals(c3.getInt(0), g.timeBins(Duration.ofDays(1), origin, true).size());
     }
 
     @Test
@@ -431,9 +431,9 @@ public class GeneratedTemporalParityTest {
         Pointer bins = Memory.allocate(rt, Long.BYTES);
         Pointer count = Memory.allocate(rt, Integer.BYTES);
         Pointer frags = GeneratedFunctions.temporal_time_split(p,
-                ConversionUtils.timedelta_to_interval(size), origin, bins, count);
+                ConversionUtils.timedelta_to_interval(size), origin, true, bins, count);
         Pointer binsArr = bins.getPointer(0);
-        List<GeneratedTemporal.TimeSplit> split = g.timeSplit(size, origin);
+        List<GeneratedTemporal.TimeSplit> split = g.timeSplit(size, origin, true);
 
         assertEquals(count.getInt(0), split.size());
         for (int i = 0; i < split.size(); i++) {
