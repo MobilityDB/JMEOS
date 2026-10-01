@@ -133,6 +133,10 @@ def run_spark(args):
             '--jar', args.jar]
     if args.report:
         argv.append('--report')
+    if args.gaps:
+        argv += ['--gaps', args.gaps]
+    if args.rebaseline:
+        argv.append('--rebaseline')
     saved = sys.argv
     try:
         sys.argv = argv
@@ -1475,6 +1479,8 @@ def main():
     ap.add_argument('--package', default='org.mobilitydb.meos',
                     help='facade package (flink/kafka only)')
     ap.add_argument('--report', action='store_true', help='spark only')
+    ap.add_argument('--gaps', help='spark only: the ledger of unreached public functions')
+    ap.add_argument('--rebaseline', action='store_true', help='spark only: rewrite --gaps')
     args = ap.parse_args()
 
     if args.engine == 'spark':

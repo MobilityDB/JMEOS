@@ -1,0 +1,758 @@
+# The public JMEOS functions the generated Spark surface does not reach,
+# one per line with the reason the catalog states. Written by
+# codegen_spark_udfs.py --rebaseline; a function missing from it fails
+# the run. The ledger only shrinks, as types get their mappings.
+above_tpcbox_tpcbox	arg:TPCBox *
+add_timestamp_interval	no-decoder:Timestamp; unsupported-return:Timestamp
+add_timestamptz_interval	no-decoder:TimestampTz; unsupported-return:Timestamp
+add_timestamptz_interval_at_zone	no-decoder:TimestampTz; unsupported-return:Timestamp
+adjacent_tpcbox_tpcbox	arg:TPCBox *
+adjacent_tpcbox_tpointcloud	arg:TPCBox *
+adjacent_tpointcloud_tpcbox	arg:TPCBox *
+after_tpcbox_tpcbox	arg:TPCBox *
+always_eq_posechain_tposechain	arg:PoseChain *
+always_eq_text_ttext	internal
+always_eq_tposechain_posechain	arg:PoseChain *
+always_eq_ttext_text	internal
+always_ge_text_ttext	internal
+always_ge_ttext_text	internal
+always_gt_text_ttext	internal
+always_gt_ttext_text	internal
+always_le_text_ttext	internal
+always_le_ttext_text	internal
+always_lt_text_ttext	internal
+always_lt_ttext_text	internal
+always_ne_posechain_tposechain	arg:PoseChain *
+always_ne_text_ttext	internal
+always_ne_tposechain_posechain	arg:PoseChain *
+always_ne_ttext_text	internal
+araster_value	arg:Raster *
+back_tpcbox_tpcbox	arg:TPCBox *
+before_tpcbox_tpcbox	arg:TPCBox *
+below_tpcbox_tpcbox	arg:TPCBox *
+bigintset_make	array-or-out-param:values
+bigintspan_bins	array-or-out-param:count
+bigintspanset_bins	array-or-out-param:count
+bool_hash	ret:uint32_t
+bool_to_text	ret:jmeos-kind-mismatch
+box3d_in	internal
+box3d_make	internal
+box3d_out	internal
+box3d_to_stbox	internal
+cbuffer_hash	ret:uint32_t
+cbufferarr_round	unsupported-return:struct Cbuffer **
+cbufferarr_to_geom	internal
+cbufferset_make	internal
+cbufferset_value_n	internal
+cmp_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+cmp_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+cmp_timestamp_timestamp	no-decoder:Timestamp
+cmp_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+cmp_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+contained_posechain_set	arg:PoseChain *
+contained_text_set	internal
+contained_tpcbox_tpcbox	arg:TPCBox *
+contained_tpcbox_tpointcloud	arg:TPCBox *
+contained_tpointcloud_tpcbox	arg:TPCBox *
+contains_set_posechain	arg:PoseChain *
+contains_set_text	internal
+contains_tpcbox_tpcbox	arg:TPCBox *
+contains_tpcbox_tpointcloud	arg:TPCBox *
+contains_tpointcloud_tpcbox	arg:TPCBox *
+cstring_to_text	ret:jmeos-kind-mismatch
+date_extract	no-decoder:DateADT
+date_hash	no-decoder:DateADT
+date_time_to_timestamp	no-decoder:DateADT; no-decoder:TimeADT; unsupported-return:Timestamp
+date_to_timestamp	no-decoder:DateADT; unsupported-return:Timestamp
+dateset_make	no-decoder:DateADT
+dateset_value_n	no-decoder:DateADT
+datespan_bins	no-decoder:DateADT; array-or-out-param:count
+datespanset_bins	no-decoder:DateADT; array-or-out-param:count
+datespanset_date_n	no-decoder:DateADT
+eq_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+eq_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+eq_timestamp_timestamp	no-decoder:Timestamp
+eq_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+eq_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+eraster_value	arg:Raster *
+ever_eq_posechain_tposechain	arg:PoseChain *
+ever_eq_text_ttext	internal
+ever_eq_tposechain_posechain	arg:PoseChain *
+ever_eq_ttext_text	internal
+ever_ge_text_ttext	internal
+ever_ge_ttext_text	internal
+ever_gt_text_ttext	internal
+ever_gt_ttext_text	internal
+ever_le_text_ttext	internal
+ever_le_ttext_text	internal
+ever_lt_text_ttext	internal
+ever_lt_ttext_text	internal
+ever_ne_posechain_tposechain	arg:PoseChain *
+ever_ne_text_ttext	internal
+ever_ne_tposechain_posechain	arg:PoseChain *
+ever_ne_ttext_text	internal
+float8_hash	ret:uint32_t
+floatset_make	array-or-out-param:values
+floatspan_bins	array-or-out-param:count
+floatspanset_bins	array-or-out-param:count
+front_tpcbox_tpcbox	arg:TPCBox *
+gbox_in	internal
+gbox_make	internal
+gbox_out	internal
+gbox_to_stbox	internal
+ge_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+ge_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+ge_timestamp_timestamp	no-decoder:Timestamp
+ge_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+ge_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+geo_as_ewkb	array-or-out-param:size; unsupported-return:uint8_t *
+geo_cluster_dbscan	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:uint32_t *
+geo_cluster_intersecting	array-or-out-param:geoms
+geo_cluster_kmeans	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:int *
+geo_cluster_within	array-or-out-param:geoms
+geo_collect_garray	internal
+geo_from_ewkb	array-or-out-param:wkb
+geo_makeline_garray	internal
+geo_pointarr	internal
+geo_split_each_n_stboxes	array-or-out-param:count
+geo_split_n_stboxes	array-or-out-param:count
+geo_stboxes	array-or-out-param:count
+geog_array_union	internal
+geom_array_union	internal
+geom_minimum_bounding_radius	array-or-out-param:radius
+geomval_arr_free	no-decoder:GeomVal
+geopose_frame	no-encoder:GeoPoseFrame
+geopose_frames	array-or-out-param:count; no-encoder:GeoPoseFrame
+geoset_make	internal
+geoset_value_n	internal
+gt_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+gt_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+gt_timestamp_timestamp	no-decoder:Timestamp
+gt_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+gt_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+h3index_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+h3index_cell_to_parent	arg:uint32_t
+h3index_from_wkb	array-or-out-param:wkb
+h3index_get_resolution	ret:uint32_t
+h3index_hash	ret:uint32_t
+h3indexset_make	array-or-out-param:values
+index_result_create	no-encoder:MeosArray
+index_result_id	no-decoder:MeosArray; array-or-out-param:id
+int32_hash	ret:uint32_t
+int64_hash	ret:uint32_t
+intersection_posechain_set	arg:PoseChain *
+intersection_set_posechain	arg:PoseChain *
+intersection_set_text	internal
+intersection_text_set	internal
+intersection_tpcbox_tpcbox	ret:TPCBox *
+interval_extract	internal
+interval_hash	ret:uint32_t
+interval_part	internal
+interval_to_time	unsupported-return:TimeADT
+interval_trunc	internal
+intset_make	array-or-out-param:values
+intspan_bins	array-or-out-param:count
+intspanset_bins	array-or-out-param:count
+json_array_element	internal
+json_array_element_text	internal
+json_array_elements	array-or-out-param:count; unsupported-return:text **
+json_array_elements_text	array-or-out-param:count; unsupported-return:text **
+json_array_length	internal
+json_each	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
+json_each_text	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
+json_extract_path	array-or-out-param:path_elems
+json_extract_path_text	array-or-out-param:path_elems
+json_in	ret:jmeos-kind-mismatch
+json_make	array-or-out-param:keys_vals
+json_make_two_arg	array-or-out-param:keys; array-or-out-param:values
+json_object_field	internal
+json_object_field_text	internal
+json_object_keys	array-or-out-param:count; unsupported-return:text **
+json_out	internal
+json_strip_nulls	internal
+json_typeof	internal
+jsonb_array_element_text	ret:jmeos-kind-mismatch
+jsonb_array_elements	internal
+jsonb_array_elements_text	array-or-out-param:count; unsupported-return:text **
+jsonb_delete	internal
+jsonb_delete_array	array-or-out-param:keys_elems
+jsonb_delete_path	array-or-out-param:path_elems
+jsonb_each	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
+jsonb_each_text	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
+jsonb_exists	internal
+jsonb_exists_array	array-or-out-param:keys_elems
+jsonb_extract_path	array-or-out-param:path_elems
+jsonb_extract_path_text	array-or-out-param:path_elems
+jsonb_from_text	internal
+jsonb_hash	ret:uint32_t
+jsonb_insert	array-or-out-param:path_elems
+jsonb_make	array-or-out-param:keys_vals
+jsonb_make_two_arg	array-or-out-param:keys; array-or-out-param:values
+jsonb_object_field	internal
+jsonb_object_field_text	internal
+jsonb_object_keys	array-or-out-param:count; unsupported-return:text **
+jsonb_path_query_all	internal
+jsonb_pretty	ret:jmeos-kind-mismatch
+jsonb_set	array-or-out-param:path_elems
+jsonb_set_lax	array-or-out-param:path_elems
+jsonb_to_float4	ret:float
+jsonb_to_int16	ret:int16_t
+jsonb_to_text	ret:jmeos-kind-mismatch
+jsonbset_array_element	arg:nullHandleType
+jsonbset_delete	internal
+jsonbset_delete_array	array-or-out-param:keys
+jsonbset_delete_path	array-or-out-param:path_elems
+jsonbset_exists	array-or-out-param:count; unsupported-return:bool *
+jsonbset_exists_array	array-or-out-param:keys; array-or-out-param:rescount; unsupported-return:bool *
+jsonbset_extract_path	array-or-out-param:path_elems
+jsonbset_insert	array-or-out-param:path_elems
+jsonbset_make	internal
+jsonbset_object_field	internal
+jsonbset_path_exists	array-or-out-param:count; unsupported-return:bool *
+jsonbset_path_match	array-or-out-param:count; unsupported-return:bool *
+jsonbset_set	array-or-out-param:keys
+jsonbset_to_alphanumset	internal
+jsonbset_to_bigintset	arg:nullHandleType
+jsonbset_to_floatset	arg:nullHandleType
+jsonbset_to_intset	arg:nullHandleType
+jsonbset_to_textset_key	arg:nullHandleType
+jsonbset_value_n	internal
+le_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+le_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+le_timestamp_timestamp	no-decoder:Timestamp
+le_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+le_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+left_set_text	internal
+left_text_set	internal
+left_tpcbox_tpcbox	arg:TPCBox *
+lt_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+lt_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+lt_timestamp_timestamp	no-decoder:Timestamp
+lt_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+lt_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+mindistance_tcbufferarr_tcbufferarr	array-or-out-param:arr2
+minus_posechain_set	arg:PoseChain *
+minus_set_posechain	arg:PoseChain *
+minus_set_text	internal
+minus_text_set	internal
+minus_time_interval	no-decoder:TimeADT; unsupported-return:TimeADT
+minus_time_time	no-decoder:TimeADT
+minus_timestamp_interval	no-decoder:Timestamp; unsupported-return:Timestamp
+minus_timestamp_timestamp	no-decoder:Timestamp
+minus_timestamptz_interval_at_zone	no-decoder:TimestampTz; unsupported-return:TimestampTz
+ne_date_timestamp	no-decoder:DateADT; no-decoder:Timestamp
+ne_timestamp_date	no-decoder:Timestamp; no-decoder:DateADT
+ne_timestamp_timestamp	no-decoder:Timestamp
+ne_timestamp_timestamptz	no-decoder:Timestamp; no-decoder:TimestampTz
+ne_timestamptz_timestamp	no-decoder:TimestampTz; no-decoder:Timestamp
+npoint_hash	ret:uint32_t
+npointset_make	internal
+npointset_value_n	internal
+null_handle_type_from_string	ret:nullHandleType
+overabove_tpcbox_tpcbox	arg:TPCBox *
+overafter_tpcbox_tpcbox	arg:TPCBox *
+overback_tpcbox_tpcbox	arg:TPCBox *
+overbefore_tpcbox_tpcbox	arg:TPCBox *
+overbelow_tpcbox_tpcbox	arg:TPCBox *
+overfront_tpcbox_tpcbox	arg:TPCBox *
+overlaps_tpcbox_tpcbox	arg:TPCBox *
+overlaps_tpcbox_tpointcloud	arg:TPCBox *
+overlaps_tpointcloud_tpcbox	arg:TPCBox *
+overleft_set_text	internal
+overleft_text_set	internal
+overleft_tpcbox_tpcbox	arg:TPCBox *
+overright_set_text	internal
+overright_text_set	internal
+overright_tpcbox_tpcbox	arg:TPCBox *
+pcpatch_get_pcid	ret:uint32_t
+pcpatch_hash	ret:uint32_t
+pcpatch_make	internal
+pcpatch_make_coords	array-or-out-param:values
+pcpatch_npoints	ret:uint32_t
+pcpatch_points	internal
+pcpatch_to_tpcbox	ret:TPCBox *
+pcpatchset_make	internal
+pcpatchset_value_n	internal
+pcpoint_get_dim	no-decoder:PCSCHEMA; array-or-out-param:out
+pcpoint_get_pcid	ret:uint32_t
+pcpoint_get_x	no-decoder:PCSCHEMA; array-or-out-param:out
+pcpoint_get_y	no-decoder:PCSCHEMA; array-or-out-param:out
+pcpoint_get_z	no-decoder:PCSCHEMA; array-or-out-param:out
+pcpoint_hash	ret:uint32_t
+pcpoint_make	array-or-out-param:values
+pcpoint_to_tpcbox	no-decoder:PCSCHEMA
+pcpointset_make	internal
+pcpointset_value_n	internal
+plus_time_interval	no-decoder:TimeADT; unsupported-return:TimeADT
+pose_hash	ret:uint32_t
+pose_to_posechain	ret:PoseChain *
+posearr_round	unsupported-return:struct Pose **
+posechain_append	ret:PoseChain *
+posechain_as_ewkt	arg:PoseChain *
+posechain_as_hexwkb	array-or-out-param:size_out
+posechain_as_text	arg:PoseChain *
+posechain_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+posechain_cmp	arg:PoseChain *
+posechain_copy	ret:PoseChain *
+posechain_end_pose	arg:PoseChain *
+posechain_eq	arg:PoseChain *
+posechain_from_hexwkb	ret:PoseChain *
+posechain_from_wkb	array-or-out-param:wkb
+posechain_ge	arg:PoseChain *
+posechain_gt	arg:PoseChain *
+posechain_hash	ret:uint32_t
+posechain_hash_extended	arg:PoseChain *
+posechain_in	ret:PoseChain *
+posechain_le	arg:PoseChain *
+posechain_lt	arg:PoseChain *
+posechain_make	ret:PoseChain *
+posechain_ne	arg:PoseChain *
+posechain_nsame	arg:PoseChain *
+posechain_num_poses	arg:PoseChain *
+posechain_out	arg:PoseChain *
+posechain_pose_n	arg:PoseChain *
+posechain_poses	internal
+posechain_prefix_pose	arg:PoseChain *
+posechain_round	ret:PoseChain *
+posechain_same	arg:PoseChain *
+posechain_set_srid	ret:PoseChain *
+posechain_srid	arg:PoseChain *
+posechain_start_pose	arg:PoseChain *
+posechain_timestamptz_to_stbox	no-decoder:TimestampTz
+posechain_to_point	arg:PoseChain *
+posechain_to_pose	arg:PoseChain *
+posechain_to_set	arg:PoseChain *
+posechain_to_stbox	arg:PoseChain *
+posechain_transform	ret:PoseChain *
+posechain_transform_pipeline	ret:PoseChain *
+posechain_tstzspan_to_stbox	arg:PoseChain *
+posechain_union_transfn	arg:PoseChain *
+posechainset_end_value	ret:PoseChain *
+posechainset_make	internal
+posechainset_start_value	ret:PoseChain *
+posechainset_value_n	internal
+posechainset_values	internal
+poseset_make	internal
+poseset_value_n	internal
+quadbin_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+quadbin_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
+quadbin_cell_to_parent	arg:uint32_t
+quadbin_cell_to_tile	array-or-out-param:x; array-or-out-param:y; array-or-out-param:z
+quadbin_from_wkb	array-or-out-param:wkb
+quadbin_get_resolution	ret:uint32_t
+quadbin_hash	ret:uint32_t
+quadbin_point_to_cell	arg:uint32_t
+quadbin_tile_to_cell	arg:uint32_t
+quadbinset_make	array-or-out-param:values
+raquet_hash	ret:uint32_t
+raquet_make	array-or-out-param:pixels
+raquet_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
+raquet_pixtype_from_string	ret:MeosPixType
+raquet_pixtype_size	internal
+raquet_read_bytes	array-or-out-param:data
+raster_as_hexwkb	array-or-out-param:size_out
+raster_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+raster_at_value	arg:Raster *
+raster_band_has_nodata_value	arg:Raster *
+raster_band_nodata_value	arg:Raster *
+raster_band_pixel_type	arg:Raster *
+raster_clip	array-or-out-param:bands; array-or-out-param:nodata; no-encoder:Raster
+raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
+raster_from_hexwkb	no-encoder:Raster
+raster_from_wkb	array-or-out-param:wkb; no-encoder:Raster
+raster_height	arg:Raster *
+raster_minus_value	arg:Raster *
+raster_num_bands	arg:Raster *
+raster_reclass	no-encoder:Raster
+raster_rescale	no-encoder:Raster
+raster_scale_x	arg:Raster *
+raster_scale_y	arg:Raster *
+raster_skew_x	arg:Raster *
+raster_skew_y	arg:Raster *
+raster_srid	arg:Raster *
+raster_summary_stats	no-encoder:BandStats
+raster_tile_value_array	internal
+raster_tile_value_quadbin	array-or-out-param:pixels
+raster_to_stbox	arg:Raster *
+raster_transform	no-encoder:Raster
+raster_transform_pipeline	no-encoder:Raster
+raster_transform_raster	no-encoder:Raster
+raster_upper_left_x	arg:Raster *
+raster_upper_left_y	arg:Raster *
+raster_value	arg:Raster *
+raster_width	arg:Raster *
+right_set_text	internal
+right_text_set	internal
+right_tpcbox_tpcbox	arg:TPCBox *
+s2cell_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+s2cell_cell_to_child	arg:uint32_t
+s2cell_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
+s2cell_cell_to_parent	arg:uint32_t
+s2cell_edge_length	arg:uint32_t
+s2cell_from_wkb	array-or-out-param:wkb
+s2cell_get_face	ret:uint32_t
+s2cell_get_resolution	ret:uint32_t
+s2cell_hash	ret:uint32_t
+s2cell_point_to_cell	arg:uint32_t
+s2cellset_make	array-or-out-param:values
+same_tpcbox_tpcbox	arg:TPCBox *
+same_tpcbox_tpointcloud	arg:TPCBox *
+same_tpointcloud_tpcbox	arg:TPCBox *
+set_hash	ret:uint32_t
+set_spans	array-or-out-param:count
+set_split_each_n_spans	array-or-out-param:count
+set_split_n_spans	array-or-out-param:count
+span_hash	ret:uint32_t
+spanset_hash	ret:uint32_t
+spanset_spanarr	internal
+spanset_spans	array-or-out-param:count
+spanset_split_each_n_spans	array-or-out-param:count
+spanset_split_n_spans	array-or-out-param:count
+sptree_create_bigintspan	no-encoder:SPTree
+sptree_create_datespan	no-encoder:SPTree
+sptree_create_floatspan	no-encoder:SPTree
+sptree_create_intspan	no-encoder:SPTree
+sptree_create_stbox	no-encoder:SPTree
+sptree_create_tbox	no-encoder:SPTree
+sptree_create_tpcbox	no-encoder:SPTree
+sptree_create_tstzspan	no-encoder:SPTree
+sptree_free	no-decoder:SPTree
+sptree_height	no-decoder:SPTree
+sptree_insert	no-decoder:SPTree; no-decoder:void
+sptree_insert_temporal	no-decoder:SPTree
+sptree_insert_temporal_split	no-decoder:SPTree
+sptree_join	no-decoder:SPTree; no-decoder:MeosArray
+sptree_load	no-decoder:SPTree; no-decoder:void; array-or-out-param:ids
+sptree_mem_size	no-decoder:SPTree
+sptree_nn_cursor_close	no-decoder:SPNNCursor
+sptree_nn_cursor_next	no-decoder:SPNNCursor; array-or-out-param:id_out; array-or-out-param:dist_out
+sptree_nn_cursor_open	no-decoder:SPTree; no-decoder:void; no-encoder:SPNNCursor
+sptree_num_entries	no-decoder:SPTree
+sptree_search	no-decoder:SPTree; no-decoder:void; no-decoder:MeosArray
+sptree_search_temporal	no-decoder:SPTree; no-decoder:MeosArray
+sptree_search_temporal_dedup	no-decoder:SPTree; no-decoder:MeosArray
+stbox_hash	ret:uint32_t
+stbox_quad_split	array-or-out-param:count
+stbox_tmax	no-decoder:TimestampTz
+stbox_tmin	no-decoder:TimestampTz
+stbox_to_box3d	internal
+stbox_to_gbox	internal
+tbigint_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tbigint_value_bins	array-or-out-param:count
+tbigint_value_boxes	array-or-out-param:count
+tbigint_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tbigint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
+tbigint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
+tbigint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tbool_values	array-or-out-param:count; unsupported-return:bool *
+tbox_hash	ret:uint32_t
+tbox_tmax	no-decoder:TimestampTz
+tbox_tmin	no-decoder:TimestampTz
+tcbuffer_value_at_timestamptz	no-decoder:TimestampTz
+tcbuffer_value_n	internal
+tcbuffer_values	internal
+tcbufferseq_from_base_tstzspan	internal
+tcbufferseqset_from_base_tstzspanset	internal
+temparr_round	unsupported-return:Temporal **
+temporal_append_tinstant	internal
+temporal_as_tsequence	internal
+temporal_as_tsequenceset	internal
+temporal_hash	ret:uint32_t
+temporal_instants	internal
+temporal_merge_array	internal
+temporal_segments	internal
+temporal_sequences	internal
+temporal_set_interp	internal
+temporal_spans	array-or-out-param:count
+temporal_split_each_n_spans	array-or-out-param:count
+temporal_split_n_spans	array-or-out-param:count
+temporal_time_bins	no-decoder:TimestampTz; array-or-out-param:count
+temporal_timestamps	array-or-out-param:count; no-encoder:TimestampTz
+temporal_timestamptz_n	no-decoder:TimestampTz
+temporal_tsample	no-decoder:TimestampTz
+teq_posechain_tposechain	arg:PoseChain *
+teq_text_ttext	internal
+teq_tposechain_posechain	arg:PoseChain *
+teq_ttext_text	internal
+text_cmp	no-decoder:Oid
+text_eq	internal
+text_ge	internal
+text_gt	internal
+text_hash	no-decoder:Oid
+text_hash_extended	no-decoder:Oid
+text_in	ret:jmeos-kind-mismatch
+text_initcap	internal
+text_le	internal
+text_lower	internal
+text_lt	internal
+text_ne	internal
+text_pattern_ge	internal
+text_pattern_gt	internal
+text_pattern_le	internal
+text_pattern_lt	internal
+text_to_set	internal
+text_union_transfn	internal
+text_upper	internal
+textcat_text_text	internal
+textcat_text_textset	internal
+textcat_text_ttext	internal
+textcat_textset_text	internal
+textcat_ttext_text	internal
+textset_end_value	ret:jmeos-kind-mismatch
+textset_make	array-or-out-param:values
+textset_start_value	ret:jmeos-kind-mismatch
+textset_value_n	array-or-out-param:result
+tfloat_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tfloat_value_bins	array-or-out-param:count
+tfloat_value_boxes	array-or-out-param:count
+tfloat_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tfloat_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
+tfloat_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
+tfloat_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tfloatseq_from_base_tstzspan	internal
+tfloatseqset_from_base_tstzspanset	internal
+tge_text_ttext	internal
+tge_ttext_text	internal
+tgeo_affine	no-decoder:AFFINE
+tgeo_space_boxes	array-or-out-param:count
+tgeo_space_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tgeo_split_each_n_stboxes	array-or-out-param:count
+tgeo_split_n_stboxes	array-or-out-param:count
+tgeo_stboxes	array-or-out-param:count
+tgeo_value_at_timestamptz	no-decoder:TimestampTz
+tgeo_value_n	internal
+tgeo_values	internal
+tgeogpoint_h3index_split	array-or-out-param:cells
+tgeogpoint_quadbin_split	array-or-out-param:cells
+tgeogpoint_s2cell_split	array-or-out-param:cells
+tgeompoint_h3index_split	array-or-out-param:cells
+tgeompoint_quadbin_split	array-or-out-param:cells
+tgeompoint_s2cell_split	array-or-out-param:cells
+tgeoseq_from_base_tstzspan	internal
+tgeoseqset_from_base_tstzspanset	internal
+tgt_text_ttext	internal
+tgt_ttext_text	internal
+th3index_value_at_timestamptz	no-decoder:TimestampTz
+th3index_value_n	arg:uint64_t *
+th3indexseq_in	internal
+th3indexseq_make	array-or-out-param:values; no-decoder:TimestampTz
+th3indexseqset_make	array-or-out-param:sequences
+time_cmp	no-decoder:TimeADT
+time_eq	no-decoder:TimeADT
+time_extract	no-decoder:TimeADT
+time_ge	no-decoder:TimeADT
+time_gt	no-decoder:TimeADT
+time_hash	no-decoder:TimeADT
+time_hash_extended	no-decoder:TimeADT
+time_in	unsupported-return:TimeADT
+time_larger	no-decoder:TimeADT; unsupported-return:TimeADT
+time_le	no-decoder:TimeADT
+time_lt	no-decoder:TimeADT
+time_make	unsupported-return:TimeADT
+time_ne	no-decoder:TimeADT
+time_of_day	ret:jmeos-kind-mismatch
+time_out	no-decoder:TimeADT
+time_overlaps	no-decoder:TimeADT
+time_part	no-decoder:TimeADT
+time_scale	no-decoder:TimeADT; unsupported-return:TimeADT
+time_smaller	no-decoder:TimeADT; unsupported-return:TimeADT
+time_to_interval	no-decoder:TimeADT
+time_to_timetz	no-decoder:TimeADT
+timestamp_age	no-decoder:Timestamp
+timestamp_at_local	no-decoder:Timestamp; unsupported-return:TimestampTz
+timestamp_bin	no-decoder:Timestamp; unsupported-return:Timestamp
+timestamp_extract	no-decoder:Timestamp
+timestamp_hash	no-decoder:Timestamp
+timestamp_in	unsupported-return:Timestamp
+timestamp_is_finite	no-decoder:Timestamp
+timestamp_izone	no-decoder:Timestamp; unsupported-return:TimestampTz
+timestamp_larger	no-decoder:Timestamp; unsupported-return:Timestamp
+timestamp_make	unsupported-return:Timestamp
+timestamp_out	no-decoder:Timestamp
+timestamp_overlaps	no-decoder:Timestamp
+timestamp_part	no-decoder:Timestamp
+timestamp_scale	no-decoder:Timestamp; unsupported-return:Timestamp
+timestamp_smaller	no-decoder:Timestamp; unsupported-return:Timestamp
+timestamp_to_date	no-decoder:Timestamp; unsupported-return:DateADT
+timestamp_to_time	no-decoder:Timestamp; unsupported-return:TimeADT
+timestamp_to_timestamptz	no-decoder:Timestamp; unsupported-return:TimestampTz
+timestamp_trunc	no-decoder:Timestamp; unsupported-return:Timestamp
+timestamp_zone	no-decoder:Timestamp; unsupported-return:TimestampTz
+timestamptz_extract	no-decoder:TimestampTz
+timestamptz_izone	no-decoder:TimestampTz; unsupported-return:Timestamp
+timestamptz_make_at_timezone	unsupported-return:TimestampTz
+timestamptz_part	no-decoder:TimestampTz
+timestamptz_tcount_transfn	no-decoder:SkipList; no-decoder:TimestampTz; no-encoder:SkipList
+timestamptz_to_time	no-decoder:TimestampTz; unsupported-return:TimeADT
+timestamptz_to_timestamp	no-decoder:TimestampTz; unsupported-return:Timestamp
+timestamptz_trunc	no-decoder:TimestampTz; unsupported-return:TimestampTz
+timestamptz_trunc_zone	no-decoder:TimestampTz; unsupported-return:TimestampTz
+timestamptz_zone	no-decoder:TimestampTz; unsupported-return:Timestamp
+timetz_extract	internal
+timetz_hash	ret:uint32_t
+timetz_part	internal
+timetz_to_time	unsupported-return:TimeADT
+timetz_zone	internal
+tint_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tint_value_bins	array-or-out-param:count
+tint_value_boxes	array-or-out-param:count
+tint_value_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+tint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
+tint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
+tint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tjson_array_element	arg:nullHandleType
+tjson_extract_path	array-or-out-param:path_elems
+tjson_object_field	internal
+tjsonb_array_element	arg:nullHandleType
+tjsonb_delete	internal
+tjsonb_delete_array	array-or-out-param:keys
+tjsonb_delete_path	array-or-out-param:path_elems
+tjsonb_exists	internal
+tjsonb_exists_all	array-or-out-param:keys
+tjsonb_exists_any	array-or-out-param:keys
+tjsonb_exists_array	array-or-out-param:keys
+tjsonb_extract_path	array-or-out-param:path_elems
+tjsonb_insert	array-or-out-param:keys
+tjsonb_object_field	internal
+tjsonb_set	array-or-out-param:keys
+tjsonb_to_tbool	arg:nullHandleType
+tjsonb_to_tfloat	internal
+tjsonb_to_tint	arg:nullHandleType
+tjsonb_to_ttext_key	arg:nullHandleType
+tjsonb_value_at_timestamptz	no-decoder:TimestampTz
+tjsonb_value_n	internal
+tjsonb_values	internal
+tle_text_ttext	internal
+tle_ttext_text	internal
+tlt_text_ttext	internal
+tlt_ttext_text	internal
+tne_posechain_tposechain	arg:PoseChain *
+tne_text_ttext	internal
+tne_tposechain_posechain	arg:PoseChain *
+tne_ttext_text	internal
+tnpoint_positions	internal
+tnpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
+tnpoint_value_at_timestamptz	no-decoder:TimestampTz
+tnpoint_value_n	internal
+tnpoint_values	internal
+tnpointseq_from_base_tstzspan	internal
+tnpointseqset_from_base_tstzspanset	internal
+tnumber_split_each_n_tboxes	array-or-out-param:count
+tnumber_split_n_tboxes	array-or-out-param:count
+tnumber_tavg_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tnumber_tavg_finalfn	no-decoder:SkipList
+tnumber_tavg_transfn	no-decoder:SkipList; no-encoder:SkipList
+tnumber_tboxes	array-or-out-param:count
+tnumber_wavg_transfn	no-decoder:SkipList; no-encoder:SkipList
+tpcbox_as_hexwkb	array-or-out-param:size_out
+tpcbox_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+tpcbox_cmp	arg:TPCBox *
+tpcbox_copy	ret:TPCBox *
+tpcbox_eq	arg:TPCBox *
+tpcbox_from_hexwkb	ret:TPCBox *
+tpcbox_from_wkb	array-or-out-param:wkb
+tpcbox_ge	arg:TPCBox *
+tpcbox_geodetic	arg:TPCBox *
+tpcbox_gt	arg:TPCBox *
+tpcbox_hast	arg:TPCBox *
+tpcbox_hasx	arg:TPCBox *
+tpcbox_hasz	arg:TPCBox *
+tpcbox_in	ret:TPCBox *
+tpcbox_le	arg:TPCBox *
+tpcbox_lt	arg:TPCBox *
+tpcbox_make	ret:TPCBox *
+tpcbox_ne	arg:TPCBox *
+tpcbox_out	arg:TPCBox *
+tpcbox_pcid	ret:uint32_t
+tpcbox_round	ret:TPCBox *
+tpcbox_set_srid	ret:TPCBox *
+tpcbox_srid	arg:TPCBox *
+tpcbox_tmax	no-decoder:TimestampTz
+tpcbox_tmax_inc	arg:TPCBox *
+tpcbox_tmin	no-decoder:TimestampTz
+tpcbox_tmin_inc	arg:TPCBox *
+tpcbox_to_stbox	arg:TPCBox *
+tpcbox_xmax	arg:TPCBox *
+tpcbox_xmin	arg:TPCBox *
+tpcbox_ymax	arg:TPCBox *
+tpcbox_ymin	arg:TPCBox *
+tpcbox_zmax	arg:TPCBox *
+tpcbox_zmin	arg:TPCBox *
+tpcpatch_value_at_timestamptz	no-decoder:TimestampTz
+tpcpatch_value_n	internal
+tpcpatch_values	internal
+tpcpoint_value_at_timestamptz	no-decoder:TimestampTz
+tpcpoint_value_n	internal
+tpcpoint_values	internal
+tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
+tpoint_make_simple	internal
+tpoint_tcentroid_finalfn	no-decoder:SkipList
+tpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
+tpoint_tfloat_to_geomeas	internal
+tpointseq_from_base_tstzspan	internal
+tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords; no-decoder:TimestampTz
+tpointseqset_from_base_tstzspanset	internal
+tpose_value_at_timestamptz	no-decoder:TimestampTz
+tpose_value_n	internal
+tpose_values	internal
+tposechain_from_base_temp	arg:PoseChain *
+tposechain_unnest	array-or-out-param:values
+tposechain_values	internal
+tposechainarr_as_geopose	internal
+tposeseq_from_base_tstzspan	internal
+tposeseqset_from_base_tstzspanset	internal
+tquadbin_value_at_timestamptz	no-decoder:TimestampTz
+tquadbin_value_n	arg:uint64_t *
+tquadbinseq_make	array-or-out-param:values; no-decoder:TimestampTz
+tquadbinseqset_make	array-or-out-param:sequences
+trgeometry_append_tinstant	internal
+trgeometry_instants	internal
+trgeometry_merge_array	internal
+trgeometry_segments	internal
+trgeometry_sequences	internal
+trgeometry_set_interp	internal
+trgeometry_space_boxes	array-or-out-param:count
+trgeometry_space_time_boxes	no-decoder:TimestampTz; array-or-out-param:count
+trgeometry_split_each_n_stboxes	array-or-out-param:count
+trgeometry_split_n_stboxes	array-or-out-param:count
+trgeometry_stboxes	array-or-out-param:count
+trgeometry_value_n	internal
+trgeometry_values	internal
+trgeometryseq_make	internal
+trgeometryseqset_make	array-or-out-param:sequences
+trgeometryseqset_make_gaps	internal
+ts2cell_value_at_timestamptz	no-decoder:TimestampTz
+ts2cell_value_n	arg:uint64_t *
+ts2cellseq_make	array-or-out-param:values; no-decoder:TimestampTz
+ts2cellseqset_make	array-or-out-param:sequences
+tsequence_make	internal
+tsequenceset_make	array-or-out-param:sequences
+tsequenceset_make_gaps	internal
+tstzset_make	no-decoder:TimestampTz
+tstzset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
+tstzset_value_n	no-decoder:TimestampTz
+tstzspan_bins	no-decoder:TimestampTz; array-or-out-param:count
+tstzspan_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
+tstzspanset_bins	no-decoder:TimestampTz; array-or-out-param:count
+tstzspanset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
+tstzspanset_timestamptz_n	no-decoder:TimestampTz
+ttext_at_value	internal
+ttext_end_value	ret:jmeos-kind-mismatch
+ttext_from_base_temp	internal
+ttext_max_value	ret:jmeos-kind-mismatch
+ttext_min_value	ret:jmeos-kind-mismatch
+ttext_minus_value	internal
+ttext_start_value	ret:jmeos-kind-mismatch
+ttext_value_at_timestamptz	no-decoder:TimestampTz; array-or-out-param:value
+ttext_value_n	array-or-out-param:result
+ttext_values	array-or-out-param:count; unsupported-return:text **
+ttextinst_make	no-decoder:TimestampTz
+ttextseq_from_base_tstzset	internal
+ttextseq_from_base_tstzspan	internal
+ttextseqset_from_base_tstzspanset	internal
+union_posechain_set	arg:PoseChain *
+union_set_posechain	arg:PoseChain *
+union_set_text	internal
+union_text_set	internal
+union_tpcbox_tpcbox	ret:TPCBox *
+wkb_variant_from_endian	internal

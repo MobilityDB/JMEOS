@@ -1587,6 +1587,10 @@ def main():
                     help="JMEOS jar; only functions JMEOS actually exposes are emitted "
                          "(catalog is a superset incl. internal _addmat/above8D/GEOS macros)")
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--gaps", help="the ledger of the public functions the surface does not reach; "
+                    "a function missing from it fails the run")
+    ap.add_argument("--rebaseline", action="store_true",
+                    help="rewrite the --gaps ledger to the functions the surface does not reach")
     args = ap.parse_args()
 
     cat = json.load(open(args.catalog))
@@ -2055,6 +2059,57 @@ def main():
     print("  deferred type gaps (top):", file=sys.stderr)
     for k, c in skips.most_common(18):
         print("     %4d  %s" % (c, k), file=sys.stderr)
+
+    # ── the ledger of unreached functions ──
+    # A function the jar exposes and no emitted UDF calls is unreached. It is out of the surface
+    # by the catalog's own statement when the catalog says it is not public, or that its
+    # category (lifecycle, index) is not a value-to-value function (the `network` reasons
+    # MEOS-API's parser/enrich.py fills). Every other unreached function is a gap: --gaps names
+    # the ledger of the known ones, and a gap missing from it fails the run, so a function
+    # dropped by a catalog change is refused instead of disappearing. A ledger entry the
+    # surface now reaches is a notice: the ledger shrinks with --rebaseline.
+    if args.gaps and jar_syms is not None:
+        emitted = "".join(c for part in grouped.values() for c in part) + MARSHAL + AGGREGATE
+        reached = set(re.findall(r"GeneratedFunctions(?:\.|::)([a-z][A-Za-z0-9_]+)", emitted))
+        gaps = {}
+        for f in fns:
+            nm = f["name"]
+            if nm not in jar_syms or nm in reached:
+                continue
+            why = [r.strip() for r in ((f.get("network") or {}).get("reason") or "").split(";")
+                   if r.strip()]
+            if f.get("api") != "public" or any(r in ("internal", "lifecycle", "index")
+                                               for r in why):
+                continue
+            gaps[nm] = "; ".join(why) or supported(f) or "not emitted"
+        if args.rebaseline:
+            with open(args.gaps, "w") as fh:
+                fh.write("# The public JMEOS functions the generated Spark surface does not reach,\n"
+                         "# one per line with the reason the catalog states. Written by\n"
+                         "# codegen_spark_udfs.py --rebaseline; a function missing from it fails\n"
+                         "# the run. The ledger only shrinks, as types get their mappings.\n")
+                for nm in sorted(gaps):
+                    fh.write("%s\t%s\n" % (nm, gaps[nm]))
+            print("  gaps ledger rewritten: %d functions" % len(gaps), file=sys.stderr)
+            return
+        known = set()
+        if os.path.exists(args.gaps):
+            for line in open(args.gaps):
+                if line.strip() and not line.startswith("#"):
+                    known.add(line.split("\t")[0].strip())
+        new = sorted(set(gaps) - known)
+        stale = sorted(known - set(gaps))
+        if stale:
+            print("  NOTICE: %d ledger functions are reached or gone, shrink it with --rebaseline: %s"
+                  % (len(stale), ", ".join(stale[:20])), file=sys.stderr)
+        if new:
+            print("  ERROR: %d public functions the surface does not reach and the ledger does not "
+                  "list; map their types or record them with --rebaseline:" % len(new),
+                  file=sys.stderr)
+            for nm in new:
+                print("     %s\t%s" % (nm, gaps[nm]), file=sys.stderr)
+            sys.exit(1)
+        print("  gaps ledger: %d functions, none new" % len(gaps), file=sys.stderr)
 
 
 if __name__ == "__main__":
