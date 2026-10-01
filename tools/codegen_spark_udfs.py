@@ -1854,15 +1854,20 @@ def main():
     portable_names = {e["bareName"] for fn, fam in fams.items() if fn != "distance" for e in fam}
     sqlgroups = {}
     for f in fns:
-        s = f.get("sqlfn")
         # A backing-only @sqlfn (the shared bbox-topological tag same_bbox/contains_bbox/…,
         # classified in the catalog by MEOS-API) is NOT a deployed SQL name — MobilityDB
         # exposes only the operator's bare portable alias (registered by the topology pass).
         # Never register the `_bbox` backing tag as a UDF. (catalog SoT: sqlfnBackingOnly.)
-        if not s or s in names or s in portable_names or f.get("sqlfnBackingOnly") \
-                or supported(f) is not None:
+        if not f.get("sqlfn") or f.get("sqlfnBackingOnly") or supported(f) is not None:
             continue
-        sqlgroups.setdefault(s, []).append(f)
+        # A C function backing several SQL names (temporal_from_hexwkb behind tintFromHexWKB,
+        # tbigintFromHexWKB …, temporal_as_tinstant behind tintInst, tfloatInst …) states each
+        # name on its signatures, sqlfn being the representative: the function joins the
+        # group of every name its signatures carry, as _omitted reads them.
+        for s in {sig.get("sqlName") or f["sqlfn"] for sig in f.get("sqlSignatures") or []} \
+                or {f["sqlfn"]}:
+            if s not in names and s not in portable_names:
+                sqlgroups.setdefault(s, []).append(f)
     nsql = nsqldisp = ndropped = nskip = 0
     sqlfn_emitted = set()
     for sname in sorted(sqlgroups):
@@ -1889,7 +1894,14 @@ def main():
                 bysig.setdefault(sig, []).append(f)
         if not bysig:
             continue
-        group = max(bysig.values(), key=len)
+        # The name's own functions, those whose sqlfn it is, choose the shape: the one holding
+        # most of them, the first of them on a tie. A function stating the name on one of its
+        # signatures joins a shape and never chooses it; the largest shape answers a name
+        # that only signatures state. A key on the overloads, as _famrank is below.
+        pos = {id(f): i for i, f in enumerate(sqlgroups[sname])}
+        own = lambda g: [pos[id(f)] for f in g if f.get("sqlfn") == sname]
+        group = max(bysig.values(),
+                    key=lambda g: (len(own(g)), -min(own(g))) if own(g) else (0, len(g)))
         # A multi-overload @sqlfn needs a runtime parse dispatcher, which is only sound
         # when the overloads discriminate via WKB / WKT — drop an overload whose text-*_in
         # argument (stbox/tbox/cbuffer/npoint/pose) sits where the overloads differ, so e.g.
@@ -1903,11 +1915,15 @@ def main():
             continue
         # Keep only parse-DISTINGUISHABLE overloads: one per _parsetuple, preferring the
         # tgeo/geo family. Overloads differing only by temporal subtype can't be routed
-        # by parsing, so they're left to their C name (not silently mis-dispatched).
+        # by parsing, so they're left to their C name (not silently mis-dispatched). Among
+        # overloads of one parse shape, the function whose own sqlfn is the name comes
+        # first: spatialset_as_text answers asText of a set before bigintset_out, which
+        # states that name on one of its signatures.
         best = {}
+        rank = lambda f: (f.get("sqlfn") != sname, _famrank(f))
         for f in group:
             t = _parsetuple(f)
-            if t not in best or _famrank(f) < _famrank(best[t]):
+            if t not in best or rank(f) < rank(best[t]):
                 best[t] = f
         disp = sorted(best.values(), key=lambda f: f["name"])
         ndropped += len(group) - len(disp)
