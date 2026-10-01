@@ -468,29 +468,6 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosMfJsonOutputError("x", 12)));
         }
-
-        @Nested
-        @DisplayName("Native MEOS trigger")
-        class NativeTrigger {
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosMfJsonOutputError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosIoError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosException() {
-                // TODO
-            }
-        }
     }
 
     // =========================================================================
@@ -768,29 +745,6 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (sibling class)")
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosTextOutputError("x", 12)));
-        }
-
-        @Nested
-        @DisplayName("Native MEOS trigger")
-        class NativeTrigger {
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosTextOutputError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosIoError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosException() {
-                // TODO
-            }
         }
     }
 
@@ -1072,29 +1026,6 @@ class MeosIoErrorBranchTest {
         void notInstanceofSibling_MeosWkbInputError() {
             assertFalse(MeosWkbInputError.class.isInstance(new MeosWkbOutputError("x", 12)));
         }
-
-        @Nested
-        @DisplayName("Native MEOS trigger")
-        class NativeTrigger {
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosWkbOutputError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosIoError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosException() {
-                // TODO
-            }
-        }
     }
 
     // =========================================================================
@@ -1374,29 +1305,6 @@ class MeosIoErrorBranchTest {
         @DisplayName("NOT instanceof MeosWkbOutputError (sibling class)")
         void notInstanceofSibling_MeosWkbOutputError() {
             assertFalse(MeosWkbOutputError.class.isInstance(new MeosGeoJsonOutputError("x", 12)));
-        }
-
-        @Nested
-        @DisplayName("Native MEOS trigger")
-        class NativeTrigger {
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosGeoJsonOutputError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosIoError() {
-                // TODO
-            }
-
-            @Test
-            @DisplayName("")
-            void a_throwsMeosException() {
-                // TODO
-            }
         }
     }
 }
