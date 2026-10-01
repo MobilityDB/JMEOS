@@ -883,6 +883,256 @@ def emit_scalar_values(name, f, shape):
     return "\n".join(L)
 
 
+# ── set-returning signatures: one Spark row per SQL row, the rows as an array ──
+# A SQL function returning a set of rows (unnest, valueSplit, spaceTiles, dynTimeWarpPath ...)
+# is a MEOS C function returning parallel arrays: its result and its out-parameters, the length
+# in its `int *count` out-parameter. The catalog names the C value behind each column of the
+# row (sqlSignatures[].columns): `from` is "return", an out-parameter, or "ordinal" (the row's
+# 1-based ordinality); `field` reads a member of a struct element. The UDF returns
+# array<struct<columns>>, which `LATERAL VIEW inline` unfolds into the rows, or array<value>
+# for a single unnamed column, which `explode` unfolds. The struct layouts are the catalog's
+# (STRUCTS, filled in main), sized as ObjectLayerGenerator#structSize sizes them.
+STRUCTS = {}
+
+SCALAR_BYTES = {"bool": 1, "char": 1, "int8": 1, "int8_t": 1, "uint8": 1, "uint8_t": 1,
+                "short": 2, "int16": 2, "int16_t": 2, "uint16": 2, "uint16_t": 2,
+                "int": 4, "int32": 4, "int32_t": 4, "uint32": 4, "uint32_t": 4, "float": 4,
+                "Oid": 4, "DateADT": 4,
+                "long": 8, "int64": 8, "int64_t": 8, "uint64": 8, "uint64_t": 8, "double": 8,
+                "float8": 8, "Datum": 8, "Timestamp": 8, "TimestampTz": 8, "TimeADT": 8,
+                "size_t": 8, "uintptr_t": 8}
+
+
+def _size_align(ctype):
+    """(size, alignment) in bytes of a struct field's C type, or None when the catalog does
+    not state it: a scalar, a pointer, a fixed-size array or a nested catalog struct."""
+    c = norm(ctype)
+    if c.endswith("*"):
+        return 8, 8
+    if "[" in c:
+        b = _size_align(c[:c.index("[")])
+        return None if b is None else (b[0] * int(c[c.index("[") + 1:c.index("]")]), b[1])
+    if c in STRUCTS:
+        lay = struct_layout(c)
+        return None if lay is None else (lay[0], lay[1])
+    n = SCALAR_BYTES.get(c)
+    return None if n is None else (n, n)
+
+
+def struct_layout(name):
+    """(size, alignment, {field: (offset, ctype)}) of a catalog struct under the C layout rules
+    of the 64-bit targets the binding ships for, or None when a field's size is unknown."""
+    offset, widest, fields = 0, 1, {}
+    for f in STRUCTS[name].get("fields") or []:
+        sa = _size_align(f["cType"])
+        if sa is None:
+            return None
+        widest = max(widest, sa[1])
+        offset = (offset + sa[1] - 1) // sa[1] * sa[1]
+        fields[f["name"]] = (offset, norm(f["cType"]))
+        offset += sa[0]
+    return (offset + widest - 1) // widest * widest, widest, fields
+
+
+# Contiguous scalar elements: C type -> (Spark type, Java read of element `i` of array `a`).
+# A TimestampTz renders as MEOS writes it, as every TimestampTz result does (ret_emit);
+# a DateADT stays the day count, as a DateADT result does.
+ROW_SCALAR = {
+    "int":         ("IntegerType", "%s.getInt((long) %s * 4L)"),
+    "int32_t":     ("IntegerType", "%s.getInt((long) %s * 4L)"),
+    "int64_t":     ("LongType",    "%s.getLongLong((long) %s * 8L)"),
+    "uint64_t":    ("LongType",    "%s.getLongLong((long) %s * 8L)"),
+    "double":      ("DoubleType",  "%s.getDouble((long) %s * 8L)"),
+    "bool":        ("BooleanType", "(%s.getByte((long) %s) != 0)"),
+    "DateADT":     ("IntegerType", "%s.getInt((long) %s * 4L)"),
+    "TimestampTz": ("StringType",  "UdfMarshal.tsOut(utils.TimestampTzConverter.toOffsetDateTime("
+                                   "%s.getLongLong((long) %s * 8L)))"),
+}
+
+
+def row_column(f, col):
+    """How to read one column of a returned row: a dict with the Spark type, the Java read of
+    row `_i` from the array the column names (one %s), and whether each element is a MEOS
+    allocation to free; None when the column cannot be read."""
+    src = col["from"]
+    if src == "ordinal":
+        return {"src": "ordinal", "dt": "IntegerType", "read": "(_i + 1)", "free": False}
+    if "element" in col:            # the index pairs of the *Pairs kernels: tgeoarr's shape
+        return None
+    if src == "return":
+        arr = norm(f["returnType"]["canonical"])
+    else:
+        p = next((p for p in f["params"] if p["name"] == src), None)
+        if p is None or not norm(p["canonical"]).endswith("**"):
+            return None
+        arr = norm(p["canonical"])[:-1].strip()       # the array the out-parameter points to
+    if not arr.endswith("*"):
+        return None
+    elem = arr[:-1].strip()
+    if "field" in col:
+        lay = struct_layout(elem) if elem in STRUCTS else None
+        if lay is None or col["field"] not in lay[2]:
+            return None
+        off, ctype = lay[2][col["field"]]
+        if ctype not in ROW_SCALAR:
+            return None
+        at = "%%s.slice((long) _i * %dL + %dL)" % (lay[0], off)
+        return {"src": src, "dt": ROW_SCALAR[ctype][0], "free": False,
+                "read": ROW_SCALAR[ctype][1] % (at, "0")}
+    if elem.endswith("*"):                            # an array of pointers
+        b = elem[:-1].strip()
+        if b in SERIAL:
+            return {"src": src, "dt": SERIAL[b][0], "free": True,
+                    "read": SERIAL[b][1] % "%s.getPointer((long) _i * 8L)"}
+        if b == "text":
+            return {"src": src, "dt": "StringType", "free": True,
+                    "read": "GeneratedFunctions.text_out(%s.getPointer((long) _i * 8L))"}
+        return None
+    if elem in ROW_SCALAR:
+        return {"src": src, "dt": ROW_SCALAR[elem][0], "free": False,
+                "read": ROW_SCALAR[elem][1] % ("%s", "_i")}
+    if elem in SERIAL and elem in STRUCTS:            # contiguous structs: STBox, TBox
+        lay = struct_layout(elem)
+        if lay is None:
+            return None
+        return {"src": src, "dt": SERIAL[elem][0], "free": False,
+                "read": SERIAL[elem][1] % ("%%s.slice((long) _i * %dL)" % lay[0])}
+    return None
+
+
+def setret_shape(f, sig):
+    """The rows a set-returning signature of `f` returns, or None when they cannot be read: the
+    inputs (every parameter outside shape.outParams, each marshallable), the `int *count`
+    out-parameter, the out-parameters holding arrays, and one reader per column."""
+    outs = f.get("shape", {}).get("outParams", [])
+    params = f["params"]
+    ins = [p for p in params if p["name"] not in outs]
+    counts = [p for p in params if p["name"] in outs and norm(p["canonical"]) == "int *"
+              and "const" not in p["canonical"]]
+    if len(counts) != 1 or not ins or any(arg_kind(p["canonical"]) is None for p in ins):
+        return None
+    cols = sig.get("columns") or [{"name": None, "from": "return"}]
+    readers = []
+    for col in cols:
+        r = row_column(f, col)
+        if r is None:
+            return None
+        readers.append(dict(r, name=col["name"]))
+    arrays = [p["name"] for p in params if p["name"] in outs and p is not counts[0]]
+    if any(r["src"] not in ("return", "ordinal") and r["src"] not in arrays for r in readers):
+        return None
+    return {"ins": ins, "count": counts[0]["name"], "arrays": arrays, "cols": readers}
+
+
+def _row_dt(shape):
+    """The Spark type of one returned row: the value of a single unnamed column, else a struct
+    of the named columns."""
+    cols = shape["cols"]
+    if len(cols) == 1 and cols[0]["name"] is None:
+        return "DataTypes.%s" % cols[0]["dt"]
+    fields = ", ".join('DataTypes.createStructField("%s", DataTypes.%s, true)'
+                       % (c["name"], c["dt"]) for c in cols)
+    return ("DataTypes.createStructType(new org.apache.spark.sql.types.StructField[]{%s})"
+            % fields)
+
+
+def _setret_key(shape):
+    """What two overloads must share to answer one Spark UDF, as #_sig is for the @sqlfn pass:
+    the kinds of their inputs and the Spark types of their columns (the column names follow the
+    group, see #emit_setret)."""
+    return (tuple(arg_kind(p["canonical"]) for p in shape["ins"]),
+            tuple(c["dt"] for c in shape["cols"]),
+            len(shape["cols"]) == 1 and shape["cols"][0]["name"] is None)
+
+
+def emit_setret(name, cands, colnames):
+    """Emit a Spark UDF returning the rows of a set-returning signature as an array, its columns
+    named `colnames`. `cands` are the (C function, shape) overloads sharing one #_setret_key,
+    tried in turn as #emit_dispatch tries its overloads: a typed overload first, its receiver
+    read through the reader that checks its WKB type byte (#_argkinds), and the first whose
+    every input reads is called. The inputs marshal as in #emit_scalar_values; then one cell
+    per array out-parameter and the count are allocated, `count` rows are read column by
+    column, and each element MEOS allocated, each array, and the inputs are freed."""
+    rep = cands[0][1]
+    argnames = [_javaid(p["name"] or ("a%d" % i)) for i, p in enumerate(rep["ins"])]
+    argboxes = []
+    for p in rep["ins"]:
+        k = arg_kind(p["canonical"])
+        argboxes.append({"ptr": "Object", "ts": "Object",
+                         "scalar": k[2] if k[0] == "scalar" else "String"}[k[0]])
+    single = len(rep["cols"]) == 1 and rep["cols"][0]["name"] is None
+    elem = "Object" if single else "org.apache.spark.sql.Row"
+    iface = "UDF%d<%s, java.util.List<%s>>" % (len(argnames), ", ".join(argboxes), elem)
+    L = ['        spark.udf().register("%s", (%s) (%s) -> {' % (name, iface, ", ".join(argnames))]
+    L.append("        if (" + " || ".join("%s == null" % a for a in argnames) + ") return null;")
+    order = sorted(cands, key=lambda fs: (0 if _expected_temptype(fs[0]) else 1, fs[0]["name"]))
+    for f, shape in order:
+        t = _expected_temptype(f) if len(cands) > 1 else None
+        L.append("        {")
+        callargs, ptrs = [], []
+        for a, p in zip(argnames, shape["ins"]):
+            k = arg_kind(p["canonical"])
+            if k[0] == "ptr" and t is not None and k[2] == "K_TEMPORAL" and not ptrs:
+                k = ("ptr", "UdfMarshal.tFromOf(%%s, %d)" % TEMPTYPE_CODE[t], k[2])
+            if k[0] == "ptr":
+                L.append("        jnr.ffi.Pointer p_%s = %s;" % (a, k[1] % a))
+                callargs.append("p_%s" % a); ptrs.append("p_%s" % a)
+            elif k[0] == "ts":
+                callargs.append("UdfMarshal.tsOdt(%s)" % a)
+            else:
+                callargs.append(a)
+        L.append("        if (%s) {" % (" && ".join("%s != null" % p for p in ptrs) or "true"))
+        L.append("        jnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();")
+        cells = {}
+        for p in f["params"]:
+            if p["name"] in shape["arrays"]:
+                cells[p["name"]] = "_o_%s" % _javaid(p["name"])
+                L.append("        jnr.ffi.Pointer %s = jnr.ffi.Memory.allocateDirect(_rt, 8, true);"
+                         % cells[p["name"]])
+                callargs.append(cells[p["name"]])
+            elif p["name"] == shape["count"]:
+                L.append("        jnr.ffi.Pointer _cnt = "
+                         "jnr.ffi.Memory.allocateDirect(_rt, 4, true);")
+                callargs.append("_cnt")
+        L.append("        jnr.ffi.Pointer _ret = null;")
+        L.append("        int _c = 0;")
+        L.append("        try {")
+        L.append("            _ret = GeneratedFunctions.%s(%s);" % (f["name"], ", ".join(callargs)))
+        L.append("            if (_ret == null) return null;")
+        L.append("            _c = _cnt.getInt(0L);")
+        arrvar = {"return": "_ret"}
+        for n, cell in cells.items():
+            arrvar[n] = "%s.getPointer(0L)" % cell
+        reads = [c["read"] if c["src"] == "ordinal" else c["read"] % arrvar[c["src"]]
+                 for c in shape["cols"]]
+        L.append("            java.util.List<%s> _rows = new java.util.ArrayList<>(_c);" % elem)
+        L.append("            for (int _i = 0; _i < _c; _i++)")
+        L.append("                _rows.add(%s);" % (reads[0] if single else
+                 "org.apache.spark.sql.RowFactory.create(%s)" % ", ".join(reads)))
+        L.append("            return _rows;")
+        L.append("        } finally {")
+        for c in shape["cols"]:
+            if c["free"]:
+                v = arrvar[c["src"]]
+                L.append("            if (%s != null) for (int _i = 0; _i < _c; _i++) "
+                         "MeosMemory.free(%s.getPointer((long) _i * 8L));" % (v, v))
+        for cell in cells.values():
+            L.append("            MeosMemory.free(%s.getPointer(0L));" % cell)
+        L.append("            MeosMemory.free(_ret);")
+        for p in ptrs:
+            L.append("            MeosMemory.free(%s);" % p)
+        L.append("        }")
+        L.append("        }")
+        for p in ptrs:
+            L.append("        MeosMemory.free(%s);" % p)
+        L.append("        }")
+    L.append("        return null;")
+    named = [dict(c, name=None if n in (None, "None") else n)
+             for c, n in zip(rep["cols"], colnames)]
+    L.append("        }, DataTypes.createArrayType(%s));" % _row_dt(dict(rep, cols=named)))
+    return "\n".join(L)
+
+
 GEN_NOTE = "// GENERATED by tools/codegen_spark_udfs.py from the MEOS-API catalog. DO NOT EDIT.\n"
 IMPORTS = """\
 package org.mobilitydb.spark.generated;
@@ -1518,6 +1768,62 @@ def main():
         cov += 1
         nval += 1
     print("  scalar-value array UDFs           : %d" % nval, file=sys.stderr)
+
+    # ── set-returning pass: each SQL signature returning a set of rows, as an array ──
+    # A function is reached under its C name, its columns named as most of its signatures name
+    # them. A SQL name is registered when its overloads share one input and row signature
+    # (_setret_key), since a Spark UDF has one signature: the UDF tries each overload, a typed
+    # one first. A SQL name whose overloads need different signatures (valueSplit's int,
+    # double and bigint bins) stays unregistered, each overload reachable under its C name.
+    STRUCTS.update({s["name"]: s for s in cat.get("structs") or []})
+    setret, nset_c, nset_sql = {}, 0, 0
+    for f in fns:
+        nm = f["name"]
+        if jar_syms is not None and nm not in jar_syms:
+            continue
+        if (f.get("group") or "").startswith("meos_internal"):
+            continue
+        if nm in JSIG and JSIG[nm][1] != len(f["params"]):
+            continue
+        for sig in f.get("sqlSignatures") or []:
+            if not sig.get("retSet"):
+                continue
+            shape = setret_shape(f, sig)
+            if shape is not None:
+                setret.setdefault(sig.get("sqlName") or f.get("sqlfn"), []).append((f, shape))
+    by_fn = {}
+    for sname, cands in setret.items():
+        for f, shape in cands:
+            by_fn.setdefault(f["name"], []).append((f, shape))
+    for nm in sorted(by_fn):
+        if nm in names:
+            continue
+        cols = collections.Counter(tuple(str(c["name"]) for c in s["cols"]) for _, s in by_fn[nm])
+        f, shape = by_fn[nm][0]
+        grouped.setdefault(class_for(f.get("group")), []).append(
+            emit_setret(nm, [(f, shape)], min(cols, key=lambda k: (-cols[k], k))))
+        names.add(nm)
+        cov += 1
+        nset_c += 1
+    set_left = []
+    for sname in sorted(n for n in setret if n):
+        if sname in names:
+            continue
+        if len({_setret_key(s) for _, s in setret[sname]}) != 1:
+            set_left.append(sname)
+            continue
+        one = {}
+        for f, shape in setret[sname]:
+            one.setdefault(f["name"], (f, shape))
+        cols = collections.Counter(tuple(str(c["name"]) for c in s["cols"])
+                                   for _, s in setret[sname])
+        grouped.setdefault("GeneratedUdfs_sqlfn", []).append(
+            emit_setret(sname, list(one.values()), min(cols, key=lambda k: (-cols[k], k))))
+        names.add(sname)
+        nset_sql += 1
+    print("  set-returning UDFs                : %d C names, %d SQL names "
+          "(left to C names, several signatures: %s)"
+          % (nset_c, nset_sql, ", ".join(set_left) or "none"), file=sys.stderr)
 
     # ── @sqlfn CANONICAL-NAME pass: emit the MobilityDB SQL surface ──
     # Every catalog function carries the canonical MobilityDB SQL spelling in its
