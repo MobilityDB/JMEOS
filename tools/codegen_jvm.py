@@ -390,25 +390,15 @@ public final class MeosOpsRuntime {{
      * meos_initialize_allocator, whose default is libc malloc, so a returned
      * pointer is a libc-heap pointer that the system free accepts.  A JNR Pointer
      * is a raw address the Java GC does not track, so every owned return is freed
-     * explicitly.  Unsafe.freeMemory calls that system free; loading libc through
-     * LibraryLoader instead hits classloader-boundary trouble inside the engines. */
-    private static final sun.misc.Unsafe UNSAFE;
-
-    static {{
-        try {{
-            java.lang.reflect.Field f =
-                    sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            UNSAFE = (sun.misc.Unsafe) f.get(null);
-        }} catch (ReflectiveOperationException e) {{
-            throw new ExceptionInInitializerError(e);
-        }}
-    }}
+     * explicitly.  jffi's MemoryIO.freeMemory calls that system free; jffi is the
+     * native layer jnr-ffi runs on, so it shares the classloader of every MEOS call
+     * inside the engines and needs no internal JDK API. */
+    private static final com.kenai.jffi.MemoryIO IO = com.kenai.jffi.MemoryIO.getInstance();
 
     /** Free a native pointer owned by the caller.  Null-safe. */
     public static void free(jnr.ffi.Pointer p) {{
         if (p != null) {{
-            UNSAFE.freeMemory(p.address());
+            IO.freeMemory(p.address());
         }}
     }}
 
@@ -1321,17 +1311,9 @@ public final class MeosSqlRuntime {{
     private static final jnr.ffi.Runtime RUNTIME = jnr.ffi.Runtime.getSystemRuntime();
     private static final String NULL_ELEMENT = "null array element not allowed in this context";
 
-    private static final sun.misc.Unsafe UNSAFE;
-
-    static {{
-        try {{
-            java.lang.reflect.Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            UNSAFE = (sun.misc.Unsafe) f.get(null);
-        }} catch (ReflectiveOperationException e) {{
-            throw new ExceptionInInitializerError(e);
-        }}
-    }}
+    /** jffi's MemoryIO frees through the system free, which MEOS allocates with; jffi is the
+     * native layer jnr-ffi runs on and needs no internal JDK API. */
+    private static final com.kenai.jffi.MemoryIO IO = com.kenai.jffi.MemoryIO.getInstance();
 
     private static final ThreadLocal<Boolean> ISO_INTERVALS = ThreadLocal.withInitial(() -> {{
         GeneratedFunctions.meos_set_intervalstyle("iso_8601", 0);
@@ -1363,7 +1345,7 @@ public final class MeosSqlRuntime {{
     public static void free(Pointer[] ps) {{
         for (Pointer p : ps) {{
             if (p != null) {{
-                UNSAFE.freeMemory(p.address());
+                IO.freeMemory(p.address());
             }}
         }}
     }}
@@ -1371,7 +1353,7 @@ public final class MeosSqlRuntime {{
     /** Free a value MEOS allocated.  Null-safe. */
     public static void free(Pointer p) {{
         if (p != null) {{
-            UNSAFE.freeMemory(p.address());
+            IO.freeMemory(p.address());
         }}
     }}
 
@@ -1402,13 +1384,13 @@ public final class MeosSqlRuntime {{
                 return;
             }}
         }}
-        UNSAFE.freeMemory(r.address());
+        IO.freeMemory(r.address());
     }}
 
     /** Free a result unless it is one of the inputs, which the caller frees. */
     public static void freeResult(Pointer r, Inputs in) {{
         if (!in.holds(r)) {{
-            UNSAFE.freeMemory(r.address());
+            IO.freeMemory(r.address());
         }}
     }}
 
@@ -1463,7 +1445,7 @@ public final class MeosSqlRuntime {{
         public void free() {{
             for (int i = 0; i < n; i++) {{
                 if (owned[i] != null) {{
-                    UNSAFE.freeMemory(owned[i].address());
+                    IO.freeMemory(owned[i].address());
                 }}
             }}
             n = 0;
