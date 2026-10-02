@@ -105,7 +105,6 @@ ge_timestamp_date	arg:Timestamp
 ge_timestamp_timestamp	arg:Timestamp
 ge_timestamp_timestamptz	arg:Timestamp
 ge_timestamptz_timestamp	arg:Timestamp
-geo_affine	no-decoder:AFFINE
 geo_as_ewkb	array-or-out-param:size; unsupported-return:uint8_t *
 geo_cluster_dbscan	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:uint32_t *
 geo_cluster_intersecting	array-or-out-param:geoms
@@ -514,7 +513,6 @@ tfloatseq_from_base_tstzspan	internal
 tfloatseqset_from_base_tstzspanset	internal
 tge_text_ttext	internal
 tge_ttext_text	internal
-tgeo_affine	no-decoder:AFFINE
 tgeo_space_boxes	array-or-out-param:count
 tgeo_space_time_boxes	array-or-out-param:count
 tgeo_split_each_n_stboxes	array-or-out-param:count
@@ -699,6 +697,10 @@ tposechain_from_base_temp	arg:PoseChain *
 tposechain_unnest	array-or-out-param:values
 tposechain_values	internal
 tposechainarr_as_geopose	internal
+tposechaininst_make	arg:PoseChain *
+tposechainseq_from_base_tstzset	arg:PoseChain *
+tposechainseq_from_base_tstzspan	arg:PoseChain *
+tposechainseqset_from_base_tstzspanset	arg:PoseChain *
 tposeseq_from_base_tstzspan	internal
 tposeseqset_from_base_tstzspanset	internal
 tquadbin_value_at_timestamptz	arg:uint64_t *
