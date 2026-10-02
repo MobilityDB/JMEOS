@@ -149,8 +149,11 @@ SCALAR_RET = {
     "uint64_t": ("LongType",    "%s"),
     "DateADT":  ("IntegerType", "%s"),
     "char *":   ("StringType",  "%s"),     # cstring already a Java String via jnr
-    "text *":   ("StringType",  "GeneratedFunctions.text_out(%s)"),
 }
+# A text result is a MEOS allocation the jar returns as a Pointer: text_out copies it into the
+# String Spark answers and the pointer path of #emit_single frees it after, as a value it
+# serializes (#ret_emit).
+TEXT_RET = ("StringType", "GeneratedFunctions.text_out(%s)")
 # operators whose int (1/0/-1) result is a tri-state predicate -> BooleanType ==1
 PRED_OPS = {"?=", "?<>", "?<", "?<=", "?>", "?>=",
             "%=", "%<>", "%<", "%<=", "%>", "%>=",
@@ -247,6 +250,8 @@ def ret_emit(canon, sqlop):
     b = base(t)
     if b in SERIAL and t.endswith("*"):
         return ("ptr",) + SERIAL[b]
+    if t == "text *":
+        return ("ptr",) + TEXT_RET
     if b == "TimestampTz":            # JMEOS maps TimestampTz -> OffsetDateTime
         return ("dt", "StringType", "UdfMarshal.tsOut(%s)")
     if t in INT32 or b in INT32:
