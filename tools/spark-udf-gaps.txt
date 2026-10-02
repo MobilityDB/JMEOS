@@ -138,6 +138,7 @@ index_result_create	no-encoder:MeosArray
 index_result_id	no-decoder:MeosArray; array-or-out-param:id
 int32_hash	ret:uint32_t
 int64_hash	ret:uint32_t
+interptype_from_string	internal
 intersection_posechain_set	arg:PoseChain *
 intersection_set_posechain	arg:PoseChain *
 intersection_set_text	internal
@@ -603,6 +604,7 @@ tjsonb_extract_path	array-or-out-param:path_elems
 tjsonb_insert	array-or-out-param:keys
 tjsonb_object_field	internal
 tjsonb_set	array-or-out-param:keys
+tjsonb_to_tbigint	arg:nullHandleType
 tjsonb_to_tbool	arg:nullHandleType
 tjsonb_to_tfloat	internal
 tjsonb_to_tint	arg:nullHandleType
