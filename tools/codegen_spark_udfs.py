@@ -531,6 +531,21 @@ def _sqlsig(f):
     return (tuple(sig[0][:len(_visparams(f))]), sig[1])
 
 
+def _merges(sig, rep):
+    """Whether the overloads of _sqlsig `sig` join those of `rep` in one UDF, the shape test
+    beside #_dispatchable, which then admits the overloads of the merged group.
+
+    Spark keeps one registration per name and a Java UDF one interface, but a position may
+    take Object: a pointer value is told apart by its type-checked reader, which answers null
+    for a value of another class (UdfMarshal.read), and a scalar by its Java class, so two
+    overloads of one arity and one result whose classes differ at a position meet in one UDF
+    over Object there (th3index over a temporal point and an integer, and over a cell and a
+    time value). A timestamp position is read by UdfMarshal.tsOdt, which tells no class apart,
+    so a position where one of them takes a timestamp keeps the shapes apart."""
+    return (len(sig[0]) == len(rep[0]) and sig[1] == rep[1]
+            and all(a == b or "T" not in (a, b) for a, b in zip(sig[0], rep[0])))
+
+
 def _safe_dispatch(f):
     """A function is safely arg-kind-dispatchable only if every pointer arg parses via a
     type-safe WKB reader (UdfMarshal.tFrom and its siblings, which check the WKB type and
@@ -650,7 +665,11 @@ def emit_dispatch(name, cands, vis_arity=None):
             slots = slots[:vis]
             n = vis
     argnames = ["a%d" % i for i in range(n)]
-    argboxes = [("Object" if s in ("P", "T") else s) for s in slots]
+    # A position whose class the overloads disagree on takes Object, and each overload
+    # reads a scalar there only from a value of its own class (#_merges).
+    shapes = [_sig(f)[0][:n] for f in cands]
+    mixed = {i for i in range(n) if len({s[i] for s in shapes}) > 1}
+    argboxes = [("Object" if s in ("P", "T") or i in mixed else s) for i, s in enumerate(slots)]
     ret_kind, ret_dt, ret_ser = ret
     box = _RETBOX[ret_dt]
     iface = "UDF%d<%s, %s>" % (n, ", ".join(argboxes), box) if n else "UDF0<%s>" % box
@@ -668,9 +687,9 @@ def emit_dispatch(name, cands, vis_arity=None):
     for f in sorted(cands, key=permissiveness):
         cps = classify(f)[0]
         ks = _argkinds(f)
-        callargs, ptrs = [], []
+        callargs, ptrs, classes = [], [], []
         L.append("        {")
-        for a, k in zip(argnames, ks):
+        for i, (a, k) in enumerate(zip(argnames, ks)):
             if k[0] == "ptr":
                 pv = "P_%s" % a
                 L.append("          jnr.ffi.Pointer %s = %s;" % (pv, k[1] % a))
@@ -678,6 +697,9 @@ def emit_dispatch(name, cands, vis_arity=None):
             elif k[0] == "ts":
                 L.append("          java.time.OffsetDateTime D_%s = UdfMarshal.tsOdt(%s);" % (a, a))
                 callargs.append("D_%s" % a)
+            elif i in mixed:
+                classes.append("%s instanceof %s" % (a, k[2]))
+                callargs.append("((%s) %s)" % (k[2], a))
             else:
                 callargs.append(a)
         # SQL-hidden trailing flags get the wrapper-bound literal (shape.boundArgs) or the
@@ -685,7 +707,7 @@ def emit_dispatch(name, cands, vis_arity=None):
         # candidate's remaining params are the flags).
         for p in cps[vis:]:
             callargs.append(hidden_arg(f, p, vis, name))
-        cond = " && ".join("%s != null" % p for p in ptrs) if ptrs else "true"
+        cond = " && ".join(classes + ["%s != null" % p for p in ptrs]) or "true"
         free = " ".join("MeosMemory.free(%s);" % p for p in ptrs)
         call = "GeneratedFunctions.%s(%s)" % (f["name"], ", ".join(callargs))
         L.append("          if (%s) {" % cond)
@@ -1907,6 +1929,10 @@ def main():
         own = lambda g: [pos[id(f)] for f in g if f.get("sqlfn") == sname]
         group = max(bysig.values(),
                     key=lambda g: (len(own(g)), -min(own(g))) if own(g) else (0, len(g)))
+        # The shapes the chosen one meets in one UDF answer under the name too (#_merges).
+        rsig = _sqlsig(group[0])
+        group = group + [f for sig, g in bysig.items() if g is not group and _merges(sig, rsig)
+                         for f in g]
         # A multi-overload @sqlfn needs a runtime parse dispatcher, which is only sound
         # when the overloads discriminate via WKB / WKT — drop an overload whose text-*_in
         # argument (stbox/tbox/cbuffer/npoint/pose) sits where the overloads differ, so e.g.
