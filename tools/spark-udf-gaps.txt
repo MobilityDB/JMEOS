@@ -34,7 +34,6 @@ bigintset_make	array-or-out-param:values
 bigintspan_bins	array-or-out-param:count
 bigintspanset_bins	array-or-out-param:count
 bool_hash	ret:uint32_t
-bool_to_text	ret:jmeos-kind-mismatch
 box3d_in	internal
 box3d_make	internal
 box3d_out	internal
@@ -59,7 +58,6 @@ contains_set_text	internal
 contains_tpcbox_tpcbox	arg:TPCBox *
 contains_tpcbox_tpointcloud	arg:TPCBox *
 contains_tpointcloud_tpcbox	arg:TPCBox *
-cstring_to_text	ret:jmeos-kind-mismatch
 date_extract	internal
 date_hash	ret:uint32_t
 date_time_to_timestamp	ret:Timestamp
@@ -162,7 +160,6 @@ json_each	array-or-out-param:values; array-or-out-param:count; unsupported-retur
 json_each_text	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
 json_extract_path	array-or-out-param:path_elems
 json_extract_path_text	array-or-out-param:path_elems
-json_in	ret:jmeos-kind-mismatch
 json_make	array-or-out-param:keys_vals
 json_make_two_arg	array-or-out-param:keys; array-or-out-param:values
 json_object_field	internal
@@ -171,7 +168,6 @@ json_object_keys	array-or-out-param:count; unsupported-return:text **
 json_out	internal
 json_strip_nulls	internal
 json_typeof	internal
-jsonb_array_element_text	ret:jmeos-kind-mismatch
 jsonb_array_elements	internal
 jsonb_array_elements_text	array-or-out-param:count; unsupported-return:text **
 jsonb_delete	internal
@@ -192,12 +188,10 @@ jsonb_object_field	internal
 jsonb_object_field_text	internal
 jsonb_object_keys	array-or-out-param:count; unsupported-return:text **
 jsonb_path_query_all	internal
-jsonb_pretty	ret:jmeos-kind-mismatch
 jsonb_set	array-or-out-param:path_elems
 jsonb_set_lax	array-or-out-param:path_elems
 jsonb_to_float4	ret:float
 jsonb_to_int16	ret:int16_t
-jsonb_to_text	ret:jmeos-kind-mismatch
 jsonbset_array_element	arg:nullHandleType
 jsonbset_delete	internal
 jsonbset_delete_array	array-or-out-param:keys
@@ -480,7 +474,6 @@ text_ge	internal
 text_gt	internal
 text_hash	no-decoder:Oid
 text_hash_extended	no-decoder:Oid
-text_in	ret:jmeos-kind-mismatch
 text_initcap	internal
 text_le	internal
 text_lower	internal
@@ -498,9 +491,7 @@ textcat_text_textset	internal
 textcat_text_ttext	internal
 textcat_textset_text	internal
 textcat_ttext_text	internal
-textset_end_value	ret:jmeos-kind-mismatch
 textset_make	array-or-out-param:values
-textset_start_value	ret:jmeos-kind-mismatch
 textset_value_n	array-or-out-param:result
 tfloat_time_boxes	array-or-out-param:count
 tfloat_value_bins	array-or-out-param:count
@@ -548,7 +539,6 @@ time_le	arg:TimeADT
 time_lt	arg:TimeADT
 time_make	ret:TimeADT
 time_ne	arg:TimeADT
-time_of_day	ret:jmeos-kind-mismatch
 time_out	arg:TimeADT
 time_overlaps	arg:TimeADT
 time_part	arg:TimeADT
@@ -739,12 +729,8 @@ tstzspanset_bins	array-or-out-param:count
 tstzspanset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
 tstzspanset_timestamptz_n	arg:TimestampTz *
 ttext_at_value	internal
-ttext_end_value	ret:jmeos-kind-mismatch
 ttext_from_base_temp	internal
-ttext_max_value	ret:jmeos-kind-mismatch
-ttext_min_value	ret:jmeos-kind-mismatch
 ttext_minus_value	internal
-ttext_start_value	ret:jmeos-kind-mismatch
 ttext_value_at_timestamptz	array-or-out-param:value
 ttext_value_n	array-or-out-param:result
 ttext_values	array-or-out-param:count; unsupported-return:text **

@@ -781,6 +781,14 @@ def _ret(m, sql, f, jt, outs):
                 ['if (_r == null) return null;',
                  f'try {{ return {SQL_PKG}.types.{vc}.encode(_r); }}',
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
+    if sql in ('text', 'cstring') and jt == 'jnr.ffi.Pointer' and rc == 'text *' \
+            and 'text_out' in m.jmeos:
+        # A text MEOS allocates, read into a String through text_out and freed after, as the
+        # Spark arm reads it (#ret_emit in codegen_spark_udfs.py).
+        return ('String',
+                ['if (_r == null) return null;',
+                 'try { return GeneratedFunctions.text_out(_r); }',
+                 'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql == 'interval' and jt == 'jnr.ffi.Pointer':
         return ('java.time.Duration',
                 ['if (_r == null) return null;',
