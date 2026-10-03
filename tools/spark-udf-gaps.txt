@@ -138,7 +138,6 @@ index_result_create	no-encoder:MeosArray
 index_result_id	no-decoder:MeosArray; array-or-out-param:id
 int32_hash	ret:uint32_t
 int64_hash	ret:uint32_t
-interptype_from_string	internal
 intersection_posechain_set	arg:PoseChain *
 intersection_set_posechain	arg:PoseChain *
 intersection_set_text	internal
@@ -193,7 +192,6 @@ jsonb_set	array-or-out-param:path_elems
 jsonb_set_lax	array-or-out-param:path_elems
 jsonb_to_float4	ret:float
 jsonb_to_int16	ret:int16_t
-jsonbset_array_element	arg:nullHandleType
 jsonbset_delete	internal
 jsonbset_delete_array	array-or-out-param:keys
 jsonbset_delete_path	array-or-out-param:path_elems
@@ -207,10 +205,6 @@ jsonbset_path_exists	array-or-out-param:count; unsupported-return:bool *
 jsonbset_path_match	array-or-out-param:count; unsupported-return:bool *
 jsonbset_set	array-or-out-param:keys
 jsonbset_to_alphanumset	internal
-jsonbset_to_bigintset	arg:nullHandleType
-jsonbset_to_floatset	arg:nullHandleType
-jsonbset_to_intset	arg:nullHandleType
-jsonbset_to_textset_key	arg:nullHandleType
 jsonbset_value_n	internal
 le_date_timestamp	arg:Timestamp
 le_timestamp_date	arg:Timestamp
@@ -243,7 +237,6 @@ ne_timestamptz_timestamp	arg:Timestamp
 npoint_hash	ret:uint32_t
 npointset_make	internal
 npointset_value_n	internal
-null_handle_type_from_string	ret:nullHandleType
 overabove_tpcbox_tpcbox	arg:TPCBox *
 overafter_tpcbox_tpcbox	arg:TPCBox *
 overback_tpcbox_tpcbox	arg:TPCBox *
@@ -446,25 +439,18 @@ tbox_tmin	arg:TimestampTz *
 tcbuffer_value_at_timestamptz	internal
 tcbuffer_value_n	internal
 tcbuffer_values	internal
-tcbufferseq_from_base_tstzspan	internal
-tcbufferseqset_from_base_tstzspanset	internal
 temparr_round	unsupported-return:Temporal **
-temporal_append_tinstant	internal
-temporal_as_tsequence	internal
-temporal_as_tsequenceset	internal
 temporal_hash	ret:uint32_t
 temporal_instants	internal
 temporal_merge_array	internal
 temporal_segments	internal
 temporal_sequences	internal
-temporal_set_interp	internal
 temporal_spans	array-or-out-param:count
 temporal_split_each_n_spans	array-or-out-param:count
 temporal_split_n_spans	array-or-out-param:count
 temporal_time_bins	array-or-out-param:count
 temporal_timestamps	array-or-out-param:count
 temporal_timestamptz_n	arg:TimestampTz *
-temporal_tsample	internal
 teq_posechain_tposechain	arg:PoseChain *
 teq_text_ttext	internal
 teq_tposechain_posechain	arg:PoseChain *
@@ -501,8 +487,6 @@ tfloat_value_time_boxes	array-or-out-param:count
 tfloat_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
-tfloatseq_from_base_tstzspan	internal
-tfloatseqset_from_base_tstzspanset	internal
 tge_text_ttext	internal
 tge_ttext_text	internal
 tgeo_space_boxes	array-or-out-param:count
@@ -519,8 +503,6 @@ tgeogpoint_s2cell_split	array-or-out-param:cells
 tgeompoint_h3index_split	array-or-out-param:cells
 tgeompoint_quadbin_split	array-or-out-param:cells
 tgeompoint_s2cell_split	array-or-out-param:cells
-tgeoseq_from_base_tstzspan	internal
-tgeoseqset_from_base_tstzspanset	internal
 tgt_text_ttext	internal
 tgt_ttext_text	internal
 th3index_value_at_timestamptz	arg:uint64_t *
@@ -589,10 +571,8 @@ tint_value_time_boxes	array-or-out-param:count
 tint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
-tjson_array_element	arg:nullHandleType
 tjson_extract_path	array-or-out-param:path_elems
 tjson_object_field	internal
-tjsonb_array_element	arg:nullHandleType
 tjsonb_delete	internal
 tjsonb_delete_array	array-or-out-param:keys
 tjsonb_delete_path	array-or-out-param:path_elems
@@ -604,11 +584,6 @@ tjsonb_extract_path	array-or-out-param:path_elems
 tjsonb_insert	array-or-out-param:keys
 tjsonb_object_field	internal
 tjsonb_set	array-or-out-param:keys
-tjsonb_to_tbigint	arg:nullHandleType
-tjsonb_to_tbool	arg:nullHandleType
-tjsonb_to_tfloat	internal
-tjsonb_to_tint	arg:nullHandleType
-tjsonb_to_ttext_key	arg:nullHandleType
 tjsonb_value_at_timestamptz	internal
 tjsonb_value_n	internal
 tjsonb_values	internal
@@ -625,8 +600,6 @@ tnpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tnpoint_value_at_timestamptz	internal
 tnpoint_value_n	internal
 tnpoint_values	internal
-tnpointseq_from_base_tstzspan	internal
-tnpointseqset_from_base_tstzspanset	internal
 tnumber_split_each_n_tboxes	array-or-out-param:count
 tnumber_split_n_tboxes	array-or-out-param:count
 tnumber_tavg_combinefn	no-decoder:SkipList; no-encoder:SkipList
@@ -679,9 +652,7 @@ tpoint_make_simple	internal
 tpoint_tcentroid_finalfn	no-decoder:SkipList
 tpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpoint_tfloat_to_geomeas	internal
-tpointseq_from_base_tstzspan	internal
 tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords
-tpointseqset_from_base_tstzspanset	internal
 tpose_value_at_timestamptz	internal
 tpose_value_n	internal
 tpose_values	internal
@@ -693,18 +664,14 @@ tposechaininst_make	arg:PoseChain *
 tposechainseq_from_base_tstzset	arg:PoseChain *
 tposechainseq_from_base_tstzspan	arg:PoseChain *
 tposechainseqset_from_base_tstzspanset	arg:PoseChain *
-tposeseq_from_base_tstzspan	internal
-tposeseqset_from_base_tstzspanset	internal
 tquadbin_value_at_timestamptz	arg:uint64_t *
 tquadbin_value_n	arg:uint64_t *
 tquadbinseq_make	array-or-out-param:values
 tquadbinseqset_make	array-or-out-param:sequences
-trgeometry_append_tinstant	internal
 trgeometry_instants	internal
 trgeometry_merge_array	internal
 trgeometry_segments	internal
 trgeometry_sequences	internal
-trgeometry_set_interp	internal
 trgeometry_space_boxes	array-or-out-param:count
 trgeometry_space_time_boxes	array-or-out-param:count
 trgeometry_split_each_n_stboxes	array-or-out-param:count

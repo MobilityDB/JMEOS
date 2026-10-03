@@ -202,6 +202,9 @@ def arg_kind(canon):
         return ("ts",)
     if b in PARSE:
         return ("ptr",) + PARSE[b]
+    # An enum the catalog reads from its name: the SQL text is parsed into the int JMEOS takes.
+    if b in ENUM_PARSER and "*" not in nc:
+        return ("scalar", "StringType", "String", "GeneratedFunctions.%s(%%s)" % ENUM_PARSER[b])
     # scalar ONLY when not a pointer: int* / DateADT* are arrays/out-params, not ints.
     if b in SCALAR_ARG and "*" not in nc:
         return ("scalar",) + SCALAR_ARG[b]
@@ -452,7 +455,7 @@ def emit_single(name, f, vis_arity=None):
             L.append(f"        java.time.OffsetDateTime dt_{a} = UdfMarshal.tsOdt({a});")
             callargs.append(f"dt_{a}")
         else:
-            callargs.append(a)
+            callargs.append(k[3] % a)
     # supply the wrapper-bound literal (shape.boundArgs) — or the generic type default —
     # for the SQL-hidden trailing flags (sqlArity..C-arity)
     for p in hidden:
@@ -607,6 +610,10 @@ def _famrank(f):
 # that concrete temporal type, so the dispatcher can tell it apart from a sibling overload
 # by the WKB type byte instead of guessing.
 TEMPTYPE_CODE = {}
+# For each C enum, the public catalog function reading it from its name, so an enum argument
+# travels as the text its SQL function takes. The rule is the Flink arm's, SqlModel._enum_parsers
+# in codegen_jvm.py, read from the public functions alone, as #supported admits only those.
+ENUM_PARSER = {}
 # The value of each macro and enum member the catalog states, which is what a bound
 # literal or SQL default naming one passes. Filled from the catalog before any emit pass.
 CONST = {}
@@ -699,9 +706,9 @@ def emit_dispatch(name, cands, vis_arity=None):
                 callargs.append("D_%s" % a)
             elif i in mixed:
                 classes.append("%s instanceof %s" % (a, k[2]))
-                callargs.append("((%s) %s)" % (k[2], a))
+                callargs.append(k[3] % ("((%s) %s)" % (k[2], a)))
             else:
-                callargs.append(a)
+                callargs.append(k[3] % a)
         # SQL-hidden trailing flags get the wrapper-bound literal (shape.boundArgs) or the
         # generic default (zip above paired only the first `vis` exposed args; the
         # candidate's remaining params are the flags).
@@ -903,7 +910,7 @@ def emit_scalar_values(name, f, shape):
             L.append("        java.time.OffsetDateTime dt_%s = UdfMarshal.tsOdt(%s);" % (a, a))
             callargs.append("dt_%s" % a)
         else:
-            callargs.append(a)
+            callargs.append(k[3] % a)
     L.append("        jnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();")
     L.append("        jnr.ffi.Pointer _cnt = jnr.ffi.Memory.allocateDirect(_rt, 4);")
     callargs.append("_cnt")
@@ -1116,7 +1123,7 @@ def emit_setret(name, cands, colnames):
             elif k[0] == "ts":
                 callargs.append("UdfMarshal.tsOdt(%s)" % a)
             else:
-                callargs.append(a)
+                callargs.append(k[3] % a)
         L.append("        if (%s) {" % (" && ".join("%s != null" % p for p in ptrs) or "true"))
         L.append("        jnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();")
         cells = {}
@@ -1661,6 +1668,15 @@ def main():
                            0 if not jargs else len(jargs.split(",")))
     # The codec each value travels in, from the catalog, before any emit pass reads it.
     derive_codecs(cat, lambda n: bool(n) and (jar_syms is None or n in jar_syms))
+    # The public parser of each enum the catalog states, before any emit pass reads it.
+    enums = {e["name"] for e in cat.get("enums", [])}
+    for f in fns:
+        ps = f["params"]
+        rt = norm(f["returnType"]["canonical"])
+        if (rt in enums and len(ps) == 1 and norm(ps[0]["canonical"]) == "char *"
+                and f.get("api") == "public"
+                and (jar_syms is None or f["name"] in jar_syms)):
+            ENUM_PARSER.setdefault(rt, f["name"])
 
     # GOAL: reach the WHOLE JMEOS surface. Every MEOS C function (unique by its C
     # name) becomes a 1:1 UDF named by that C symbol — that is how the ~2254

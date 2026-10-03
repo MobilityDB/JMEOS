@@ -690,13 +690,15 @@ class SqlModel:
             self.value_class[sql] = cls
 
     def _enum_parsers(self):
-        """For each C enum, the catalog function reading it from its name."""
+        """For each C enum, the public catalog function reading it from its name, as a binding
+        calls the public API alone; the Spark arm reads the same (ENUM_PARSER in
+        codegen_spark_udfs.py)."""
         self.enum_parser = {}
         for f in self.fns:
             rt = _norm(f['returnType']['canonical'])
             ps = f['params']
             if rt in self.enums and len(ps) == 1 and _norm(ps[0]['canonical']) == 'char *' \
-                    and f['name'] in self.jmeos:
+                    and f.get('api') == 'public' and f['name'] in self.jmeos:
                 self.enum_parser.setdefault(rt, f['name'])
 
 
