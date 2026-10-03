@@ -270,8 +270,10 @@ def ret_emit(canon, sqlop):
 
 def supported(f):
     """Reason string if NOT emittable, else None."""
-    # meos_internal_* doxygen groups are MEOS-internal, not user-facing — excluded.
-    if (f.get("group") or "").startswith("meos_internal"):
+    # A binding calls the public API alone. The catalog's `api` states it, public for a
+    # function whose @ingroup is a public group; a function stating no group reads as
+    # internal there, so its name is no test of it.
+    if f.get("api") != "public":
         return "internal"
     in_params, out = classify(f)
     if out is None:
