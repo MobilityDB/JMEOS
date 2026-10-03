@@ -591,9 +591,9 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	public Duration distance(Object other) throws Exception {
 		Duration answer = null;
 		if (other instanceof LocalDateTime) {
-			answer= Duration.ofSeconds((long)GeneratedFunctions.distance_set_timestamptz(this._inner, ConversionUtils.datetimeToTimestampTz((LocalDateTime) other)));
+			answer= ConversionUtils.interval_to_timedelta(GeneratedFunctions.distance_set_timestamptz(this._inner, ConversionUtils.datetimeToTimestampTz((LocalDateTime) other)));
 		} else if (other instanceof tstzset) {
-			answer= Duration.ofSeconds((long)GeneratedFunctions.distance_tstzset_tstzset(this._inner, ((tstzset) other)._inner));
+			answer= ConversionUtils.interval_to_timedelta(GeneratedFunctions.distance_tstzset_tstzset(this._inner, ((tstzset) other)._inner));
 		} else if (other instanceof tstzspan) {
 			answer= Duration.ofSeconds((long)this.to_span().distance((TemporalObject) other));
 //					Duration.ofSeconds((long)GeneratedFunctions.distance_tstzspanset_tstzspan(this.to_spanset(tstzspan.class).get_inner(), ((tstzspan) other).get_inner()));

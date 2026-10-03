@@ -193,8 +193,8 @@ class TsTzSetTest {
     public void testDistanceFunction() throws Exception {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         tstzset tmp_set = new tstzset("{2020-01-01 00:00:00+0, 2020-01-31 00:00:00+0}");
-        System.out.println(Duration.ofSeconds((long) GeneratedFunctions.distance_tstzset_tstzset(tset.get_inner(), tmp_set.get_inner())));
-        tset.distance(tmp_set);
+        // From 2019-09-03, the last instant of tset, to 2020-01-01
+        assertEquals(Duration.ofDays(120), tset.distance(tmp_set));
     }
 
 
