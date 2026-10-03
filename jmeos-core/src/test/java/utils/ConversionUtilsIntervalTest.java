@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Verifies that a {@link Duration} survives conversion to a MEOS interval and back.
@@ -29,6 +30,24 @@ public class ConversionUtilsIntervalTest {
             Pointer interval = ConversionUtils.timedelta_to_interval(d);
             assertEquals(d, ConversionUtils.interval_to_timedelta(interval), "round-trip of " + d);
         }
+    }
+
+    @Test
+    void everyIntervalWithoutMonthsIsItsDuration() {
+        // One day, a time below a day, a fraction of a second, and days with a time
+        String[] texts = {"1 day", "03:04:05", "00:00:01.25", "2 days 00:00:00.000001"};
+        Duration[] durations = {Duration.ofDays(1), Duration.ofSeconds(3 * 3600 + 4 * 60 + 5),
+                Duration.ofMillis(1250), Duration.ofDays(2).plusNanos(1000)};
+        for (int i = 0; i < texts.length; i++)
+            assertEquals(durations[i], ConversionUtils.interval_to_timedelta(
+                    GeneratedFunctions.interval_in(texts[i], -1)), texts[i]);
+    }
+
+    @Test
+    void anIntervalOfMonthsHasNoDuration() {
+        Pointer interval = GeneratedFunctions.interval_in("1 mon", -1);
+        assertThrows(IllegalArgumentException.class,
+                () -> ConversionUtils.interval_to_timedelta(interval));
     }
 
     @Test

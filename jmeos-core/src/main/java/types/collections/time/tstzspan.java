@@ -787,13 +787,18 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	public double distance(TemporalObject other) throws Exception {
 		double returnValue;
 		switch (other){
-			case tstzspan p -> returnValue = GeneratedFunctions.distance_tstzspan_tstzspan(this._inner,p.get_inner());
-			case tstzspanset ps -> returnValue = GeneratedFunctions.distance_tstzspanset_tstzspan(ps.get_inner(),this._inner);
+			case tstzspan p -> returnValue = seconds(GeneratedFunctions.distance_tstzspan_tstzspan(this._inner,p.get_inner()));
+			case tstzspanset ps -> returnValue = seconds(GeneratedFunctions.distance_tstzspanset_tstzspan(ps.get_inner(),this._inner));
 			case tstzset ts -> returnValue = ts.to_span().distance(other);
-			case Box b -> returnValue = GeneratedFunctions.distance_tstzspan_tstzspan(this._inner, b.to_period().get_inner());
+			case Box b -> returnValue = seconds(GeneratedFunctions.distance_tstzspan_tstzspan(this._inner, b.to_period().get_inner()));
 			default -> throw new TypeNotPresentException(other.getClass().toString(), new Throwable("Operation not supported with this type"));
 		}
 		return returnValue;
+	}
+
+	/** The seconds, with their fraction, of the interval MEOS answers as a distance of times. */
+	private static double seconds(Pointer interval) {
+		return ConversionUtils.interval_to_timedelta(interval).toNanos() / 1e9;
 	}
 
 	/*------------------------ Set Operations ------------------------*/
