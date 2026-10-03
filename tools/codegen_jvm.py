@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Unified MEOS-surface code generator for the MobilityDB JVM bindings.
 
-ONE generator, three engines, selected by ``--engine {spark|flink|kafka}``. Every
+ONE generator, its engines selected by ``--engine``. Every
 JVM binding (MobilitySpark, MobilityFlink, MobilityKafka) vendors this identical
 file plus its ``codegen_spark_udfs.py`` sibling, so the generated surface can never
 drift between engines — the North Star that MEOS is the single source of truth and
@@ -22,6 +22,11 @@ all bindings are GENERATED from it.
                         SQL name the catalog states, each overload an eval method,
                         and one RAW type per MEOS value type the signatures use,
                         carrying the serialized form the catalog codec writes.
+  * ``spark-sql``    -> the typed Spark SQL surface, from the same overloads as
+                        flink-sql: one Spark UserDefinedType per MEOS value type over
+                        the same serialized form, and one registration per SQL name
+                        whose builder chooses the overload and its result type from
+                        the argument types while Spark plans the call.
 
 Shared front-end (facade back-end only): load the catalog, list the jar symbols,
 and derive each function's object-model class / role / header directly from the
@@ -32,6 +37,8 @@ Usage:
   codegen_jvm.py --engine spark --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine flink --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine kafka --catalog meos-idl.json --jar JMEOS.jar --out DIR
+  codegen_jvm.py --engine flink-sql --catalog meos-idl.json --jar JMEOS.jar --out DIR
+  codegen_jvm.py --engine spark-sql --catalog meos-idl.json --jar JMEOS.jar --out DIR
 """
 import argparse
 import importlib.util
@@ -594,8 +601,12 @@ def _javaid(name):
 class SqlModel:
     """What the catalog and the jar state about the SQL surface, indexed once."""
 
-    def __init__(self, cat, jmeos):
+    def __init__(self, cat, jmeos, pkg=SQL_PKG, engine='flink'):
         self.cat = cat
+        # The Java package of the generated surface, where its value types live, and the engine
+        # whose spellings of a SQL type, an array type and a row the overloads take.
+        self.pkg = pkg
+        self.engine = engine
         self.jmeos = jmeos
         self.fns = cat['functions']
         self.by_name = {f['name']: f for f in self.fns}
@@ -610,6 +621,34 @@ class SqlModel:
         self._align()
         self._codecs()
         self._enum_parsers()
+
+    def datatype(self, cls):
+        """The engine's SQL type expression for the Java class `cls`."""
+        return _spark_datatype(self, cls) if self.engine == 'spark' else _datatype(cls)
+
+    def array_type(self, elem):
+        """The engine's SQL type expression for an array of the type expression `elem`."""
+        return (f'DataTypes.createArrayType({elem})' if self.engine == 'spark'
+                else f'DataTypes.ARRAY({elem})')
+
+    def row_type(self, fields):
+        """The engine's SQL type expression for a row of the named type expressions."""
+        if self.engine == 'spark':
+            return ('DataTypes.createStructType(new org.apache.spark.sql.types.StructField[] {'
+                    + ', '.join(f'DataTypes.createStructField("{n}", {t}, true)' for n, t in fields)
+                    + '})')
+        return 'DataTypes.ROW(' + ', '.join(f'DataTypes.FIELD("{n}", {t})' for n, t in fields) + ')'
+
+    @property
+    def row_class(self):
+        """The engine's Java class of a row."""
+        return 'org.apache.spark.sql.Row' if self.engine == 'spark' else 'org.apache.flink.types.Row'
+
+    @property
+    def row_of(self):
+        """The engine's Java factory of a row from its fields."""
+        return ('org.apache.spark.sql.RowFactory.create' if self.engine == 'spark'
+                else 'org.apache.flink.types.Row.of')
 
     def visible(self, f):
         outs = set((f.get('shape') or {}).get('outParams') or [])
@@ -779,9 +818,9 @@ def _ret(m, sql, f, jt, outs):
             return None
         return r[0], [f'return _r == null ? null : {r[1]};']
     if vc and jt == 'jnr.ffi.Pointer':
-        return (f'{SQL_PKG}.types.{vc}',
+        return (f'{m.pkg}.types.{vc}',
                 ['if (_r == null) return null;',
-                 f'try {{ return {SQL_PKG}.types.{vc}.encode(_r); }}',
+                 f'try {{ return {m.pkg}.types.{vc}.encode(_r); }}',
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql in ('text', 'cstring') and jt == 'jnr.ffi.Pointer' and rc == 'text *' \
             and 'text_out' in m.jmeos:
@@ -818,7 +857,7 @@ def _ret(m, sql, f, jt, outs):
 
 def _flink_class(m, sql):
     if sql in m.value_class:
-        return f'{SQL_PKG}.types.{m.value_class[sql]}'
+        return f'{m.pkg}.types.{m.value_class[sql]}'
     return SQL_SCALAR.get(sql)
 
 
@@ -838,7 +877,7 @@ def _array_arg(m, elem, a, p, jt, name, temps):
     if elem in m.value_class and c.count('*') == 2 \
             and _base(el['canonical']) == m.sql_cbase.get(elem):
         temps.append((t, name, 'values'))
-        return f'{SQL_PKG}.types.{m.value_class[elem]}[]', t
+        return f'{m.pkg}.types.{m.value_class[elem]}[]', t
     hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
         or SQL_ARRAY_SCALAR.get((elem, _base(el['canonical'])))
     if hit and c.count('*') == 1:
@@ -889,7 +928,7 @@ def _overload(m, f, args, ret, jsig, bound=None):
         return None, f'ret:{ret}/{_norm(f["returnType"]["canonical"])}'
     rcls, rstmts = r
     body = [f'{_jshort(jsig["ret"])} _r = GeneratedFunctions.{f["name"]}({", ".join(call)});']
-    return (params, temps, rcls, body + rstmts, _datatype(rcls)), None
+    return (params, temps, rcls, body + rstmts, m.datatype(rcls)), None
 
 
 def _inputs(m, f, args, jtypes, bound=None):
@@ -1050,8 +1089,8 @@ def _setret_column(m, f, col, layout):
     if elem.endswith('*'):                            # an array of pointers
         b = elem[:-1].strip()
         if vc and m.sql_cbase.get(sql) == b:
-            return (f'{SQL_PKG}.types.{vc}', src,
-                    f'{SQL_PKG}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
+            return (f'{m.pkg}.types.{vc}', src,
+                    f'{m.pkg}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
         if b == 'text' and sql == 'text' and 'text_out' in m.jmeos:
             return ('String', src, 'GeneratedFunctions.text_out(MeosSqlRuntime.at({a}, _i))', True)
         return None
@@ -1060,8 +1099,8 @@ def _setret_column(m, f, col, layout):
         return hit[0], src, hit[1].format(p='{a}', i='_i'), False
     lay = layout(elem) if vc and m.sql_cbase.get(sql) == elem else None
     if lay is not None:                               # contiguous structs: STBox, TBox
-        return (f'{SQL_PKG}.types.{vc}', src,
-                f'{SQL_PKG}.types.{vc}.encode({{a}}.slice((long) _i * {lay[0]}L))', False)
+        return (f'{m.pkg}.types.{vc}', src,
+                f'{m.pkg}.types.{vc}.encode({{a}}.slice((long) _i * {lay[0]}L))', False)
     return None
 
 
@@ -1100,11 +1139,10 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     single = len(readers) == 1 and readers[0][0] is None
     if single:
         ecls = readers[0][1][0]
-        etype = _datatype(ecls)
+        etype = m.datatype(ecls)
     else:
-        ecls = 'org.apache.flink.types.Row'
-        etype = 'DataTypes.ROW(' + ', '.join(
-            f'DataTypes.FIELD("{n}", {_datatype(r[0])})' for n, r in readers) + ')'
+        ecls = m.row_class
+        etype = m.row_type([(n, m.datatype(r[0])) for n, r in readers])
     arr = {'return': '_r', **{n: f'_a{k}' for n, k in
                               ((n, cells[n][2:]) for n in cells)}}
     reads = [r[2] if r[1] is None else r[2].replace('{a}', arr[r[1]]) for _, r in readers]
@@ -1118,7 +1156,7 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     body += [f'    {ecls}[] _rows = new {ecls}[_c];',
              '    for (int _i = 0; _i < _c; _i++) {',
              '        _rows[_i] = ' + (reads[0] if single else
-                                       f'org.apache.flink.types.Row.of({", ".join(reads)})') + ';',
+                                       f'{m.row_of}({", ".join(reads)})') + ';',
              '    }',
              '    return _rows;',
              '} finally {']
@@ -1128,7 +1166,7 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
             body.append(f'    MeosSqlRuntime.freeEach({src}, _c);')
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
     body += ['    MeosSqlRuntime.free(_r);', '}']
-    return (params, temps, f'{ecls}[]', body, f'DataTypes.ARRAY({etype})'), None
+    return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
 
 
 def _value_class_src(m, sql):
@@ -1207,6 +1245,269 @@ public final class {cls} extends MeosValue {{
     }}
 }}
 '''
+
+
+# ── the run-time class both JVM SQL engines share ──
+# A generated SQL surface carries a MeosSqlRuntime: its package, imports and heading comment, the
+# engine's own planning hook (Flink's type inference, Spark's overload resolution) and the
+# conversions between the engine's SQL values and MEOS's and the release of what MEOS allocates,
+# which are the same for both engines.
+_FLINK_RUNTIME_IMPORTS = '''import functions.GeneratedFunctions;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import org.apache.flink.table.types.DataType;
+import org.apache.flink.table.types.inference.ArgumentTypeStrategy;
+import org.apache.flink.table.types.inference.InputTypeStrategies;
+import org.apache.flink.table.types.inference.InputTypeStrategy;
+import org.apache.flink.table.types.inference.TypeInference;
+import org.apache.flink.table.types.inference.TypeStrategies;
+import org.apache.flink.table.types.inference.TypeStrategy;
+
+'''
+_FLINK_RUNTIME_DOC = '''/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
+ * Conversions between Flink's SQL values and the ones MEOS takes, and the release of
+ * what MEOS allocates.  MEOS counts days and microseconds from the PostgreSQL epoch. */
+'''
+_RUNTIME_FIELDS = '''    private static final long PG_EPOCH_DAY = 10957L;
+    private static final long PG_EPOCH_SECOND = 946684800L;
+
+    private static final jnr.ffi.Runtime RUNTIME = jnr.ffi.Runtime.getSystemRuntime();
+    private static final String NULL_ELEMENT = "null array element not allowed in this context";
+
+    /** jffi's MemoryIO frees through the system free, which MEOS allocates with; jffi is the
+     * native layer jnr-ffi runs on and needs no internal JDK API. */
+    private static final com.kenai.jffi.MemoryIO IO = com.kenai.jffi.MemoryIO.getInstance();
+
+    private static final ThreadLocal<Boolean> ISO_INTERVALS = ThreadLocal.withInitial(() -> {
+        GeneratedFunctions.meos_set_intervalstyle("iso_8601", 0);
+        return Boolean.TRUE;
+    });
+
+    private MeosSqlRuntime() { }
+
+'''
+_FLINK_INFERENCE = '''    /** The overloads of one function as a single flat alternative of argument types, each
+     * mapped to its result type, so planning a call is linear in the number of overloads. */
+    public static TypeInference inference(DataType[][] args, DataType[] rets) {
+        InputTypeStrategy[] seqs = new InputTypeStrategy[args.length];
+        Map<InputTypeStrategy, TypeStrategy> results = new LinkedHashMap<>();
+        for (int i = 0; i < args.length; i++) {
+            ArgumentTypeStrategy[] a = new ArgumentTypeStrategy[args[i].length];
+            for (int j = 0; j < a.length; j++) {
+                a[j] = InputTypeStrategies.explicit(args[i][j]);
+            }
+            seqs[i] = InputTypeStrategies.sequence(a);
+            results.put(seqs[i], TypeStrategies.explicit(rets[i]));
+        }
+        return TypeInference.newBuilder()
+                .inputTypeStrategy(seqs.length == 1 ? seqs[0] : InputTypeStrategies.or(seqs))
+                .outputTypeStrategy(TypeStrategies.mapping(results))
+                .build();
+    }
+
+'''
+_RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
+    public static void free(Pointer[] ps) {
+        for (Pointer p : ps) {
+            if (p != null) {
+                IO.freeMemory(p.address());
+            }
+        }
+    }
+
+    /** Free a value MEOS allocated.  Null-safe. */
+    public static void free(Pointer p) {
+        if (p != null) {
+            IO.freeMemory(p.address());
+        }
+    }
+
+    /** Free each of the n values MEOS allocated whose pointers the C array a holds.  Null-safe. */
+    public static void freeEach(Pointer a, int n) {
+        if (a != null) {
+            for (int i = 0; i < n; i++) {
+                free(at(a, i));
+            }
+        }
+    }
+
+    /** Element i of the C array of pointers a. */
+    public static Pointer at(Pointer a, int i) {
+        return a.getPointer((long) i * RUNTIME.addressSize());
+    }
+
+    /** Zeroed memory for one value of the given width that MEOS writes as an out-parameter,
+     * which the garbage collector releases. */
+    public static Pointer cell(int width) {
+        return Memory.allocateDirect(RUNTIME, width, true);
+    }
+
+    /** Free a result unless it is one of the inputs, which the caller frees. */
+    public static void freeResult(Pointer r, Pointer[] in) {
+        for (Pointer p : in) {
+            if (p != null && p.address() == r.address()) {
+                return;
+            }
+        }
+        IO.freeMemory(r.address());
+    }
+
+    /** Free a result unless it is one of the inputs, which the caller frees. */
+    public static void freeResult(Pointer r, Inputs in) {
+        if (!in.holds(r)) {
+            IO.freeMemory(r.address());
+        }
+    }
+
+    /** What an eval taking an array hands MEOS, gathered as it is built: the values MEOS
+     * allocated, released by {@link #free}, and the C arrays, kept reachable until then. */
+    public static final class Inputs {
+
+        private Pointer[] owned = new Pointer[8];
+        private int n;
+        private final java.util.ArrayList<Pointer> held = new java.util.ArrayList<>();
+
+        /** Keep p for release and pass it on. */
+        public Pointer value(Pointer p) {
+            if (n == owned.length) {
+                owned = java.util.Arrays.copyOf(owned, 2 * n);
+            }
+            owned[n++] = p;
+            return p;
+        }
+
+        /** Keep the C array b reachable until the call returns and pass it on. */
+        public Pointer hold(Pointer b) {
+            held.add(b);
+            return b;
+        }
+
+        /** The values decoded one by one into the C array of pointers MEOS reads.  A null
+         * element raises, as it does in PostgreSQL. */
+        public Pointer values(MeosValue[] vs) {
+            int w = RUNTIME.addressSize();
+            Pointer b = hold(buffer(vs.length, w));
+            for (int i = 0; i < vs.length; i++) {
+                Pointer p = value(element(vs, i).decode());
+                if (p == null) {
+                    throw new IllegalArgumentException("an array element does not decode");
+                }
+                b.putPointer((long) i * w, p);
+            }
+            return b;
+        }
+
+        boolean holds(Pointer r) {
+            for (int i = 0; i < n; i++) {
+                if (owned[i] != null && owned[i].address() == r.address()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** Free each value kept. */
+        public void free() {
+            for (int i = 0; i < n; i++) {
+                if (owned[i] != null) {
+                    IO.freeMemory(owned[i].address());
+                }
+            }
+            n = 0;
+            held.clear();
+        }
+    }
+
+    private static <T> T element(T[] xs, int i) {
+        if (xs[i] == null) {
+            throw new IllegalArgumentException(NULL_ELEMENT);
+        }
+        return xs[i];
+    }
+
+    /** Memory for n elements of the given width, which the garbage collector releases. */
+    private static Pointer buffer(int n, int width) {
+        return Memory.allocateDirect(RUNTIME, Math.max(1, n) * width);
+    }
+
+    public static Pointer ints(Integer[] xs) {
+        Pointer b = buffer(xs.length, 4);
+        for (int i = 0; i < xs.length; i++) {
+            b.putInt(4L * i, element(xs, i));
+        }
+        return b;
+    }
+
+    public static Pointer longs(Long[] xs) {
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {
+            b.putLongLong(8L * i, element(xs, i));
+        }
+        return b;
+    }
+
+    public static Pointer doubles(Double[] xs) {
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {
+            b.putDouble(8L * i, element(xs, i));
+        }
+        return b;
+    }
+
+    public static Pointer dates(java.time.LocalDate[] xs) {
+        Pointer b = buffer(xs.length, 4);
+        for (int i = 0; i < xs.length; i++) {
+            b.putInt(4L * i, dateAdt(element(xs, i)));
+        }
+        return b;
+    }
+
+    public static Pointer timestamps(java.time.Instant[] xs) {
+        Pointer b = buffer(xs.length, 8);
+        for (int i = 0; i < xs.length; i++) {
+            b.putLongLong(8L * i, micros(element(xs, i)));
+        }
+        return b;
+    }
+
+    /** Microseconds from the PostgreSQL epoch, the TimestampTz MEOS reads. */
+    public static long micros(java.time.Instant t) {
+        return Math.addExact(Math.multiplyExact(t.getEpochSecond() - PG_EPOCH_SECOND, 1000000L),
+                t.getNano() / 1000);
+    }
+
+    public static int dateAdt(java.time.LocalDate d) {
+        return (int) (d.toEpochDay() - PG_EPOCH_DAY);
+    }
+
+    public static java.time.LocalDate date(int d) {
+        return java.time.LocalDate.ofEpochDay(d + PG_EPOCH_DAY);
+    }
+
+    public static java.time.Instant timestamptz(long micros) {
+        return java.time.Instant.ofEpochSecond(PG_EPOCH_SECOND + Math.floorDiv(micros, 1000000L),
+                Math.floorMod(micros, 1000000L) * 1000L);
+    }
+
+    public static Pointer interval(java.time.Duration d) {
+        return GeneratedFunctions.interval_in(d.toString(), -1);
+    }
+
+    public static java.time.Duration duration(Pointer p) {
+        ISO_INTERVALS.get();
+        return java.time.Duration.parse(GeneratedFunctions.interval_out(p));
+    }
+}
+'''
+
+
+def _runtime_src(pkg, imports, doc, planning):
+    """The MeosSqlRuntime class of the surface in `pkg`: its imports and heading comment, the
+    engine's planning hook, and the conversions and releases both engines share."""
+    return (f'package {pkg};\n\n' + imports + doc + 'public final class MeosSqlRuntime {\n\n'
+            + _RUNTIME_FIELDS + planning + _RUNTIME_CORE)
 
 
 SQL_SUPPORT = {
@@ -1295,255 +1596,8 @@ public abstract class MeosValueSerializer<T extends MeosValue> extends TypeSeria
     }}
 }}
 ''',
-    'MeosSqlRuntime': f'''package {SQL_PKG};
-
-import functions.GeneratedFunctions;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import jnr.ffi.Memory;
-import jnr.ffi.Pointer;
-import org.apache.flink.table.types.DataType;
-import org.apache.flink.table.types.inference.ArgumentTypeStrategy;
-import org.apache.flink.table.types.inference.InputTypeStrategies;
-import org.apache.flink.table.types.inference.InputTypeStrategy;
-import org.apache.flink.table.types.inference.TypeInference;
-import org.apache.flink.table.types.inference.TypeStrategies;
-import org.apache.flink.table.types.inference.TypeStrategy;
-
-/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * Conversions between Flink's SQL values and the ones MEOS takes, and the release of
- * what MEOS allocates.  MEOS counts days and microseconds from the PostgreSQL epoch. */
-public final class MeosSqlRuntime {{
-
-    private static final long PG_EPOCH_DAY = 10957L;
-    private static final long PG_EPOCH_SECOND = 946684800L;
-
-    private static final jnr.ffi.Runtime RUNTIME = jnr.ffi.Runtime.getSystemRuntime();
-    private static final String NULL_ELEMENT = "null array element not allowed in this context";
-
-    /** jffi's MemoryIO frees through the system free, which MEOS allocates with; jffi is the
-     * native layer jnr-ffi runs on and needs no internal JDK API. */
-    private static final com.kenai.jffi.MemoryIO IO = com.kenai.jffi.MemoryIO.getInstance();
-
-    private static final ThreadLocal<Boolean> ISO_INTERVALS = ThreadLocal.withInitial(() -> {{
-        GeneratedFunctions.meos_set_intervalstyle("iso_8601", 0);
-        return Boolean.TRUE;
-    }});
-
-    private MeosSqlRuntime() {{ }}
-
-    /** The overloads of one function as a single flat alternative of argument types, each
-     * mapped to its result type, so planning a call is linear in the number of overloads. */
-    public static TypeInference inference(DataType[][] args, DataType[] rets) {{
-        InputTypeStrategy[] seqs = new InputTypeStrategy[args.length];
-        Map<InputTypeStrategy, TypeStrategy> results = new LinkedHashMap<>();
-        for (int i = 0; i < args.length; i++) {{
-            ArgumentTypeStrategy[] a = new ArgumentTypeStrategy[args[i].length];
-            for (int j = 0; j < a.length; j++) {{
-                a[j] = InputTypeStrategies.explicit(args[i][j]);
-            }}
-            seqs[i] = InputTypeStrategies.sequence(a);
-            results.put(seqs[i], TypeStrategies.explicit(rets[i]));
-        }}
-        return TypeInference.newBuilder()
-                .inputTypeStrategy(seqs.length == 1 ? seqs[0] : InputTypeStrategies.or(seqs))
-                .outputTypeStrategy(TypeStrategies.mapping(results))
-                .build();
-    }}
-
-    /** Free each value MEOS allocated.  Null-safe. */
-    public static void free(Pointer[] ps) {{
-        for (Pointer p : ps) {{
-            if (p != null) {{
-                IO.freeMemory(p.address());
-            }}
-        }}
-    }}
-
-    /** Free a value MEOS allocated.  Null-safe. */
-    public static void free(Pointer p) {{
-        if (p != null) {{
-            IO.freeMemory(p.address());
-        }}
-    }}
-
-    /** Free each of the n values MEOS allocated whose pointers the C array a holds.  Null-safe. */
-    public static void freeEach(Pointer a, int n) {{
-        if (a != null) {{
-            for (int i = 0; i < n; i++) {{
-                free(at(a, i));
-            }}
-        }}
-    }}
-
-    /** Element i of the C array of pointers a. */
-    public static Pointer at(Pointer a, int i) {{
-        return a.getPointer((long) i * RUNTIME.addressSize());
-    }}
-
-    /** Zeroed memory for one value of the given width that MEOS writes as an out-parameter,
-     * which the garbage collector releases. */
-    public static Pointer cell(int width) {{
-        return Memory.allocateDirect(RUNTIME, width, true);
-    }}
-
-    /** Free a result unless it is one of the inputs, which the caller frees. */
-    public static void freeResult(Pointer r, Pointer[] in) {{
-        for (Pointer p : in) {{
-            if (p != null && p.address() == r.address()) {{
-                return;
-            }}
-        }}
-        IO.freeMemory(r.address());
-    }}
-
-    /** Free a result unless it is one of the inputs, which the caller frees. */
-    public static void freeResult(Pointer r, Inputs in) {{
-        if (!in.holds(r)) {{
-            IO.freeMemory(r.address());
-        }}
-    }}
-
-    /** What an eval taking an array hands MEOS, gathered as it is built: the values MEOS
-     * allocated, released by {{@link #free}}, and the C arrays, kept reachable until then. */
-    public static final class Inputs {{
-
-        private Pointer[] owned = new Pointer[8];
-        private int n;
-        private final java.util.ArrayList<Pointer> held = new java.util.ArrayList<>();
-
-        /** Keep p for release and pass it on. */
-        public Pointer value(Pointer p) {{
-            if (n == owned.length) {{
-                owned = java.util.Arrays.copyOf(owned, 2 * n);
-            }}
-            owned[n++] = p;
-            return p;
-        }}
-
-        /** Keep the C array b reachable until the call returns and pass it on. */
-        public Pointer hold(Pointer b) {{
-            held.add(b);
-            return b;
-        }}
-
-        /** The values decoded one by one into the C array of pointers MEOS reads.  A null
-         * element raises, as it does in PostgreSQL. */
-        public Pointer values(MeosValue[] vs) {{
-            int w = RUNTIME.addressSize();
-            Pointer b = hold(buffer(vs.length, w));
-            for (int i = 0; i < vs.length; i++) {{
-                Pointer p = value(element(vs, i).decode());
-                if (p == null) {{
-                    throw new IllegalArgumentException("an array element does not decode");
-                }}
-                b.putPointer((long) i * w, p);
-            }}
-            return b;
-        }}
-
-        boolean holds(Pointer r) {{
-            for (int i = 0; i < n; i++) {{
-                if (owned[i] != null && owned[i].address() == r.address()) {{
-                    return true;
-                }}
-            }}
-            return false;
-        }}
-
-        /** Free each value kept. */
-        public void free() {{
-            for (int i = 0; i < n; i++) {{
-                if (owned[i] != null) {{
-                    IO.freeMemory(owned[i].address());
-                }}
-            }}
-            n = 0;
-            held.clear();
-        }}
-    }}
-
-    private static <T> T element(T[] xs, int i) {{
-        if (xs[i] == null) {{
-            throw new IllegalArgumentException(NULL_ELEMENT);
-        }}
-        return xs[i];
-    }}
-
-    /** Memory for n elements of the given width, which the garbage collector releases. */
-    private static Pointer buffer(int n, int width) {{
-        return Memory.allocateDirect(RUNTIME, Math.max(1, n) * width);
-    }}
-
-    public static Pointer ints(Integer[] xs) {{
-        Pointer b = buffer(xs.length, 4);
-        for (int i = 0; i < xs.length; i++) {{
-            b.putInt(4L * i, element(xs, i));
-        }}
-        return b;
-    }}
-
-    public static Pointer longs(Long[] xs) {{
-        Pointer b = buffer(xs.length, 8);
-        for (int i = 0; i < xs.length; i++) {{
-            b.putLongLong(8L * i, element(xs, i));
-        }}
-        return b;
-    }}
-
-    public static Pointer doubles(Double[] xs) {{
-        Pointer b = buffer(xs.length, 8);
-        for (int i = 0; i < xs.length; i++) {{
-            b.putDouble(8L * i, element(xs, i));
-        }}
-        return b;
-    }}
-
-    public static Pointer dates(java.time.LocalDate[] xs) {{
-        Pointer b = buffer(xs.length, 4);
-        for (int i = 0; i < xs.length; i++) {{
-            b.putInt(4L * i, dateAdt(element(xs, i)));
-        }}
-        return b;
-    }}
-
-    public static Pointer timestamps(java.time.Instant[] xs) {{
-        Pointer b = buffer(xs.length, 8);
-        for (int i = 0; i < xs.length; i++) {{
-            b.putLongLong(8L * i, micros(element(xs, i)));
-        }}
-        return b;
-    }}
-
-    /** Microseconds from the PostgreSQL epoch, the TimestampTz MEOS reads. */
-    public static long micros(java.time.Instant t) {{
-        return Math.addExact(Math.multiplyExact(t.getEpochSecond() - PG_EPOCH_SECOND, 1000000L),
-                t.getNano() / 1000);
-    }}
-
-    public static int dateAdt(java.time.LocalDate d) {{
-        return (int) (d.toEpochDay() - PG_EPOCH_DAY);
-    }}
-
-    public static java.time.LocalDate date(int d) {{
-        return java.time.LocalDate.ofEpochDay(d + PG_EPOCH_DAY);
-    }}
-
-    public static java.time.Instant timestamptz(long micros) {{
-        return java.time.Instant.ofEpochSecond(PG_EPOCH_SECOND + Math.floorDiv(micros, 1000000L),
-                Math.floorMod(micros, 1000000L) * 1000L);
-    }}
-
-    public static Pointer interval(java.time.Duration d) {{
-        return GeneratedFunctions.interval_in(d.toString(), -1);
-    }}
-
-    public static java.time.Duration duration(Pointer p) {{
-        ISO_INTERVALS.get();
-        return java.time.Duration.parse(GeneratedFunctions.interval_out(p));
-    }}
-}}
-''',
+    'MeosSqlRuntime': _runtime_src(SQL_PKG, _FLINK_RUNTIME_IMPORTS, _FLINK_RUNTIME_DOC,
+                                   _FLINK_INFERENCE),
 }
 
 
@@ -1667,12 +1721,550 @@ def run_flink_sql(args):
         print(f'  skipped {n:5d}  {why}')
 
 
+# ───────────────────────── spark-sql: the typed Spark SQL surface ─────────────────────────
+# The Spark twin of the flink-sql engine, on the same SqlModel (rule 8 of the portable naming
+# notes): a MEOS value carries its SQL type, one Spark UserDefinedType per SQL type over the
+# form its catalog codec writes, as Flink holds one RAW type per SQL type (#_value_class_src);
+# and each SQL name is one registration whose builder chooses the overload and its result type
+# from the argument types while Spark plans the call, as Flink's type inference does
+# (#_FLINK_INFERENCE). The overloads are the flink-sql engine's own (#_overload, #_emit_eval),
+# so a capability one engine gains the other gains with it.
+
+SPARK_SQL_PKG = 'org.mobilitydb.spark.sql'
+
+# The Spark SQL type of each Java class an overload takes or returns.
+SPARK_DATATYPE = {
+    'Boolean': 'DataTypes.BooleanType', 'Integer': 'DataTypes.IntegerType',
+    'Short': 'DataTypes.ShortType', 'Long': 'DataTypes.LongType',
+    'Double': 'DataTypes.DoubleType', 'String': 'DataTypes.StringType',
+    'java.time.Instant': 'DataTypes.TimestampType', 'java.time.LocalDate': 'DataTypes.DateType',
+    'java.time.Duration': 'MeosSqlRuntime.DURATION',
+}
+
+
+def _spark_datatype(m, cls):
+    """The Spark DataType expression of a Java class #_overload names, or None."""
+    if cls.endswith('[]'):
+        inner = _spark_datatype(m, cls[:-2])
+        return inner and f'DataTypes.createArrayType({inner})'
+    if cls.startswith(f'{m.pkg}.types.'):
+        return f'{cls}.TYPE'
+    return SPARK_DATATYPE.get(cls)
+
+
+def _spark_arg(cls, i):
+    """The Java expression reading argument i, as Spark hands it, into the class `cls`."""
+    a = f'a[{i}]'
+    if cls == 'java.time.Instant':
+        return f'MeosSqlRuntime.instant({a})'
+    if cls == 'java.time.LocalDate':
+        return f'MeosSqlRuntime.localDate({a})'
+    if cls == 'java.time.Instant[]':
+        return f'MeosSqlRuntime.instants({a})'
+    if cls == 'java.time.LocalDate[]':
+        return f'MeosSqlRuntime.localDates({a})'
+    if cls.endswith('[]'):
+        return f'MeosSqlRuntime.array({a}, new {cls[:-2]}[0])'
+    return f'({cls}) {a}'
+
+
+_SPARK_RUNTIME_IMPORTS = '''import functions.GeneratedFunctions;
+import java.util.ArrayList;
+import java.util.List;
+import jnr.ffi.Memory;
+import jnr.ffi.Pointer;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.FunctionIdentifier;
+import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
+import org.apache.spark.sql.catalyst.expressions.Cast;
+import org.apache.spark.sql.catalyst.expressions.EvalMode;
+import org.apache.spark.sql.catalyst.expressions.Expression;
+import org.apache.spark.sql.catalyst.expressions.ScalaUDF;
+import org.apache.spark.sql.internal.SQLConf;
+import org.apache.spark.sql.types.ArrayType;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.DayTimeIntervalType;
+import org.apache.spark.sql.types.DecimalType;
+import org.apache.spark.sql.types.NullType;
+import scala.Function1;
+import scala.Option;
+import scala.collection.immutable.Seq;
+import scala.jdk.javaapi.CollectionConverters;
+import scala.runtime.AbstractFunction1;
+
+'''
+
+_SPARK_RUNTIME_DOC = '''/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
+ * Conversions between Spark's SQL values and the ones MEOS takes, the release of what MEOS
+ * allocates, and the registration of each SQL name with the builder that resolves its
+ * overloads.  MEOS counts days and microseconds from the PostgreSQL epoch. */
+'''
+
+
+def _spark_planning(arity):
+    """The Spark planning hook of MeosSqlRuntime, the twin of #_FLINK_INFERENCE: one registration
+    per name whose builder resolves the overload from the argument types, and the function
+    classes a resolved call runs, up to `arity` arguments."""
+    fns = []
+    for n in range(arity + 1):
+        ps = ', '.join(f'Object a{i}' for i in range(n))
+        gen = ', '.join(['Object'] * (n + 1))
+        args = ', '.join(f'a{i}' for i in range(n))
+        fns.append(f'''    private static final class F{n} extends scala.runtime.AbstractFunction{n}<{gen}>
+            implements java.io.Serializable {{
+        private final Body b;
+
+        F{n}(Body b) {{
+            this.b = b;
+        }}
+
+        @Override
+        public Object apply({ps}) {{
+            return b.apply(new Object[] {{{args}}});
+        }}
+    }}
+''')
+    cases = ''.join(f'            case {n}: return new F{n}(b);\n' for n in range(arity + 1))
+    return '''    /** The Spark type of an interval, from days to seconds, the one java.time.Duration maps to. */
+    public static final DataType DURATION = DataTypes.createDayTimeIntervalType();
+
+    /** One overload of a SQL name: the Spark types of its arguments in order, its result type
+     * and the body computing it. */
+    public static final class Overload implements java.io.Serializable {
+
+        final DataType[] args;
+        final DataType ret;
+        final Body body;
+
+        public Overload(DataType[] args, DataType ret, Body body) {
+            this.args = args;
+            this.ret = ret;
+            this.body = body;
+        }
+    }
+
+    /** The body of an overload over the arguments Spark hands it. */
+    public interface Body extends java.io.Serializable {
+        Object apply(Object[] a);
+    }
+
+    /** Register name once: its builder chooses among the overloads from the argument types while
+     * Spark plans the call, as PostgreSQL resolves an overloaded function, and hands a call no
+     * overload takes to the function Spark held under that name before, so a Spark built-in of
+     * the same name keeps answering its own arguments. */
+    public static void register(SparkSession spark, String name, Overload... overloads) {
+        Option<Function1<Seq<Expression>, Expression>> before =
+            spark.sessionState().functionRegistry().lookupFunctionBuilder(FunctionIdentifier.apply(name));
+        spark.sessionState().functionRegistry().createOrReplaceTempFunction(name,
+            new AbstractFunction1<Seq<Expression>, Expression>() {
+                @Override
+                public Expression apply(Seq<Expression> args) {
+                    return resolve(name, overloads, args, before);
+                }
+            }, "scala_udf");
+    }
+
+    /** The call of the overload whose argument types the arguments have, else of the first one
+     * they reach by widening a number, as PostgreSQL's implicit casts reach it. A name Spark
+     * already answers keeps a call no overload takes as it stands for that function: round(2.5)
+     * stays Spark's own, as PostgreSQL resolves it to its numeric round, not to MEOS's. */
+    static Expression resolve(String name, Overload[] overloads, Seq<Expression> args,
+            Option<Function1<Seq<Expression>, Expression>> before) {
+        List<Expression> given = CollectionConverters.asJava(args);
+        for (boolean widen : before.isDefined() ? new boolean[] {false} : new boolean[] {false, true}) {
+            for (Overload o : overloads) {
+                List<Expression> in = fit(o, given, widen);
+                if (in != null) {
+                    return call(name, o, in);
+                }
+            }
+        }
+        if (before.isDefined()) {
+            return before.get().apply(args);
+        }
+        StringBuilder types = new StringBuilder();
+        for (Expression e : given) {
+            types.append(types.length() == 0 ? "" : ", ").append(e.dataType().simpleString());
+        }
+        throw new IllegalArgumentException("function " + name + "(" + types + ") does not exist");
+    }
+
+    private static List<Expression> fit(Overload o, List<Expression> given, boolean widen) {
+        if (o.args.length != given.size()) {
+            return null;
+        }
+        List<Expression> in = new ArrayList<>();
+        for (int i = 0; i < o.args.length; i++) {
+            Expression e = given.get(i);
+            DataType have = e.dataType();
+            if (have.equals(o.args[i])) {
+                in.add(e);
+            } else if (have instanceof NullType || sameKind(have, o.args[i])
+                    || (widen && widens(have, o.args[i]))) {
+                in.add(new Cast(e, o.args[i], Option.<String>empty(), EvalMode.fromSQLConf(SQLConf.get())));
+            } else {
+                return null;
+            }
+        }
+        return in;
+    }
+
+    /** Whether two types hold the same Java values and differ only in what Spark notes of them:
+     * the fields an interval states (INTERVAL '1' DAY is an interval day, the overload's an
+     * interval day to second, one java.time.Duration), or whether an array may hold a null
+     * (array(3, 1, 2) cannot, an overload's array may, one Java array). */
+    private static boolean sameKind(DataType have, DataType want) {
+        if (have instanceof DayTimeIntervalType && want instanceof DayTimeIntervalType) {
+            return true;
+        }
+        return have instanceof ArrayType && want instanceof ArrayType
+            && ((ArrayType) have).elementType().equals(((ArrayType) want).elementType());
+    }
+
+    /** Whether a number of type have reaches type want without loss, as PostgreSQL's implicit
+     * numeric casts do: a smaller integer to a larger one, any number to a double. */
+    private static boolean widens(DataType have, DataType want) {
+        boolean integral = have.equals(DataTypes.ByteType) || have.equals(DataTypes.ShortType)
+            || have.equals(DataTypes.IntegerType);
+        if (want.equals(DataTypes.LongType)) {
+            return integral;
+        }
+        if (want.equals(DataTypes.IntegerType)) {
+            return have.equals(DataTypes.ByteType) || have.equals(DataTypes.ShortType);
+        }
+        if (want.equals(DataTypes.DoubleType)) {
+            return integral || have.equals(DataTypes.LongType) || have.equals(DataTypes.FloatType)
+                || have instanceof DecimalType;
+        }
+        return false;
+    }
+
+    private static Expression call(String name, Overload o, List<Expression> in) {
+        List<Option<ExpressionEncoder<?>>> enc = new ArrayList<>();
+        for (int i = 0; i < in.size(); i++) {
+            enc.add(Option.empty());
+        }
+        return new ScalaUDF(function(o.body, in.size()), o.ret, CollectionConverters.asScala(in).toList(),
+            CollectionConverters.asScala(enc).toList(), Option.empty(), Option.apply(name), true, true);
+    }
+
+    private static Object function(Body b, int n) {
+        switch (n) {
+''' + cases + '''            default: throw new IllegalArgumentException("too many arguments: " + n);
+        }
+    }
+
+''' + '\n'.join(fns) + '''
+    /** A timestamp as Spark hands it, java.sql.Timestamp or java.time.Instant. */
+    public static java.time.Instant instant(Object o) {
+        return o instanceof java.sql.Timestamp ? ((java.sql.Timestamp) o).toInstant() : (java.time.Instant) o;
+    }
+
+    /** A date as Spark hands it, java.sql.Date or java.time.LocalDate. */
+    public static java.time.LocalDate localDate(Object o) {
+        return o instanceof java.sql.Date ? ((java.sql.Date) o).toLocalDate() : (java.time.LocalDate) o;
+    }
+
+    /** An array of timestamps as Spark hands it, each element read as #instant reads one. */
+    public static java.time.Instant[] instants(Object o) {
+        Object[] xs = array(o, new Object[0]);
+        java.time.Instant[] r = new java.time.Instant[xs.length];
+        for (int i = 0; i < xs.length; i++) {
+            r[i] = xs[i] == null ? null : instant(xs[i]);
+        }
+        return r;
+    }
+
+    /** An array of dates as Spark hands it, each element read as #localDate reads one. */
+    public static java.time.LocalDate[] localDates(Object o) {
+        Object[] xs = array(o, new Object[0]);
+        java.time.LocalDate[] r = new java.time.LocalDate[xs.length];
+        for (int i = 0; i < xs.length; i++) {
+            r[i] = xs[i] == null ? null : localDate(xs[i]);
+        }
+        return r;
+    }
+
+    /** An array as Spark hands it, a Scala sequence, as the Java array of its elements. */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] array(Object o, T[] empty) {
+        if (o instanceof scala.collection.Seq) {
+            return CollectionConverters.asJava((scala.collection.Seq<T>) o).toArray(empty);
+        }
+        return java.util.Arrays.copyOf((Object[]) o, ((Object[]) o).length,
+            (Class<T[]>) empty.getClass());
+    }
+
+'''
+
+
+def _spark_value_class_src(m, sql):
+    """The Spark value of the SQL type `sql`: the class holding the form its catalog codec writes,
+    as #_value_class_src writes the Flink one, and the UserDefinedType Spark carries it as."""
+    cls = m.value_class[sql]
+    kind, dec, enc, in_aux, out_aux = m.codec[sql]
+    daux = ''.join(', ' + str(a.get('default', 0)) for a in in_aux)
+    eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') \
+        else ''.join(', ' + str(a.get('default', 0)) for a in out_aux)
+    if kind == 'bytes':
+        decode = f'GeneratedFunctions.{dec}(form)'
+        encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
+                  f'        return b == null ? null : new {cls}(b);')
+        render = 'MeosValue.hex(form)'
+    else:
+        decode = f'GeneratedFunctions.{dec}(new String(form, StandardCharsets.UTF_8){daux})'
+        encode = (f'String s = GeneratedFunctions.{enc}(p{eaux});\n'
+                  f'        return s == null ? null : new {cls}(s.getBytes(StandardCharsets.UTF_8));')
+        render = 'new String(form, StandardCharsets.UTF_8)'
+    return f'''package {m.pkg}.types;
+
+import functions.GeneratedFunctions;
+import java.nio.charset.StandardCharsets;
+import jnr.ffi.Pointer;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.SQLUserDefinedType;
+import org.apache.spark.sql.types.UserDefinedType;
+import {m.pkg}.MeosValue;
+
+/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
+ * The SQL type {sql}, carried as its {kind} form ({dec} / {enc}). */
+@SQLUserDefinedType(udt = {cls}.UDT.class)
+public final class {cls} extends MeosValue {{
+
+    /** The Spark SQL type of this value. */
+    public static final DataType TYPE = new UDT();
+
+    public {cls}(byte[] form) {{
+        super(form);
+    }}
+
+    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
+    public Pointer decode() {{
+        return {decode};
+    }}
+
+    /** The value MEOS holds at p, in the form this type carries. */
+    public static {cls} encode(Pointer p) {{
+        {encode}
+    }}
+
+    @Override
+    public String toString() {{
+        return {render};
+    }}
+
+    /** The SQL type {sql} as Spark carries it: the bytes of the form. */
+    public static final class UDT extends UserDefinedType<{cls}> {{
+        @Override
+        public DataType sqlType() {{
+            return DataTypes.BinaryType;
+        }}
+
+        @Override
+        public Object serialize({cls} v) {{
+            return v.form;
+        }}
+
+        @Override
+        public {cls} deserialize(Object d) {{
+            return new {cls}((byte[]) d);
+        }}
+
+        @Override
+        public Class<{cls}> userClass() {{
+            return {cls}.class;
+        }}
+
+        @Override
+        public String typeName() {{
+            return "{sql}";
+        }}
+    }}
+}}
+'''
+
+
+_SPARK_MEOS_VALUE = '''package {pkg};
+
+import java.util.Arrays;
+import jnr.ffi.Pointer;
+
+/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
+ * A MEOS value as Spark holds it: the serialized form its catalog codec writes, as bytes —
+ * the WKB itself, or the UTF-8 of a string form. */
+public abstract class MeosValue implements java.io.Serializable {
+
+    public final byte[] form;
+
+    protected MeosValue(byte[] form) {
+        this.form = form;
+    }
+
+    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
+    public abstract Pointer decode();
+
+    /** The hex text of bytes, the readable form of a WKB. */
+    public static String hex(byte[] b) {
+        StringBuilder s = new StringBuilder(2 * b.length);
+        for (byte x : b) {
+            s.append(Character.forDigit((x >> 4) & 0xF, 16)).append(Character.forDigit(x & 0xF, 16));
+        }
+        return s.toString().toUpperCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o != null && o.getClass() == getClass() && Arrays.equals(form, ((MeosValue) o).form);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(form);
+    }
+}
+'''
+
+
+def run_spark_sql(args):
+    """The typed Spark SQL surface: the flink-sql engine's overloads, registered once per SQL name
+    through #_spark_planning's builder, over a UserDefinedType per SQL value type."""
+    cat = load_catalog(args.catalog)
+    jmeos = parse_jmeos_signatures(args.jar)
+    m = SqlModel(cat, jmeos, SPARK_SQL_PKG, 'spark')
+    root = Path(args.out) / 'src/main/java' / SPARK_SQL_PKG.replace('.', '/')
+    for sub in ('', 'types', 'functions'):
+        d = root / sub
+        d.mkdir(parents=True, exist_ok=True)
+        for old in d.glob('*.java'):
+            old.unlink()
+    for sql in m.value_class:
+        (root / 'types' / f'{m.value_class[sql]}.java').write_text(_spark_value_class_src(m, sql))
+
+    # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, as the flink-sql
+    # engine reads them for a set-returning signature's rows.
+    spark = _spark_module()
+    spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
+    layout = lambda name: spark.struct_layout(name) if name in spark.STRUCTS else None  # noqa: E731
+
+    names = defaultdict(list)          # SQL name -> (eval lines, Spark arg types, ret, classes)
+    seen = defaultdict(set)
+    skipped = defaultdict(int)
+    nset = 0
+    for f in m.fns:
+        if not f.get('sqlfn') or f.get('sqlfnBackingOnly') or f.get('api') != 'public':
+            continue
+        jsig = jmeos.get(f['name'])
+        if jsig is None:
+            skipped['not in jar'] += 1
+            continue
+        for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
+                                                             f.get('sqlSignatures') or []):
+            if sig.get('retSet'):
+                ov, why = _setret_overload(m, f, sig, jsig, sbound, layout)
+                nset += ov is not None
+            else:
+                ov, why = _overload(m, f, sargs, sret, jsig, sbound)
+            if ov is None:
+                skipped[why.split('/')[0]] += 1
+                continue
+            ret = ov[4]
+            if ret is None:
+                skipped['spark:ret'] += 1
+                continue
+            defaults = (list(sdef) + [None] * len(sargs))[:len(sargs)]
+            variants = [None]
+            for k in range(1, len(sargs) + 1):
+                lits = [_default_literal(sargs[len(sargs) - k + j], defaults[len(sargs) - k + j])
+                        for j in range(k)]
+                if any(x is None for x in lits):
+                    break
+                variants.append(lits)
+            for dv in variants:
+                shown = ov[0] if dv is None else ov[0][:len(ov[0]) - len(dv)]
+                key = tuple(t for t, _ in shown)
+                if key in seen[sqlname]:
+                    continue
+                types = [_spark_datatype(m, t) for t in key]
+                if None in types:
+                    skipped['spark:arg'] += 1
+                    continue
+                seen[sqlname].add(key)
+                names[sqlname].append((_emit_eval(ov, dv), types, ret, list(key)))
+
+    arity = max((len(t) for sigs in names.values() for _, t, _, _ in sigs), default=0)
+    (root / 'MeosValue.java').write_text(_SPARK_MEOS_VALUE.replace('{pkg}', SPARK_SQL_PKG))
+    (root / 'MeosSqlRuntime.java').write_text(
+        _runtime_src(SPARK_SQL_PKG, _SPARK_RUNTIME_IMPORTS, _SPARK_RUNTIME_DOC,
+                     _spark_planning(arity)))
+
+    classes = {}
+    taken = set()
+    for sqlname in sorted(names):
+        cls = _javaid(sqlname)
+        while cls.lower() in taken:
+            cls += '_'
+        taken.add(cls.lower())
+        classes[sqlname] = cls
+        sigs = names[sqlname]
+        body = [f'package {SPARK_SQL_PKG}.functions;', '',
+                'import functions.GeneratedFunctions;',
+                'import java.time.OffsetDateTime;',
+                'import jnr.ffi.Pointer;',
+                'import org.apache.spark.sql.types.DataType;',
+                'import org.apache.spark.sql.types.DataTypes;',
+                f'import {SPARK_SQL_PKG}.MeosSqlRuntime;', '',
+                '/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.',
+                f' * The MobilityDB SQL function {sqlname}: {len(sigs)} overload(s). */',
+                f'public final class {cls} {{', '',
+                f'    private {cls}() {{ }}', '']
+        for k, (ev, _, _, _) in enumerate(sigs):
+            body += [ev[0].replace('    public ', '    static ', 1).replace(' eval(', f' e{k}(', 1)] \
+                + ev[1:]
+        body += ['    /** The overloads of this name, in the order the builder tries them. */',
+                 '    public static MeosSqlRuntime.Overload[] overloads() {',
+                 '        return new MeosSqlRuntime.Overload[] {']
+        for k, (_, types, ret, jcls) in enumerate(sigs):
+            call = ', '.join(_spark_arg(c, i) for i, c in enumerate(jcls))
+            body.append(f'            new MeosSqlRuntime.Overload(new DataType[] {{{", ".join(types)}}}, '
+                        f'{ret}, a -> e{k}({call})),')
+        body += ['        };', '    }', '}']
+        (root / 'functions' / f'{cls}.java').write_text('\n'.join(body) + '\n')
+
+    reg = [f'package {SPARK_SQL_PKG};', '',
+           'import org.apache.spark.sql.SparkSession;', '',
+           '/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.',
+           ' * Registers every generated function under its MobilityDB SQL name, each name once with',
+           ' * the builder that resolves its overloads from the argument types. */',
+           'public final class MobilitySparkSql {', '',
+           '    private MobilitySparkSql() { }', '']
+    items = sorted(classes.items())
+    chunks = [items[i:i + 200] for i in range(0, len(items), 200)]
+    reg.append('    public static void registerAll(SparkSession spark) {')
+    reg += [f'        register{i}(spark);' for i in range(len(chunks))]
+    reg += ['    }', '']
+    for i, chunk in enumerate(chunks):
+        reg.append(f'    private static void register{i}(SparkSession spark) {{')
+        reg += [f'        MeosSqlRuntime.register(spark, "{n}", {SPARK_SQL_PKG}.functions.{c}.overloads());'
+                for n, c in chunk]
+        reg += ['    }', '']
+    reg.append('}')
+    (root / 'MobilitySparkSql.java').write_text('\n'.join(reg) + '\n')
+
+    n_ov = sum(len(v) for v in names.values())
+    print(f'spark-sql: {len(classes)} SQL functions ({n_ov} overloads, {nset} of them '
+          f'set-returning signatures), {len(m.value_class)} value types into {root}')
+    for why, n in sorted(skipped.items(), key=lambda x: -x[1]):
+        print(f'  skipped {n:5d}  {why}')
+
+
 # ───────────────────────── entry point ─────────────────────────
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--engine', required=True, choices=['spark', 'flink', 'kafka', 'flink-sql'])
+    ap.add_argument('--engine', required=True, choices=['spark', 'flink', 'kafka', 'flink-sql', 'spark-sql'])
     ap.add_argument('--catalog', required=True, help='MEOS-API meos-idl.json')
     ap.add_argument('--jar', required=True,
                     help='JMEOS jar with functions.GeneratedFunctions')
@@ -1688,6 +2280,8 @@ def main():
         run_spark(args)
     elif args.engine == 'flink-sql':
         run_flink_sql(args)
+    elif args.engine == 'spark-sql':
+        run_spark_sql(args)
     else:
         run_facades(args)
 
