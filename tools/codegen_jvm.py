@@ -1854,25 +1854,30 @@ def _spark_planning(arity):
      * overload takes to the function Spark held under that name before, so a Spark built-in of
      * the same name keeps answering its own arguments. */
     public static void register(SparkSession spark, String name, Overload... overloads) {
+        FunctionIdentifier id = FunctionIdentifier.apply(name);
         Option<Function1<Seq<Expression>, Expression>> before =
-            spark.sessionState().functionRegistry().lookupFunctionBuilder(FunctionIdentifier.apply(name));
+            spark.sessionState().functionRegistry().lookupFunctionBuilder(id);
+        boolean builtin = org.apache.spark.sql.catalyst.analysis.FunctionRegistry.builtin().functionExists(id);
         spark.sessionState().functionRegistry().createOrReplaceTempFunction(name,
             new AbstractFunction1<Seq<Expression>, Expression>() {
                 @Override
                 public Expression apply(Seq<Expression> args) {
-                    return resolve(name, overloads, args, before);
+                    return resolve(name, overloads, args, before, builtin);
                 }
             }, "scala_udf");
     }
 
     /** The call of the overload whose argument types the arguments have, else of the first one
      * they reach by widening a number, as PostgreSQL's implicit casts reach it. A name Spark
-     * already answers keeps a call no overload takes as it stands for that function: round(2.5)
-     * stays Spark's own, as PostgreSQL resolves it to its numeric round, not to MEOS's. */
+     * itself answers keeps a call no overload takes exactly as it stands for that built-in:
+     * round(2.5) stays Spark's own, as PostgreSQL resolves it to its numeric round, not to
+     * MEOS's. A function held before that is not Spark's own, such as the one the UDF surface
+     * registers under the same name, comes after the widening: eDwithin(t1, t2, 300) over two
+     * tgeompoint values reaches the overload taking a double distance. */
     static Expression resolve(String name, Overload[] overloads, Seq<Expression> args,
-            Option<Function1<Seq<Expression>, Expression>> before) {
+            Option<Function1<Seq<Expression>, Expression>> before, boolean builtin) {
         List<Expression> given = CollectionConverters.asJava(args);
-        for (boolean widen : before.isDefined() ? new boolean[] {false} : new boolean[] {false, true}) {
+        for (boolean widen : builtin ? new boolean[] {false} : new boolean[] {false, true}) {
             for (Overload o : overloads) {
                 List<Expression> in = fit(o, given, widen);
                 if (in != null) {
