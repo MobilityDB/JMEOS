@@ -588,6 +588,14 @@ def _single_pointer(t):
     return n.endswith('*') and n.count('*') == 1
 
 
+def _deployed_type(t):
+    """The SQL type `t` as PostgreSQL deploys a function over it: CREATE FUNCTION discards a
+    parenthesized type modifier, so geometry(Point) is geometry and geography(Point)[] is
+    geography[].  As #_norm reads a C type the way the jar sees it, this reads a SQL type
+    the way the engine sees it."""
+    return re.sub(r'^(\w+)\([\w ,]*\)((?:\[\])*)$', r'\1\2', t)
+
+
 def _jshort(t):
     return {'jnr.ffi.Pointer': 'Pointer', 'java.lang.String': 'String',
             'java.time.OffsetDateTime': 'OffsetDateTime'}.get(t, t)
@@ -658,10 +666,15 @@ class SqlModel:
     def signatures(self, f):
         """(sqlName, args, ret, argDefaults, boundArgs) for every SQL signature of f, where
         boundArgs are the literals the wrapper passes for the C parameters the signature
-        does not state: those of the whole function and those of the signature."""
+        does not state: those of the whole function and those of the signature.  A type
+        carries no modifier: CREATE FUNCTION discards it, so `startValue(tgeompoint)`,
+        declared to return geometry(Point), returns a geometry (#_deployed_type)."""
         fbound = (f.get('shape') or {}).get('boundArgs') or {}
         for s in f.get('sqlSignatures') or []:
-            yield (s.get('sqlName') or f['sqlfn'], s.get('args') or [], s.get('ret'),
+            ret = s.get('ret')
+            yield (s.get('sqlName') or f['sqlfn'],
+                   [_deployed_type(a) for a in s.get('args') or []],
+                   _deployed_type(ret) if ret else ret,
                    s.get('argDefaults') or [], {**fbound, **(s.get('boundArgs') or {})})
 
     def _align(self):
@@ -691,10 +704,13 @@ class SqlModel:
 
         The WKB bytes where the catalog states the byte codec of the C type, and its
         hex WKB where it states a WKB decoder and an asHexWKB encoder: a C type has one
-        WKB reader, so one codec serves every SQL type the C type stands for.  Text
-        otherwise, and only for a C type a single SQL type stands for, since a text
-        decoder cannot tell those SQL types apart.  The Spark generator chooses by the
-        same rule (#derive_codecs in codegen_spark_udfs.py)."""
+        WKB reader, so one codec serves every SQL type the C type stands for.  The hex
+        WKB of a SQL type where the catalog keys a WKB reader by it among the readers of a
+        C type several SQL types share (geometry: geom_from_hexewkb, geography:
+        geog_from_hexewkb), written by the C type's WKB encoder with the inputs the catalog
+        states for it.  Text otherwise, and only for a C type a single SQL type stands for,
+        since a text decoder cannot tell those SQL types apart.  The Spark generator chooses
+        by the same rule (#derive_codecs in codegen_spark_udfs.py)."""
         hexwkb = {}
         for f in self.fns:
             if f.get('sqlfn') == 'asHexWKB' and f['params'] and f['name'] in self.jmeos:
@@ -714,6 +730,10 @@ class SqlModel:
                 self.codec[sql] = ('bytes', byt['decoder'], byt['encoder'], [], [])
             elif dec.get('wkb') in self.jmeos and cb in hexwkb:
                 self.codec[sql] = ('wkb', dec['wkb'], hexwkb[cb], [], [])
+            elif ((e.get('readers') or {}).get('wkb') or {}).get(sql) in self.jmeos \
+                    and encd.get('wkb') in self.jmeos:
+                self.codec[sql] = ('wkb', e['readers']['wkb'][sql], encd['wkb'],
+                                   e['readerAux']['wkb'][sql], e['encoderAux']['wkb'])
             elif len(by_cbase[cb]) == 1 and dec.get('text') in self.jmeos \
                     and encd.get('text') in self.jmeos:
                 self.codec[sql] = ('text', dec['text'], encd['text'],
@@ -805,6 +825,13 @@ def _ret(m, sql, f, jt, outs):
         if len(outs) != 1 or rc != 'bool' or jt != 'jnr.ffi.Pointer':
             return None
         oc = _norm(outs[0]['canonical'])
+        if vc and oc == f'{m.sql_cbase.get(sql)} **':
+            # A value out-parameter: the jar dereferences the buffer and returns the value
+            # MEOS allocated (geoset_value_n copies the element), carried as a returned value is.
+            return (f'{m.pkg}.types.{vc}',
+                    ['if (_r == null) return null;',
+                     f'try {{ return {m.pkg}.types.{vc}.encode(_r); }}',
+                     'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
         read = {('integer', 'int *'): ('Integer', '_r.getInt(0)'),
                 ('float', 'double *'): ('Double', '_r.getDouble(0)'),
                 ('bigint', 'int64 *'): ('Long', '_r.getLongLong(0)'),
@@ -938,7 +965,9 @@ def _inputs(m, f, args, jtypes, bound=None):
     The SQL arguments pair with the visible C parameters in order, except that a SQL array
     stands for the C array shape.inputArrays names together with the count its lengthFrom
     names, which the eval passes as the length of the Flink array, and that a parameter
-    the signature's wrapper binds (`bound`, from boundArgs) takes that literal."""
+    the signature's wrapper binds (`bound`, from boundArgs) takes that literal: a count
+    takes it with its array (raster_clip's first signature binds bands to NULL and nbands
+    to 0)."""
     vis, _ = m.visible(f)
     jsig = {'arg_types': jtypes}
     arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []}
@@ -948,8 +977,9 @@ def _inputs(m, f, args, jtypes, bound=None):
         if lf.get('kind') != 'param' or lf.get('name') not in {p['name'] for p in vis}:
             return None, 'array:length'
         counts[lf['name']] = a['param']
-    bound = {k: v for k, v in (bound or {}).items()
-             if k in {p['name'] for p in vis} and k not in counts}
+    raw = bound or {}
+    bound = {k: v for k, v in raw.items()
+             if k in {p['name'] for p in vis} and (k not in counts or counts[k] in raw)}
     walk = [i for i, p in enumerate(vis) if p['name'] not in counts and p['name'] not in bound]
     if len(args) != len(walk):
         return None, 'arity:sql'
@@ -980,7 +1010,7 @@ def _inputs(m, f, args, jtypes, bound=None):
         call[i] = e
         passed[p['name']] = name
     for i, p in enumerate(vis):
-        if p['name'] in counts:
+        if p['name'] in counts and p['name'] not in bound:
             if jsig['arg_types'][i] not in ('int', 'long'):
                 return None, f'arraycount:{jsig["arg_types"][i]}'
             call[i] = f'{passed[counts[p["name"]]]}.length'
@@ -1120,6 +1150,7 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     if len(counts) != 1:
         return None, 'setret:count'
     cols = sig.get('columns') or [{'name': None, 'from': 'return', 'type': sig.get('ret')}]
+    cols = [dict(c, type=_deployed_type(c['type'])) if c.get('type') else c for c in cols]
     readers = []
     for col in cols:
         r = _setret_column(m, f, col, layout)
@@ -1129,7 +1160,8 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     sources = {r[1] for _, r in readers} - {None, 'return'}
     if any(p is not counts[0] and p['name'] not in sources for p in outs):
         return None, 'setret:out'
-    got, why = _inputs(m, f, sig.get('args') or [], [jt[p['name']] for p in vis], bound)
+    got, why = _inputs(m, f, [_deployed_type(a) for a in sig.get('args') or []],
+                       [jt[p['name']] for p in vis], bound)
     if got is None:
         return None, why
     params, call_vis, temps = got
@@ -1169,12 +1201,32 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
 
 
+def _aux_literal(a):
+    """The Java literal of the value the catalog states for a trailing input: a number as
+    written, a string quoted, and null where it states none (geo_as_hexewkb's endian, which
+    MEOS reads as the machine's byte order). #_default_literal renders a SQL default, the
+    text a signature carries; this renders the value a codec's aux carries."""
+    v = a.get('default', 0)
+    if v is None:
+        return 'null'
+    return json.dumps(v) if isinstance(v, str) else str(v)
+
+
+def _codec_aux(m, sql):
+    """(kind, decoder, encoder, the decoder's trailing arguments, the encoder's) of the codec
+    of `sql`, the arguments as Java text: the inputs the catalog states for the codec, else the
+    extended WKB variant a WKB or byte writer takes. The Flink value (#_value_class_src) and
+    the Spark one (#_spark_value_class_src) call the same codec, so both read it here."""
+    kind, dec, enc, in_aux, out_aux = m.codec[sql]
+    daux = ''.join(', ' + _aux_literal(a) for a in in_aux)
+    eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') and not out_aux \
+        else ''.join(', ' + _aux_literal(a) for a in out_aux)
+    return kind, dec, enc, daux, eaux
+
+
 def _value_class_src(m, sql):
     cls = m.value_class[sql]
-    kind, dec, enc, in_aux, out_aux = m.codec[sql]
-    daux = ''.join(', ' + str(a.get('default', 0)) for a in in_aux)
-    eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') \
-        else ''.join(', ' + str(a.get('default', 0)) for a in out_aux)
+    kind, dec, enc, daux, eaux = _codec_aux(m, sql)
     # The form is bytes whatever the codec: the WKB itself, or the UTF-8 of a string form.
     if kind == 'bytes':
         decode = f'GeneratedFunctions.{dec}(form)'
@@ -2147,7 +2199,7 @@ def _spark_aggregates(m, cat, jmeos, scalars):
     stated = {a['sqlName'].lower() for a in cat.get('aggregates') or []}
     for a in cat.get('aggregates') or []:
         meos = lambda k: (a.get(k) or {}).get('meos')  # noqa: E731
-        args = a.get('args') or []
+        args = [_deployed_type(t) for t in a.get('args') or []]
         if len(args) != 1 or meos('final') != 'temporal_tagg_finalfn' \
                 or not meos('transition') or not meos('combine'):
             continue
@@ -2156,7 +2208,7 @@ def _spark_aggregates(m, cat, jmeos, scalars):
             if (name + 'Agg').lower() in stated:
                 continue
             name += 'Agg'
-        if args[0] not in m.value_class or a['ret'] not in m.value_class:
+        if args[0] not in m.value_class or _deployed_type(a['ret']) not in m.value_class:
             left[f"{name}: no value type"] += 1
             continue
         if any(s not in jmeos for s in (meos('transition'), meos('combine')) + need):
@@ -2183,10 +2235,7 @@ def _spark_value_class_src(m, sql):
     """The Spark value of the SQL type `sql`: the class holding the form its catalog codec writes,
     as #_value_class_src writes the Flink one, and the UserDefinedType Spark carries it as."""
     cls = m.value_class[sql]
-    kind, dec, enc, in_aux, out_aux = m.codec[sql]
-    daux = ''.join(', ' + str(a.get('default', 0)) for a in in_aux)
-    eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') \
-        else ''.join(', ' + str(a.get('default', 0)) for a in out_aux)
+    kind, dec, enc, daux, eaux = _codec_aux(m, sql)
     if kind == 'bytes':
         decode = f'GeneratedFunctions.{dec}(form)'
         encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
