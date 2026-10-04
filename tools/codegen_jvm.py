@@ -691,7 +691,8 @@ class SqlModel:
 
         The SQL arguments pair with the visible C parameters as #_inputs pairs them:
         a parameter the signature's wrapper binds, and the count of an input array,
-        stand for no SQL argument."""
+        stand for no SQL argument, and the catalog's sqlArgParams, where stated, gives
+        the order the wrapper reads them in."""
         seen = defaultdict(lambda: defaultdict(int))
         for f in self.fns:
             if not f.get('sqlfn'):
@@ -699,8 +700,13 @@ class SqlModel:
             vis, outs = self.visible(f)
             counts = {(a.get('lengthFrom') or {}).get('name')
                       for a in (f.get('shape') or {}).get('inputArrays') or []}
-            for _, args, ret, _, bound in self.signatures(f):
+            for (_, args, ret, _, bound), sig in zip(self.signatures(f),
+                                                     f.get('sqlSignatures') or []):
                 walk = [p for p in vis if p['name'] not in bound and p['name'] not in counts]
+                order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
+                at = {p['name']: p for p in walk}
+                if order and set(order) == set(at):
+                    walk = [at[n] for n in order]
                 if len(args) == len(walk):
                     for a, p in zip(args, walk):
                         if _single_pointer(p['canonical']):
@@ -914,7 +920,8 @@ def _array_arg(m, elem, a, p, jt, name, temps):
     el = a['element']
     t = f'_p{len(temps)}'
     if elem in m.value_class and c.count('*') == 2 \
-            and _base(el['canonical']) == m.sql_cbase.get(elem):
+            and m.sql_cbase.get(elem) in (_base(el['canonical']),
+                                          m.subtype_of.get(_base(el['canonical']))):
         temps.append((t, name, 'values'))
         return f'{m.pkg}.types.{m.value_class[elem]}[]', t
     hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
@@ -927,8 +934,11 @@ def _array_arg(m, elem, a, p, jt, name, temps):
 
 def _bound_literal(m, v, jt):
     """The Java literal passing the value a wrapper binds (boundArgs) to a jar parameter of
-    type `jt`, or None.  A macro or enum member name stands for its catalog value."""
+    type `jt`, or None.  A macro or enum member name stands for its catalog value, which the
+    catalog states as JSON: NORMALIZE is the boolean true."""
     v = m.consts.get(v, v)
+    if isinstance(v, bool):
+        v = 'true' if v else 'false'
     if v in ('true', 'false'):
         return v if jt == 'boolean' else None
     if v == 'NULL':
@@ -950,7 +960,7 @@ def _bound_literal(m, v, jt):
     return None
 
 
-def _overload(m, f, args, ret, jsig, bound=None):
+def _overload(m, f, args, ret, jsig, bound=None, order=None):
     """The eval of one signature returning one value, or (None, reason): the arguments
     #_inputs passes and the result #_ret reads, as (params, temps, Flink return class, body,
     Flink return type)."""
@@ -958,7 +968,7 @@ def _overload(m, f, args, ret, jsig, bound=None):
     outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
     if len(jsig['arg_types']) != len(vis):
         return None, 'arity:jmeos'
-    got, why = _inputs(m, f, args, jsig['arg_types'], bound)
+    got, why = _inputs(m, f, args, jsig['arg_types'], bound, order)
     if got is None:
         return None, why
     params, call, temps = got
@@ -970,7 +980,7 @@ def _overload(m, f, args, ret, jsig, bound=None):
     return (params, temps, rcls, body + rstmts, m.datatype(rcls)), None
 
 
-def _inputs(m, f, args, jtypes, bound=None):
+def _inputs(m, f, args, jtypes, bound=None, order=None):
     """((params, call, temps), None) passing the SQL arguments `args` of a signature of `f` to
     its visible C parameters, whose jar types are `jtypes`, or (None, reason).
 
@@ -993,6 +1003,13 @@ def _inputs(m, f, args, jtypes, bound=None):
     bound = {k: v for k, v in raw.items()
              if k in {p['name'] for p in vis} and (k not in counts or counts[k] in raw)}
     walk = [i for i, p in enumerate(vis) if p['name'] not in counts and p['name'] not in bound]
+    if order:
+        # The catalog's sqlArgParams: the C parameters in the order the wrapper reads the SQL
+        # arguments for them, where that is not their C order (tsequence_make takes the
+        # interpolation last, tgeogpointSeq reads it second).
+        at = {p['name']: i for i, p in enumerate(vis)}
+        if set(order) <= set(at) and sorted(at[n] for n in order) == walk:
+            walk = [at[n] for n in order]
     if len(args) != len(walk):
         return None, 'arity:sql'
     params, temps, passed = [], [], {}
@@ -1157,7 +1174,8 @@ def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
     if sig.get('retSet'):
         ov, why = _setret_overload(m, f, sig, jsig, bound, layout)
         return ov, why, ov is not None
-    ov, why = _overload(m, f, args, ret, jsig, bound)
+    order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
+    ov, why = _overload(m, f, args, ret, jsig, bound, order)
     if ov is None and ret and ret.endswith('[]'):
         arr, awhy = _setret_overload(m, f, dict(sig, ret=ret[:-2]), jsig, bound, layout)
         if arr is not None:
@@ -1192,7 +1210,8 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     if any(p is not counts[0] and p['name'] not in sources for p in outs):
         return None, 'setret:out'
     got, why = _inputs(m, f, [_deployed_type(a) for a in sig.get('args') or []],
-                       [jt[p['name']] for p in vis], bound)
+                       [jt[p['name']] for p in vis], bound,
+                       sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams'))
     if got is None:
         return None, why
     params, call_vis, temps = got
