@@ -626,6 +626,11 @@ class SqlModel:
         self.consts.update({v['name']: v['value'] for e in cat.get('enums', [])
                             for v in e.get('values') or []
                             if isinstance(v, dict) and isinstance(v.get('value'), int)})
+        # The subtypes the object model's subtype axis lists (TInstant, TSequence, TSequenceSet),
+        # each a Temporal, as #derive_codecs of codegen_spark_udfs.py reads them.
+        axis = ((cat.get('objectModel') or {}).get('axes') or {}).get('subtype') or {}
+        self.subtype_of = {v['class']: 'Temporal' for v in axis.get('values') or []
+                           if v.get('class') and v['class'] != 'Temporal'}
         self._align()
         self._codecs()
         self._enum_parsers()
@@ -1125,7 +1130,7 @@ def _setret_column(m, f, col, layout):
     vc = m.value_class.get(sql)
     if elem.endswith('*'):                            # an array of pointers
         b = elem[:-1].strip()
-        if vc and m.sql_cbase.get(sql) == b:
+        if vc and m.sql_cbase.get(sql) in (b, m.subtype_of.get(b)):
             return (f'{m.pkg}.types.{vc}', src,
                     f'{m.pkg}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
         if b == 'text' and sql == 'text' and 'text_out' in m.jmeos:
@@ -1139,6 +1144,25 @@ def _setret_column(m, f, col, layout):
         return (f'{m.pkg}.types.{vc}', src,
                 f'{m.pkg}.types.{vc}.encode({{a}}.slice((long) _i * {lay[0]}L))', False)
     return None
+
+
+def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
+    """(eval or None, reason, whether it answers an array of rows) for one signature of `f`.
+
+    A set-returning signature reads its rows (#_setret_overload). A signature returning one
+    value reads it (#_overload), and a signature returning a SQL array `X[]` that #_overload
+    refuses reads the elements as a set-returning signature of `X` reads its rows: the C
+    function answers the same array and writes its length through `int *count`, so
+    instants(ttype), declared to return ttypeInst[], answers the instants as an array."""
+    if sig.get('retSet'):
+        ov, why = _setret_overload(m, f, sig, jsig, bound, layout)
+        return ov, why, ov is not None
+    ov, why = _overload(m, f, args, ret, jsig, bound)
+    if ov is None and ret and ret.endswith('[]'):
+        arr, awhy = _setret_overload(m, f, dict(sig, ret=ret[:-2]), jsig, bound, layout)
+        if arr is not None:
+            return arr, awhy, False
+    return ov, why, False
 
 
 def _setret_overload(m, f, sig, jsig, bound, layout):
@@ -1694,11 +1718,8 @@ def run_flink_sql(args):
             continue
         for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
                                                              f.get('sqlSignatures') or []):
-            if sig.get('retSet'):
-                ov, why = _setret_overload(m, f, sig, jsig, sbound, layout)
-                nset += ov is not None
-            else:
-                ov, why = _overload(m, f, sargs, sret, jsig, sbound)
+            ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
+            nset += isset
             if ov is None:
                 skipped[why.split('/')[0]] += 1
                 continue
@@ -2397,11 +2418,8 @@ def run_spark_sql(args):
             continue
         for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
                                                              f.get('sqlSignatures') or []):
-            if sig.get('retSet'):
-                ov, why = _setret_overload(m, f, sig, jsig, sbound, layout)
-                nset += ov is not None
-            else:
-                ov, why = _overload(m, f, sargs, sret, jsig, sbound)
+            ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
+            nset += isset
             if ov is None:
                 skipped[why.split('/')[0]] += 1
                 continue
