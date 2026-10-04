@@ -824,6 +824,12 @@ def _arg(m, sql, p, jt, name, temps):
         return name
     if sql in ('text', 'cstring') and jt == 'java.lang.String' and c == 'char *':
         return name
+    if sql == 'text' and jt == 'jnr.ffi.Pointer' and c == 'text *' and 'text_in' in m.jmeos:
+        # A text MEOS reads, built by text_in and freed after the call, as a text it returns
+        # is read by text_out (#_ret).
+        t = f'_p{len(temps)}'
+        temps.append((t, f'GeneratedFunctions.text_in({name})', 'value'))
+        return t
     if sql in ('text', 'cstring') and jt == 'int' and c in m.enum_parser:
         return f'GeneratedFunctions.{m.enum_parser[c]}({name})'
     if sql == 'timestamptz' and jt == 'java.time.OffsetDateTime':
