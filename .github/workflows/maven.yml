@@ -108,6 +108,20 @@ jobs:
           python3 tools/codegen_jvm.py --engine spark --catalog codegen/input/meos-idl.json \
             --jar jar/JMEOS.jar --out "$RUNNER_TEMP/spark" --gaps tools/spark-udf-gaps.txt
 
+      # Spark and Flink own names PostgreSQL gives MobilityDB functions (round, lower, hash,
+      # ...), and the catalog states the name these engines publish each such signature under,
+      # its altSqlName. A surface registering a PostgreSQL name all of whose signatures carry
+      # one would replace Spark's own function or be shadowed or refused by Flink, so the UDF
+      # surface above and the two SQL surfaces are generated and such a name fails the step.
+      - name: Refuse a name Spark or Flink owns
+        run: |
+          for engine in spark-sql flink-sql; do
+            python3 tools/codegen_jvm.py --engine "$engine" --catalog codegen/input/meos-idl.json \
+              --jar jar/JMEOS.jar --out "$RUNNER_TEMP/$engine"
+          done
+          python3 tools/check_owned_names.py codegen/input/meos-idl.json \
+            "$RUNNER_TEMP/spark" "$RUNNER_TEMP/spark-sql" "$RUNNER_TEMP/flink-sql"
+
       # The build's own summary states two things this job's conclusion does
       # not: a test reported SKIPPED asserts nothing while the job still reads
       # success, and a test the run never collects appears in no count at all,

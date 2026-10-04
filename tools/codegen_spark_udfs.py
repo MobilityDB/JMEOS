@@ -370,6 +370,24 @@ def _java_bound(v, ctype):
     return None
 
 
+def published_name(f, s):
+    """The name Spark publishes signature `s` of `f` under: its altSqlName where the catalog
+    states one, the name the engine takes where it owns the PostgreSQL one (`floatRound` for
+    `round(tfloat, integer)`, since registering `round` would replace Spark's own), else its
+    sqlName, else the function's sqlfn. The same choice as #signatures of codegen_jvm.py makes
+    for the typed SQL surfaces, so the UDF surface and those surfaces publish one name set."""
+    return s.get("altSqlName") or s.get("sqlName") or f.get("sqlfn")
+
+
+def own_names(f):
+    """The names `f` publishes for its own SQL name, its sqlfn: those of the signatures carrying
+    that name, so a function whose sqlfn is `round` owns `floatRound`, `geoRound`, ... where its
+    signatures state them, and `round` where they state none."""
+    sigs = [s for s in f.get("sqlSignatures") or []
+            if (s.get("sqlName") or f.get("sqlfn")) == f.get("sqlfn")]
+    return {published_name(f, s) for s in sigs} or {f.get("sqlfn")}
+
+
 def _omitted(f, p, vis, name):
     """The values MobilityDB gives parameter `p` of `f` when a call of the SQL name `name`
     states `vis` arguments: the literal the wrapper passes for a signature of that arity
@@ -381,7 +399,7 @@ def _omitted(f, p, vis, name):
     params = classify(f)[0]
     vals = []
     for s in f.get("sqlSignatures") or []:
-        if (s.get("sqlName") or f.get("sqlfn")) != name:
+        if published_name(f, s) != name:
             continue
         sb = {**fbound, **(s.get("boundArgs") or {})}
         args = s.get("args") or []
@@ -1917,8 +1935,8 @@ def main():
                 continue
             shape = setret_shape(f, sig)
             if shape is not None:
-                setret.setdefault(sig.get("sqlName") or f.get("sqlfn"), []).append((f, shape))
-                setret_sql.setdefault(sig.get("sqlName") or f.get("sqlfn"), []).append(
+                setret.setdefault(published_name(f, sig), []).append((f, shape))
+                setret_sql.setdefault(published_name(f, sig), []).append(
                     (f, setret_shape(f, sig, f.get("sqlArity"))))
     by_fn = {}
     for sname, cands in setret.items():
@@ -1980,7 +1998,7 @@ def main():
         # tbigintFromHexWKB …, temporal_as_tinstant behind tintInst, tfloatInst …) states each
         # name on its signatures, sqlfn being the representative: the function joins the
         # group of every name its signatures carry, as _omitted reads them.
-        for s in {sig.get("sqlName") or f["sqlfn"] for sig in f.get("sqlSignatures") or []} \
+        for s in {published_name(f, sig) for sig in f.get("sqlSignatures") or []} \
                 or {f["sqlfn"]}:
             if s not in names and s not in portable_names:
                 sqlgroups.setdefault(s, []).append(f)
@@ -2015,7 +2033,7 @@ def main():
         # signatures joins a shape and never chooses it; the largest shape answers a name
         # that only signatures state. A key on the overloads, as _famrank is below.
         pos = {id(f): i for i, f in enumerate(sqlgroups[sname])}
-        own = lambda g: [pos[id(f)] for f in g if f.get("sqlfn") == sname]
+        own = lambda g: [pos[id(f)] for f in g if sname in own_names(f)]
         group = max(bysig.values(),
                     key=lambda g: (len(own(g)), -min(own(g))) if own(g) else (0, len(g)))
         # The shapes the chosen one meets in one UDF answer under the name too (#_merges).
@@ -2040,7 +2058,7 @@ def main():
         # first: spatialset_as_text answers asText of a set before bigintset_out, which
         # states that name on one of its signatures.
         best = {}
-        rank = lambda f: (f.get("sqlfn") != sname, _famrank(f))
+        rank = lambda f: (sname not in own_names(f), _famrank(f))
         for f in group:
             t = _parsetuple(f)
             if t not in best or rank(f) < rank(best[t]):
@@ -2092,9 +2110,12 @@ def main():
     for a in cat.get("aggregates") or []:
         role = lambda k: (a.get(k) or {}).get("meos")
         name = a["sqlName"]
+        # A bare aggregate the catalog also states under its `Agg` name (merge beside
+        # mergeAgg) is carried under that name alone, whatever the scalars are called: the
+        # merge scalar is temporalMerge here, and the aggregate stays mergeAgg.
+        if (name + "Agg").lower() in stated:
+            continue
         if name.lower() in registered:
-            if (name + "Agg").lower() in stated:
-                continue
             name += "Agg"
         takes = a.get("args") or []
         roles = [role(k) for k in ("transition", "combine", "final", "serialize", "deserialize")]

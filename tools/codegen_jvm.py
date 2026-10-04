@@ -692,15 +692,20 @@ class SqlModel:
                [p for p in f['params'] if p['name'] in outs]
 
     def signatures(self, f):
-        """(sqlName, args, ret, argDefaults, boundArgs) for every SQL signature of f, where
+        """(name, args, ret, argDefaults, boundArgs) for every SQL signature of f, where
         boundArgs are the literals the wrapper passes for the C parameters the signature
-        does not state: those of the whole function and those of the signature.  A type
-        carries no modifier: CREATE FUNCTION discards it, so `startValue(tgeompoint)`,
-        declared to return geometry(Point), returns a geometry (#_deployed_type)."""
+        does not state: those of the whole function and those of the signature. The name is
+        the signature's altSqlName where the catalog states one, the name Spark and Flink
+        publish where the engine owns the PostgreSQL one (`floatRound` for `round(tfloat,
+        integer)`), else its sqlName, else the function's sqlfn: the name the catalog states
+        for these engines wins over the bare one, as #_catalog_aggregates takes the catalog's
+        own `Agg` name of an aggregate. A type carries no modifier: CREATE FUNCTION discards
+        it, so `startValue(tgeompoint)`, declared to return geometry(Point), returns a
+        geometry (#_deployed_type)."""
         fbound = (f.get('shape') or {}).get('boundArgs') or {}
         for s in f.get('sqlSignatures') or []:
             ret = s.get('ret')
-            yield (s.get('sqlName') or f['sqlfn'],
+            yield (s.get('altSqlName') or s.get('sqlName') or f['sqlfn'],
                    [_deployed_type(a) for a in s.get('args') or []],
                    _deployed_type(ret) if ret else ret,
                    s.get('argDefaults') or [], {**fbound, **(s.get('boundArgs') or {})})
@@ -2726,9 +2731,12 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
         meos = lambda k: (a.get(k) or {}).get('meos')  # noqa: E731
         args = [_deployed_type(t) for t in a.get('args') or []]
         name = a['sqlName']
+        # A bare aggregate the catalog also states under its `Agg` name (merge beside
+        # mergeAgg) is carried under that name alone, whatever the scalars of this surface
+        # are called: the merge scalar is temporalMerge here, and the aggregate stays mergeAgg.
+        if (name + 'Agg').lower() in stated:
+            continue
         if name.lower() in scalars:
-            if (name + 'Agg').lower() in stated:
-                continue
             name += 'Agg'
         if not args:
             continue
