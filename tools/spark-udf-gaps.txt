@@ -609,11 +609,13 @@ tnumber_tavg_finalfn	no-decoder:SkipList
 tnumber_tavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tnumber_tboxes	array-or-out-param:count
 tnumber_wavg_transfn	no-decoder:SkipList; no-encoder:SkipList
+tpc_extent_transfn	ret:TPCBox *
 tpcbox_as_hexwkb	array-or-out-param:size_out
 tpcbox_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tpcbox_cmp	arg:TPCBox *
 tpcbox_copy	ret:TPCBox *
 tpcbox_eq	arg:TPCBox *
+tpcbox_extent_transfn	ret:TPCBox *
 tpcbox_from_hexwkb	ret:TPCBox *
 tpcbox_from_wkb	array-or-out-param:wkb
 tpcbox_ge	arg:TPCBox *
