@@ -425,6 +425,8 @@ stbox_tmax	arg:TimestampTz *
 stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
+taggstate_deserialize	array-or-out-param:bytes; no-encoder:SkipList
+taggstate_serialize	no-decoder:SkipList; array-or-out-param:size_out; unsupported-return:uint8_t *
 tbigint_time_boxes	array-or-out-param:count
 tbigint_value_bins	array-or-out-param:count
 tbigint_value_boxes	array-or-out-param:count
