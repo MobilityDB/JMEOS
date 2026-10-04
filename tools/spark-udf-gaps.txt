@@ -168,8 +168,6 @@ json_object_keys	array-or-out-param:count; unsupported-return:text **
 json_out	internal
 json_strip_nulls	internal
 json_typeof	internal
-jsonb_array_elements	internal
-jsonb_array_elements_text	array-or-out-param:count; unsupported-return:text **
 jsonb_delete	internal
 jsonb_delete_array	array-or-out-param:keys_elems
 jsonb_delete_path	array-or-out-param:path_elems
@@ -186,8 +184,6 @@ jsonb_make	array-or-out-param:keys_vals
 jsonb_make_two_arg	array-or-out-param:keys; array-or-out-param:values
 jsonb_object_field	internal
 jsonb_object_field_text	internal
-jsonb_object_keys	array-or-out-param:count; unsupported-return:text **
-jsonb_path_query_all	internal
 jsonb_set	array-or-out-param:path_elems
 jsonb_set_lax	array-or-out-param:path_elems
 jsonb_to_float4	ret:float
@@ -390,12 +386,16 @@ set_hash	ret:uint32_t
 set_spans	array-or-out-param:count
 set_split_each_n_spans	array-or-out-param:count
 set_split_n_spans	array-or-out-param:count
+setstate_deserialize	array-or-out-param:bytes
+setstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
 span_hash	ret:uint32_t
 spanset_hash	ret:uint32_t
 spanset_spanarr	internal
 spanset_spans	array-or-out-param:count
 spanset_split_each_n_spans	array-or-out-param:count
 spanset_split_n_spans	array-or-out-param:count
+spansetstate_deserialize	array-or-out-param:bytes
+spansetstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
 sptree_create_bigintspan	no-encoder:SPTree
 sptree_create_datespan	no-encoder:SPTree
 sptree_create_floatspan	no-encoder:SPTree
