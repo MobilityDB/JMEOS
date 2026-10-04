@@ -732,7 +732,12 @@ def emit_dispatch(name, cands, vis_arity=None):
         for p in ptrs:
             L.append("          if (%s != null) MeosMemory.free(%s);" % (p, p))
         L.append("        }")
-    L.append("        return null;")
+    # No overload takes these arguments: refused, as TemporalAggregate.pick refuses a temporal
+    # type its steps do not take, never answered as NULL. The UDF answers the overloads sharing
+    # its one Spark result type; the typed SQL surface (MobilitySparkSql) resolves every one.
+    L.append('        throw new IllegalArgumentException("%s takes the arguments of %s; '
+             'the typed SQL surface (MobilitySparkSql) resolves every overload");'
+             % (name, ", ".join(f["name"] for f in cands)))
     L.append("        }, DataTypes.%s);" % ret_dt)
     return "\n".join(L)
 
