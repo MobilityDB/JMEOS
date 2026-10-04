@@ -669,15 +669,22 @@ class SqlModel:
         pair it with a single C value: a parameter that is one pointer, or the return
         of a function with no out-parameters.  A pointer to pointers, or a return that
         an out-parameter counts, is an array, and the SQL type opposite it is an array
-        or a record, not a value."""
+        or a record, not a value.
+
+        The SQL arguments pair with the visible C parameters as #_inputs pairs them:
+        a parameter the signature's wrapper binds, and the count of an input array,
+        stand for no SQL argument."""
         seen = defaultdict(lambda: defaultdict(int))
         for f in self.fns:
             if not f.get('sqlfn'):
                 continue
             vis, outs = self.visible(f)
-            for _, args, ret, _, _ in self.signatures(f):
-                if len(args) == len(vis):
-                    for a, p in zip(args, vis):
+            counts = {(a.get('lengthFrom') or {}).get('name')
+                      for a in (f.get('shape') or {}).get('inputArrays') or []}
+            for _, args, ret, _, bound in self.signatures(f):
+                walk = [p for p in vis if p['name'] not in bound and p['name'] not in counts]
+                if len(args) == len(walk):
+                    for a, p in zip(args, walk):
                         if _single_pointer(p['canonical']):
                             seen[a][_base(p['canonical'])] += 1
                 rc = f['returnType']['canonical']
