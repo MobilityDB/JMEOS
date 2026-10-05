@@ -1303,8 +1303,11 @@ def _codec_aux(m, sql):
     the Spark one (#_spark_value_class_src) call the same codec, so both read it here."""
     kind, dec, enc, in_aux, out_aux = m.codec[sql]
     daux = ''.join(', ' + _aux_literal(a) for a in in_aux)
+    # The variant goes to a writer whose jar signature takes it beside the value: a writer of
+    # pgPointCloud's own WKB (pcpoint_as_hexwkb) takes the value alone.
+    takes_variant = len((m.jmeos.get(enc) or {}).get('arg_types') or []) > 1
     eaux = f', (byte) {WKB_VARIANT}' if kind in ('wkb', 'bytes') and not out_aux \
-        else ''.join(', ' + _aux_literal(a) for a in out_aux)
+        and takes_variant else ''.join(', ' + _aux_literal(a) for a in out_aux)
     return kind, dec, enc, daux, eaux
 
 
