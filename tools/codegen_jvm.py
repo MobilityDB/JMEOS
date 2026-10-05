@@ -850,6 +850,13 @@ def _ret(m, sql, f, jt, outs):
                     ['if (_r == null) return null;',
                      f'try {{ return {m.pkg}.types.{vc}.encode(_r); }}',
                      'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
+        if sql == 'text' and oc == 'text **' and 'text_out' in m.jmeos:
+            # A text out-parameter: the jar dereferences the buffer and returns the text MEOS
+            # allocated, read into a String through text_out as a returned text is.
+            return ('String',
+                    ['if (_r == null) return null;',
+                     'try { return GeneratedFunctions.text_out(_r); }',
+                     'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
         read = {('integer', 'int *'): ('Integer', '_r.getInt(0)'),
                 ('float', 'double *'): ('Double', '_r.getDouble(0)'),
                 ('bigint', 'int64 *'): ('Long', '_r.getLongLong(0)'),
