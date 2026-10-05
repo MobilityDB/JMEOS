@@ -541,7 +541,7 @@ SQL_SCALAR = {
     'boolean': 'Boolean', 'integer': 'Integer', 'smallint': 'Short', 'bigint': 'Long',
     'float': 'Double', 'double precision': 'Double', 'text': 'String', 'cstring': 'String',
     'timestamptz': 'java.time.Instant', 'date': 'java.time.LocalDate',
-    'interval': 'java.time.Duration',
+    'interval': 'java.time.Duration', 'bytea': 'byte[]',
 }
 
 # The Flink SQL type of each Flink-side scalar class; a MEOS value class carries its own TYPE.
@@ -551,6 +551,7 @@ SQL_DATATYPE = {
     'Double': 'DataTypes.DOUBLE()', 'String': 'DataTypes.STRING()',
     'java.time.Instant': 'DataTypes.TIMESTAMP_LTZ(6)', 'java.time.LocalDate': 'DataTypes.DATE()',
     'java.time.Duration': 'DataTypes.INTERVAL(DataTypes.SECOND(3))',
+    'byte[]': 'DataTypes.BYTES()',
 }
 
 # The WKB variant the WKB writers take: the extended form, which keeps the SRID.
@@ -570,6 +571,10 @@ SQL_ARRAY_SCALAR = {
 
 
 def _datatype(cls):
+    # A class the table names (byte[], a bytea) before an array of its element, as
+    # #_spark_datatype reads SPARK_DATATYPE first.
+    if cls in SQL_DATATYPE:
+        return SQL_DATATYPE[cls]
     if cls.endswith('[]'):
         return f'DataTypes.ARRAY({_datatype(cls[:-2])})'
     return SQL_DATATYPE.get(cls, f'{cls}.TYPE')
@@ -664,8 +669,13 @@ class SqlModel:
                 else 'org.apache.flink.types.Row.of')
 
     def visible(self, f):
+        """(the C parameters a SQL argument or a bound literal stands for, the out-parameters).
+        The length of a byte array (shape.inputArrays over uint8_t) is neither: the jar folds
+        the array and its length into one byte[] (span_from_wkb(byte[])), which a SQL bytea
+        stands for, as #_inputs passes the count of any other input array itself."""
         outs = set((f.get('shape') or {}).get('outParams') or [])
-        return [p for p in f['params'] if p['name'] not in outs], \
+        folded = set(_byte_arrays(f).values())
+        return [p for p in f['params'] if p['name'] not in outs and p['name'] not in folded], \
                [p for p in f['params'] if p['name'] in outs]
 
     def signatures(self, f):
@@ -830,6 +840,9 @@ def _arg(m, sql, p, jt, name, temps):
         return t
     if sql == 'boolean' and jt == 'boolean':
         return name
+    if sql == 'bytea' and jt == 'byte[]' and b == 'uint8_t':
+        # The WKB a reader takes, which the jar copies with its length (#_byte_arrays).
+        return name
     if sql in ('integer', 'smallint') and jt in ('int', 'short', 'byte'):
         return name if jt == 'int' else f'({jt}) (int) {name}'
     if sql in ('integer', 'bigint') and jt == 'long':
@@ -930,6 +943,10 @@ def _ret(m, sql, f, jt, outs):
                 ['if (_r == null) return null;',
                  'try { return GeneratedFunctions.text_out(_r); }',
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
+    if sql == 'bytea' and jt == 'byte[]':
+        # The WKB a writer returns, which the jar copies out of the buffer MEOS allocated and
+        # frees, its length read from the size out-parameter.
+        return 'byte[]', ['return _r;']
     if sql == 'interval' and jt == 'jnr.ffi.Pointer':
         return ('java.time.Duration',
                 ['if (_r == null) return null;',
@@ -964,6 +981,16 @@ def _flink_class(m, sql):
     if sql in m.value_class:
         return f'{m.pkg}.types.{m.value_class[sql]}'
     return SQL_SCALAR.get(sql)
+
+
+def _byte_arrays(f):
+    """{byte array parameter: its length parameter} over the shape.inputArrays of `f` whose
+    element is uint8_t, the WKB a reader takes (span_from_wkb(wkb, size)), which the jar folds
+    into one byte[]; every other input array is passed by #_array_arg."""
+    return {a['param']: (a.get('lengthFrom') or {}).get('name')
+            for a in (f.get('shape') or {}).get('inputArrays') or []
+            if _base((a.get('element') or {}).get('canonical')) == 'uint8_t'
+            and (a.get('lengthFrom') or {}).get('kind') == 'param'}
 
 
 def _array_arg(m, elem, a, p, jt, name, temps):
@@ -1053,7 +1080,9 @@ def _inputs(m, f, args, jtypes, bound=None, order=None):
     to 0)."""
     vis, _ = m.visible(f)
     jsig = {'arg_types': jtypes}
-    arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []}
+    folded = _byte_arrays(f)
+    arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []
+              if a['param'] not in folded}
     counts = {}
     for a in arrays.values():
         lf = a.get('lengthFrom') or {}
@@ -1904,12 +1933,14 @@ SPARK_DATATYPE = {
     'Short': 'DataTypes.ShortType', 'Long': 'DataTypes.LongType',
     'Double': 'DataTypes.DoubleType', 'String': 'DataTypes.StringType',
     'java.time.Instant': 'DataTypes.TimestampType', 'java.time.LocalDate': 'DataTypes.DateType',
-    'java.time.Duration': 'MeosSqlRuntime.DURATION',
+    'java.time.Duration': 'MeosSqlRuntime.DURATION', 'byte[]': 'DataTypes.BinaryType',
 }
 
 
 def _spark_datatype(m, cls):
     """The Spark DataType expression of a Java class #_overload names, or None."""
+    if cls in SPARK_DATATYPE:
+        return SPARK_DATATYPE[cls]
     if cls.endswith('[]'):
         inner = _spark_datatype(m, cls[:-2])
         return inner and f'DataTypes.createArrayType({inner})'
@@ -1929,6 +1960,8 @@ def _spark_arg(cls, i):
         return f'MeosSqlRuntime.instants({a})'
     if cls == 'java.time.LocalDate[]':
         return f'MeosSqlRuntime.localDates({a})'
+    if cls == 'byte[]':
+        return f'(byte[]) {a}'
     if cls.endswith('[]'):
         return f'MeosSqlRuntime.array({a}, new {cls[:-2]}[0])'
     return f'({cls}) {a}'
