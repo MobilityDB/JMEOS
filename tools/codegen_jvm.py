@@ -833,6 +833,28 @@ def _arg(m, sql, p, jt, name, temps):
     return None
 
 
+# The by-value guards a PG wrapper returns NULL on, as the catalog states them
+# (`shape.nullableResult`, read from the wrapper's `if (<guard>) PG_RETURN_NULL();`), each as the
+# Java test of `_r`. No JMEOS generator read the field before; this is the map MobilityDuck's
+# generator keeps as SCALAR_NULL_GUARD, beside the three-valued branch of #_ret. The distance
+# sentinel of distance_sentinel is the maximum of the type the C function answers in.
+_SENTINEL_GUARD = {'if (result == DBL_MAX)': 'max',
+                   'if (datum_eq(result, distance_sentinel(basetype), basetype))': 'max',
+                   'if (result < 0)': 'neg'}
+_JAVA_MAX = {'int': 'Integer.MAX_VALUE', 'long': 'Long.MAX_VALUE', 'double': 'Double.MAX_VALUE'}
+
+
+def _null_guard(f, jt):
+    """The statement returning NULL where the PG wrapper does for a by-value result, or None; the
+    statements are those #_ret returns."""
+    kind = _SENTINEL_GUARD.get((f.get('shape') or {}).get('nullableResult'))
+    if kind == 'max' and jt in _JAVA_MAX:
+        return [f'if (_r == {_JAVA_MAX[jt]}) return null;']
+    if kind == 'neg' and jt in ('int', 'long', 'short'):
+        return ['if (_r < 0) return null;']
+    return None
+
+
 def _ret(m, sql, f, jt, outs):
     """(Flink return class, statements turning `_r` into the result), or None."""
     rc = _norm(f['returnType']['canonical'])
@@ -892,12 +914,17 @@ def _ret(m, sql, f, jt, outs):
     if sql == 'boolean' and jt == 'int':
         # Three-valued: negative is undefined and reads as NULL.
         return 'Boolean', ['return _r < 0 ? null : _r != 0;']
+    guard = _null_guard(f, jt) or []
     if sql in ('integer', 'smallint') and jt in ('int', 'short'):
-        return 'Integer', ['return (int) _r;']
+        return 'Integer', guard + ['return (int) _r;']
     if sql == 'bigint' and jt in ('long', 'int'):
-        return 'Long', ['return (long) _r;']
+        return 'Long', guard + ['return (long) _r;']
     if sql in ('float', 'double precision') and jt == 'double':
-        return 'Double', ['return _r;']
+        return 'Double', guard + ['return _r;']
+    if sql in ('float', 'double precision') and jt in ('int', 'long'):
+        # A distance MEOS answers in an integer type, which the wrapper returns as the float
+        # its SQL signature states (distance_double).
+        return 'Double', guard + ['return (double) _r;']
     if sql in ('text', 'cstring') and jt == 'java.lang.String':
         return 'String', ['return _r;']
     if sql == 'timestamptz' and jt == 'java.time.OffsetDateTime':
