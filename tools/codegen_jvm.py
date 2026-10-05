@@ -694,6 +694,7 @@ class SqlModel:
         stand for no SQL argument, and the catalog's sqlArgParams, where stated, gives
         the order the wrapper reads them in."""
         seen = defaultdict(lambda: defaultdict(int))
+        byvalue = set()
         for f in self.fns:
             if not f.get('sqlfn'):
                 continue
@@ -711,11 +712,21 @@ class SqlModel:
                     for a, p in zip(args, walk):
                         if _single_pointer(p['canonical']):
                             seen[a][_base(p['canonical'])] += 1
-                rc = f['returnType']['canonical']
+                        elif p.get('typedef') in self.enc:
+                            seen[a][p['typedef']] += 1
+                            byvalue.add(p['typedef'])
+                rt = f['returnType']
+                rc = rt['canonical']
                 if ret and not outs and _single_pointer(rc) and _norm(rc) != 'char *':
                     seen[ret][_base(rc)] += 1
+                elif ret and not outs and rt.get('typedef') in self.enc:
+                    seen[ret][rt['typedef']] += 1
+                    byvalue.add(rt['typedef'])
         self.sql_cbase = {s: max(c, key=c.get) for s, c in seen.items()
                           if re.fullmatch(r'\w+', s)}
+        # The SQL types whose C value travels by value, a typedef the catalog encodes (the
+        # H3Index, Quadbin and S2CellId cells), which the jar passes as the integer it is.
+        self.sql_byvalue = {s for s, cb in self.sql_cbase.items() if cb in byvalue}
 
     def _codecs(self):
         """Value types and the codec each crosses Flink with.
@@ -806,6 +817,9 @@ def _arg(m, sql, p, jt, name, temps):
     """Java expression passing Flink argument `name` to a jar parameter, or None."""
     c = _norm(p['canonical'])
     b = _base(p['canonical'])
+    if sql in m.codec and sql in m.sql_byvalue and jt == 'long':
+        # A cell the jar passes as its integer: nothing to free.
+        return f'{name}.decode()'
     if sql in m.codec and jt == 'jnr.ffi.Pointer':
         t = f'_p{len(temps)}'
         temps.append((t, f'{name}.decode()', 'value'))
@@ -894,9 +908,15 @@ def _ret(m, sql, f, jt, outs):
                     ('java.time.Instant', 'MeosSqlRuntime.timestamptz(_r.getLongLong(0))'),
                 ('date', 'DateADT *'): ('java.time.LocalDate', 'MeosSqlRuntime.date(_r.getInt(0))')}
         r = read.get((sql, oc))
+        if not r and vc and sql in m.sql_byvalue and oc == 'uint64_t *':
+            # A cell written through its out-parameter, carried as a returned cell is.
+            r = (f'{m.pkg}.types.{vc}', f'{m.pkg}.types.{vc}.encode(_r.getLongLong(0))')
         if not r:
             return None
         return r[0], [f'return _r == null ? null : {r[1]};']
+    if vc and sql in m.sql_byvalue and jt == 'long':
+        # A cell the jar returns as its integer: nothing to free.
+        return f'{m.pkg}.types.{vc}', [f'return {m.pkg}.types.{vc}.encode(_r);']
     if vc and jt == 'jnr.ffi.Pointer':
         return (f'{m.pkg}.types.{vc}',
                 ['if (_r == null) return null;',
@@ -962,8 +982,9 @@ def _array_arg(m, elem, a, p, jt, name, temps):
     if elem in m.value_class and c.count('*') == 2 \
             and m.sql_cbase.get(elem) in (_base(el['canonical']),
                                           m.subtype_of.get(_base(el['canonical']))):
-        temps.append((t, name, 'values'))
-        return f'{m.pkg}.types.{m.value_class[elem]}[]', t
+        cls = f'{m.pkg}.types.{m.value_class[elem]}'
+        temps.append((t, f'{name}, {cls}::decode', 'values'))
+        return f'{cls}[]', t
     hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
         or SQL_ARRAY_SCALAR.get((elem, _base(el['canonical'])))
     if hit and c.count('*') == 1:
@@ -1320,6 +1341,11 @@ def _codec_aux(m, sql):
 def _value_class_src(m, sql):
     cls = m.value_class[sql]
     kind, dec, enc, daux, eaux = _codec_aux(m, sql)
+    # A cell travels by value: the jar passes and returns the integer it is.
+    jtype = 'long' if sql in m.sql_byvalue else 'Pointer'
+    ddoc = ('The cell this one carries' if jtype == 'long' else
+            'The MEOS value this one carries, allocated by MEOS for the caller to free')
+    edoc = 'The cell p' if jtype == 'long' else 'The value MEOS holds at p'
     # The form is bytes whatever the codec: the WKB itself, or the UTF-8 of a string form.
     if kind == 'bytes':
         decode = f'GeneratedFunctions.{dec}(form)'
@@ -1356,13 +1382,13 @@ public final class {cls} extends MeosValue {{
         super(form);
     }}
 
-    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
-    public Pointer decode() {{
+    /** {ddoc}. */
+    public {jtype} decode() {{
         return {decode};
     }}
 
-    /** The value MEOS holds at p, in the form this type carries. */
-    public static {cls} encode(Pointer p) {{
+    /** {edoc}, in the form this type carries. */
+    public static {cls} encode({jtype} p) {{
         {encode}
     }}
 
@@ -1529,13 +1555,14 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
             return b;
         }
 
-        /** The values decoded one by one into the C array of pointers MEOS reads.  A null
-         * element raises, as it does in PostgreSQL. */
-        public Pointer values(MeosValue[] vs) {
+        /** The values decoded one by one by dec into the C array of pointers MEOS reads.  A
+         * null element raises, as it does in PostgreSQL. */
+        public <V extends MeosValue> Pointer values(V[] vs,
+                java.util.function.Function<V, Pointer> dec) {
             int w = RUNTIME.addressSize();
             Pointer b = hold(buffer(vs.length, w));
             for (int i = 0; i < vs.length; i++) {
-                Pointer p = value(element(vs, i).decode());
+                Pointer p = value(dec.apply(element(vs, i)));
                 if (p == null) {
                     throw new IllegalArgumentException("an array element does not decode");
                 }
@@ -1671,9 +1698,6 @@ public abstract class MeosValue {{
     protected MeosValue(byte[] form) {{
         this.form = form;
     }}
-
-    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
-    public abstract Pointer decode();
 
     /** The hex text of bytes, the readable form of a WKB. */
     public static String hex(byte[] b) {{
@@ -2326,6 +2350,11 @@ def _spark_value_class_src(m, sql):
     as #_value_class_src writes the Flink one, and the UserDefinedType Spark carries it as."""
     cls = m.value_class[sql]
     kind, dec, enc, daux, eaux = _codec_aux(m, sql)
+    # A cell travels by value: the jar passes and returns the integer it is.
+    jtype = 'long' if sql in m.sql_byvalue else 'Pointer'
+    ddoc = ('The cell this one carries' if jtype == 'long' else
+            'The MEOS value this one carries, allocated by MEOS for the caller to free')
+    edoc = 'The cell p' if jtype == 'long' else 'The value MEOS holds at p'
     if kind == 'bytes':
         decode = f'GeneratedFunctions.{dec}(form)'
         encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
@@ -2359,13 +2388,13 @@ public final class {cls} extends MeosValue {{
         super(form);
     }}
 
-    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
-    public Pointer decode() {{
+    /** {ddoc}. */
+    public {jtype} decode() {{
         return {decode};
     }}
 
-    /** The value MEOS holds at p, in the form this type carries. */
-    public static {cls} encode(Pointer p) {{
+    /** {edoc}, in the form this type carries. */
+    public static {cls} encode({jtype} p) {{
         {encode}
     }}
 
@@ -2420,9 +2449,6 @@ public abstract class MeosValue implements java.io.Serializable {
     protected MeosValue(byte[] form) {
         this.form = form;
     }
-
-    /** The MEOS value this one carries, allocated by MEOS for the caller to free. */
-    public abstract Pointer decode();
 
     /** The hex text of bytes, the readable form of a WKB. */
     public static String hex(byte[] b) {
