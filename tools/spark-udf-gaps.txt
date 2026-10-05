@@ -48,6 +48,7 @@ box3d_in	internal
 box3d_make	internal
 box3d_out	internal
 box3d_to_stbox	internal
+cbuffer_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 cbuffer_hash	ret:uint32_t
 cbufferarr_round	unsupported-return:struct Cbuffer **
 cbufferarr_to_geom	internal
@@ -244,9 +245,11 @@ ne_timestamp_date	arg:Timestamp
 ne_timestamp_timestamp	arg:Timestamp
 ne_timestamp_timestamptz	arg:Timestamp
 ne_timestamptz_timestamp	arg:Timestamp
+npoint_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 npoint_hash	ret:uint32_t
 npointset_make	internal
 npointset_value_n	internal
+nsegment_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 overabove_tpcbox_tpcbox	arg:TPCBox *
 overabove_tpcbox_tpointcloud	arg:TPCBox *
 overabove_tpointcloud_tpcbox	arg:TPCBox *
@@ -298,11 +301,14 @@ pcpoint_to_tpcbox	no-decoder:PCSCHEMA
 pcpointset_make	internal
 pcpointset_value_n	internal
 plus_time_interval	ret:TimeADT
+pose_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 pose_hash	ret:uint32_t
 pose_to_posechain	ret:PoseChain *
 posearr_round	unsupported-return:struct Pose **
 posechain_append	ret:PoseChain *
+posechain_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 posechain_as_ewkt	arg:PoseChain *
+posechain_as_hexewkb	array-or-out-param:size_out
 posechain_as_hexwkb	array-or-out-param:size_out
 posechain_as_text	arg:PoseChain *
 posechain_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
@@ -428,6 +434,7 @@ spanset_split_each_n_spans	array-or-out-param:count
 spanset_split_n_spans	array-or-out-param:count
 spansetstate_deserialize	array-or-out-param:bytes
 spansetstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
+spatialset_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 sptree_create_bigintspan	no-encoder:SPTree
 sptree_create_datespan	no-encoder:SPTree
 sptree_create_floatspan	no-encoder:SPTree
@@ -451,6 +458,7 @@ sptree_num_entries	no-decoder:SPTree
 sptree_search	no-decoder:SPTree; no-decoder:void; no-decoder:MeosArray
 sptree_search_temporal	no-decoder:SPTree; no-decoder:MeosArray
 sptree_search_temporal_dedup	no-decoder:SPTree; no-decoder:MeosArray
+stbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 stbox_hash	ret:uint32_t
 stbox_quad_split	array-or-out-param:count
 stbox_tmax	arg:TimestampTz *
@@ -643,6 +651,8 @@ tnumber_tavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tnumber_tboxes	array-or-out-param:count
 tnumber_wavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpc_extent_transfn	ret:TPCBox *
+tpcbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
+tpcbox_as_hexewkb	array-or-out-param:size_out
 tpcbox_as_hexwkb	array-or-out-param:size_out
 tpcbox_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tpcbox_cmp	arg:TPCBox *
@@ -729,6 +739,7 @@ ts2cellseqset_make	array-or-out-param:sequences
 tsequence_make	internal
 tsequenceset_make	array-or-out-param:sequences
 tsequenceset_make_gaps	internal
+tspatial_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tstzset_make	arg:TimestampTz *
 tstzset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
 tstzset_value_n	arg:TimestampTz *
