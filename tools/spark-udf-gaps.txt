@@ -3,6 +3,8 @@
 # codegen_spark_udfs.py --rebaseline; a function missing from it fails
 # the run. The ledger only shrinks, as types get their mappings.
 above_tpcbox_tpcbox	arg:TPCBox *
+above_tpcbox_tpointcloud	arg:TPCBox *
+above_tpointcloud_tpcbox	arg:TPCBox *
 add_timestamp_interval	ret:Timestamp
 add_timestamptz_interval	ret:Timestamp
 add_timestamptz_interval_at_zone	ret:Timestamp
@@ -10,6 +12,8 @@ adjacent_tpcbox_tpcbox	arg:TPCBox *
 adjacent_tpcbox_tpointcloud	arg:TPCBox *
 adjacent_tpointcloud_tpcbox	arg:TPCBox *
 after_tpcbox_tpcbox	arg:TPCBox *
+after_tpcbox_tpointcloud	arg:TPCBox *
+after_tpointcloud_tpcbox	arg:TPCBox *
 always_eq_posechain_tposechain	arg:PoseChain *
 always_eq_text_ttext	internal
 always_eq_tposechain_posechain	arg:PoseChain *
@@ -28,8 +32,14 @@ always_ne_tposechain_posechain	arg:PoseChain *
 always_ne_ttext_text	internal
 araster_value	arg:Raster *
 back_tpcbox_tpcbox	arg:TPCBox *
+back_tpcbox_tpointcloud	arg:TPCBox *
+back_tpointcloud_tpcbox	arg:TPCBox *
 before_tpcbox_tpcbox	arg:TPCBox *
+before_tpcbox_tpointcloud	arg:TPCBox *
+before_tpointcloud_tpcbox	arg:TPCBox *
 below_tpcbox_tpcbox	arg:TPCBox *
+below_tpcbox_tpointcloud	arg:TPCBox *
+below_tpointcloud_tpcbox	arg:TPCBox *
 bigintset_make	array-or-out-param:values
 bigintspan_bins	array-or-out-param:count
 bigintspanset_bins	array-or-out-param:count
@@ -94,6 +104,8 @@ floatset_make	array-or-out-param:values
 floatspan_bins	array-or-out-param:count
 floatspanset_bins	array-or-out-param:count
 front_tpcbox_tpcbox	arg:TPCBox *
+front_tpcbox_tpointcloud	arg:TPCBox *
+front_tpointcloud_tpcbox	arg:TPCBox *
 gbox_in	internal
 gbox_make	internal
 gbox_out	internal
@@ -210,6 +222,8 @@ le_timestamptz_timestamp	arg:Timestamp
 left_set_text	internal
 left_text_set	internal
 left_tpcbox_tpcbox	arg:TPCBox *
+left_tpcbox_tpointcloud	arg:TPCBox *
+left_tpointcloud_tpcbox	arg:TPCBox *
 lt_date_timestamp	arg:Timestamp
 lt_timestamp_date	arg:Timestamp
 lt_timestamp_timestamp	arg:Timestamp
@@ -234,20 +248,36 @@ npoint_hash	ret:uint32_t
 npointset_make	internal
 npointset_value_n	internal
 overabove_tpcbox_tpcbox	arg:TPCBox *
+overabove_tpcbox_tpointcloud	arg:TPCBox *
+overabove_tpointcloud_tpcbox	arg:TPCBox *
 overafter_tpcbox_tpcbox	arg:TPCBox *
+overafter_tpcbox_tpointcloud	arg:TPCBox *
+overafter_tpointcloud_tpcbox	arg:TPCBox *
 overback_tpcbox_tpcbox	arg:TPCBox *
+overback_tpcbox_tpointcloud	arg:TPCBox *
+overback_tpointcloud_tpcbox	arg:TPCBox *
 overbefore_tpcbox_tpcbox	arg:TPCBox *
+overbefore_tpcbox_tpointcloud	arg:TPCBox *
+overbefore_tpointcloud_tpcbox	arg:TPCBox *
 overbelow_tpcbox_tpcbox	arg:TPCBox *
+overbelow_tpcbox_tpointcloud	arg:TPCBox *
+overbelow_tpointcloud_tpcbox	arg:TPCBox *
 overfront_tpcbox_tpcbox	arg:TPCBox *
+overfront_tpcbox_tpointcloud	arg:TPCBox *
+overfront_tpointcloud_tpcbox	arg:TPCBox *
 overlaps_tpcbox_tpcbox	arg:TPCBox *
 overlaps_tpcbox_tpointcloud	arg:TPCBox *
 overlaps_tpointcloud_tpcbox	arg:TPCBox *
 overleft_set_text	internal
 overleft_text_set	internal
 overleft_tpcbox_tpcbox	arg:TPCBox *
+overleft_tpcbox_tpointcloud	arg:TPCBox *
+overleft_tpointcloud_tpcbox	arg:TPCBox *
 overright_set_text	internal
 overright_text_set	internal
 overright_tpcbox_tpcbox	arg:TPCBox *
+overright_tpcbox_tpointcloud	arg:TPCBox *
+overright_tpointcloud_tpcbox	arg:TPCBox *
 pcpatch_get_pcid	ret:uint32_t
 pcpatch_hash	ret:uint32_t
 pcpatch_make	internal
@@ -368,6 +398,8 @@ raster_width	arg:Raster *
 right_set_text	internal
 right_text_set	internal
 right_tpcbox_tpcbox	arg:TPCBox *
+right_tpcbox_tpointcloud	arg:TPCBox *
+right_tpointcloud_tpcbox	arg:TPCBox *
 s2cell_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 s2cell_cell_to_child	arg:uint32_t
 s2cell_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
