@@ -569,6 +569,11 @@ SQL_ARRAY_SCALAR = {
     ('timestamptz', 'TimestampTz'): ('java.time.Instant', 'timestamps'),
 }
 
+# The by-value C types a SQL scalar carries (#_arg passes each from its Java value), which a
+# public reader from a string, bool_in or int32_in, does not make a text argument: the C
+# elements SQL_ARRAY_SCALAR names, the boolean, the 32-bit integer and the cell index.
+_SQL_SCALAR_C = {c for _, c in SQL_ARRAY_SCALAR} | {'bool', 'int32_t', 'uint64_t'}
+
 
 def _datatype(cls):
     # A class the table names (byte[], a bytea) before an array of its element, as
@@ -792,12 +797,19 @@ class SqlModel:
         calls the public API alone; the Spark arm reads the same (ENUM_PARSER in
         codegen_spark_udfs.py)."""
         self.enum_parser = {}
+        readers = defaultdict(list)
         for f in self.fns:
             rt = _norm(f['returnType']['canonical'])
             ps = f['params']
-            if rt in self.enums and len(ps) == 1 and _norm(ps[0]['canonical']) == 'char *' \
+            if len(ps) == 1 and _norm(ps[0]['canonical']) == 'char *' and '*' not in rt \
                     and f.get('api') == 'public' and f['name'] in self.jmeos:
-                self.enum_parser.setdefault(rt, f['name'])
+                readers[rt].append(f['name'])
+        for rt, names in readers.items():
+            # An enum is read from its name; so is a by-value C type no SQL scalar carries and
+            # one public function reads from a string, which the SQL text stands for: the WKB
+            # variant every writer takes, read from its endian by wkb_variant_from_endian.
+            if rt in self.enums or (len(names) == 1 and rt not in _SQL_SCALAR_C):
+                self.enum_parser[rt] = names[0]
 
 
 def _default_literal(sql, lit):
@@ -857,7 +869,7 @@ def _arg(m, sql, p, jt, name, temps):
         t = f'_p{len(temps)}'
         temps.append((t, f'GeneratedFunctions.text_in({name})', 'value'))
         return t
-    if sql in ('text', 'cstring') and jt == 'int' and c in m.enum_parser:
+    if sql in ('text', 'cstring') and jt in ('int', 'byte') and c in m.enum_parser:
         return f'GeneratedFunctions.{m.enum_parser[c]}({name})'
     if sql == 'timestamptz' and jt == 'java.time.OffsetDateTime':
         return f'{name}.atOffset(java.time.ZoneOffset.UTC)'
