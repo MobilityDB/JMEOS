@@ -453,6 +453,7 @@ temporal_split_n_spans	array-or-out-param:count
 temporal_time_bins	array-or-out-param:count
 temporal_timestamps	array-or-out-param:count
 temporal_timestamptz_n	arg:TimestampTz *
+temporal_wcount_transfn	no-decoder:SkipList; no-encoder:SkipList
 teq_posechain_tposechain	arg:PoseChain *
 teq_text_ttext	internal
 teq_tposechain_posechain	arg:PoseChain *
@@ -645,6 +646,8 @@ tpcbox_ymax	arg:TPCBox *
 tpcbox_ymin	arg:TPCBox *
 tpcbox_zmax	arg:TPCBox *
 tpcbox_zmin	arg:TPCBox *
+tpcpatch_tdensity_transfn	no-decoder:SkipList; no-encoder:SkipList
+tpcpatch_tnpoints_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpcpatch_value_at_timestamptz	internal
 tpcpatch_value_n	internal
 tpcpatch_values	internal
@@ -653,6 +656,7 @@ tpcpoint_value_n	internal
 tpcpoint_values	internal
 tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
 tpoint_make_simple	internal
+tpoint_tcentroid_combinefn	no-decoder:SkipList; no-encoder:SkipList
 tpoint_tcentroid_finalfn	no-decoder:SkipList
 tpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpoint_tfloat_to_geomeas	internal
