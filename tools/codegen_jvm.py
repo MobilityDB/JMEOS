@@ -1285,6 +1285,253 @@ def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
     return ov, why, False
 
 
+def _sql_overloads(m, cat, jmeos, layout, skipped, keep):
+    """Every overload a typed SQL surface registers, as (SQL name, SQL argument types,
+    argument defaults, eval or None, reason, whether it answers an array of rows): one per
+    signature of each catalog function `keep` admits (#_signature_overload), then one per
+    composition the catalog states (#_composition_overload), so both engines walk the same
+    list. A function absent from the jar is tallied in `skipped` as `not in jar`."""
+    for f in m.fns:
+        if not keep(f):
+            continue
+        jsig = jmeos.get(f['name'])
+        if jsig is None:
+            skipped['not in jar'] += 1
+            continue
+        for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
+                                                             f.get('sqlSignatures') or []):
+            ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
+            yield sqlname, sargs, sdef, ov, why, isset
+    for comp in cat.get('compositions') or []:
+        ov, why = _composition_overload(m, comp, jmeos, layout)
+        yield (comp['sqlName'], comp['args'], comp.get('argDefaults') or [], ov, why,
+               ov is not None and bool(comp.get('retSet')))
+
+
+def _composition_inputs(m, comp, jmeos, f):
+    """(params, the Java expression of each visible parameter of `f`, temps, raw), or
+    (None, reason): each argument operand of `comp` decoded as #_arg decodes an argument for
+    the first function it reaches and passed through the MEOS functions of its `casts` in
+    order, a `value` operand passed as the literal #_bound_literal reads, each in the order of
+    the C parameters it names (`param`). `raw` maps an argument to its decoded value before
+    any cast, the value a restore restricts."""
+    args, temps, raw, params = comp['args'], [], {}, []
+    for k, sql in enumerate(args):
+        fc = _flink_class(m, sql)
+        if fc is None:
+            return None, f'sqltype:{sql}'
+        params.append((fc, f'a{k}'))
+
+    def operand(o, p, jt):
+        if 'value' in o:
+            return _bound_literal(m, str(o['value']).strip("'"), jt)
+        k, chain = o['arg'], list(o.get('casts') or ())
+        if not chain:
+            e = _arg(m, args[k], p, jt, f'a{k}', temps)
+            if e is not None:
+                raw.setdefault(k, e)
+            return e
+        first = m.by_name.get(chain[0])
+        if first is None or any(c not in jmeos or jmeos[c]['ret'] != 'jnr.ffi.Pointer'
+                                for c in chain):
+            return None
+        fvis, _ = m.visible(first)
+        e = _arg(m, args[k], fvis[0], jmeos[chain[0]]['arg_types'][0], f'a{k}', temps)
+        if e is None:
+            return None
+        raw.setdefault(k, e)
+        for cast in chain:
+            t = f'_p{len(temps)}'
+            temps.append((t, f'GeneratedFunctions.{cast}({e})', 'value'))
+            e = t
+        return e
+
+    jtypes = jmeos[f['name']]['arg_types']
+    vis, _ = m.visible(f)
+    # The jar takes every C parameter where the call writes through an out-parameter (the
+    # row count of a set-returning function, as #_setret_overload reads it) and the visible
+    # ones otherwise (#_overload).
+    if len(jtypes) == len(f['params']):
+        jt_of = dict(zip((p['name'] for p in f['params']), jtypes))
+    elif len(jtypes) == len(vis):
+        jt_of = dict(zip((p['name'] for p in vis), jtypes))
+    else:
+        return None, 'arity:jmeos'
+    by_param = {o.get('param'): o for o in comp['operands']}
+    call = []
+    for p in vis:
+        jt = jt_of[p['name']]
+        o = by_param.get(p['name'])
+        e = operand(o, p, jt) if o is not None else None
+        if e is None:
+            return None, f'composition:operand/{p["name"]}'
+        call.append(e)
+    return (params, call, temps, raw), None
+
+
+def _composition_overload(m, comp, jmeos, layout):
+    """The eval of one composition the catalog states (its top-level `compositions`), or
+    (None, reason), as #_overload builds the eval of a signature: the operands
+    #_composition_inputs passes, the function `call` called on them, and the answer read by
+    #_ret. A composition without `call` answers the last cast of its one operand (`centroid
+    (tpcpoint)`); `restore` answers the argument `of` at the time `time` reads from the
+    call's answer, through `at` (`nearestApproachInstant(tpcpoint, geometry)`); a
+    set-returning composition reads its rows as #_composition_setret reads them."""
+    if comp.get('retSet'):
+        return _composition_setret(m, comp, jmeos, layout)
+    if comp['ret'].endswith('[]') and not comp.get('restore'):
+        return _composition_setret(m, comp, jmeos, layout)
+    if 'call' not in comp:
+        o = comp['operands'][0] if len(comp['operands']) == 1 else {}
+        chain = list(o.get('casts') or ())
+        last = m.by_name.get(chain[-1]) if chain else None
+        if last is None or chain[-1] not in jmeos:
+            return None, 'composition:operands'
+        head = dict(comp, call=chain[-1], operands=[dict(o, casts=chain[:-1],
+                                                           param=m.visible(last)[0][0]['name'])])
+        got, why = _composition_inputs(m, head, jmeos, last)
+        if got is None:
+            return None, why
+        params, call, temps, _ = got
+        r = _ret(m, comp['ret'], last, 'jnr.ffi.Pointer', [])
+        if r is None:
+            return None, f'ret:{comp["ret"]}'
+        body = [f'Pointer _r = GeneratedFunctions.{chain[-1]}({", ".join(call)});']
+        return (params, temps, r[0], body + r[1], m.datatype(r[0])), None
+    f = m.by_name.get(comp['call'])
+    jsig = jmeos.get(comp['call'])
+    if f is None or jsig is None:
+        return None, 'not in jar'
+    got, why = _composition_inputs(m, comp, jmeos, f)
+    if got is None:
+        return None, why
+    params, call, temps, raw = got
+    _, outs = m.visible(f)
+    outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
+    restore = comp.get('restore')
+    if restore is None:
+        r = _ret(m, comp['ret'], f, jsig['ret'], outs)
+        if r is None:
+            return None, f'ret:{comp["ret"]}/{_norm(f["returnType"]["canonical"])}'
+        body = [f'{_jshort(jsig["ret"])} _r = GeneratedFunctions.{f["name"]}({", ".join(call)});']
+        return (params, temps, r[0], body + r[1], m.datatype(r[0])), None
+    # The call's answer is over the cast type: read its time and restrict argument `of`.
+    af = m.by_name.get(restore['at'])
+    if (af is None or restore['of'] not in raw or restore['at'] not in jmeos
+            or restore['time'] not in jmeos or jsig['ret'] != 'jnr.ffi.Pointer'):
+        return None, 'composition:restore'
+    q = f'_p{len(temps)}'
+    temps.append((q, f'GeneratedFunctions.{f["name"]}({", ".join(call)})', 'value'))
+    when = f'GeneratedFunctions.{restore["time"]}({q})'
+    if jmeos[restore['time']]['ret'] == 'jnr.ffi.Pointer':
+        t = f'_p{len(temps)}'
+        temps.append((t, when, 'value'))
+        when = t
+    _, aouts = m.visible(af)
+    r = _ret(m, comp['ret'], af, jmeos[restore['at']]['ret'], aouts)
+    if r is None:
+        return None, f'ret:{comp["ret"]}'
+    body = [f'{_jshort(jmeos[restore["at"]]["ret"])} _r = GeneratedFunctions.{restore["at"]}('
+            f'{raw[restore["of"]]}, {when});']
+    return (params, temps, r[0], body + r[1], m.datatype(r[0])), None
+
+
+def _composition_setret(m, comp, jmeos, layout):
+    """The eval of one set-returning composition, or (None, reason), as #_setret_overload
+    builds the eval of a set-returning signature: the operands #_composition_inputs passes
+    to the function `call`, and its rows read through the columns of the call's own
+    set-returning signature (`spaceSplit(tgeompoint, ...)` for `spaceSplit(tpose, ...)`).
+    With `restore`, the column `from` of each row is the argument `of` at the time `time`
+    reads from it, through `at`, carried as the composition's column `column`."""
+    f, jsig = m.by_name.get(comp.get('call')), jmeos.get(comp.get('call'))
+    if f is None or jsig is None:
+        return None, 'not in jar'
+    if jsig['ret'] != 'jnr.ffi.Pointer':
+        return None, 'setret:ret'
+    vis, outs = m.visible(f)
+    counts = [p for p in outs if _norm(p['canonical']) == 'int *'
+              and 'const' not in p['canonical']]
+    if len(counts) != 1:
+        return None, 'setret:count'
+    restore = comp.get('restore')
+    single = not comp.get('columns')
+    want = [c['name'] for c in comp.get('columns') or ()]
+    if restore:
+        want = [restore['from'] if n == restore['column'] else n for n in want]
+    if single:
+        # A composition returning a SQL array `X[]` answers the elements the call writes,
+        # as #_signature_overload reads an array return through its count out-parameter.
+        ccols = [{'name': None, 'from': 'return', 'type': comp['ret'][:-2]}]
+    else:
+        ccols = next((s['columns'] for s in f.get('sqlSignatures') or ()
+                      if s.get('retSet') and [c['name'] for c in s.get('columns') or ()]
+                      == want), None)
+    if ccols is None:
+        return None, 'composition:columns'
+    ccols = [dict(c, type=_deployed_type(c['type'])) if c.get('type') else c for c in ccols]
+    readers = []
+    for col in ccols:
+        r = _setret_column(m, f, col, layout)
+        if r is None:
+            return None, f'setret:column/{col["from"]}:{col.get("type")}'
+        readers.append((col['name'], r))
+    got, why = _composition_inputs(m, comp, jmeos, f)
+    if got is None:
+        return None, why
+    params, call_vis, temps, raw = got
+    vcall = dict(zip([p['name'] for p in vis], call_vis))
+    cells = {p['name']: f'_o{k}' for k, p in enumerate(o for o in outs if o is not counts[0])}
+    call = [vcall.get(p['name']) or cells.get(p['name']) or '_cnt' for p in f['params']]
+    arr = {'return': '_r', **{n: f'_a{k}' for n, k in ((n, cells[n][2:]) for n in cells)}}
+    names = [c['name'] for c in comp.get('columns') or ccols]
+    classes = [r[0] for _, r in readers]
+    reads = [r[2] if r[1] is None else r[2].replace('{a}', arr[r[1]]) for _, r in readers]
+    pre = []
+    if restore:
+        k = want.index(restore['from'])
+        ctype = next(c['type'] for c in comp['columns'] if c['name'] == restore['column'])
+        vc = m.value_class.get(_deployed_type(ctype))
+        src = readers[k][1][1]
+        if (vc is None or src is None or restore['of'] not in raw
+                or restore['time'] not in jmeos or restore['at'] not in jmeos
+                or jmeos[restore['time']]['ret'] != 'jnr.ffi.Pointer'):
+            return None, 'composition:restore'
+        cls = f'{m.pkg}.types.{vc}'
+        pre = [f'Pointer _t = GeneratedFunctions.{restore["time"]}('
+               f'MeosSqlRuntime.at({arr[src]}, _i));',
+               f'Pointer _u = GeneratedFunctions.{restore["at"]}({raw[restore["of"]]}, _t);',
+               'MeosSqlRuntime.free(_t);',
+               f'{cls} _v = _u == null ? null : {cls}.encode(_u);',
+               'MeosSqlRuntime.free(_u);']
+        classes[k], reads[k] = cls, '_v'
+    if single:
+        ecls, etype = classes[0], m.datatype(classes[0])
+    else:
+        ecls = m.row_class
+        etype = m.row_type([(n, m.datatype(c)) for n, c in zip(names, classes)])
+    body = ['Pointer _cnt = MeosSqlRuntime.cell(4);']
+    body += [f'Pointer {c} = MeosSqlRuntime.cell(8);' for c in cells.values()]
+    body += ['Pointer _r = null;', 'int _c = 0;', 'try {',
+             f'    _r = GeneratedFunctions.{f["name"]}({", ".join(call)});',
+             '    if (_r == null) return null;',
+             '    _c = _cnt.getInt(0L);']
+    body += [f'    Pointer _a{c[2:]} = {c}.getPointer(0L);' for c in cells.values()]
+    body += [f'    {ecls}[] _rows = new {ecls}[_c];',
+             '    for (int _i = 0; _i < _c; _i++) {']
+    body += [f'        {s}' for s in pre]
+    body += [f'        _rows[_i] = {reads[0] if single else m.row_of + "(" + ", ".join(reads) + ")"};',
+             '    }',
+             '    return _rows;',
+             '} finally {']
+    for (_, r) in readers:
+        if r[3]:
+            src = '_r' if r[1] == 'return' else f'{cells[r[1]]}.getPointer(0L)'
+            body.append(f'    MeosSqlRuntime.freeEach({src}, _c);')
+    body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
+    body += ['    MeosSqlRuntime.free(_r);', '}']
+    return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
+
+
 def _setret_overload(m, f, sig, jsig, bound, layout):
     """The eval of one set-returning signature, or (None, reason), as #_overload builds the eval
     of a signature returning one value: the arguments #_inputs passes, a zeroed cell for the row
@@ -1836,35 +2083,29 @@ def run_flink_sql(args):
     seen = defaultdict(set)
     skipped = defaultdict(int)
     nset = 0
-    for f in m.fns:
-        if not f.get('sqlfn') or f.get('sqlfnBackingOnly') or f.get('api') == 'internal':
+    keep = lambda f: (f.get('sqlfn') and not f.get('sqlfnBackingOnly')  # noqa: E731
+                      and f.get('api') != 'internal')
+    for sqlname, sargs, sdef, ov, why, isset in _sql_overloads(m, cat, jmeos, layout,
+                                                                skipped, keep):
+        nset += isset
+        if ov is None:
+            skipped[why.split('/')[0]] += 1
             continue
-        jsig = jmeos.get(f['name'])
-        if jsig is None:
-            skipped['not in jar'] += 1
-            continue
-        for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
-                                                             f.get('sqlSignatures') or []):
-            ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
-            nset += isset
-            if ov is None:
-                skipped[why.split('/')[0]] += 1
+        defaults = (list(sdef) + [None] * len(sargs))[:len(sargs)]
+        variants = [None]
+        for k in range(1, len(sargs) + 1):
+            lits = [_default_literal(sargs[len(sargs) - k + j], defaults[len(sargs) - k + j])
+                    for j in range(k)]
+            if any(x is None for x in lits):
+                break
+            variants.append(lits)
+        for dv in variants:
+            shown = ov[0] if dv is None else ov[0][:len(ov[0]) - len(dv)]
+            key = tuple(t for t, _ in shown)
+            if key in seen[sqlname]:
                 continue
-            defaults = (list(sdef) + [None] * len(sargs))[:len(sargs)]
-            variants = [None]
-            for k in range(1, len(sargs) + 1):
-                lits = [_default_literal(sargs[len(sargs) - k + j], defaults[len(sargs) - k + j])
-                        for j in range(k)]
-                if any(x is None for x in lits):
-                    break
-                variants.append(lits)
-            for dv in variants:
-                shown = ov[0] if dv is None else ov[0][:len(ov[0]) - len(dv)]
-                key = tuple(t for t, _ in shown)
-                if key in seen[sqlname]:
-                    continue
-                seen[sqlname].add(key)
-                names[sqlname].append((_emit_eval(ov, dv), list(key), ov[4]))
+            seen[sqlname].add(key)
+            names[sqlname].append((_emit_eval(ov, dv), list(key), ov[4]))
 
     classes = {}
     taken = set()
@@ -2546,43 +2787,37 @@ def run_spark_sql(args):
     seen = defaultdict(set)
     skipped = defaultdict(int)
     nset = 0
-    for f in m.fns:
-        if not f.get('sqlfn') or f.get('sqlfnBackingOnly') or f.get('api') != 'public':
+    keep = lambda f: (f.get('sqlfn') and not f.get('sqlfnBackingOnly')  # noqa: E731
+                      and f.get('api') == 'public')
+    for sqlname, sargs, sdef, ov, why, isset in _sql_overloads(m, cat, jmeos, layout,
+                                                                skipped, keep):
+        nset += isset
+        if ov is None:
+            skipped[why.split('/')[0]] += 1
             continue
-        jsig = jmeos.get(f['name'])
-        if jsig is None:
-            skipped['not in jar'] += 1
+        ret = ov[4]
+        if ret is None:
+            skipped['spark:ret'] += 1
             continue
-        for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
-                                                             f.get('sqlSignatures') or []):
-            ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
-            nset += isset
-            if ov is None:
-                skipped[why.split('/')[0]] += 1
+        defaults = (list(sdef) + [None] * len(sargs))[:len(sargs)]
+        variants = [None]
+        for k in range(1, len(sargs) + 1):
+            lits = [_default_literal(sargs[len(sargs) - k + j], defaults[len(sargs) - k + j])
+                    for j in range(k)]
+            if any(x is None for x in lits):
+                break
+            variants.append(lits)
+        for dv in variants:
+            shown = ov[0] if dv is None else ov[0][:len(ov[0]) - len(dv)]
+            key = tuple(t for t, _ in shown)
+            if key in seen[sqlname]:
                 continue
-            ret = ov[4]
-            if ret is None:
-                skipped['spark:ret'] += 1
+            types = [_spark_datatype(m, t) for t in key]
+            if None in types:
+                skipped['spark:arg'] += 1
                 continue
-            defaults = (list(sdef) + [None] * len(sargs))[:len(sargs)]
-            variants = [None]
-            for k in range(1, len(sargs) + 1):
-                lits = [_default_literal(sargs[len(sargs) - k + j], defaults[len(sargs) - k + j])
-                        for j in range(k)]
-                if any(x is None for x in lits):
-                    break
-                variants.append(lits)
-            for dv in variants:
-                shown = ov[0] if dv is None else ov[0][:len(ov[0]) - len(dv)]
-                key = tuple(t for t, _ in shown)
-                if key in seen[sqlname]:
-                    continue
-                types = [_spark_datatype(m, t) for t in key]
-                if None in types:
-                    skipped['spark:arg'] += 1
-                    continue
-                seen[sqlname].add(key)
-                names[sqlname].append((_emit_eval(ov, dv), types, ret, list(key)))
+            seen[sqlname].add(key)
+            names[sqlname].append((_emit_eval(ov, dv), types, ret, list(key)))
 
     arity = max((len(t) for sigs in names.values() for _, t, _, _ in sigs), default=0)
     (root / 'MeosValue.java').write_text(_SPARK_MEOS_VALUE.replace('{pkg}', SPARK_SQL_PKG))
