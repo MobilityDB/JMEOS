@@ -281,6 +281,14 @@ def supported(f):
         if r is None:
             b = base(f["returnType"]["canonical"])
             return ("internal" if b in INTERNAL or b == "__INTERNAL__" else "ret:"+norm(f["returnType"]["canonical"]))
+    # An array the catalog names in shape.inputArrays is no single value, though a contiguous
+    # array of structs (spanset_make reads Span *spans) has the C type of one: a UDF decoding
+    # one value would hand MEOS `count` elements to read past it. The typed SQL surfaces carry
+    # such an array (#_array_arg of codegen_jvm.py); here it is refused.
+    arrays = {a["param"] for a in (f.get("shape") or {}).get("inputArrays") or ()}
+    for p in in_params:
+        if p["name"] in arrays and (arg_kind(p["canonical"]) or ("",))[0] == "ptr":
+            return "array:" + norm(p["canonical"])
     for p in in_params:
         if arg_kind(p["canonical"]) is None:
             b = base(p["canonical"])

@@ -52,7 +52,7 @@ cbuffer_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 cbuffer_hash	ret:uint32_t
 cbufferarr_round	unsupported-return:struct Cbuffer **
 cbufferarr_to_geom	internal
-cbufferset_make	internal
+cbufferset_make	array:Cbuffer *
 cbufferset_value_n	internal
 cmp_date_timestamp	arg:Timestamp
 cmp_timestamp_date	arg:Timestamp
@@ -247,7 +247,7 @@ ne_timestamp_timestamptz	arg:Timestamp
 ne_timestamptz_timestamp	arg:Timestamp
 npoint_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 npoint_hash	ret:uint32_t
-npointset_make	internal
+npointset_make	array:Npoint *
 npointset_value_n	internal
 nsegment_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 overabove_tpcbox_tpcbox	arg:TPCBox *
@@ -428,6 +428,7 @@ setstate_deserialize	array-or-out-param:bytes
 setstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
 span_hash	ret:uint32_t
 spanset_hash	ret:uint32_t
+spanset_make	array:Span *
 spanset_spanarr	internal
 spanset_spans	array-or-out-param:count
 spanset_split_each_n_spans	array-or-out-param:count
@@ -465,6 +466,7 @@ stbox_tmax	arg:TimestampTz *
 stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
+stboxarr_round	array:STBox *
 taggstate_deserialize	array-or-out-param:bytes; no-encoder:SkipList
 taggstate_serialize	no-decoder:SkipList; array-or-out-param:size_out; unsupported-return:uint8_t *
 tbigint_time_boxes	array-or-out-param:count
