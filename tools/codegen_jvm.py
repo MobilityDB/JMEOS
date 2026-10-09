@@ -629,6 +629,13 @@ class SqlModel:
         self.jmeos = jmeos
         self.fns = cat['functions']
         self.by_name = {f['name']: f for f in self.fns}
+        # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, the rule the
+        # Spark arm sizes them by: the rows of a set-returning signature and a contiguous array
+        # of structs (#_array_arg) read them, on both engines.
+        spark = _spark_module()
+        spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
+        self.layout = lambda name: (spark.struct_layout(name)  # noqa: E731
+                                    if name in spark.STRUCTS else None)
         self.enc = cat.get('typeEncodings', {})
         self.enums = {e['name'] for e in cat.get('enums', [])}
         # The value of each macro and enum member a wrapper binds by name.
@@ -1025,6 +1032,15 @@ def _array_arg(m, elem, a, p, jt, name, temps):
         cls = f'{m.pkg}.types.{m.value_class[elem]}'
         temps.append((t, f'{name}, {cls}::decode', 'values'))
         return f'{cls}[]', t
+    # A contiguous array of structs (spanset_make reads Span *spans): each element decodes as
+    # above and its bytes are copied into the C array, each the size #struct_layout of
+    # codegen_spark_udfs.py gives the catalog struct.
+    lay = m.layout(_base(el['canonical'])) if c.count('*') == 1 else None
+    if elem in m.value_class and lay is not None \
+            and m.sql_cbase.get(elem) == _base(el['canonical']):
+        cls = f'{m.pkg}.types.{m.value_class[elem]}'
+        temps.append((t, f'{name}, {cls}::decode, {lay[0]}', 'structs'))
+        return f'{cls}[]', t
     hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
         or SQL_ARRAY_SCALAR.get((elem, _base(el['canonical'])))
     if hit and c.count('*') == 1:
@@ -1175,6 +1191,7 @@ def _emit_eval(ov, defaults=None):
         L.append('        try {')
         for t, e, kind in temps:
             v = {'value': f'_in.value({e})', 'values': f'_in.values({e})',
+                 'structs': f'_in.structs({e})',
                  'buffer': f'_in.hold({e})'}[kind]
             L.append(f'            Pointer {t} = {v};')
         L += [f'            {s}' for s in body]
@@ -1860,6 +1877,22 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
             return b;
         }
 
+        /** The values decoded one by one by dec into the contiguous C array of structs of
+         * the given size MEOS reads, as {@link #values} decodes them into an array of
+         * pointers: each decoded value is kept for release and its bytes are copied in. */
+        public <V extends MeosValue> Pointer structs(V[] vs,
+                java.util.function.Function<V, Pointer> dec, int size) {
+            Pointer b = hold(buffer(vs.length, size));
+            for (int i = 0; i < vs.length; i++) {
+                Pointer p = value(dec.apply(element(vs, i)));
+                if (p == null) {
+                    throw new IllegalArgumentException("an array element does not decode");
+                }
+                p.transferTo(0, b, (long) i * size, size);
+            }
+            return b;
+        }
+
         boolean holds(Pointer r) {
             for (int i = 0; i < n; i++) {
                 if (owned[i] != null && owned[i].address() == r.address()) {
@@ -2074,11 +2107,7 @@ def run_flink_sql(args):
     for sql in m.value_class:
         (root / 'types' / f'{m.value_class[sql]}.java').write_text(_value_class_src(m, sql))
 
-    # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, the rule the
-    # Spark arm sizes them by.
-    spark = _spark_module()
-    spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
-    layout = lambda name: spark.struct_layout(name) if name in spark.STRUCTS else None  # noqa: E731
+    layout = m.layout
 
     names = defaultdict(list)          # SQL name -> eval methods
     seen = defaultdict(set)
@@ -2778,11 +2807,7 @@ def run_spark_sql(args):
     for sql in m.value_class:
         (root / 'types' / f'{m.value_class[sql]}.java').write_text(_spark_value_class_src(m, sql))
 
-    # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, as the flink-sql
-    # engine reads them for a set-returning signature's rows.
-    spark = _spark_module()
-    spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
-    layout = lambda name: spark.struct_layout(name) if name in spark.STRUCTS else None  # noqa: E731
+    layout = m.layout
 
     names = defaultdict(list)          # SQL name -> (eval lines, Spark arg types, ret, classes)
     seen = defaultdict(set)
