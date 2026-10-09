@@ -1287,7 +1287,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return A {@link Float} with the Frechet distance.
      */
     public float frechet_distance(Temporal other){
-        return (float) GeneratedFunctions.temporal_frechet_distance(this.inner,other.getInner());
+        return (float) GeneratedFunctions.temporal_frechet_distance(this.inner,other.getInner(), true);
     }
 
     /**
@@ -1302,7 +1302,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return A {@link Float} with the Dynamic Time Warp distance.
      */
     public float dyntimewarp_distance(Temporal other){
-        return (float) GeneratedFunctions.temporal_dyntimewarp_distance(this.inner,other.getInner());
+        return (float) GeneratedFunctions.temporal_dyntimewarp_distance(this.inner,other.getInner(), true);
     }
 
     /**
@@ -1317,7 +1317,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return A {@link Float} with the Hausdorff distance.
      */
     public float hausdorff_distance(Temporal other){
-        return (float) GeneratedFunctions.temporal_hausdorff_distance(this.inner,other.getInner());
+        return (float) GeneratedFunctions.temporal_hausdorff_distance(this.inner,other.getInner(), true);
     }
 
 
