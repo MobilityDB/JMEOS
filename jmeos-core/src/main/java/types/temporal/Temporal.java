@@ -160,7 +160,7 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
      * @return The temporal object as a MF-JSON string.
      */
     public String as_mfjson(boolean with_bbox, int flags, int precision, String srs){
-        return GeneratedFunctions.temporal_as_mfjson(this.inner,with_bbox,flags,precision,srs);
+        return GeneratedFunctions.temporal_as_mfjson(this.inner, with_bbox ? 1 : 0, flags, precision, srs);
     }
 
 
