@@ -393,7 +393,12 @@ def _omitted(f, p, vis, name):
             i = free.index(p["name"])
             dflt = (list(s.get("argDefaults") or []) + [None] * len(args))[:len(args)]
             if vis <= i < len(args) and all(d is not None for d in dflt[vis:]):
-                vals.append(dflt[i])
+                # an argument left to a NULL default passes what the wrapper passes for it,
+                # the catalog's nullDefaultBinds, as the typed surfaces pass it
+                # (#_null_default_signatures of codegen_jvm.py)
+                nd = (s.get("nullDefaultBinds") or {}).get(str(i)) or {}
+                null = dflt[i].strip().upper() == "NULL"
+                vals.append(nd.get(p["name"], dflt[i]) if null else dflt[i])
     return vals
 
 
