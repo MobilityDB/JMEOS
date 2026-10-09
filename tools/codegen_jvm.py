@@ -1059,7 +1059,10 @@ def _bound_literal(m, v, jt):
     if v in ('true', 'false'):
         return v if jt == 'boolean' else None
     if v == 'NULL':
-        return 'null' if jt == 'jnr.ffi.Pointer' else None
+        # Java takes null for every reference type, a pointer or a string alike, and for
+        # none of its eight primitive types
+        return None if jt in ('boolean', 'byte', 'char', 'short', 'int', 'long', 'float',
+                              'double') else 'null'
     try:
         x = float(v)
     except (TypeError, ValueError):
