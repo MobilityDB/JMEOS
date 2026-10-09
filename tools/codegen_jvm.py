@@ -214,8 +214,9 @@ def folded_nxn(r):
             else:
                 periods = nm
             i += 1; continue
-        if c in ('double', 'int'):
-            scalars.append((nm, 'double' if c == 'double' else 'int')); i += 1; continue
+        if c in ('double', 'int', 'bool'):
+            scalars.append((nm, {'double': 'double', 'int': 'int', 'bool': 'boolean'}[c]))
+            i += 1; continue
         return None
     if not arrays or count is None:
         return None

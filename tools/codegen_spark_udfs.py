@@ -760,7 +760,8 @@ def emit_timearg(name, op):
 
 def tgeoarr_shape(f):
     """Recognize a MEOS NxN array kernel — params are one or more (Temporal **, int)
-    array pairs, an optional `double` (distance), and optional non-const out-params
+    array pairs, an optional `double` (distance), an optional `bool` (the model of the earth
+    a geography is measured on, `spheroid`), and optional non-const out-params
     (int *count, SpanSet ***periods). Returns a shape dict or None.
     ret: 'double' (scalar, e.g. minDistance) | 'pairs' (int* of 2*count [i,j], e.g. the
     *Pairs functions). periods=True iff a SpanSet*** out-param is present (tDwithin)."""
@@ -768,6 +769,7 @@ def tgeoarr_shape(f):
     n = len(ps)
     i = arrays = 0
     dist = has_count = periods = False
+    flag = None
     while i < n:
         c = norm(ps[i]["canonical"]); isconst = "const" in ps[i]["canonical"]
         bare = c.replace("*", "").strip()   # base() maps ** -> __INTERNAL__, so strip here
@@ -777,6 +779,8 @@ def tgeoarr_shape(f):
             return None
         if c == "double":
             dist = True; i += 1; continue
+        if c == "bool" and flag is None:
+            flag = ps[i]["name"]; i += 1; continue
         if c == "int *" and not isconst:
             has_count = True; i += 1; continue
         if bare == "SpanSet" and c.count("*") == 3 and not isconst:
@@ -788,7 +792,7 @@ def tgeoarr_shape(f):
     ret = "double" if rt == "double" else ("pairs" if rt == "int *" else None)
     if ret is None or (ret == "pairs" and not has_count):
         return None
-    return {"arrays": arrays, "dist": dist, "periods": periods, "ret": ret}
+    return {"arrays": arrays, "dist": dist, "flag": flag, "periods": periods, "ret": ret}
 
 
 def emit_tgeoarr(name, f, shape):
@@ -798,10 +802,19 @@ def emit_tgeoarr(name, f, shape):
     yield a Double UDF; pairs-return kernels yield array<struct<i,j[,periods]>> (consumed via
     LATERAL explode), with MEOS 1-based indices mapped to 0-based."""
     nA = shape["arrays"]
-    argnames = ["a%d" % i for i in range(nA)] + (["dist"] if shape["dist"] else [])
+    # the flag a SQL signature omits (its SQL-required arity stops before it) is the value
+    # MobilityDB gives it, as #emit_single supplies a hidden flag
+    flag, hidden = shape["flag"], None
+    vis = nA + (1 if shape["dist"] else 0)
+    if flag and f.get("sqlArity") == vis:
+        p = next(q for q in f["params"] if q["name"] == flag)
+        flag, hidden = None, hidden_arg(f, p, vis, name)
+    argnames = ["a%d" % i for i in range(nA)] + (["dist"] if shape["dist"] else []) \
+        + ([flag] if flag else [])
     # dist arrives as Object: a bare SQL literal like 10.0 is decimal (BigDecimal), not
     # double, so take it as Object and coerce via Number rather than failing the cast.
-    boxes = ["Object"] * nA + (["Object"] if shape["dist"] else [])
+    boxes = ["Object"] * nA + (["Object"] if shape["dist"] else []) \
+        + (["Boolean"] if flag else [])
     if shape["ret"] == "double":
         retbox, ret_dt = "Double", "DataTypes.DoubleType"
     else:
@@ -813,7 +826,9 @@ def emit_tgeoarr(name, f, shape):
         retbox, ret_dt = "java.util.List<org.apache.spark.sql.Row>", "DataTypes.createArrayType(%s)" % struct
     iface = "UDF%d<%s, %s>" % (len(argnames), ", ".join(boxes), retbox)
     L = ['        spark.udf().register("%s", (%s) (%s) -> {' % (name, iface, ", ".join(argnames))]
-    L.append("        if (" + " || ".join("a%d == null" % i for i in range(nA)) + ") return null;")
+    L.append("        if (" + " || ".join(["a%d == null" % i for i in range(nA)]
+                                   + ([flag + " == null"] if flag else []))
+             + ") return null;")
     for i in range(nA):
         L.append("        Object[] s%d = UdfMarshal.asArray(a%d);" % (i, i))
     L.append("        if (" + " || ".join("s%d == null" % i for i in range(nA)) + ") return null;")
@@ -826,6 +841,10 @@ def emit_tgeoarr(name, f, shape):
         callargs += ["arr%d" % i, "s%d.length" % i]
     if shape["dist"]:
         callargs.append("dist == null ? 0.0 : ((Number) dist).doubleValue()")
+    if flag:
+        callargs.append(flag)
+    elif hidden:
+        callargs.append(hidden)
     if shape["ret"] == "pairs":
         L.append("        jnr.ffi.Pointer _cnt = jnr.ffi.Memory.allocateDirect(_rt, 4);")
         callargs.append("_cnt")
@@ -1050,13 +1069,22 @@ def row_column(f, col):
     return None
 
 
-def setret_shape(f, sig):
+def setret_shape(f, sig, vis=None):
     """The rows a set-returning signature of `f` returns, or None when they cannot be read: the
     inputs (every parameter outside shape.outParams, each marshallable), the `int *count`
-    out-parameter, the out-parameters holding arrays, and one reader per column."""
+    out-parameter, the out-parameters holding arrays, and one reader per column. With `vis`, the
+    SQL-required arity of a SQL name, the inputs from `vis` on are hidden when each is a
+    defaultable flag preceding every out-parameter, as #emit_single hides them."""
     outs = f.get("shape", {}).get("outParams", [])
     params = f["params"]
     ins = [p for p in params if p["name"] not in outs]
+    hidden = []
+    if vis is not None and 0 < vis < len(ins):
+        tail = ins[vis:]
+        first_out = min([i for i, q in enumerate(params) if q["name"] in outs] or [len(params)])
+        if all(base(q["canonical"]) in HIDE_DEFAULT and "*" not in norm(q["canonical"])
+               and params.index(q) < first_out for q in tail):
+            hidden, ins = tail, ins[:vis]
     counts = [p for p in params if p["name"] in outs and norm(p["canonical"]) == "int *"
               and "const" not in p["canonical"]]
     if len(counts) != 1 or not ins or any(arg_kind(p["canonical"]) is None for p in ins):
@@ -1071,7 +1099,8 @@ def setret_shape(f, sig):
     arrays = [p["name"] for p in params if p["name"] in outs and p is not counts[0]]
     if any(r["src"] not in ("return", "ordinal") and r["src"] not in arrays for r in readers):
         return None
-    return {"ins": ins, "count": counts[0]["name"], "arrays": arrays, "cols": readers}
+    return {"ins": ins, "hidden": hidden, "count": counts[0]["name"], "arrays": arrays,
+            "cols": readers}
 
 
 def _row_dt(shape):
@@ -1131,6 +1160,8 @@ def emit_setret(name, cands, colnames):
                 callargs.append("UdfMarshal.tsOdt(%s)" % a)
             else:
                 callargs.append(k[3] % a)
+        for p in shape.get("hidden", []):
+            callargs.append(hidden_arg(f, p, len(shape["ins"]), name))
         L.append("        if (%s) {" % (" && ".join("%s != null" % p for p in ptrs) or "true"))
         L.append("        jnr.ffi.Runtime _rt = jnr.ffi.Runtime.getSystemRuntime();")
         cells = {}
@@ -1839,7 +1870,7 @@ def main():
     # one first. A SQL name whose overloads need different signatures (valueSplit's int,
     # double and bigint bins) stays unregistered, each overload reachable under its C name.
     STRUCTS.update({s["name"]: s for s in cat.get("structs") or []})
-    setret, nset_c, nset_sql = {}, 0, 0
+    setret, setret_sql, nset_c, nset_sql = {}, {}, 0, 0
     for f in fns:
         nm = f["name"]
         if jar_syms is not None and nm not in jar_syms:
@@ -1854,6 +1885,8 @@ def main():
             shape = setret_shape(f, sig)
             if shape is not None:
                 setret.setdefault(sig.get("sqlName") or f.get("sqlfn"), []).append((f, shape))
+                setret_sql.setdefault(sig.get("sqlName") or f.get("sqlfn"), []).append(
+                    (f, setret_shape(f, sig, f.get("sqlArity"))))
     by_fn = {}
     for sname, cands in setret.items():
         for f, shape in cands:
@@ -1869,17 +1902,17 @@ def main():
         cov += 1
         nset_c += 1
     set_left = []
-    for sname in sorted(n for n in setret if n):
+    for sname in sorted(n for n in setret_sql if n):
         if sname in names:
             continue
-        if len({_setret_key(s) for _, s in setret[sname]}) != 1:
+        if len({_setret_key(s) for _, s in setret_sql[sname]}) != 1:
             set_left.append(sname)
             continue
         one = {}
-        for f, shape in setret[sname]:
+        for f, shape in setret_sql[sname]:
             one.setdefault(f["name"], (f, shape))
         cols = collections.Counter(tuple(str(c["name"]) for c in s["cols"])
-                                   for _, s in setret[sname])
+                                   for _, s in setret_sql[sname])
         grouped.setdefault("GeneratedUdfs_sqlfn", []).append(
             emit_setret(sname, list(one.values()), min(cols, key=lambda k: (-cols[k], k))))
         names.add(sname)

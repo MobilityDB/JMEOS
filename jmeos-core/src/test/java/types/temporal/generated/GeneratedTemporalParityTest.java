@@ -208,7 +208,7 @@ public class GeneratedTemporalParityTest {
 
         // A temporal object argument is forwarded as its inner pointer.
         assertEquals(id(GeneratedFunctions.temporal_merge(pa, b.getInner())), id(g.merge(b)));
-        assertEquals(GeneratedFunctions.temporal_frechet_distance(pa, b.getInner()), g.frechetDistance(b));
+        assertEquals(GeneratedFunctions.temporal_frechet_distance(pa, b.getInner(), true), g.frechetDistance(b, true));
         assertEquals(id(GeneratedFunctions.temporal_insert(pa, b.getInner(), true)), id(g.insert(b, true)));
         assertEquals(id(GeneratedFunctions.temporal_append_tsequence(pa, b.getInner(), false)),
                 id(g.appendTsequence(b, false)));
@@ -400,8 +400,8 @@ public class GeneratedTemporalParityTest {
 
         // frechetPath folds the Match array into records; compare each to the raw {i, j} pair.
         Pointer c = Memory.allocate(rt, Integer.BYTES);
-        Pointer arr = GeneratedFunctions.temporal_frechet_path(pa, b.getInner(), c);
-        List<GeneratedTemporal.Match> path = g.frechetPath(b);
+        Pointer arr = GeneratedFunctions.temporal_frechet_path(pa, b.getInner(), true, c);
+        List<GeneratedTemporal.Match> path = g.frechetPath(b, true);
         assertEquals(c.getInt(0), path.size());
         for (int i = 0; i < path.size(); i++) {
             assertEquals(arr.getInt((long) i * 8), path.get(i).i());
@@ -410,8 +410,8 @@ public class GeneratedTemporalParityTest {
 
         // The dynamic-time-warp path folds the same way.
         Pointer c2 = Memory.allocate(rt, Integer.BYTES);
-        GeneratedFunctions.temporal_dyntimewarp_path(pa, b.getInner(), c2);
-        assertEquals(c2.getInt(0), g.dyntimewarpPath(b).size());
+        GeneratedFunctions.temporal_dyntimewarp_path(pa, b.getInner(), true, c2);
+        assertEquals(c2.getInt(0), g.dyntimewarpPath(b, true).size());
     }
 
     @Test

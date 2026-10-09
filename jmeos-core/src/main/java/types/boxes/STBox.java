@@ -1052,7 +1052,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_geom(Geometry other) {
-		return (float) GeneratedFunctions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()));
+		return (float) GeneratedFunctions.nad_stbox_geo(this._inner, ConversionUtils.geo_to_gserialized(other, this.geodetic()), true);
 	}
 
 
@@ -1070,7 +1070,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_stbox(STBox other) {
-		return (float) GeneratedFunctions.nad_stbox_stbox(this._inner, other._inner);
+		return (float) GeneratedFunctions.nad_stbox_stbox(this._inner, other._inner, true);
 	}
 
 
@@ -1088,7 +1088,7 @@ public class STBox implements Box {
 	 * @return a Float instance with the distance between the nearest points of "this" and "``other``".
 	 */
 	public float nearest_approach_distance_tpoint(TPoint other) {
-		return (float) GeneratedFunctions.nad_tgeo_stbox(this._inner, other.getPointInner());
+		return (float) GeneratedFunctions.nad_tgeo_stbox(this._inner, other.getPointInner(), true);
 	}
 
 
