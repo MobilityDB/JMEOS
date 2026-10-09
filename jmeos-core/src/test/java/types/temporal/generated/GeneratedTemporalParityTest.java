@@ -294,8 +294,8 @@ public class GeneratedTemporalParityTest {
 
         // The hex-WKB and MF-JSON strings match the direct call; the size_out is folded by the wrapper.
         assertEquals(GeneratedFunctions.temporal_as_hexwkb(p, (byte) 4), g.asHEXWKB((byte) 4));
-        assertEquals(GeneratedFunctions.temporal_as_mfjson(p, true, 3, 6, null),
-                g.asMFJSON(true, 3, 6, null));
+        assertEquals(GeneratedFunctions.temporal_as_mfjson(p, 1, 3, 6, null),
+                g.asMFJSON(1, 3, 6, null));
         // The WKB buffer is returned as a raw pointer.
         assertNotNull(g.asWKB((byte) 4));
     }
