@@ -55,6 +55,18 @@ public class FunctionsGenerator {
      */
     private static final Set<String> CALLBACK_TYPES = Set.of("error_handler_fn");
 
+    /**
+     * The MEOS functions that install MEOS's default error handler, which ends the process with
+     * exit(EXIT_FAILURE) on an error and so takes the whole JVM down. meos_initialize() installs
+     * it, so a program calling meos_initialize() after the binding has initialised MEOS would
+     * otherwise lose the binding's handler; the wrapper of each installs the binding's handler
+     * again once MEOS returns.
+     */
+    private static final Set<String> INSTALLS_DEFAULT_ERROR_HANDLER = Set.of("meos_initialize");
+
+    /** The call that installs the binding's error handler in place of MEOS's default. */
+    private static final String BINDING_HANDLER_CALL = "meos_initialize_error_handler(ERROR_HANDLER);";
+
     // -------------------------------------------------------------------------
     // Optional MEOS type families, gated by build flags mirroring the
     // MobilityDB/MEOS flag names and ON|OFF (also 1|0) values: -DCBUFFER=OFF,
@@ -1120,6 +1132,10 @@ public class FunctionsGenerator {
         }
         for (String paramName : byteInputs) {
             fence.append("\t\tjava.lang.ref.Reference.reachabilityFence(").append(paramName).append("_buf);\n");
+        }
+        // MEOS's default error handler, which this call installs, ends the process on an error.
+        if (INSTALLS_DEFAULT_ERROR_HANDLER.contains(fn.name)) {
+            fence.append("\t\t").append(BINDING_HANDLER_CALL).append("\n");
         }
 
         // --- Delegate + error check + return ---

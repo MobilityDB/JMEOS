@@ -534,6 +534,47 @@ class FunctionsGeneratorTest {
         }
 
         @Test
+        @DisplayName("meos_initialize installs the binding's error handler after MEOS returns")
+        void initializeInstallsBindingHandlerAfterTheCall() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "meos_initialize",
+                    "returnType": {"c": "void"},
+                    "params": []
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            String wrapper = out.substring(out.indexOf("public static void meos_initialize()"));
+            wrapper = wrapper.substring(0, wrapper.indexOf("\n\t}\n"));
+            int call = wrapper.indexOf("_meos_a.meos_initialize();");
+            int install = wrapper.indexOf("meos_initialize_error_handler(ERROR_HANDLER);");
+            int check = wrapper.indexOf("MeosErrorHandler.checkError();");
+            assertTrue(call >= 0, "the wrapper calls MEOS");
+            assertTrue(install > call, "the binding's handler is installed after MEOS returns");
+            assertTrue(check > install, "the error check follows the installation");
+        }
+
+        @Test
+        @DisplayName("a function leaving the error handler alone does not install it")
+        void otherFunctionDoesNotInstallBindingHandler() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "meos_finalize",
+                    "returnType": {"c": "void"},
+                    "params": []
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            String wrapper = out.substring(out.indexOf("public static void meos_finalize()"));
+            wrapper = wrapper.substring(0, wrapper.indexOf("\n\t}\n"));
+            assertFalse(wrapper.contains("meos_initialize_error_handler(ERROR_HANDLER);"));
+        }
+
+        @Test
         @DisplayName("bool+result pattern hides result param from wrapper")
         void boolResultPattern() throws Exception {
             String json = """
