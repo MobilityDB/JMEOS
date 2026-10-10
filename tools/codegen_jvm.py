@@ -2457,18 +2457,24 @@ def _spark_planning(arity):
     }
 
     private static List<Expression> fit(Overload o, List<Expression> given, boolean widen) {
-        if (o.args.length != given.size()) {
+        return fit(o.args, given, widen);
+    }
+
+    /** The arguments given as the types want takes them, cast where a type differs only in what
+     * Spark notes of it or, with widen, where a number widens; null where they do not fit. */
+    public static List<Expression> fit(DataType[] want, List<Expression> given, boolean widen) {
+        if (want.length != given.size()) {
             return null;
         }
         List<Expression> in = new ArrayList<>();
-        for (int i = 0; i < o.args.length; i++) {
+        for (int i = 0; i < want.length; i++) {
             Expression e = given.get(i);
             DataType have = e.dataType();
-            if (have.equals(o.args[i])) {
+            if (have.equals(want[i])) {
                 in.add(e);
-            } else if (have instanceof NullType || sameKind(have, o.args[i])
-                    || (widen && widens(have, o.args[i]))) {
-                in.add(new Cast(e, o.args[i], Option.<String>empty(), EvalMode.fromSQLConf(SQLConf.get())));
+            } else if (have instanceof NullType || sameKind(have, want[i])
+                    || (widen && widens(have, want[i]))) {
+                in.add(new Cast(e, want[i], Option.<String>empty(), EvalMode.fromSQLConf(SQLConf.get())));
             } else {
                 return null;
             }
@@ -2592,9 +2598,10 @@ import jnr.ffi.Pointer;
  * writing of a state as bytes and its reading back. */
 public final class MeosAggregate implements Serializable {{
 
-    /** The transition: the state with the value folded in, the value of the overload's class. */
+    /** The transition: the state with the arguments of one row folded in, each of the class
+     * the overload states for it. */
     public interface Transition extends Serializable {{
-        Pointer apply(Pointer state, Object value);
+        Pointer apply(Pointer state, Object[] values);
     }}
 
     /** The combine: the two partial states joined. */
@@ -2640,9 +2647,10 @@ public final class MeosAggregate implements Serializable {{
         this.make = make;
     }}
 
-    /** The state with the value folded in; the state given is the transition's to keep or free. */
-    public Pointer step(Pointer state, Object value) {{
-        return transition.apply(state, value);
+    /** The state with the arguments of one row folded in; the state given is the transition's to
+     * keep or free. */
+    public Pointer step(Pointer state, Object... values) {{
+        return transition.apply(state, values);
     }}
 
     /** The two partial states joined; both are consumed. */
@@ -2695,12 +2703,18 @@ public final class MeosAggregate implements Serializable {{
 '''
 
 
+# The class of an aggregate argument after the first, beside the value types: the interval of the
+# window aggregates, which both engines encode.
+_AGG_ARGUMENT = {'java.time.Duration'}
+
+
 def _catalog_aggregates(m, cat, jmeos, scalars):
     """The aggregates of the catalog's `aggregates` section both typed surfaces carry:
     {SQL name: [overload]} and {reason: count} for what is left out. An overload is a dict of its
     argument and result classes, the transition's inputs as #_inputs passes them, and the Java of
-    its roles. An aggregate is carried when it takes one value of a type the surface holds,
-    states a transition and a combine, and its state is either internal with a serialize and a
+    its roles. An aggregate is carried when it takes a value of a type the surface holds, each
+    further argument a value or an interval (the window of wCount) that the transition takes in
+    the order the SQL arguments come, states a transition and a combine, and its state is either internal with a serialize and a
     deserialize function or of a SQL type the surface holds, each role a MEOS function of the
     jar. Each engine holds one function per name regardless of case, so a name a scalar of the
     surface carries stays the scalar's and the aggregate takes the `Agg` suffix of its canonical
@@ -2716,8 +2730,7 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
             if (name + 'Agg').lower() in stated:
                 continue
             name += 'Agg'
-        if len(args) != 1:
-            left[f'{len(args)} arguments'] += 1
+        if not args:
             continue
         if not meos('combine'):
             left['no combine'] += 1
@@ -2743,9 +2756,13 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
         if got is None or any(kind != 'value' for _, _, kind in got[2]):
             left[f'transition input {why or "of no value"}'] += 1
             continue
-        if (name.lower(), args[0]) in seen:
+        classes = [fc for fc, _ in got[0]]
+        if any(c not in _AGG_ARGUMENT and not c.startswith(f'{m.pkg}.types.') for c in classes[1:]):
+            left['argument of no value type or interval'] += 1
             continue
-        seen.add((name.lower(), args[0]))
+        if (name.lower(), tuple(args)) in seen:
+            continue
+        seen.add((name.lower(), tuple(args)))
         cls = lambda sql: f'{m.pkg}.types.{m.value_class[sql]}'  # noqa: E731
         if stype == 'internal':
             write = f'GeneratedFunctions::{meos("serialize")}'
@@ -2754,7 +2771,7 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
             write = f'p -> {cls(stype)}.encode(p).form'
             read = f'b -> new {cls(stype)}(b).decode()'
         fin = f'GeneratedFunctions::{meos("final")}' if meos('final') else 'null'
-        aggs[name].append({'arg': cls(args[0]), 'ret': cls(ret),
+        aggs[name].append({'args': classes, 'ret': cls(ret),
                            'transition': meos('transition'), 'inputs': got,
                            'roles': (f'GeneratedFunctions::{meos("combine")}', fin, write, read,
                                      f'{cls(ret)}::encode')})
@@ -2762,12 +2779,11 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
 
 
 def _transition_src(k, ov):
-    """The static transition of overload k of an aggregate: its value decoded as #_inputs decodes
-    an argument, folded into the state, and released after the call."""
+    """The static transition of overload k of an aggregate: the arguments of one row decoded as
+    #_inputs decodes those of a function, folded into the state, and released after the call."""
     params, call, temps = ov['inputs']
-    (fc, name), = params
-    L = [f'    static Pointer t{k}(Pointer state, Object value) {{',
-         f'        {fc} {name} = ({fc}) value;']
+    L = [f'    static Pointer t{k}(Pointer state, Object[] values) {{']
+    L += [f'        {fc} {name} = ({fc}) values[{i}];' for i, (fc, name) in enumerate(params)]
     L += [f'        Pointer {t} = {e};' for t, e, _ in temps]
     L.append(f'        Pointer[] _in = {{{", ".join(t for t, _, _ in temps)}}};')
     L += ['        try {',
@@ -2809,13 +2825,16 @@ public final class MeosAggState {{
     byte[] state;
     int overload = -1;
 
-    /** Fold a value into the state, by the roles of overload k. */
-    public void add(MeosAggregate[] roles, int k, Object value) {{
-        if (value == null) {{
-            return;
+    /** Fold the arguments of one row into the state, by the roles of overload k; a row with a
+     * null argument is skipped. */
+    public void add(MeosAggregate[] roles, int k, Object... values) {{
+        for (Object v : values) {{
+            if (v == null) {{
+                return;
+            }}
         }}
         MeosAggregate r = roles[k];
-        Pointer s = r.step(r.read(state), value);
+        Pointer s = r.step(r.read(state), values);
         try {{
             state = r.write(s);
         }} finally {{
@@ -2921,6 +2940,7 @@ def _flink_aggregate_src(sqlname, cls, ovs):
     body = [f'package {SQL_PKG}.functions;', '',
             'import functions.GeneratedFunctions;',
             'import jnr.ffi.Pointer;',
+            'import org.apache.flink.table.api.DataTypes;',
             'import org.apache.flink.table.catalog.DataTypeFactory;',
             'import org.apache.flink.table.functions.AggregateFunction;',
             'import org.apache.flink.table.types.DataType;',
@@ -2940,8 +2960,10 @@ def _flink_aggregate_src(sqlname, cls, ovs):
     body += ['    @Override', '    public MeosAggState createAccumulator() {',
              '        return new MeosAggState();', '    }', '']
     for k, ov in enumerate(ovs):
-        body += [f'    public void accumulate(MeosAggState acc, {ov["arg"]} a0) {{',
-                 f'        acc.add(ROLES, {k}, a0);', '    }', '']
+        ps = ', '.join(f'{c} a{i}' for i, c in enumerate(ov['args']))
+        body += [f'    public void accumulate(MeosAggState acc, {ps}) {{',
+                 f'        acc.add(ROLES, {k}, {", ".join(f"a{i}" for i in range(len(ov["args"])))});',
+                 '    }', '']
     body += ['    public void merge(MeosAggState acc, Iterable<MeosAggState> others) {',
              '        acc.merge(ROLES, others);', '    }', '',
              '    @Override', '    public MeosValue getValue(MeosAggState acc) {',
@@ -2949,7 +2971,7 @@ def _flink_aggregate_src(sqlname, cls, ovs):
              '    @Override',
              '    public TypeInference getTypeInference(DataTypeFactory typeFactory) {',
              '        return MeosSqlRuntime.aggregateInference(new DataType[][] {']
-    body += [f'            {{{_datatype(ov["arg"])}}},' for ov in ovs]
+    body += [f'            {{{", ".join(_datatype(c) for c in ov["args"])}}},' for ov in ovs]
     body += ['        }, new DataType[] {']
     body += [f'            {_datatype(ov["ret"])},' for ov in ovs]
     body += ['        }, MeosAggState.TYPE);', '    }', '}']
@@ -2992,17 +3014,17 @@ public final class MeosAggregates {{
 
     private MeosAggregates() {{ }}
 
-    /** One overload: the SQL type it takes, the classes of its argument and result, and its
-     * roles. */
+    /** One overload: the SQL types it takes, the encoder of its arguments, the class of its
+     * result, and its roles. */
     public static final class Overload implements Serializable {{
-        final DataType arg;
-        final Class<? extends MeosValue> in;
+        final DataType[] args;
+        final Encoder<?> in;
         final Class<? extends MeosValue> out;
         final MeosAggregate roles;
 
-        public Overload(DataType arg, Class<? extends MeosValue> in, Class<? extends MeosValue> out,
+        public Overload(DataType[] args, Encoder<?> in, Class<? extends MeosValue> out,
                 MeosAggregate roles) {{
-            this.arg = arg;
+            this.args = args;
             this.in = in;
             this.out = out;
             this.roles = roles;
@@ -3041,16 +3063,17 @@ public final class MeosAggregates {{
                 @Override
                 @SuppressWarnings({{"unchecked", "rawtypes"}})
                 public Expression apply(Seq<Expression> args) {{
-                    if (args.size() == 1) {{
-                        for (Overload o : overloads) {{
-                            if (o.arg.equals(args.head().dataType())) {{
-                                Aggregator typed = new Typed(o, Encoders.bean(o.out));
-                                return new ScalaAggregator(args, typed,
-                                    package$.MODULE$.encoderFor(Encoders.bean(o.in)),
-                                    package$.MODULE$.encoderFor(typed.bufferEncoder()),
-                                    true, true, 0, 0, Option.<String>empty())
-                                    .toAggregateExpression();
-                            }}
+                    java.util.List<Expression> given = scala.jdk.javaapi.CollectionConverters.asJava(args);
+                    for (Overload o : overloads) {{
+                        java.util.List<Expression> in = MeosSqlRuntime.fit(o.args, given, false);
+                        if (in != null) {{
+                            Aggregator typed = new Typed(o, Encoders.bean(o.out));
+                            return new ScalaAggregator(
+                                scala.jdk.javaapi.CollectionConverters.asScala(in).toList(), typed,
+                                package$.MODULE$.encoderFor(o.in),
+                                package$.MODULE$.encoderFor(typed.bufferEncoder()),
+                                true, true, 0, 0, Option.<String>empty())
+                                .toAggregateExpression();
                         }}
                     }}
                     if (before.isDefined()) {{
@@ -3065,8 +3088,9 @@ public final class MeosAggregates {{
             }}, "scala_udf");
     }}
 
-    /** An aggregate over typed values, run by the roles of its overload. */
-    static final class Typed extends Aggregator<MeosValue, Buffer, MeosValue> {{
+    /** An aggregate over typed values, run by the roles of its overload; the arguments of a row
+     * of several arrive as the tuple their encoder reads. */
+    static final class Typed extends Aggregator<Object, Buffer, MeosValue> {{
         private final MeosAggregate r;
         private final Encoder<MeosValue> outEnc;
 
@@ -3078,10 +3102,23 @@ public final class MeosAggregates {{
 
         @Override public Buffer zero() {{ return new Buffer(r); }}
 
-        @Override public Buffer reduce(Buffer b, MeosValue v) {{
-            if (v != null) {{
-                b.state = r.step(b.state, v);
+        @Override public Buffer reduce(Buffer b, Object row) {{
+            Object[] values;
+            if (row instanceof scala.Product && !(row instanceof MeosValue)) {{
+                scala.Product p = (scala.Product) row;
+                values = new Object[p.productArity()];
+                for (int i = 0; i < values.length; i++) {{
+                    values[i] = p.productElement(i);
+                }}
+            }} else {{
+                values = new Object[] {{row}};
             }}
+            for (Object v : values) {{
+                if (v == null) {{
+                    return b;
+                }}
+            }}
+            b.state = r.step(b.state, values);
             return b;
         }}
 
@@ -3104,12 +3141,23 @@ public final class MeosAggregates {{
 '''
 
 
-def _spark_aggregate_src(sqlname, cls, ovs):
+def _spark_encoder(classes):
+    """The Spark encoder of the arguments of an aggregate overload: a value's bean encoder, the
+    Duration encoder of an interval, and the tuple of them for several arguments."""
+    one = lambda c: 'Encoders.DURATION()' if c == 'java.time.Duration' else f'Encoders.bean({c}.class)'  # noqa: E731
+    if len(classes) == 1:
+        return one(classes[0])
+    return f'Encoders.tuple({", ".join(one(c) for c in classes)})'
+
+
+def _spark_aggregate_src(m, sqlname, cls, ovs):
     """The class of the Spark aggregate sqlname: the transition of each overload and the
     overloads MeosAggregates registers, the twin of #_flink_aggregate_src."""
     body = [f'package {SPARK_SQL_PKG}.functions;', '',
             'import functions.GeneratedFunctions;',
             'import jnr.ffi.Pointer;',
+            'import org.apache.spark.sql.Encoders;',
+            'import org.apache.spark.sql.types.DataType;',
             f'import {SPARK_SQL_PKG}.MeosAggregate;',
             f'import {SPARK_SQL_PKG}.MeosAggregates;',
             f'import {SPARK_SQL_PKG}.MeosSqlRuntime;', '',
@@ -3122,8 +3170,9 @@ def _spark_aggregate_src(sqlname, cls, ovs):
     body += ['    /** The overloads of this aggregate, in the order the builder tries them. */',
              '    public static MeosAggregates.Overload[] overloads() {',
              '        return new MeosAggregates.Overload[] {',
-             ',\n'.join(f'            new MeosAggregates.Overload({ov["arg"]}.TYPE, '
-                        f'{ov["arg"]}.class, {ov["ret"]}.class,\n'
+             ',\n'.join(f'            new MeosAggregates.Overload(new DataType[] {{'
+                        f'{", ".join(_spark_datatype(m, c) for c in ov["args"])}}},\n'
+                        f'                {_spark_encoder(ov["args"])}, {ov["ret"]}.class,\n'
                         + _roles_src(cls, k, ov, '                ') + ')'
                         for k, ov in enumerate(ovs)),
              '        };', '    }', '}']
@@ -3350,7 +3399,7 @@ def run_spark_sql(args):
             cls += '_'
         taken.add(cls.lower())
         (root / 'functions' / f'{cls}.java').write_text(
-            _spark_aggregate_src(sqlname, cls, aggs[sqlname]))
+            _spark_aggregate_src(m, sqlname, cls, aggs[sqlname]))
         regs.append(f'        register(spark, "{sqlname}", {SPARK_SQL_PKG}.functions.{cls}.overloads());\n')
     (root / 'MeosAggregates.java').write_text(
         _SPARK_AGGREGATES.format(pkg=SPARK_SQL_PKG, registrations=''.join(regs)))
