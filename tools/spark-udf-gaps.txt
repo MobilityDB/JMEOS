@@ -467,8 +467,6 @@ stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
 stboxarr_round	array:STBox *
-taggstate_deserialize	array-or-out-param:bytes; no-encoder:SkipList
-taggstate_serialize	no-decoder:SkipList; array-or-out-param:size_out; unsupported-return:uint8_t *
 tbigint_time_boxes	array-or-out-param:count
 tbigint_value_bins	array-or-out-param:count
 tbigint_value_boxes	array-or-out-param:count
@@ -495,6 +493,7 @@ temporal_split_n_spans	array-or-out-param:count
 temporal_time_bins	array-or-out-param:count
 temporal_timestamps	array-or-out-param:count
 temporal_timestamptz_n	arg:TimestampTz *
+temporal_to_taggstate	no-encoder:SkipList
 temporal_wcount_transfn	no-decoder:SkipList; no-encoder:SkipList
 teq_posechain_tposechain	arg:PoseChain *
 teq_text_ttext	internal
@@ -641,15 +640,11 @@ tne_text_ttext	internal
 tne_tposechain_posechain	arg:PoseChain *
 tne_ttext_text	internal
 tnpoint_positions	internal
-tnpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tnpoint_value_at_timestamptz	internal
 tnpoint_value_n	internal
 tnpoint_values	internal
 tnumber_split_each_n_tboxes	array-or-out-param:count
 tnumber_split_n_tboxes	array-or-out-param:count
-tnumber_tavg_combinefn	no-decoder:SkipList; no-encoder:SkipList
-tnumber_tavg_finalfn	no-decoder:SkipList
-tnumber_tavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tnumber_tboxes	array-or-out-param:count
 tnumber_wavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpc_extent_transfn	ret:TPCBox *
@@ -690,8 +685,6 @@ tpcbox_ymax	arg:TPCBox *
 tpcbox_ymin	arg:TPCBox *
 tpcbox_zmax	arg:TPCBox *
 tpcbox_zmin	arg:TPCBox *
-tpcpatch_tdensity_transfn	no-decoder:SkipList; no-encoder:SkipList
-tpcpatch_tnpoints_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpcpatch_value_at_timestamptz	internal
 tpcpatch_value_n	internal
 tpcpatch_values	internal
@@ -700,9 +693,6 @@ tpcpoint_value_n	internal
 tpcpoint_values	internal
 tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
 tpoint_make_simple	internal
-tpoint_tcentroid_combinefn	no-decoder:SkipList; no-encoder:SkipList
-tpoint_tcentroid_finalfn	no-decoder:SkipList
-tpoint_tcentroid_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpoint_tfloat_to_geomeas	internal
 tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords
 tpose_value_at_timestamptz	internal

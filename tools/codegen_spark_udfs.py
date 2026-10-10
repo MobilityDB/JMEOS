@@ -1532,12 +1532,12 @@ __WKB_KINDS__
 """
 
 # A temporal aggregate of MEOS as a Spark Aggregator over WKB temporals, a generated
-# helper written beside UdfMarshal like the MARSHAL template above. The transition and
-# combine functions of the family are handed in per temporal type, and the buffer holds
-# the native state of the partition. When Spark moves a buffer between executors it writes
-# the state as the temporal value temporal_tagg_finalfn returns and reads it back through
-# temporal_to_taggstate, and a combine function answers one of the two states it takes
-# while temporal_tagg_finalfn releases the other.
+# helper written beside UdfMarshal like the MARSHAL template above. The roles the catalog
+# states for the aggregate are handed in per temporal type, and the buffer holds the native
+# state of the partition. When Spark moves a buffer between executors it writes the state as
+# the bytes the serialize function writes and reads it back through the deserialize function,
+# and the state a combine function does not answer is released through the final function,
+# which consumes it.
 AGGREGATE = GEN_NOTE + """\
 package org.mobilitydb.spark.generated;
 
@@ -1553,60 +1553,76 @@ import functions.GeneratedFunctions;
 import org.mobilitydb.spark.MeosMemory;
 
 public final class TemporalAggregate extends Aggregator<byte[], TemporalAggregate.Buffer, byte[]> {
-    /** A transition or a combine function of the family: (state, value) or (state, state). */
+    /** A transition or a combine function: (state, value) or (state, state). */
     public interface Step extends Serializable {
         Pointer apply(Pointer a, Pointer b);
     }
 
-    /** The state of a partition, and the index of the temporal type it aggregates. */
+    /** A final function, which consumes the state. */
+    public interface Final extends Serializable {
+        Pointer apply(Pointer state);
+    }
+
+    /** A serialize function: the bytes of a state, which is kept. */
+    public interface Write extends Serializable {
+        byte[] apply(Pointer state);
+    }
+
+    /** A deserialize function: the state the bytes hold. */
+    public interface Read extends Serializable {
+        Pointer apply(byte[] form);
+    }
+
+    /** The state of a partition, the index of the temporal type it aggregates, and the
+     * functions writing the state as bytes and reading it back when it leaves the executor. */
     public static final class Buffer implements Serializable {
         transient Pointer state;
         int step = -1;
+        Write write;
+        Read read;
 
         private void writeObject(ObjectOutputStream out) throws IOException {
             out.defaultWriteObject();
-            byte[] wkb = null;
-            if (state != null) {
-                Pointer t = GeneratedFunctions.temporal_tagg_finalfn(state);
-                state = null;
-                if (t != null) {
-                    wkb = GeneratedFunctions.temporal_as_wkb(t, (byte) 4);
-                    state = GeneratedFunctions.temporal_to_taggstate(t);
-                    MeosMemory.free(t);
-                }
-            }
-            out.writeObject(wkb);
+            out.writeObject(state == null ? null : write.apply(state));
         }
 
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
             in.defaultReadObject();
-            byte[] wkb = (byte[]) in.readObject();
-            state = null;
-            if (wkb != null) {
-                Pointer t = GeneratedFunctions.temporal_from_wkb(wkb);
-                state = GeneratedFunctions.temporal_to_taggstate(t);
-                MeosMemory.free(t);
-            }
+            byte[] form = (byte[]) in.readObject();
+            state = form == null ? null : read.apply(form);
         }
     }
 
     private final int[] codes;
     private final Step[] trans;
     private final Step[] combs;
+    private final Final[] fins;
+    private final Write[] writes;
+    private final Read[] reads;
 
-    /** codes[i] is the WKB type byte trans[i] and combs[i] take, or -1 for every temporal. */
-    public TemporalAggregate(int[] codes, Step[] trans, Step[] combs) {
+    /** codes[i] is the WKB type byte of the values the roles of index i take. */
+    public TemporalAggregate(int[] codes, Step[] trans, Step[] combs, Final[] fins, Write[] writes,
+            Read[] reads) {
         this.codes = codes;
         this.trans = trans;
         this.combs = combs;
+        this.fins = fins;
+        this.writes = writes;
+        this.reads = reads;
     }
 
     private int pick(Object value) {
         int type = UdfMarshal.wkbType(value);
         for (int i = 0; i < codes.length; i++)
-            if (codes[i] < 0 || codes[i] == type)
+            if (codes[i] == type)
                 return i;
         throw new IllegalArgumentException("the aggregate takes no temporal value of type " + type);
+    }
+
+    /** Release a state by releasing what its final function answers. */
+    private void release(int i, Pointer state) {
+        if (state != null)
+            MeosMemory.free(fins[i].apply(state));
     }
 
     @Override public Buffer zero() { return new Buffer(); }
@@ -1624,12 +1640,17 @@ public final class TemporalAggregate extends Aggregator<byte[], TemporalAggregat
         try {
             b.state = trans[i].apply(b.state, t);
             b.step = i;
+            b.write = writes[i];
+            b.read = reads[i];
         } finally {
             MeosMemory.free(t);
         }
         return b;
     }
 
+    /** The two partial states joined. A combine answers in the place of its first state, except
+     * that a skip-list combine answers its second state when the first is empty: the state it
+     * does not answer is released. */
     @Override public Buffer merge(Buffer b1, Buffer b2) {
         if (b2.state == null)
             return b1;
@@ -1638,8 +1659,7 @@ public final class TemporalAggregate extends Aggregator<byte[], TemporalAggregat
         if (b1.step != b2.step)
             throw new IllegalArgumentException("the aggregate takes values of one temporal type");
         Pointer r = combs[b1.step].apply(b1.state, b2.state);
-        Pointer other = r.address() == b1.state.address() ? b2.state : b1.state;
-        MeosMemory.free(GeneratedFunctions.temporal_tagg_finalfn(other));
+        release(b1.step, r != null && r.address() == b2.state.address() ? b1.state : b2.state);
         b1.state = r;
         b2.state = null;
         return b1;
@@ -1648,7 +1668,7 @@ public final class TemporalAggregate extends Aggregator<byte[], TemporalAggregat
     @Override public byte[] finish(Buffer b) {
         if (b.state == null)
             return null;
-        Pointer t = GeneratedFunctions.temporal_tagg_finalfn(b.state);
+        Pointer t = fins[b.step].apply(b.state);
         b.state = null;
         if (t == null)
             return null;
@@ -2049,65 +2069,61 @@ def main():
     print("  @sqlfn canonical names      : %d  (%d arg-kind-dispatched, %d subtype-siblings + %d unsafe-overload names to C-name)" %
           (nsql, nsqldisp, ndropped, nskip), file=sys.stderr)
 
-    # ── temporal aggregate pass: the catalog's sqlAgg families as Spark aggregators ──
-    # An aggregate is the group of functions the catalog tags with one sqlAgg name. It is
-    # emitted when each transition function takes (SkipList *, Temporal *), has the combine
-    # function of the same stem, and the final function of the family is the generic
-    # temporal_tagg_finalfn: then a partial aggregate travels between executors as the
-    # temporal value that final function returns, and temporal_to_taggstate rebuilds the
-    # state from it (TemporalAggregate.java). A family whose own final function reads more
-    # than the temporal values (tAvg, tCentroid) keeps a state that value cannot carry, so it
-    # is left out and reported. The typed transition functions of one family are chosen by
-    # the WKB type byte of the value, like the typed overloads of a dispatcher; the generic
-    # ones (temporal_tcount_transfn) take every temporal. Spark resolves function names
-    # regardless of case and holds one function per name, so an aggregate whose name a
-    # scalar of the catalog or of this surface carries takes the `Agg` suffix of its
-    # canonical name (mergeAgg, tMinAgg), and the scalar keeps the bare name.
+    # ── temporal aggregate pass: the catalog's aggregates over temporal values as Spark aggregators ──
+    # An aggregate of the catalog's `aggregates` section states the public MEOS function of each
+    # role it defines. It is emitted when it takes one temporal value and answers one, states a
+    # combine, and keeps an internal state its serialize and deserialize functions write and
+    # read: a partition keeps the state between two values, and a partial aggregate travels
+    # between executors as the bytes the serialize function writes (TemporalAggregate.java). The
+    # overloads of one name are chosen by the WKB type byte of the value, like the typed
+    # overloads of a dispatcher. Spark resolves function names regardless of case and holds one
+    # function per name, so an aggregate whose name a scalar of the catalog or of this surface
+    # carries takes the `Agg` suffix of its canonical name: the catalog's own `Agg` name where it
+    # states one beside the bare one (mergeAgg, tMinAgg), else the bare name with the suffix
+    # (tAndAgg), and the scalar keeps the bare name.
     registered = {m.lower() for part in grouped.values() for code in part
                   for m in re.findall(r'register\("([^"]+)"', code)}
     registered |= {f["sqlfn"].lower() for f in fns
                    if isinstance(f.get("sqlfn"), str) and not f.get("sqlAgg")}
     have = lambda n: n in by_name and (jar_syms is None or n in jar_syms)
-    aggs = {}
-    for f in fns:
-        for a in f.get("sqlAgg") or []:
-            aggs.setdefault(a, []).append(f)
-    state_canon = lambda p: norm(p["canonical"]) == "SkipList *"
-    nagg, agg_left = 0, []
-    for a in sorted(aggs):
-        grp = {f["name"]: f for f in aggs[a]}
-        finals = [n for n in grp if n.endswith("_finalfn")]
-        steps = []
-        for n in sorted(grp):
-            f = grp[n]
-            ps = f.get("params") or []
-            if not (n.endswith("_transfn") and len(ps) == 2 and state_canon(ps[0])
-                    and base(ps[1]["canonical"]) == "Temporal"
-                    and norm(f["returnType"]["canonical"]) == "SkipList *"):
+    stated = {a["sqlName"].lower() for a in cat.get("aggregates") or []}
+    temporal = set(cat.get("temporalTypes") or {})
+    aggs, agg_left = {}, set()
+    for a in cat.get("aggregates") or []:
+        role = lambda k: (a.get(k) or {}).get("meos")
+        name = a["sqlName"]
+        if name.lower() in registered:
+            if (name + "Agg").lower() in stated:
                 continue
-            comb = n[:-len("_transfn")] + "_combinefn"
-            t = _expected_temptype(f)
-            steps.append((TEMPTYPE_CODE[t] if t else -1, n, comb))
-        if (not steps or any(n != "temporal_tagg_finalfn" for n in finals)
-                or not all(have(n) and have(c) for _, n, c in steps)
-                or not (have("temporal_tagg_finalfn") and have("temporal_to_taggstate"))):
-            agg_left.append(a)
+            name += "Agg"
+        takes = a.get("args") or []
+        roles = [role(k) for k in ("transition", "combine", "final", "serialize", "deserialize")]
+        if (len(takes) != 1 or takes[0] not in temporal or a.get("ret") not in temporal
+                or a.get("stype") != "internal" or not all(roles) or not all(map(have, roles))):
+            agg_left.add(name)
             continue
-        sname = a + "Agg" if a.lower() in registered else a
-        codes = ", ".join(str(c) for c, _, _ in steps)
-        trans = ", ".join("GeneratedFunctions::%s" % n for _, n, _ in steps)
-        combs = ", ".join("GeneratedFunctions::%s" % c for _, _, c in steps)
+        steps = aggs.setdefault(name, {})
+        steps.setdefault(TEMPTYPE_CODE[takes[0]], roles)
+    nagg = 0
+    for sname in sorted(aggs):
+        steps = sorted(aggs[sname].items())
+        role = lambda i: ", ".join("GeneratedFunctions::%s" % r[i] for _, r in steps)
         grouped.setdefault("GeneratedUdfs_aggregate", []).append(
             '        spark.udf().register("%s", org.apache.spark.sql.functions.udaf(\n'
             '            new TemporalAggregate(new int[] {%s},\n'
             '                new TemporalAggregate.Step[] {%s},\n'
-            '                new TemporalAggregate.Step[] {%s}),\n'
-            '            org.apache.spark.sql.Encoders.BINARY()));' % (sname, codes, trans, combs))
+            '                new TemporalAggregate.Step[] {%s},\n'
+            '                new TemporalAggregate.Final[] {%s},\n'
+            '                new TemporalAggregate.Write[] {%s},\n'
+            '                new TemporalAggregate.Read[] {%s}),\n'
+            '            org.apache.spark.sql.Encoders.BINARY()));'
+            % (sname, ", ".join(str(c) for c, _ in steps), role(0), role(1), role(2), role(3),
+               role(4)))
         registered.add(sname.lower())
         nagg += 1
         cov += 1
     print("  temporal aggregates               : %d  (left out: %s)"
-          % (nagg, ", ".join(agg_left) or "none"), file=sys.stderr)
+          % (nagg, ", ".join(sorted(agg_left - set(aggs))) or "none"), file=sys.stderr)
 
     # Organize by doxygen module group (@ingroup), one class per group — the SAME
     # structure as the MEOS reference manual / XML docs, so a function is found in the
