@@ -44,6 +44,17 @@ public class FunctionsGenerator {
     /** The per-thread MEOS initialisation every wrapper performs before reaching the library. */
     private static final String GUARD_CALL = "ensureReady();";
 
+    /**
+     * The C callback types bound to a Java interface, so a caller hands MEOS a Java object.
+     *
+     * <p>jnr-ffi refers to the Java object behind a native callback only weakly: once nothing in
+     * Java holds it, the collector reclaims it, and the next time MEOS calls the function pointer
+     * it registered, jnr-ffi finds no object and raises {@code NullPointerException: callable is
+     * null} in place of what the callback was to do. MEOS keeps every callback it is given for
+     * later calls, so each wrapper taking one holds it in a static field of its own.
+     */
+    private static final Set<String> CALLBACK_TYPES = Set.of("error_handler_fn");
+
     // -------------------------------------------------------------------------
     // Optional MEOS type families, gated by build flags mirroring the
     // MobilityDB/MEOS flag names and ON|OFF (also 1|0) values: -DCBUFFER=OFF,
@@ -533,8 +544,8 @@ public class FunctionsGenerator {
         if (cType.contains("(*)") || cType.contains("(*)(")) {
             return "Pointer";
         }
-        if (cType.equals("error_handler_fn")) {
-            return "error_handler_fn";
+        if (CALLBACK_TYPES.contains(cType)) {
+            return cType;
         }
 
         // Double pointer → always Pointer
@@ -882,6 +893,11 @@ public class FunctionsGenerator {
     // spelling: a size_t* out-param is the throwaway byte-count of the *_as_hexwkb/_as_wkb
     // family (allocated, forwarded, discarded); any other pointer out-param is the VALUE the
     // boolean+result pattern writes (allocated, dereferenced, returned).
+    /** The static field holding the callback a wrapper hands MEOS through one parameter. */
+    private static String retainedCallbackField(String fnName, String paramName) {
+        return "_callback_" + fnName + "_" + paramName;
+    }
+
     private static boolean isSizeOut(ParamDef p) {
         return p.out() && p.cType().contains("size_t");
     }
@@ -992,6 +1008,20 @@ public class FunctionsGenerator {
                 : isStructResult ? resultStructClass
                 : isByteResult ? "byte[]" : mapCTypeToJavaWrapper(fn.retCType);
 
+        // A callback MEOS keeps for later calls is held in a static field the wrapper fills
+        // before handing it over, so it stays reachable for as long as MEOS can call it.
+        List<String> retainedCallbacks = new ArrayList<>();
+        for (WrapperParam wp : wparams) {
+            if (CALLBACK_TYPES.contains(wp.interfaceType())) {
+                String field = retainedCallbackField(fn.name, wp.name());
+                retainedCallbacks.add("\t\t" + field + " = " + wp.name() + ";\n");
+                sb.append("\t/** The ").append(wp.name()).append(" MEOS holds after ")
+                        .append(fn.name).append(", kept reachable while MEOS can call it. */\n");
+                sb.append("\tprivate static volatile ").append(wp.interfaceType()).append(" ")
+                        .append(field).append(";\n\n");
+            }
+        }
+
         // --- Method signature (only visible params) ---
         sb.append("\t@SuppressWarnings(\"unused\")\n");
         sb.append("\tpublic static ").append(wrapperReturnType).append(" ")
@@ -1002,6 +1032,7 @@ public class FunctionsGenerator {
         // MEOS keeps its session timezone, collation cache, PROJ and GEOS contexts and RNGs in
         // thread-local storage, so every thread that reaches the library initialises it for itself.
         sb.append("\t\t").append(GUARD_CALL).append("\n");
+        retainedCallbacks.forEach(sb::append);
 
         // --- Internal allocations ---
         // Determine if we need a Runtime (needed for any Memory.allocateDirect call).
