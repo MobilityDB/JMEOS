@@ -50,7 +50,7 @@ box3d_out	internal
 box3d_to_stbox	internal
 cbuffer_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 cbuffer_hash	ret:uint32_t
-cbufferarr_round	unsupported-return:struct Cbuffer **
+cbufferarr_round	internal
 cbufferarr_to_geom	internal
 cbufferset_make	array:Cbuffer *
 cbufferset_value_n	internal
@@ -304,7 +304,7 @@ plus_time_interval	ret:TimeADT
 pose_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 pose_hash	ret:uint32_t
 pose_to_posechain	ret:PoseChain *
-posearr_round	unsupported-return:struct Pose **
+posearr_round	internal
 posechain_append	ret:PoseChain *
 posechain_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 posechain_as_ewkt	arg:PoseChain *
@@ -466,7 +466,7 @@ stbox_tmax	arg:TimestampTz *
 stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
-stboxarr_round	array:STBox *
+stboxarr_round	array-or-out-param:boxarr
 tbigint_time_boxes	array-or-out-param:count
 tbigint_value_bins	array-or-out-param:count
 tbigint_value_boxes	array-or-out-param:count
@@ -481,7 +481,7 @@ tbox_tmin	arg:TimestampTz *
 tcbuffer_value_at_timestamptz	internal
 tcbuffer_value_n	internal
 tcbuffer_values	internal
-temparr_round	unsupported-return:Temporal **
+temparr_round	internal
 temporal_hash	ret:uint32_t
 temporal_instants	internal
 temporal_merge_array	internal
@@ -700,6 +700,7 @@ tpose_value_n	internal
 tpose_values	internal
 tposechain_from_base_temp	arg:PoseChain *
 tposechain_unnest	array-or-out-param:values
+tposechain_value	ret:PoseChain *
 tposechain_values	internal
 tposechainarr_as_geopose	internal
 tposechaininst_make	arg:PoseChain *
