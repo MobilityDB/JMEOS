@@ -132,4 +132,4 @@ jobs:
         uses: MobilityDB/MEOS-API/.github/actions/check-test-outcome@master
         with:
           log: ${{ runner.temp }}/build.log
-          min-tests: "1902"
+          min-tests: "1908"
