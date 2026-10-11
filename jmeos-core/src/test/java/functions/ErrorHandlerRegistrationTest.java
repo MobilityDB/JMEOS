@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Isolated;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * An error handler a caller registers without keeping a reference to it, as in
  * {@code meos_initialize_error_handler(new MeosErrorHandler())}, still receives the errors MEOS
  * raises after the collector has run: the binding holds the handler while MEOS can call it.
+ * Isolated, as MeosInitializeHandlerTest is: the binding holds only the latest handler MEOS
+ * receives, so a handler another test registers meanwhile, or the other test of this class, would
+ * replace the one a test checks and leave it to the collector.
  */
 @DisplayName("Error handler registration")
+@Isolated
 @ExtendWith(TestLogger.class)
 class ErrorHandlerRegistrationTest {
 
