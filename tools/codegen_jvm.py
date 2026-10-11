@@ -2774,6 +2774,10 @@ public final class MeosAggregate implements Serializable {{
 # both engines encode.
 _AGG_ARGUMENT = {'java.time.Duration', 'String', 'Double'}
 
+# The class of the first argument of an aggregate over a base value, beside the value types: the
+# integers, floats, texts, dates and timestamps setUnion, extent and tCount fold.
+_AGG_BASE = {'Integer', 'Long', 'Double', 'String', 'java.time.LocalDate', 'java.time.Instant'}
+
 # The MEOS function answering the start timestamp of a temporal value, the order an aggregate with
 # no combine folds its rows in: the instant of a temporal instant, the lower bound of a sequence.
 _ORDER_KEY = 'temporal_start_timestamptz'
@@ -2783,7 +2787,8 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
     """The aggregates of the catalog's `aggregates` section both typed surfaces carry:
     {SQL name: [overload]} and {reason: count} for what is left out. An overload is a dict of its
     argument and result classes, the transition's inputs as #_inputs passes them, and the Java of
-    its roles. An aggregate is carried when it takes a value of a type the surface holds, each
+    its roles. An aggregate is carried when it takes a value of a type the surface holds or a base
+    value (an integer, a float, a text, a date or a timestamp: setUnion, extent, tCount), each
     further argument a value, an interval (the window of wCount), a text (the interpolation of
     appendInstantAgg) or a float that the transition takes as the signature of the transition
     the aggregate names reads it (its boundArgs and sqlArgParams), states a transition, and its
@@ -2821,8 +2826,8 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
         elif stype not in m.value_class:
             left[f'state {stype}'] += 1
             continue
-        if args[0] not in m.value_class or ret not in m.value_class:
-            left[f'argument {args[0]} or result {ret} of no value type'] += 1
+        if ret not in m.value_class:
+            left[f'result {ret} of no value type'] += 1
             continue
         roles = [meos(k) for k in ('transition', 'combine', 'final', 'serialize', 'deserialize')]
         if any(r and r not in jmeos for r in roles):
@@ -2839,6 +2844,9 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
             left[f'transition input {why or "of no value"}'] += 1
             continue
         classes = [fc for fc, _ in got[0]]
+        if classes[0] not in _AGG_BASE and not classes[0].startswith(f'{m.pkg}.types.'):
+            left[f'argument {args[0]} of no value or base type'] += 1
+            continue
         if any(c not in _AGG_ARGUMENT and not c.startswith(f'{m.pkg}.types.') for c in classes[1:]):
             left['argument of no value type or interval'] += 1
             continue
@@ -3309,10 +3317,12 @@ public final class MeosAggregates {{
 
 def _spark_encoder(classes):
     """The Spark encoder of the arguments of an aggregate overload: a value's bean encoder, the
-    Duration encoder of an interval, the String and Double encoders of a text and a float, and the
-    tuple of them for several arguments."""
+    Duration encoder of an interval, the encoder of each base value (a text, a float, an integer,
+    a date, a timestamp), and the tuple of them for several arguments."""
     scalar = {'java.time.Duration': 'Encoders.DURATION()', 'String': 'Encoders.STRING()',
-              'Double': 'Encoders.DOUBLE()'}
+              'Double': 'Encoders.DOUBLE()', 'Integer': 'Encoders.INT()',
+              'Long': 'Encoders.LONG()', 'java.time.LocalDate': 'Encoders.LOCALDATE()',
+              'java.time.Instant': 'Encoders.INSTANT()'}
     one = lambda c: scalar.get(c) or f'Encoders.bean({c}.class)'  # noqa: E731
     if len(classes) == 1:
         return one(classes[0])
