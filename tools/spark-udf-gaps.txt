@@ -326,6 +326,7 @@ posechain_in	ret:PoseChain *
 posechain_le	arg:PoseChain *
 posechain_lt	arg:PoseChain *
 posechain_make	ret:PoseChain *
+posechain_mem_size	arg:PoseChain *
 posechain_ne	arg:PoseChain *
 posechain_nsame	arg:PoseChain *
 posechain_num_poses	arg:PoseChain *
@@ -377,10 +378,12 @@ raster_band_has_nodata_value	arg:Raster *
 raster_band_nodata_value	arg:Raster *
 raster_band_pixel_type	arg:Raster *
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
+raster_copy	ret:Raster *
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
 raster_from_hexwkb	ret:Raster *
 raster_from_wkb	array-or-out-param:wkb
 raster_height	arg:Raster *
+raster_mem_size	arg:Raster *
 raster_minus_value	arg:Raster *
 raster_num_bands	arg:Raster *
 raster_reclass	ret:Raster *
