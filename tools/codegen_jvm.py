@@ -21,10 +21,11 @@ all bindings are GENERATED from it.
   * ``flink-sql``    -> the Flink SQL surface: one Flink function per MobilityDB
                         SQL name the catalog states, each overload an eval method,
                         and one RAW type per MEOS value type the signatures use,
-                        carrying the serialized form the catalog codec writes.
+                        carrying the value's memory image where the catalog states
+                        one for its C type, else the form its catalog codec writes.
   * ``spark-sql``    -> the typed Spark SQL surface, from the same overloads as
                         flink-sql: one Spark UserDefinedType per MEOS value type over
-                        the same serialized form, and one registration per SQL name
+                        the same carried form, and one registration per SQL name
                         whose builder chooses the overload and its result type from
                         the argument types while Spark plans the call.
 
@@ -530,9 +531,11 @@ def run_facades(args):
 
 # ───────────────────────── flink-sql back-end ─────────────────────────
 #
-# A MEOS value crosses Flink as the serialized form its catalog codec writes, never
-# as a native pointer: Flink copies, serializes, checkpoints and groups values, and a
-# pointer is an address in one process.  Each eval decodes its MEOS arguments, calls
+# A MEOS value crosses Flink as bytes, never as a native pointer: Flink copies,
+# serializes, checkpoints and groups values, and a pointer is an address in one process.
+# The bytes are the value's memory image where the catalog states one for its C type
+# (#_value_methods), which holds the machine's byte order and the layout of the MEOS
+# version that wrote it, else the form its catalog codec writes.  Each eval decodes its MEOS arguments, calls
 # the GeneratedFunctions wrapper, encodes the result and frees what MEOS allocated.
 
 SQL_PKG = 'org.mobilitydb.flink.sql'
@@ -795,6 +798,17 @@ class SqlModel:
                     and encd.get('text') in self.jmeos:
                 self.codec[sql] = ('text', dec['text'], encd['text'],
                                    e.get('in_aux') or [], e.get('out_aux') or [])
+        # The memory image a value type carries in the place of its codec's form, where the
+        # catalog states one for its C type (typeEncodings[C].image): the function copying a
+        # value from its image, and the function answering the image's length or, for a
+        # fixed-size structure, the bytes it is laid out in. A cell travels by value and a C
+        # type stating no image keeps its codec, so the codec keeps the user-facing forms.
+        self.image = {}
+        for sql in self.codec:
+            im = (self.enc.get(self.sql_cbase[sql]) or {}).get('image') or {}
+            if sql not in self.sql_byvalue and im.get('copy') in self.jmeos \
+                    and (im.get('size') in self.jmeos or isinstance(im.get('sizeBytes'), int)):
+                self.image[sql] = im
         om = {k.lower(): k for k in (self.cat.get('objectModel') or {}).get('classes', {})}
         self.value_class = {}
         taken = set()
@@ -1710,7 +1724,18 @@ def _codec_aux(m, sql):
     return kind, dec, enc, daux, eaux
 
 
-def _value_class_src(m, sql):
+def _value_methods(m, sql):
+    """(the Java type a value decodes to, the docs of decode and encode, the bodies of decode,
+    encode and toString, the form named in the class comment, the import of the run-time class
+    an image-carried value uses) of the value class of `sql`,
+    which the Flink value (#_value_class_src) and the Spark one (#_spark_value_class_src) share.
+
+    A value whose C type states its memory image (SqlModel.image) carries that image: decode
+    copies the bytes into memory malloc allocates, as MEOS allocates, and hands them to the
+    copy function the catalog names, and encode reads the image's length, from the size
+    function or the structure's stated bytes, and copies that many bytes out. toString renders
+    the value in the form its codec writes, through the codec's encoder. Any other value carries
+    its codec's form, bytes whatever the codec: the WKB itself, or the UTF-8 of a string form."""
     cls = m.value_class[sql]
     kind, dec, enc, daux, eaux = _codec_aux(m, sql)
     # A cell travels by value: the jar passes and returns the integer it is.
@@ -1718,17 +1743,45 @@ def _value_class_src(m, sql):
     ddoc = ('The cell this one carries' if jtype == 'long' else
             'The MEOS value this one carries, allocated by MEOS for the caller to free')
     edoc = 'The cell p' if jtype == 'long' else 'The value MEOS holds at p'
-    # The form is bytes whatever the codec: the WKB itself, or the UTF-8 of a string form.
-    if kind == 'bytes':
-        decode = f'GeneratedFunctions.{dec}(form)'
+    im = m.image.get(sql)
+    if im:
+        size = (f'GeneratedFunctions.{im["size"]}(p)' if im.get('size')
+                else str(im['sizeBytes']))
+        decode = f'return MeosSqlRuntime.fromImage(form, GeneratedFunctions::{im["copy"]});'
+        encode = f'return new {cls}(MeosSqlRuntime.image(p, {size}));'
+        text = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
+                f'            return b == null ? null : MeosValue.hex(b);' if kind == 'bytes'
+                else f'return GeneratedFunctions.{enc}(p{eaux});')
+        render = (f'Pointer p = decode();\n'
+                  f'        try {{\n'
+                  f'            {text}\n'
+                  f'        }} finally {{\n'
+                  f'            MeosSqlRuntime.free(p);\n'
+                  f'        }}')
+        form = (f'memory image ({im["copy"]} / {im["size"]})' if im.get('size')
+                else f'memory image ({im["copy"]} / {im["sizeBytes"]} bytes)')
+    elif kind == 'bytes':
+        decode = f'return GeneratedFunctions.{dec}(form);'
         encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
                   f'        return b == null ? null : new {cls}(b);')
-        render = 'MeosValue.hex(form)'
+        render = 'return MeosValue.hex(form);'
+        form = f'{kind} form ({dec} / {enc})'
     else:
-        decode = f'GeneratedFunctions.{dec}(new String(form, StandardCharsets.UTF_8){daux})'
+        decode = (f'return GeneratedFunctions.{dec}('
+                  f'new String(form, StandardCharsets.UTF_8){daux});')
         encode = (f'String s = GeneratedFunctions.{enc}(p{eaux});\n'
-                  f'        return s == null ? null : new {cls}(s.getBytes(StandardCharsets.UTF_8));')
-        render = 'new String(form, StandardCharsets.UTF_8)'
+                  f'        return s == null ? null : '
+                  f'new {cls}(s.getBytes(StandardCharsets.UTF_8));')
+        render = 'return new String(form, StandardCharsets.UTF_8);'
+        form = f'{kind} form ({dec} / {enc})'
+    # The run-time class an image-carried value copies and frees through.
+    runtime = f'import {m.pkg}.MeosSqlRuntime;\n' if im else ''
+    return jtype, ddoc, edoc, decode, encode, render, form, runtime
+
+
+def _value_class_src(m, sql):
+    cls = m.value_class[sql]
+    jtype, ddoc, edoc, decode, encode, render, form, runtime = _value_methods(m, sql)
     return f'''package {SQL_PKG}.types;
 
 import functions.GeneratedFunctions;
@@ -1739,11 +1792,11 @@ import org.apache.flink.api.common.typeutils.TypeSerializerSnapshot;
 import org.apache.flink.table.annotation.DataTypeHint;
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.types.DataType;
-import {SQL_PKG}.MeosValue;
+{runtime}import {SQL_PKG}.MeosValue;
 import {SQL_PKG}.MeosValueSerializer;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * The SQL type {sql}, carried as its {kind} form ({dec} / {enc}). */
+ * The SQL type {sql}, carried as its {form}. */
 @DataTypeHint(value = "RAW", bridgedTo = {cls}.class, rawSerializer = {cls}.Serializer.class)
 public final class {cls} extends MeosValue {{
 
@@ -1756,7 +1809,7 @@ public final class {cls} extends MeosValue {{
 
     /** {ddoc}. */
     public {jtype} decode() {{
-        return {decode};
+        {decode}
     }}
 
     /** {edoc}, in the form this type carries. */
@@ -1766,7 +1819,7 @@ public final class {cls} extends MeosValue {{
 
     @Override
     public String toString() {{
-        return {render};
+        {render}
     }}
 
     public static final class Serializer extends MeosValueSerializer<{cls}> {{
@@ -1875,6 +1928,26 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
         if (p != null) {
             IO.freeMemory(p.address());
         }
+    }
+
+    /** The value whose memory image b holds, as copy duplicates it from the image laid in
+     * memory malloc allocates, as MEOS allocates: a value MEOS allocated for the caller to
+     * free. The image is released once copied. */
+    public static Pointer fromImage(byte[] b, java.util.function.UnaryOperator<Pointer> copy) {
+        long a = IO.allocateMemory(b.length, false);
+        try {
+            IO.putByteArray(a, b, 0, b.length);
+            return copy.apply(Pointer.wrap(RUNTIME, a));
+        } finally {
+            IO.freeMemory(a);
+        }
+    }
+
+    /** The memory image of the value at p, the n bytes it is laid in. */
+    public static byte[] image(Pointer p, long n) {
+        byte[] b = new byte[Math.toIntExact(n)];
+        p.get(0L, b, 0, b.length);
+        return b;
     }
 
     /** Free each of the n values MEOS allocated whose pointers the C array a holds.  Null-safe. */
@@ -2087,8 +2160,9 @@ import java.util.Arrays;
 import jnr.ffi.Pointer;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * A MEOS value as Flink holds it: the serialized form its catalog codec writes, as bytes —
- * the WKB itself, or the UTF-8 of a string form. It is Serializable, as the Spark one is, so an
+ * A MEOS value as Flink holds it, as bytes: its memory image where the catalog states one for
+ * its C type, else the form its catalog codec writes, the WKB itself or the UTF-8 of a string
+ * form. It is Serializable, as the Spark one is, so an
  * accumulator gathering rows (MeosAggState) writes them. */
 public abstract class MeosValue implements java.io.Serializable {{
 
@@ -2287,9 +2361,10 @@ def run_flink_sql(args):
 # ───────────────────────── spark-sql: the typed Spark SQL surface ─────────────────────────
 # The Spark twin of the flink-sql engine, on the same SqlModel (rule 8 of the portable naming
 # notes): a MEOS value carries its SQL type, one Spark UserDefinedType per SQL type over the
-# form its catalog codec writes, as Flink holds one RAW type per SQL type (#_value_class_src);
-# and each SQL name is one registration whose builder chooses the overload and its result type
-# from the argument types while Spark plans the call, as Flink's type inference does
+# form the value carries (#_value_methods), as Flink holds one RAW type per SQL type
+# (#_value_class_src); and each SQL name is one registration whose builder chooses the overload
+# and its result type from the argument types while Spark plans the call, as Flink's type
+# inference does
 # (#_FLINK_INFERENCE). The overloads are the flink-sql engine's own (#_overload, #_emit_eval),
 # so a capability one engine gains the other gains with it.
 
@@ -2584,7 +2659,7 @@ def _spark_planning(arity):
 # transition folds a value into the state, the combine joins two partial states, the final
 # answers the result, and a partial state travels as the bytes the serialize function writes and
 # the deserialize function reads, or, for a state of a SQL type (the box of `extent`), as the form
-# that type's codec writes. #MeosAggregate holds the roles and both engines share it; Spark keeps
+# a value of that type carries. #MeosAggregate holds the roles and both engines share it; Spark keeps
 # the state between two values and writes it only when a partial aggregate leaves the executor,
 # while Flink holds only the bytes, a native state never being a field of a Flink accumulator.
 #
@@ -3360,25 +3435,11 @@ def _spark_aggregate_src(m, sqlname, cls, ovs):
 
 
 def _spark_value_class_src(m, sql):
-    """The Spark value of the SQL type `sql`: the class holding the form its catalog codec writes,
-    as #_value_class_src writes the Flink one, and the UserDefinedType Spark carries it as."""
+    """The Spark value of the SQL type `sql`: the class holding the form the value carries
+    (#_value_methods), as #_value_class_src writes the Flink one, and the UserDefinedType Spark
+    carries it as."""
     cls = m.value_class[sql]
-    kind, dec, enc, daux, eaux = _codec_aux(m, sql)
-    # A cell travels by value: the jar passes and returns the integer it is.
-    jtype = 'long' if sql in m.sql_byvalue else 'Pointer'
-    ddoc = ('The cell this one carries' if jtype == 'long' else
-            'The MEOS value this one carries, allocated by MEOS for the caller to free')
-    edoc = 'The cell p' if jtype == 'long' else 'The value MEOS holds at p'
-    if kind == 'bytes':
-        decode = f'GeneratedFunctions.{dec}(form)'
-        encode = (f'byte[] b = GeneratedFunctions.{enc}(p{eaux});\n'
-                  f'        return b == null ? null : new {cls}(b);')
-        render = 'MeosValue.hex(form)'
-    else:
-        decode = f'GeneratedFunctions.{dec}(new String(form, StandardCharsets.UTF_8){daux})'
-        encode = (f'String s = GeneratedFunctions.{enc}(p{eaux});\n'
-                  f'        return s == null ? null : new {cls}(s.getBytes(StandardCharsets.UTF_8));')
-        render = 'new String(form, StandardCharsets.UTF_8)'
+    jtype, ddoc, edoc, decode, encode, render, form, runtime = _value_methods(m, sql)
     return f'''package {m.pkg}.types;
 
 import functions.GeneratedFunctions;
@@ -3388,10 +3449,10 @@ import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.SQLUserDefinedType;
 import org.apache.spark.sql.types.UserDefinedType;
-import {m.pkg}.MeosValue;
+{runtime}import {m.pkg}.MeosValue;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * The SQL type {sql}, carried as its {kind} form ({dec} / {enc}). */
+ * The SQL type {sql}, carried as its {form}. */
 @SQLUserDefinedType(udt = {cls}.UDT.class)
 public final class {cls} extends MeosValue {{
 
@@ -3404,7 +3465,7 @@ public final class {cls} extends MeosValue {{
 
     /** {ddoc}. */
     public {jtype} decode() {{
-        return {decode};
+        {decode}
     }}
 
     /** {edoc}, in the form this type carries. */
@@ -3414,7 +3475,7 @@ public final class {cls} extends MeosValue {{
 
     @Override
     public String toString() {{
-        return {render};
+        {render}
     }}
 
     /** The SQL type {sql} as Spark carries it: the bytes of the form. */
@@ -3454,8 +3515,9 @@ import java.util.Arrays;
 import jnr.ffi.Pointer;
 
 /* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.
- * A MEOS value as Spark holds it: the serialized form its catalog codec writes, as bytes —
- * the WKB itself, or the UTF-8 of a string form. */
+ * A MEOS value as Spark holds it, as bytes: its memory image where the catalog states one for
+ * its C type, else the form its catalog codec writes, the WKB itself or the UTF-8 of a string
+ * form. */
 public abstract class MeosValue implements java.io.Serializable {
 
     public final byte[] form;
