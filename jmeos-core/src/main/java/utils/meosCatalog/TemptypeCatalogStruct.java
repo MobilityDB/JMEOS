@@ -1,27 +1,27 @@
 package utils.meosCatalog;
-import utils.meosCatalog.MeosEnums.meosType;
+import functions.MeosType;
 
 
 /**
- * Class for setting temporal meosType in an object.
+ * Class for setting temporal MeosType in an object.
  *
  * @author Nidhal Mareghni
  * @since 18/10/2023
  */
 public class TemptypeCatalogStruct {
-    private final meosType temptype;
-    private final meosType basetype;
+    private final MeosType temptype;
+    private final MeosType basetype;
 
-    public TemptypeCatalogStruct(meosType temptype, meosType basetype) {
+    public TemptypeCatalogStruct(MeosType temptype, MeosType basetype) {
         this.temptype = temptype;
         this.basetype = basetype;
     }
 
-    public meosType getTemptype() {
+    public MeosType getTemptype() {
         return temptype;
     }
 
-    public meosType getBasetype() {
+    public MeosType getBasetype() {
         return basetype;
     }
 }
