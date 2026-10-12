@@ -23,6 +23,8 @@ public class FunctionsGenerator {
     // Enum names extracted from the JSON "enums" section.
     // These are mapped to int in Java (JNR-FFI represents C enums as int).
     private final Set<String> enumNames = new HashSet<>();
+    /** The enums of the catalog, in its order, each written as a Java enum by {@link #writeEnumClasses}. */
+    private final List<JsonNode> enumDefs = new ArrayList<>();
     /** Struct names the catalog defines, used to spot a by-value struct return. */
     private final Set<String> structNames = new HashSet<>();
     /** Fields of each struct the catalog defines, keyed by struct name. */
@@ -241,6 +243,7 @@ public class FunctionsGenerator {
         Files.createDirectories(out.getParent());
         Files.writeString(out, content);
         System.out.println("Written: " + out.toAbsolutePath());
+        writeEnumClasses(out.getParent());
         System.out.println("=== Done ===");
     }
 
@@ -481,9 +484,59 @@ public class FunctionsGenerator {
                 JsonNode nameNode = e.get("name");
                 if (nameNode != null) {
                     enumNames.add(nameNode.asText());
+                    enumDefs.add(e);
                 }
             }
         }
+    }
+
+    /**
+     * Writes one Java enum per enum of the catalog a binding reaches, under its C name and with
+     * the values MEOS gives its constants, beside {@code GeneratedFunctions}: the enums of the
+     * public headers of an enabled family, neither those of {@code meos_internal.h} nor those of
+     * a vendored library.
+     */
+    private void writeEnumClasses(Path dir) throws IOException {
+        int written = 0;
+        for (JsonNode e : enumDefs) {
+            if (emitsEnum(e)) {
+                Files.writeString(dir.resolve(e.get("name").asText() + ".java"), enumSource(e));
+                written++;
+            }
+        }
+        System.out.println("Enums written: " + written + " of " + enumDefs.size());
+    }
+
+    /** Whether the enum belongs to the public surface this run generates. */
+    private boolean emitsEnum(JsonNode e) {
+        JsonNode file = e.get("file");
+        JsonNode vendored = e.get("vendored");
+        return (vendored == null || !vendored.asBoolean())
+                && (file == null || !file.asText().startsWith("meos_internal"))
+                && familyEnabled(familyOf(e));
+    }
+
+    /** The Java source of an enum of the catalog. */
+    static String enumSource(JsonNode e) {
+        String name = e.get("name").asText();
+        JsonNode file = e.get("file");
+        StringBuilder sb = new StringBuilder("package functions;\n\n");
+        sb.append("/** {@code ").append(name).append("} as ")
+                .append(file == null ? "MEOS" : "{@code " + file.asText() + "}")
+                .append(" declares it. */\n");
+        sb.append("public enum ").append(name).append(" {\n");
+        JsonNode values = e.get("values");
+        for (int i = 0; i < values.size(); i++) {
+            JsonNode v = values.get(i);
+            sb.append("\t").append(v.get("name").asText()).append("(").append(v.get("value").asLong())
+                    .append(i + 1 < values.size() ? "),\n" : ");\n");
+        }
+        sb.append("\n\tprivate final int value;\n\n");
+        sb.append("\t").append(name).append("(int value) {\n\t\tthis.value = value;\n\t}\n\n");
+        sb.append("\t/** The value MEOS gives this constant. */\n");
+        sb.append("\tpublic int getValue() {\n\t\treturn value;\n\t}\n");
+        sb.append("}\n");
+        return sb.toString();
     }
 
     private FunctionDef parseFunctionDef(JsonNode fn) {
@@ -609,10 +662,6 @@ public class FunctionsGenerator {
             // becomes Pointer, breaking every h3index/th3index binding.
             case "H3Index"                          -> "long";
 
-            // Explicit enum names (in case not in JSON enums section)
-            case "interpType", "RTreeSearchOp",
-                 "tempSubtype", "spatialRel",
-                 "errorCode"                        -> "int";
             default                                 -> "Pointer";
         };
     }
@@ -781,8 +830,6 @@ public class FunctionsGenerator {
                 import jnr.ffi.byref.PointerByReference;
                 import jnr.ffi.Struct;
                 import utils.JarLibraryLoader;
-                import utils.meosCatalog.MeosEnums.meosType;
-                import utils.meosCatalog.MeosEnums.meosOper;
                 import functions.MeosErrorHandler;
 
                 import java.time.*;

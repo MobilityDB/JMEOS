@@ -1,27 +1,27 @@
 package utils.meosCatalog;
-import utils.meosCatalog.MeosEnums.meosType;
+import functions.MeosType;
 
 
 /**
- * Class for setting span meosType in an object.
+ * Class for setting span MeosType in an object.
  *
  * @author Nidhal Mareghni
  * @since 18/10/2023
  */
 public class SpantypeCatalogStruct {
-    private final meosType spantype;
-    private final meosType basetype;
+    private final MeosType spantype;
+    private final MeosType basetype;
 
-    public SpantypeCatalogStruct(meosType spantype, meosType basetype) {
+    public SpantypeCatalogStruct(MeosType spantype, MeosType basetype) {
         this.spantype = spantype;
         this.basetype = basetype;
     }
 
-    public meosType getSpantype() {
+    public MeosType getSpantype() {
         return spantype;
     }
 
-    public meosType getBasetype() {
+    public MeosType getBasetype() {
         return basetype;
     }
 }

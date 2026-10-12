@@ -163,10 +163,10 @@ class FunctionsGeneratorTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"interpType", "RTreeSearchOp", "tempSubtype", "spatialRel", "errorCode"})
-        @DisplayName("explicit enum names → int")
-        void explicitEnums(String cType) throws Exception {
-            assertEquals("int", mapJava(cType));
+        @ValueSource(strings = {"interpType", "IndexSearchOp", "tempSubtype", "spatialRel", "errorCode"})
+        @DisplayName("a name the catalog states no enum of is not an enum")
+        void enumOnlyFromCatalog(String cType) throws Exception {
+            assertEquals("Pointer", mapJava(cType));
         }
 
         @Test
@@ -376,7 +376,7 @@ class FunctionsGeneratorTest {
             String json = """
                 {
                   "enums": [
-                    {"name": "RTreeSearchOp"},
+                    {"name": "IndexSearchOp"},
                     {"name": "interpType"}
                   ],
                   "functions": []
@@ -396,7 +396,7 @@ class FunctionsGeneratorTest {
             @SuppressWarnings("unchecked")
             Set<String> names = (Set<String>) enumNamesField.get(generator);
 
-            assertTrue(names.contains("RTreeSearchOp"));
+            assertTrue(names.contains("IndexSearchOp"));
             assertTrue(names.contains("interpType"));
             assertEquals(2, names.size());
         }
@@ -415,6 +415,76 @@ class FunctionsGeneratorTest {
             Set<String> names = (Set<String>) enumNamesField.get(generator);
 
             assertTrue(names.isEmpty());
+        }
+    }
+
+    // =========================================================================
+    // The Java enums of the catalog
+    // =========================================================================
+
+    @Nested
+    @DisplayName("enum classes")
+    class EnumClassTests {
+
+        private JsonNode enumNode(String json) throws Exception {
+            return new ObjectMapper().readTree(json);
+        }
+
+        private boolean emits(JsonNode e) throws Exception {
+            Method m = FunctionsGenerator.class.getDeclaredMethod("emitsEnum", JsonNode.class);
+            m.setAccessible(true);
+            return (boolean) m.invoke(generator, e);
+        }
+
+        @Test
+        @DisplayName("an enum keeps its C name and the value MEOS gives each constant")
+        void enumSourceKeepsNamesAndValues() throws Exception {
+            String src = FunctionsGenerator.enumSource(enumNode("""
+                {"name": "MeosType", "file": "meos_catalog.h", "family": "CORE",
+                 "values": [{"name": "T_UNKNOWN", "value": 0}, {"name": "T_DOUBLE2", "value": 8},
+                            {"name": "T_FLOAT8", "value": 11}]}
+                """));
+            assertTrue(src.startsWith("package functions;"));
+            assertTrue(src.contains("public enum MeosType {"));
+            assertTrue(src.contains("\tT_UNKNOWN(0),\n\tT_DOUBLE2(8),\n\tT_FLOAT8(11);\n"));
+            assertTrue(src.contains("public int getValue()"));
+        }
+
+        @Test
+        @DisplayName("the enums of a public header are written, internal and vendored ones are not")
+        void emitsPublicEnumsOnly() throws Exception {
+            assertTrue(emits(enumNode("""
+                {"name": "IndexSearchOp", "file": "meos.h", "family": "CORE", "vendored": false,
+                 "values": [{"name": "INDEX_OVERLAPS", "value": 0}]}
+                """)));
+            assertFalse(emits(enumNode("""
+                {"name": "SkipListType", "file": "meos_internal.h", "family": "CORE", "vendored": false,
+                 "values": [{"name": "TIMESTAMPTZ", "value": 0}]}
+                """)));
+            assertFalse(emits(enumNode("""
+                {"name": "ENDIANS", "file": "pc_api.h", "family": "POINTCLOUD", "vendored": true,
+                 "values": [{"name": "PC_XDR", "value": 0}]}
+                """)));
+        }
+
+        @Test
+        @DisplayName("run writes each enum beside the generated functions")
+        void runWritesEnumFiles() throws Exception {
+            Path input = tempDir.resolve("idl.json");
+            Files.writeString(input, """
+                {"enums": [{"name": "IndexSearchOp", "file": "meos.h", "family": "CORE",
+                            "values": [{"name": "INDEX_OVERLAPS", "value": 0},
+                                       {"name": "INDEX_ADJACENT", "value": 20}]},
+                           {"name": "SkipListType", "file": "meos_internal.h", "family": "CORE",
+                            "values": [{"name": "TIMESTAMPTZ", "value": 0}]}],
+                 "functions": []}
+                """);
+            Path out = tempDir.resolve("functions/GeneratedFunctions.java");
+            run.invoke(generator, input.toString(), out.toString());
+            Path written = tempDir.resolve("functions/IndexSearchOp.java");
+            assertTrue(Files.exists(written));
+            assertTrue(Files.readString(written).contains("INDEX_ADJACENT(20);"));
+            assertFalse(Files.exists(tempDir.resolve("functions/SkipListType.java")));
         }
     }
 
@@ -940,7 +1010,7 @@ class FunctionsGeneratorTest {
         void enumFromJsonSection() throws Exception {
             String json = """
                 {
-                  "enums": [{"name": "MyOp"}],
+                  "enums": [{"name": "MyOp", "file": "meos.h", "family": "CORE", "values": [{"name": "MY_OP", "value": 0}]}],
                   "functions": [{
                     "name": "do_op",
                     "returnType": {"c": "void"},
