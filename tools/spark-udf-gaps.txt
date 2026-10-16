@@ -421,6 +421,9 @@ raster_transform	ret:Raster *
 raster_transform_pipeline	ret:Raster *
 raster_transform_raster	ret:Raster *
 raster_tri	ret:Raster *
+raster_union_combinefn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
+raster_union_finalfn	no-decoder:RasterUnionState
+raster_union_transfn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
 raster_upper_left_x	arg:Raster *
 raster_upper_left_y	arg:Raster *
 raster_value	arg:Raster *
@@ -428,6 +431,8 @@ raster_value_count	array-or-out-param:searchvalues; array-or-out-param:count; no
 raster_width	arg:Raster *
 rasteralignstate_deserialize	array-or-out-param:bytes; no-encoder:RasterAlignState
 rasteralignstate_serialize	no-decoder:RasterAlignState; array-or-out-param:size_out; unsupported-return:uint8_t *
+rasterunionstate_deserialize	array-or-out-param:bytes; no-encoder:RasterUnionState
+rasterunionstate_serialize	no-decoder:RasterUnionState; array-or-out-param:size_out; unsupported-return:uint8_t *
 right_set_text	internal
 right_text_set	internal
 right_tpcbox_tpcbox	arg:TPCBox *
