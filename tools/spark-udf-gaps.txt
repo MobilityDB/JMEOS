@@ -309,6 +309,7 @@ pcpoint_make	array-or-out-param:values
 pcpoint_to_tpcbox	no-decoder:PCSCHEMA
 pcpointset_make	internal
 pcpointset_value_n	internal
+pixel_arr_free	no-decoder:Pixel
 plus_time_interval	ret:TimeADT
 pose_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 pose_hash	ret:uint32_t
@@ -389,13 +390,16 @@ raster_band_pixel_type	arg:Raster *
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
 raster_copy	ret:Raster *
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
+raster_dump_values	array-or-out-param:nodata; array-or-out-param:count; unsupported-return:double *
 raster_from_hexwkb	ret:Raster *
 raster_from_wkb	array-or-out-param:wkb
 raster_height	arg:Raster *
+raster_map_algebra	ret:Raster *
 raster_mem_size	arg:Raster *
 raster_minus_value	arg:Raster *
 raster_not_same_alignment_reason	arg:Raster *
 raster_num_bands	arg:Raster *
+raster_pixel_as_points	array-or-out-param:count; no-encoder:Pixel
 raster_reclass	ret:Raster *
 raster_rescale	ret:Raster *
 raster_same_alignment	arg:Raster *
