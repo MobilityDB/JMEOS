@@ -2315,7 +2315,7 @@ def run_flink_sql(args):
         body.append('}')
         (root / 'functions' / f'{cls}.java').write_text('\n'.join(body) + '\n')
 
-    aggs, agg_left = _catalog_aggregates(m, cat, jmeos, {n.lower() for n in names})
+    aggs, agg_left = _catalog_aggregates(m, cat, jmeos)
     (root / 'MeosAggregate.java').write_text(_AGGREGATE_ROLES.format(pkg=SQL_PKG))
     (root / 'MeosAggState.java').write_text(_FLINK_AGG_STATE)
     for sqlname in sorted(aggs):
@@ -2858,7 +2858,7 @@ _AGG_BASE = {'Integer', 'Long', 'Double', 'String', 'java.time.LocalDate', 'java
 _ORDER_KEY = 'temporal_start_timestamptz'
 
 
-def _catalog_aggregates(m, cat, jmeos, scalars):
+def _catalog_aggregates(m, cat, jmeos):
     """The aggregates of the catalog's `aggregates` section both typed surfaces carry:
     {SQL name: [overload]} and {reason: count} for what is left out. An overload is a dict of its
     argument and result classes, the transition's inputs as #_inputs passes them, and the Java of
@@ -2871,23 +2871,16 @@ def _catalog_aggregates(m, cat, jmeos, scalars):
     surface holds, each role a MEOS function of the jar. An aggregate stating no combine folds
     its gathered rows in the order of the start timestamp of its first argument
     (temporal_start_timestamptz), which the jar then carries. A final taking its state const
-    keeps it. Each engine holds one function per name regardless of case, so a name a scalar of the
-    surface carries stays the scalar's and the aggregate takes the `Agg` suffix of its canonical
-    name: the catalog's own `Agg` name where it states one beside the bare one (mergeAgg,
-    tMinAgg), else the bare name with the suffix (tAndAgg)."""
+    keeps it. Each engine holds one function per name regardless of case, so an aggregate whose
+    name a function also holds is carried under the name the catalog states for it,
+    `altSqlName` (mergeAgg, tMinAgg, tAndAgg), every other one under its own."""
     aggs, left, seen = defaultdict(list), defaultdict(int), set()
-    stated = {a['sqlName'].lower() for a in cat.get('aggregates') or []}
     for a in cat.get('aggregates') or []:
         meos = lambda k: (a.get(k) or {}).get('meos')  # noqa: E731
         args = [_deployed_type(t) for t in a.get('args') or []]
-        name = a['sqlName']
-        # A bare aggregate the catalog also states under its `Agg` name (merge beside
-        # mergeAgg) is carried under that name alone, whatever the scalars of this surface
-        # are called: the merge scalar is temporalMerge here, and the aggregate stays mergeAgg.
-        if (name + 'Agg').lower() in stated:
-            continue
-        if name.lower() in scalars:
-            name += 'Agg'
+        # The name an engine holding one function per name calls the aggregate by, where a
+        # function also holds its MobilityDB name, is the catalog's `altSqlName` (mergeAgg).
+        name = a.get('altSqlName') or a['sqlName']
         if not args:
             continue
         if not meos('combine') and (jmeos.get(_ORDER_KEY) or {}).get('ret') != 'java.time.OffsetDateTime':
@@ -3632,7 +3625,7 @@ def run_spark_sql(args):
         body += ['        };', '    }', '}']
         (root / 'functions' / f'{cls}.java').write_text('\n'.join(body) + '\n')
 
-    aggs, agg_left = _catalog_aggregates(m, cat, jmeos, {n.lower() for n in names})
+    aggs, agg_left = _catalog_aggregates(m, cat, jmeos)
     (root / 'MeosAggregate.java').write_text(_AGGREGATE_ROLES.format(pkg=SPARK_SQL_PKG))
     regs = []
     for sqlname in sorted(aggs):
