@@ -153,6 +153,7 @@ h3index_from_wkb	array-or-out-param:wkb
 h3index_get_resolution	ret:uint32_t
 h3index_hash	ret:uint32_t
 h3indexset_make	array-or-out-param:values
+h3indexset_value_n	arg:uint64_t *
 index_result_create	no-encoder:MeosArray
 index_result_id	no-decoder:MeosArray; array-or-out-param:id
 int32_hash	ret:uint32_t
@@ -375,6 +376,7 @@ quadbin_hash	ret:uint32_t
 quadbin_point_to_cell	arg:uint32_t
 quadbin_tile_to_cell	arg:uint32_t
 quadbinset_make	array-or-out-param:values
+quadbinset_value_n	arg:uint64_t *
 raquet_hash	ret:uint32_t
 raquet_make	array-or-out-param:pixels
 raquet_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
@@ -413,6 +415,9 @@ raster_skew_y	arg:Raster *
 raster_slope	ret:Raster *
 raster_srid	arg:Raster *
 raster_summary_stats	no-encoder:BandStats
+raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
+raster_summary_stats_finalfn	no-decoder:RasterStatsState; no-encoder:BandStats
+raster_summary_stats_transfn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
 raster_tile_value_array	internal
 raster_tile_value_quadbin	array-or-out-param:pixels
 raster_to_stbox	arg:Raster *
@@ -431,6 +436,8 @@ raster_value_count	array-or-out-param:searchvalues; array-or-out-param:count; no
 raster_width	arg:Raster *
 rasteralignstate_deserialize	array-or-out-param:bytes; no-encoder:RasterAlignState
 rasteralignstate_serialize	no-decoder:RasterAlignState; array-or-out-param:size_out; unsupported-return:uint8_t *
+rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsState
+rasterstatsstate_serialize	no-decoder:RasterStatsState; array-or-out-param:size_out; unsupported-return:uint8_t *
 rasterunionstate_deserialize	array-or-out-param:bytes; no-encoder:RasterUnionState
 rasterunionstate_serialize	no-decoder:RasterUnionState; array-or-out-param:size_out; unsupported-return:uint8_t *
 right_set_text	internal
@@ -449,6 +456,7 @@ s2cell_get_resolution	ret:uint32_t
 s2cell_hash	ret:uint32_t
 s2cell_point_to_cell	arg:uint32_t
 s2cellset_make	array-or-out-param:values
+s2cellset_value_n	arg:uint64_t *
 same_tpcbox_tpcbox	arg:TPCBox *
 same_tpcbox_tpointcloud	arg:TPCBox *
 same_tpointcloud_tpcbox	arg:TPCBox *
@@ -734,10 +742,13 @@ tpose_value_at_timestamptz	internal
 tpose_value_n	internal
 tpose_values	internal
 tposechain_at_value	arg:PoseChain *
+tposechain_end_value	ret:PoseChain *
 tposechain_from_base_temp	arg:PoseChain *
 tposechain_minus_value	arg:PoseChain *
+tposechain_start_value	ret:PoseChain *
 tposechain_unnest	array-or-out-param:values
 tposechain_value	ret:PoseChain *
+tposechain_value_n	internal
 tposechain_values	internal
 tposechainarr_as_geopose	internal
 tposechaininst_make	arg:PoseChain *
