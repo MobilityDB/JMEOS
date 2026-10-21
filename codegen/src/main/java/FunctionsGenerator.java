@@ -516,6 +516,22 @@ public class FunctionsGenerator {
                 && familyEnabled(familyOf(e));
     }
 
+    /**
+     * The C type a catalog type slot is mapped by. A slot whose header names a type of its
+     * own over a C standard integer (H3Index, Quadbin, S2CellId) carries that name as
+     * {@code typedef} and its width as {@code canonical}, and the width is what the library
+     * reads; any other slot is mapped by the type the header declares, its {@code field}
+     * ({@code c} for a return, {@code cType} for a parameter). Read as {@link #enumSource}
+     * reads an enum of the catalog.
+     */
+    static String slotType(JsonNode slot, String field) {
+        JsonNode width = slot.path("canonical");
+        if (slot.hasNonNull("typedef") && width.isTextual()) {
+            return width.asText();
+        }
+        return slot.path(field).asText();
+    }
+
     /** The Java source of an enum of the catalog. */
     static String enumSource(JsonNode e) {
         String name = e.get("name").asText();
@@ -549,7 +565,7 @@ public class FunctionsGenerator {
             throw new IllegalStateException("Json node of the return type of function \"" + name + "\" is null");
         }
 
-        String retCType = retNode.get("c").asText();
+        String retCType = slotType(retNode, "c");
 
         if (retCType.equals("null")) {
             throw new IllegalStateException("Null return type:" + retNode.asText());
@@ -577,7 +593,7 @@ public class FunctionsGenerator {
                 if (p != null && p.isObject()) {
                     String rawName = p.get("name").asText();
                     String pName  = sanitizeParamName(rawName);
-                    String pCType = p.get("cType").asText();
+                    String pCType = slotType(p, "cType");
                     String pJava  = mapCTypeToJava(pCType);
 
                     params.add(new ParamDef(pName, pJava, pCType, outParams.contains(rawName)));
