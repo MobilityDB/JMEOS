@@ -181,7 +181,7 @@ public class ObjectLayerGenerator {
                 if (fn == null) {
                     continue;
                 }
-                String retC = cleanType(fn.path("returnType").path("c").asText());
+                String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c"));
                 if (!retC.equals("Span *") && !retC.equals("SpanSet *") && !retC.equals("Set *")) {
                     continue; // only the base-generic value-collection returns are specialised here
                 }
@@ -408,13 +408,13 @@ public class ObjectLayerGenerator {
         // Receiver: the first parameter must be a single pointer to the class type, so getInner()
         // (a Temporal*) is the argument. A double pointer (e.g. temporal_merge_array's Temporal**)
         // is an array, not a receiver.
-        String recv = cleanType(params.get(0).path("cType").asText());
+        String recv = cleanType(FunctionsGenerator.slotType(params.get(0), "cType"));
         if (!recv.equals("Temporal *")) {
             // A constructor over an array of temporals (merge_array) takes a List, writes each element's
             // inner pointer into a buffer and passes the size as the count.
             if (recv.equals("Temporal **") && params.size() == 2
                     && params.get(1).path("name").asText().equals("count")
-                    && cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
+                    && cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c")).equals("Temporal *")) {
                 Arg list = new Arg("java.util.List<Temporal>",
                         sanitize(params.get(0).path("name").asText()), null);
                 return new Method(ooName, fnName, "Temporal", "arrayInput", null, List.of(list));
@@ -423,7 +423,7 @@ public class ObjectLayerGenerator {
             // from a receiver, so every parameter is an argument, the call omits getInner(), and the
             // result is wrapped with the type contract — symmetric to the as* output methods. It stays
             // an instance method.
-            if (cleanType(fn.path("returnType").path("c").asText()).equals("Temporal *")) {
+            if (cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c")).equals("Temporal *")) {
                 List<Arg> ctorArgs = new ArrayList<>();
                 boolean marshalled = true;
                 for (int i = 0; i < params.size(); i++) {
@@ -434,7 +434,7 @@ public class ObjectLayerGenerator {
                         i++;
                         continue;
                     }
-                    Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
                             sanitize(p.path("name").asText()), fnName);
                     if (a == null) {
                         marshalled = false;
@@ -453,7 +453,7 @@ public class ObjectLayerGenerator {
         for (JsonNode o : fn.path("shape").path("outParams")) {
             outParams.add(o.asText());
         }
-        String retC = cleanType(fn.path("returnType").path("c").asText());
+        String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c"));
 
         // Array-fold: a trailing `count` out-parameter alongside an array return folds to a List. The
         // fold forwards the receiver, the visible arguments and the count buffer, then reads each element
@@ -474,7 +474,7 @@ public class ObjectLayerGenerator {
             boolean marshalled = true;
             for (int i = 1; i < last; i++) {
                 JsonNode p = params.get(i);
-                Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
                         sanitize(p.path("name").asText()), fnName);
                 if (a == null) {
                     marshalled = false;
@@ -529,7 +529,7 @@ public class ObjectLayerGenerator {
                 boolean marshalled = true;
                 for (int i = 1; i < minOut; i++) {
                     JsonNode p = params.get(i);
-                    Arg a = marshalArg(cleanType(p.path("cType").asText()),
+                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
                             sanitize(p.path("name").asText()), fnName);
                     if (a == null) {
                         marshalled = false;
@@ -635,7 +635,7 @@ public class ObjectLayerGenerator {
             if (outParams.contains(p.path("name").asText())) {
                 continue; // a folded size_t* out-param the wrapper supplies itself
             }
-            String pC = cleanType(p.path("cType").asText());
+            String pC = cleanType(FunctionsGenerator.slotType(p, "cType"));
             String name = sanitize(p.path("name").asText());
             if (isByteInput(params, i)) {
                 args.add(new Arg("byte[]", name, name));
@@ -764,15 +764,15 @@ public class ObjectLayerGenerator {
      */
     private static boolean isByteInput(JsonNode params, int i) {
         return i + 1 < params.size()
-                && cleanType(params.get(i).path("cType").asText()).equals("uint8_t *")
-                && cleanType(params.get(i + 1).path("cType").asText()).equals("size_t");
+                && cleanType(FunctionsGenerator.slotType(params.get(i), "cType")).equals("uint8_t *")
+                && cleanType(FunctionsGenerator.slotType(params.get(i + 1), "cType")).equals("size_t");
     }
 
     /** Whether the named parameter is a {@code size_t *} out-parameter the wrapper folds internally. */
     private static boolean isSizeOut(JsonNode params, String name) {
         for (JsonNode p : params) {
             if (p.path("name").asText().equals(name)) {
-                return cleanType(p.path("cType").asText()).contains("size_t");
+                return cleanType(FunctionsGenerator.slotType(p, "cType")).contains("size_t");
             }
         }
         return false;
@@ -782,7 +782,7 @@ public class ObjectLayerGenerator {
     private static String paramCType(JsonNode params, String name) {
         for (JsonNode p : params) {
             if (p.path("name").asText().equals(name)) {
-                return cleanType(p.path("cType").asText());
+                return cleanType(FunctionsGenerator.slotType(p, "cType"));
             }
         }
         return "";

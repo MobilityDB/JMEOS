@@ -143,6 +143,21 @@ class FunctionsGeneratorTest {
         @Test void TimestampTz() throws Exception  { assertEquals("long",    mapJava("TimestampTz")); }
         @Test void H3Index() throws Exception      { assertEquals("long",    mapJava("H3Index")); }
 
+        @Test
+        @DisplayName("a cell slot is mapped by the width its canonical states, any other by its C type")
+        void slotTypeOfACell() throws Exception {
+            ObjectMapper m = new ObjectMapper();
+            JsonNode quadbin = m.readTree(
+                    "{\"cType\": \"Quadbin\", \"canonical\": \"uint64_t\", \"typedef\": \"Quadbin\"}");
+            JsonNode cells = m.readTree(
+                    "{\"c\": \"S2CellId *\", \"canonical\": \"uint64_t *\", \"typedef\": \"S2CellId\"}");
+            JsonNode bigint = m.readTree("{\"cType\": \"int64\", \"canonical\": \"int64_t\"}");
+            assertEquals("long",    mapJava(FunctionsGenerator.slotType(quadbin, "cType")));
+            assertEquals("uint64_t *", FunctionsGenerator.slotType(cells, "c"));
+            assertEquals("int64",   FunctionsGenerator.slotType(bigint, "cType"));
+            assertEquals("long",    mapJava(FunctionsGenerator.slotType(bigint, "cType")));
+        }
+
         @Test void charPointer() throws Exception  { assertEquals("String",  mapJava("char *")); }
         @Test void structPointer() throws Exception { assertEquals("Pointer", mapJava("STBox *")); }
         @Test void doublePointer() throws Exception { assertEquals("Pointer", mapJava("int **")); }
