@@ -369,7 +369,6 @@ poseset_value_n	internal
 quadbin_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 quadbin_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
 quadbin_cell_to_parent	arg:uint32_t
-quadbin_cell_to_tile	array-or-out-param:x; array-or-out-param:y; array-or-out-param:z
 quadbin_from_wkb	array-or-out-param:wkb
 quadbin_get_resolution	ret:uint32_t
 quadbin_hash	ret:uint32_t
@@ -517,6 +516,7 @@ tbigint_value_time_boxes	array-or-out-param:count
 tbigint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tbigintbox_time_tiles	array-or-out-param:count
 tbool_values	array-or-out-param:count; unsupported-return:bool *
 tbox_hash	ret:uint32_t
 tbox_tmax	arg:TimestampTz *
@@ -574,6 +574,7 @@ tfloat_value_time_boxes	array-or-out-param:count
 tfloat_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tfloat_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tfloatbox_time_tiles	array-or-out-param:count
 tge_text_ttext	internal
 tge_ttext_text	internal
 tgeo_space_boxes	array-or-out-param:count
@@ -658,6 +659,7 @@ tint_value_time_boxes	array-or-out-param:count
 tint_wmax_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wmin_transfn	no-decoder:SkipList; no-encoder:SkipList
 tint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
+tintbox_time_tiles	array-or-out-param:count
 tjson_extract_path	array-or-out-param:path_elems
 tjson_object_field	internal
 tjsonb_delete	internal
