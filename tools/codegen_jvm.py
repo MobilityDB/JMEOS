@@ -2706,9 +2706,10 @@ public final class MeosAggregate implements Serializable {{
         Pointer apply(Pointer a, Pointer b);
     }}
 
-    /** The final: the result over a state, which it consumes. */
+    /** The final: the result over a state, which it consumes; a pointer to a value or a
+     * structure, or a boolean. */
     public interface Final extends Serializable {{
-        Pointer apply(Pointer state);
+        Object apply(Pointer state);
     }}
 
     /** The bytes of a state, which is kept. */
@@ -2721,9 +2722,10 @@ public final class MeosAggregate implements Serializable {{
         Pointer apply(byte[] form);
     }}
 
-    /** The value of the result type holding what the final answers. */
+    /** The engine's value of what the final answers: a value of the result type, a boolean, or
+     * a row of the fields of a structure. */
     public interface Make extends Serializable {{
-        MeosValue apply(Pointer result);
+        Object apply(Object result);
     }}
 
     /** The start timestamp of the first argument of a row, the order the rows of an aggregate
@@ -2810,22 +2812,32 @@ public final class MeosAggregate implements Serializable {{
 
     /** Release a state. */
     public void release(Pointer state) {{
-        if (state != null) {{
-            MeosSqlRuntime.free(fin == null || keeps ? state : fin.apply(state));
+        if (state == null) {{
+            return;
+        }}
+        if (fin == null || keeps) {{
+            MeosSqlRuntime.free(state);
+            return;
+        }}
+        Object r = fin.apply(state);
+        if (r instanceof Pointer) {{
+            MeosSqlRuntime.free((Pointer) r);
         }}
     }}
 
-    /** The result over a state, which is consumed. */
-    public MeosValue finish(Pointer state) {{
+    /** The result over a state, which is consumed. A pointer the final answers is freed once
+     * read; a boolean holds nothing to free. */
+    public Object finish(Pointer state) {{
         if (state == null) {{
             return null;
         }}
-        Pointer r = fin == null ? state : fin.apply(state);
+        Object r = fin == null ? state : fin.apply(state);
+        Pointer p = r instanceof Pointer ? (Pointer) r : null;
         try {{
             return r == null ? null : make.apply(r);
         }} finally {{
-            MeosSqlRuntime.free(r);
-            if (keeps && (r == null || r.address() != state.address())) {{
+            MeosSqlRuntime.free(p);
+            if (keeps && (p == null || p.address() != state.address())) {{
                 MeosSqlRuntime.free(state);
             }}
         }}
@@ -2845,9 +2857,9 @@ public final class MeosAggregate implements Serializable {{
 
 
 # The class of an aggregate argument after the first, beside the value types: the interval of the
-# window aggregates and of the gaps of appendInstantAgg, its interpolation and its distance, which
-# both engines encode.
-_AGG_ARGUMENT = {'java.time.Duration', 'String', 'Double'}
+# window aggregates and of the gaps of appendInstantAgg, its interpolation and its distance, and
+# the band and the nodata exclusion of the raster aggregates, which both engines encode.
+_AGG_ARGUMENT = {'java.time.Duration', 'String', 'Double', 'Integer', 'Boolean'}
 
 # The class of the first argument of an aggregate over a base value, beside the value types: the
 # integers, floats, texts, dates and timestamps setUnion, extent and tCount fold.
@@ -2856,6 +2868,44 @@ _AGG_BASE = {'Integer', 'Long', 'Double', 'String', 'java.time.LocalDate', 'java
 # The MEOS function answering the start timestamp of a temporal value, the order an aggregate with
 # no combine folds its rows in: the instant of a temporal instant, the lower bound of a sequence.
 _ORDER_KEY = 'temporal_start_timestamptz'
+
+
+# The engine class and the read off a pointer of each scalar C type a field of a structure the
+# final of an aggregate answers may have, at offset {o} (#_agg_result): an unsigned 32-bit count
+# is read into a long, as PostgreSQL keeps it in a bigint.
+_STRUCT_FIELD = {'int': ('Integer', 'p.getInt({o}L)'), 'int32_t': ('Integer', 'p.getInt({o}L)'),
+                 'uint32_t': ('Long', 'Integer.toUnsignedLong(p.getInt({o}L))'),
+                 'int64': ('Long', 'p.getLongLong({o}L)'), 'int64_t': ('Long', 'p.getLongLong({o}L)'),
+                 'double': ('Double', 'p.getDouble({o}L)'), 'bool': ('Boolean', 'p.getByte({o}L) != 0')}
+
+
+def _agg_result(m, ret, final):
+    """((class, make, type, encoder), None) of the result of an aggregate of SQL result type
+    `ret` whose final function is `final`, or (None, reason): the class of the engine's value,
+    the Java making it of what the final answers (MeosAggregate.Make), its type in the engine,
+    and its Spark encoder. A value of a type the surface holds is encoded as a function's result
+    is; a final answering a C bool gives a boolean; a final answering a pointer to a structure of
+    the catalog's `structs` whose fields are all scalars (_STRUCT_FIELD) gives a row of those
+    fields under their names, as PostGIS's summarystats is the row of the BandStats a raster
+    summary answers. An aggregate stating no final answers its state, of the value type it is."""
+    if ret in m.value_class:
+        cls = f'{m.pkg}.types.{m.value_class[ret]}'
+        return (cls, f'r -> {cls}.encode((Pointer) r)', m.datatype(cls),
+                f'Encoders.bean({cls}.class)'), None
+    rt = _norm(((final or {}).get('returnType') or {}).get('canonical'))
+    if ret == 'boolean' and rt == 'bool':
+        return ('Boolean', 'r -> r', m.datatype('Boolean'), 'Encoders.BOOLEAN()'), None
+    if _single_pointer(rt):
+        st = next((x for x in m.cat.get('structs') or [] if x.get('name') == _base(rt)), None)
+        fields = [(f['name'],) + _STRUCT_FIELD[f['cType']] for f in (st or {}).get('fields') or []
+                  if f.get('cType') in _STRUCT_FIELD]
+        if st and fields and len(fields) == len(st['fields']):
+            reads = ', '.join(read.format(o=f['offset_bits'] // 8)
+                              for (_, _, read), f in zip(fields, st['fields']))
+            rtype = m.row_type([(n, m.datatype(c)) for n, c, _ in fields])
+            make = f'r -> {{ Pointer p = (Pointer) r; return {m.row_of}({reads}); }}'
+            return (m.row_class, make, rtype, f'Encoders.row({rtype})'), None
+    return None, f'result {ret} of no value type'
 
 
 def _catalog_aggregates(m, cat, jmeos):
@@ -2894,8 +2944,9 @@ def _catalog_aggregates(m, cat, jmeos):
         elif stype not in m.value_class:
             left[f'state {stype}'] += 1
             continue
-        if ret not in m.value_class:
-            left[f'result {ret} of no value type'] += 1
+        result, why = _agg_result(m, ret, m.by_name.get(meos('final')))
+        if result is None:
+            left[why] += 1
             continue
         roles = [meos(k) for k in ('transition', 'combine', 'final', 'serialize', 'deserialize')]
         if any(r and r not in jmeos for r in roles):
@@ -2932,11 +2983,12 @@ def _catalog_aggregates(m, cat, jmeos):
         ff = m.by_name.get(meos('final')) or {}
         keeps = bool(ff.get('params')) and ff['params'][0]['cType'].startswith('const ')
         comb = f'GeneratedFunctions::{meos("combine")}' if meos('combine') else 'null'
-        aggs[name].append({'args': classes, 'ret': cls(ret),
+        rcls, make, rtype, renc = result
+        aggs[name].append({'args': classes, 'ret': rcls, 'retType': rtype, 'retEnc': renc,
                            'transition': meos('transition'), 'inputs': got,
                            'gathers': not meos('combine'),
                            'roles': (comb, fin, 'true' if keeps else 'false', write, read,
-                                     f'{cls(ret)}::encode')})
+                                     make)})
     return aggs, left
 
 
@@ -3059,7 +3111,7 @@ public final class MeosAggState {{
 
     /** The result over the state, or over the gathered rows folded in order, null over no
      * value. */
-    public MeosValue value(MeosAggregate[] roles) {{
+    public Object value(MeosAggregate[] roles) {{
         if (rows != null) {{
             return roles[overload].finish(roles[overload].fold(rows));
         }}
@@ -3158,7 +3210,11 @@ public final class MeosAggState {{
 def _flink_aggregate_src(sqlname, cls, ovs):
     """The Flink AggregateFunction of the SQL aggregate sqlname: one accumulate per overload,
     which Flink chooses from the class of the argument, the roles of each, and the type inference
-    over them."""
+    over them. The result class is MeosValue where every overload answers a value of a type the
+    surface holds, else the one class its overloads answer (#_agg_result)."""
+    rets = {ov['ret'] for ov in ovs}
+    rcls = 'MeosValue' if all(r.startswith(f'{SQL_PKG}.types.') for r in rets) else \
+        (rets.pop() if len(rets) == 1 else 'Object')
     body = [f'package {SQL_PKG}.functions;', '',
             'import functions.GeneratedFunctions;',
             'import jnr.ffi.Pointer;',
@@ -3173,7 +3229,7 @@ def _flink_aggregate_src(sqlname, cls, ovs):
             f'import {SQL_PKG}.MeosValue;', '',
             '/* AUTO-GENERATED by tools/codegen_jvm.py — do not edit by hand.',
             f' * The MobilityDB SQL aggregate {sqlname}: {len(ovs)} overload(s). */',
-            f'public final class {cls} extends AggregateFunction<MeosValue, MeosAggState> {{', '',
+            f'public final class {cls} extends AggregateFunction<{rcls}, MeosAggState> {{', '',
             '    private static final MeosAggregate[] ROLES = {',
             ',\n'.join(_roles_src(cls, k, ov) for k, ov in enumerate(ovs)),
             '    };', '']
@@ -3188,14 +3244,14 @@ def _flink_aggregate_src(sqlname, cls, ovs):
                  '    }', '']
     body += ['    public void merge(MeosAggState acc, Iterable<MeosAggState> others) {',
              '        acc.merge(ROLES, others);', '    }', '',
-             '    @Override', '    public MeosValue getValue(MeosAggState acc) {',
-             '        return acc.value(ROLES);', '    }', '',
+             '    @Override', f'    public {rcls} getValue(MeosAggState acc) {{',
+             f'        return ({rcls}) acc.value(ROLES);', '    }', '',
              '    @Override',
              '    public TypeInference getTypeInference(DataTypeFactory typeFactory) {',
              '        return MeosSqlRuntime.aggregateInference(new DataType[][] {']
     body += [f'            {{{", ".join(_datatype(c) for c in ov["args"])}}},' for ov in ovs]
     body += ['        }, new DataType[] {']
-    body += [f'            {_datatype(ov["ret"])},' for ov in ovs]
+    body += [f'            {ov["retType"]},' for ov in ovs]
     body += ['        }, MeosAggState.TYPE);', '    }', '}']
     return '\n'.join(body) + '\n'
 
@@ -3236,15 +3292,15 @@ public final class MeosAggregates {{
 
     private MeosAggregates() {{ }}
 
-    /** One overload: the SQL types it takes, the encoder of its arguments, the class of its
-     * result, and its roles. */
+    /** One overload: the SQL types it takes, the encoder of its arguments, the encoder of its
+     * result (a value's bean, a boolean, or a row), and its roles. */
     public static final class Overload implements Serializable {{
         final DataType[] args;
         final Encoder<?> in;
-        final Class<? extends MeosValue> out;
+        final Encoder<?> out;
         final MeosAggregate roles;
 
-        public Overload(DataType[] args, Encoder<?> in, Class<? extends MeosValue> out,
+        public Overload(DataType[] args, Encoder<?> in, Encoder<?> out,
                 MeosAggregate roles) {{
             this.args = args;
             this.in = in;
@@ -3294,7 +3350,7 @@ public final class MeosAggregates {{
                         for (Overload o : overloads) {{
                             java.util.List<Expression> in = MeosSqlRuntime.fit(o.args, given, widen);
                             if (in != null) {{
-                                Aggregator typed = new Typed(o, Encoders.bean(o.out));
+                                Aggregator typed = new Typed(o, o.out);
                                 return new ScalaAggregator(
                                     scala.jdk.javaapi.CollectionConverters.asScala(in).toList(), typed,
                                     package$.MODULE$.encoderFor(o.in),
@@ -3318,14 +3374,14 @@ public final class MeosAggregates {{
 
     /** An aggregate over typed values, run by the roles of its overload; the arguments of a row
      * of several arrive as the tuple their encoder reads. */
-    static final class Typed extends Aggregator<Object, Buffer, MeosValue> {{
+    static final class Typed extends Aggregator<Object, Buffer, Object> {{
         private final MeosAggregate r;
-        private final Encoder<MeosValue> outEnc;
+        private final Encoder<Object> outEnc;
 
         @SuppressWarnings("unchecked")
         Typed(Overload o, Encoder<?> outEnc) {{
             this.r = o.roles;
-            this.outEnc = (Encoder<MeosValue>) outEnc;
+            this.outEnc = (Encoder<Object>) outEnc;
         }}
 
         @Override public Buffer zero() {{ return new Buffer(r); }}
@@ -3365,7 +3421,7 @@ public final class MeosAggregates {{
             return b1;
         }}
 
-        @Override public MeosValue finish(Buffer b) {{
+        @Override public Object finish(Buffer b) {{
             if (r.gathers()) {{
                 Pointer s = r.fold(b.rows);
                 b.rows.clear();
@@ -3377,7 +3433,7 @@ public final class MeosAggregates {{
         }}
 
         @Override public Encoder<Buffer> bufferEncoder() {{ return Encoders.javaSerialization(Buffer.class); }}
-        @Override public Encoder<MeosValue> outputEncoder() {{ return outEnc; }}
+        @Override public Encoder<Object> outputEncoder() {{ return outEnc; }}
     }}
 }}
 '''
@@ -3388,6 +3444,7 @@ def _spark_encoder(classes):
     Duration encoder of an interval, the encoder of each base value (a text, a float, an integer,
     a date, a timestamp), and the tuple of them for several arguments."""
     scalar = {'java.time.Duration': 'Encoders.DURATION()', 'String': 'Encoders.STRING()',
+              'Boolean': 'Encoders.BOOLEAN()',
               'Double': 'Encoders.DOUBLE()', 'Integer': 'Encoders.INT()',
               'Long': 'Encoders.LONG()', 'java.time.LocalDate': 'Encoders.LOCALDATE()',
               'java.time.Instant': 'Encoders.INSTANT()'}
@@ -3420,7 +3477,7 @@ def _spark_aggregate_src(m, sqlname, cls, ovs):
              '        return new MeosAggregates.Overload[] {',
              ',\n'.join(f'            new MeosAggregates.Overload(new DataType[] {{'
                         f'{", ".join(_spark_datatype(m, c) for c in ov["args"])}}},\n'
-                        f'                {_spark_encoder(ov["args"])}, {ov["ret"]}.class,\n'
+                        f'                {_spark_encoder(ov["args"])}, {ov["retEnc"]},\n'
                         + _roles_src(cls, k, ov, '                ') + ')'
                         for k, ov in enumerate(ovs)),
              '        };', '    }', '}']
