@@ -71,11 +71,12 @@ def _fn_ref(name, aux):
 
 
 # The types whose functions share a SQL name with those of a type already marshalled, where no
-# reader tells the two apart: hasZ/xMin.. of TPCBox and STBox, point of PoseChain and Cbuffer,
-# bandPixelType/height.. of Raster and Raquet. Marshalling them would leave each such name with
-# overloads no dispatcher can choose between (#_dispatchable), and the name would go; they wait
-# for the class-prefixed names that separate them. Read by #derive_codecs beside INTERNAL.
-DEFERRED_TYPES = {"TPCBox", "PoseChain", "Raster"}
+# reader tells the two apart: hasZ/xMin.. of TPCBox and STBox, point of PoseChain and Cbuffer.
+# Marshalling them would leave each such name with overloads no dispatcher can choose between
+# (#_dispatchable), and the name would go; they wait for the class-prefixed names that separate
+# them, which the catalog states as the altSqlName of a signature (Raster and Raquet have them:
+# rasterHeight, raquetHeight). Read by #derive_codecs beside INTERNAL.
+DEFERRED_TYPES = {"TPCBox", "PoseChain"}
 
 
 def derive_codecs(cat, have):
