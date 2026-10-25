@@ -579,7 +579,20 @@ SQL_ARRAY_SCALAR = {
 _SQL_SCALAR_C = {c for _, c in SQL_ARRAY_SCALAR} | {'bool', 'int32_t', 'uint64_t'}
 
 
+# The engine type of each structure the surface carries as a row (#SqlModel._struct_rows), keyed
+# by the class string #_flink_class names for it: the engine's row class, tagged with the SQL type
+# after a '#', since one Java class carries rows of every structure.
+_ROW_DATATYPE = {}
+
+
+def _jclass(cls):
+    """The Java class of a class string, without the SQL type a row of a structure is tagged with."""
+    return cls.split('#')[0]
+
+
 def _datatype(cls):
+    if cls in _ROW_DATATYPE:
+        return _ROW_DATATYPE[cls]
     # A class the table names (byte[], a bytea) before an array of its element, as
     # #_spark_datatype reads SPARK_DATATYPE first.
     if cls in SQL_DATATYPE:
@@ -655,6 +668,7 @@ class SqlModel:
         self._align()
         self._codecs()
         self._enum_parsers()
+        self._struct_rows()
 
     def datatype(self, cls):
         """The engine's SQL type expression for the Java class `cls`."""
@@ -672,6 +686,29 @@ class SqlModel:
                     + ', '.join(f'DataTypes.createStructField("{n}", {t}, true)' for n, t in fields)
                     + '})')
         return 'DataTypes.ROW(' + ', '.join(f'DataTypes.FIELD("{n}", {t})' for n, t in fields) + ')'
+
+    def _struct_rows(self):
+        """The SQL types the surface carries as a row of the fields of a structure, as
+        #_agg_result answers an aggregate's: a SQL type standing for a structure of the catalog's
+        `structs` that states no encoding and whose fields are all scalars (_STRUCT_FIELD), as
+        PostGIS's summarystats is the row of the BandStats a raster summary answers.
+        {SQL type: [(field, engine class, read off `p`, offset in bytes, C type)]}, each type's
+        engine row type entered in _ROW_DATATYPE under its #_flink_class string."""
+        structs = {s['name']: s for s in self.cat.get('structs') or []}
+        self.struct_row = {}
+        for sql, cb in self.sql_cbase.items():
+            st = structs.get(cb)
+            if sql in self.codec or cb in self.enc or not st or not st.get('fields') \
+                    or any(f.get('cType') not in _STRUCT_FIELD for f in st['fields']):
+                continue
+            self.struct_row[sql] = [(f['name'],) + _STRUCT_FIELD[f['cType']]
+                                    + (f['offset_bits'] // 8, f['cType']) for f in st['fields']]
+            _ROW_DATATYPE[f'{self.row_class}#{sql}'] = self.row_type(
+                [(n, self.datatype(c)) for n, c, *_ in self.struct_row[sql]])
+
+    def row_field(self, row, i):
+        """The engine's Java read of field i of the row `row`."""
+        return f'{row}.get({i})' if self.engine == 'spark' else f'{row}.getField({i})'
 
     @property
     def row_class(self):
@@ -877,6 +914,20 @@ def _arg(m, sql, p, jt, name, temps):
         t = f'_p{len(temps)}'
         temps.append((t, f'MeosSqlRuntime.interval({name})', 'value'))
         return t
+    if sql in m.struct_row and jt == 'jnr.ffi.Pointer' and b == m.sql_cbase[sql]:
+        # A row of the fields of a structure (#SqlModel._struct_rows), laid out in memory the
+        # garbage collector releases, as MeosSqlRuntime.ints lays out an array of integers.
+        fields = m.struct_row[sql]
+        size = (m.layout(b) or (None,))[0]
+        if not size:
+            return None
+        offs = ', '.join(f'{o}L' for *_, o, _ in fields)
+        kinds = ''.join(_STRUCT_PUT[c] for *_, c in fields)
+        vals = ', '.join(m.row_field(name, i) for i in range(len(fields)))
+        t = f'_p{len(temps)}'
+        temps.append((t, f'MeosSqlRuntime.struct({size}, new long[] {{{offs}}}, "{kinds}", '
+                         f'new Object[] {{{vals}}})', 'buffer'))
+        return t
     if sql == 'boolean' and jt == 'boolean':
         return name
     if sql == 'bytea' and jt == 'byte[]' and b == 'uint8_t':
@@ -974,6 +1025,14 @@ def _ret(m, sql, f, jt, outs):
                 ['if (_r == null) return null;',
                  f'try {{ return {m.pkg}.types.{vc}.encode(_r); }}',
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
+    if sql in m.struct_row and jt == 'jnr.ffi.Pointer' and _base(rc) == m.sql_cbase[sql]:
+        # A structure MEOS allocated, read into a row of its fields as #_agg_result reads the
+        # one a final answers, and freed after.
+        reads = ', '.join(read.format(o=o) for _, _, read, o, _ in m.struct_row[sql])
+        return (f'{m.row_class}#{sql}',
+                ['if (_r == null) return null;',
+                 f'try {{ Pointer p = _r; return {m.row_of}({reads}); }}',
+                 'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql in ('text', 'cstring') and jt == 'jnr.ffi.Pointer' and rc == 'text *' \
             and 'text_out' in m.jmeos:
         # A text MEOS allocates, read into a String through text_out and freed after, as the
@@ -1017,8 +1076,12 @@ def _ret(m, sql, f, jt, outs):
 
 
 def _flink_class(m, sql):
+    # A row of the fields of a structure is the engine's row class, as #_agg_result answers one,
+    # tagged with its SQL type for #_datatype.
     if sql in m.value_class:
         return f'{m.pkg}.types.{m.value_class[sql]}'
+    if sql in m.struct_row:
+        return f'{m.row_class}#{sql}'
     return SQL_SCALAR.get(sql)
 
 
@@ -1192,12 +1255,12 @@ def _emit_eval(ov, defaults=None):
     decodes, released after the body runs, the body itself and the Flink return class."""
     params, temps, rcls, body, _ = ov
     shown = params if defaults is None else params[:len(params) - len(defaults)]
-    L = [f'    public {rcls} eval({", ".join(f"{t} {n}" for t, n in shown)}) {{']
+    L = [f'    public {_jclass(rcls)} eval({", ".join(f"{_jclass(t)} {n}" for t, n in shown)}) {{']
     if shown:
         L.append(f'        if ({" || ".join(f"{n} == null" for _, n in shown)}) return null;')
     # An argument left to its SQL default is that default, converted like any other.
     for (t, n), lit in zip(params[len(shown):], defaults or []):
-        L.append(f'        {t} {n} = {lit};')
+        L.append(f'        {_jclass(t)} {n} = {lit};')
     if all(kind == 'value' for _, _, kind in temps):
         for t, e, _ in temps:
             L.append(f'        Pointer {t} = {e};')
@@ -2075,6 +2138,24 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
         return Memory.allocateDirect(RUNTIME, Math.max(1, n) * width);
     }
 
+    /** The C structure of the given size whose fields are written at their offsets, each as
+     * its letter in types states (i a 32-bit integer, l a 64-bit one, d a double, b a bool), as
+     * #ints lays out an array, in memory the garbage collector releases.  A null field raises,
+     * as a null array element does. */
+    public static Pointer struct(int size, long[] offsets, String types, Object[] fields) {
+        Pointer b = buffer(1, size);
+        for (int i = 0; i < fields.length; i++) {
+            Number v = (Number) element(fields, i);
+            switch (types.charAt(i)) {
+                case 'i': b.putInt(offsets[i], (int) v.longValue()); break;
+                case 'l': b.putLongLong(offsets[i], v.longValue()); break;
+                case 'd': b.putDouble(offsets[i], v.doubleValue()); break;
+                default: b.putByte(offsets[i], (byte) (v.longValue() != 0 ? 1 : 0)); break;
+            }
+        }
+        return b;
+    }
+
     public static Pointer ints(Integer[] xs) {
         Pointer b = buffer(xs.length, 4);
         for (int i = 0; i < xs.length; i++) {
@@ -2382,6 +2463,8 @@ SPARK_DATATYPE = {
 
 def _spark_datatype(m, cls):
     """The Spark DataType expression of a Java class #_overload names, or None."""
+    if cls in _ROW_DATATYPE:
+        return _ROW_DATATYPE[cls]
     if cls in SPARK_DATATYPE:
         return SPARK_DATATYPE[cls]
     if cls.endswith('[]'):
@@ -2407,7 +2490,7 @@ def _spark_arg(cls, i):
         return f'(byte[]) {a}'
     if cls.endswith('[]'):
         return f'MeosSqlRuntime.array({a}, new {cls[:-2]}[0])'
-    return f'({cls}) {a}'
+    return f'({_jclass(cls)}) {a}'
 
 
 _SPARK_RUNTIME_IMPORTS = '''import functions.GeneratedFunctions;
@@ -2877,6 +2960,11 @@ _STRUCT_FIELD = {'int': ('Integer', 'p.getInt({o}L)'), 'int32_t': ('Integer', 'p
                  'uint32_t': ('Long', 'Integer.toUnsignedLong(p.getInt({o}L))'),
                  'int64': ('Long', 'p.getLongLong({o}L)'), 'int64_t': ('Long', 'p.getLongLong({o}L)'),
                  'double': ('Double', 'p.getDouble({o}L)'), 'bool': ('Boolean', 'p.getByte({o}L) != 0')}
+
+# How MeosSqlRuntime.struct writes each of those C types from a row (#_arg): i a 32-bit integer,
+# l a 64-bit one, d a double, b a bool.
+_STRUCT_PUT = {'int': 'i', 'int32_t': 'i', 'uint32_t': 'i', 'int64': 'l', 'int64_t': 'l',
+               'double': 'd', 'bool': 'b'}
 
 
 def _agg_result(m, ret, final):
