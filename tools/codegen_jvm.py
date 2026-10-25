@@ -1413,6 +1413,9 @@ def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
     if sig.get('retSet'):
         ov, why = _setret_overload(m, f, sig, jsig, bound, layout)
         return ov, why, ov is not None
+    if sig.get('arrayShape') and ret and ret.endswith('[]'):
+        ov, why = _array_shape_overload(m, f, sig, jsig, bound)
+        return ov, why, False
     order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
     ov, why = _overload(m, f, args, ret, jsig, bound, order)
     if ov is None and ret and ret.endswith('[]'):
@@ -1795,6 +1798,77 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
     body += ['    MeosSqlRuntime.free(_r);', '}']
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
+
+
+def _array_shape_overload(m, f, sig, jsig, bound):
+    """The eval of a signature returning a SQL array whose layout its wrapper gives beyond the
+    C array (the catalog's arrayShape), or (None, reason), as #_setret_overload builds the eval
+    of a set-returning signature: the C array read element by element, NULL where the output
+    array `nulls` is true, and, with `rowLength`, cut into rows of the length the public
+    function it names answers for the parameters it names, an array of arrays as PostgreSQL's
+    two-dimensional array: dumpValues(raster, integer, boolean) answers a row of values per
+    row of the raster, raster_width of it long, NULL for a nodata pixel."""
+    shape = sig['arrayShape']
+    vis, outs = m.visible(f)
+    if len(jsig['arg_types']) != len(f['params']):
+        return None, 'arrayShape:arity'
+    if jsig['ret'] != 'jnr.ffi.Pointer':
+        return None, 'arrayShape:ret'
+    counts = [p for p in outs if _norm(p['canonical']) == 'int *'
+              and 'const' not in p['canonical']]
+    nulls = shape.get('nulls')
+    if len(counts) != 1 or any(p is not counts[0] and p['name'] != nulls for p in outs):
+        return None, 'arrayShape:out'
+    elem = _norm(f['returnType']['canonical'])[:-1].strip()
+    hit = SETRET_SCALAR.get((elem, _deployed_type(sig['ret'][:-2])))
+    if not hit:
+        return None, f'arrayShape:element/{elem}'
+    rl = shape.get('rowLength')
+    if rl and ((m.jmeos.get(rl['call']) or {}).get('ret') != 'int'
+               or any(a not in [p['name'] for p in vis] for a in rl['args'])):
+        return None, 'arrayShape:rowLength'
+    jt = {p['name']: t for p, t in zip(f['params'], jsig['arg_types'])}
+    got, why = _inputs(m, f, [_deployed_type(a) for a in sig.get('args') or []],
+                       [jt[p['name']] for p in vis], bound,
+                       sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams'))
+    if got is None:
+        return None, why
+    params, call_vis, temps = got
+    vcall = dict(zip([p['name'] for p in vis], call_vis))
+    call = [vcall.get(p['name']) or ('_n' if p['name'] == nulls else '_cnt') for p in f['params']]
+    ecls = hit[0]
+    read = hit[1].format(p='_r', i='_i')
+    if nulls:
+        read = f'(_m.getByte((long) _i) != 0 ? null : {read})'
+    body = ['Pointer _cnt = MeosSqlRuntime.cell(4);']
+    body += ['Pointer _n = MeosSqlRuntime.cell(8);'] if nulls else []
+    body += ['Pointer _r = null;', 'Pointer _m = null;', 'try {',
+             f'    _r = GeneratedFunctions.{f["name"]}({", ".join(call)});',
+             '    if (_r == null) return null;',
+             '    int _c = _cnt.getInt(0L);']
+    body += ['    _m = _n.getPointer(0L);'] if nulls else []
+    if rl:
+        args = ', '.join(vcall[a] for a in rl['args'])
+        body += [f'    int _w = GeneratedFunctions.{rl["call"]}({args});',
+                 '    if (_w <= 0) return null;',
+                 f'    {ecls}[][] _rows = new {ecls}[_c / _w][];',
+                 '    for (int _y = 0; _y < _rows.length; _y++) {',
+                 f'        _rows[_y] = new {ecls}[_w];',
+                 '        for (int _x = 0; _x < _w; _x++) {',
+                 '            int _i = _y * _w + _x;',
+                 f'            _rows[_y][_x] = {read};',
+                 '        }',
+                 '    }']
+        cls, etype = f'{ecls}[][]', m.array_type(m.array_type(m.datatype(ecls)))
+    else:
+        body += [f'    {ecls}[] _rows = new {ecls}[_c];',
+                 '    for (int _i = 0; _i < _c; _i++) {',
+                 f'        _rows[_i] = {read};',
+                 '    }']
+        cls, etype = f'{ecls}[]', m.array_type(m.datatype(ecls))
+    body += ['    return _rows;', '} finally {', '    MeosSqlRuntime.free(_m);',
+             '    MeosSqlRuntime.free(_r);', '}']
+    return (params, temps, cls, body, etype), None
 
 
 def _aux_literal(a):
