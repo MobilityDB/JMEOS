@@ -5,9 +5,6 @@
 above_tpcbox_tpcbox	arg:TPCBox *
 above_tpcbox_tpointcloud	arg:TPCBox *
 above_tpointcloud_tpcbox	arg:TPCBox *
-add_float_raster	ret:Raster *
-add_raster_float	ret:Raster *
-add_raster_raster	ret:Raster *
 add_timestamp_interval	ret:Timestamp
 add_timestamptz_interval	ret:Timestamp
 add_timestamptz_interval_at_zone	ret:Timestamp
@@ -33,7 +30,6 @@ always_ne_posechain_tposechain	arg:PoseChain *
 always_ne_text_ttext	internal
 always_ne_tposechain_posechain	arg:PoseChain *
 always_ne_ttext_text	internal
-araster_value	arg:Raster *
 back_tpcbox_tpcbox	arg:TPCBox *
 back_tpcbox_tpointcloud	arg:TPCBox *
 back_tpointcloud_tpcbox	arg:TPCBox *
@@ -81,15 +77,11 @@ dateset_value_n	arg:DateADT *
 datespan_bins	array-or-out-param:count
 datespanset_bins	array-or-out-param:count
 datespanset_date_n	arg:DateADT *
-div_float_raster	ret:Raster *
-div_raster_float	ret:Raster *
-div_raster_raster	ret:Raster *
 eq_date_timestamp	arg:Timestamp
 eq_timestamp_date	arg:Timestamp
 eq_timestamp_timestamp	arg:Timestamp
 eq_timestamp_timestamptz	arg:Timestamp
 eq_timestamptz_timestamp	arg:Timestamp
-eraster_value	arg:Raster *
 ever_eq_posechain_tposechain	arg:PoseChain *
 ever_eq_text_ttext	internal
 ever_eq_tposechain_posechain	arg:PoseChain *
@@ -249,9 +241,6 @@ minus_time_time	arg:TimeADT
 minus_timestamp_interval	ret:Timestamp
 minus_timestamp_timestamp	arg:Timestamp
 minus_timestamptz_interval_at_zone	internal
-mul_float_raster	ret:Raster *
-mul_raster_float	ret:Raster *
-mul_raster_raster	ret:Raster *
 ne_date_timestamp	arg:Timestamp
 ne_timestamp_date	arg:Timestamp
 ne_timestamp_timestamp	arg:Timestamp
@@ -384,57 +373,23 @@ raquet_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
 raquet_pixtype_from_string	ret:MeosPixType
 raquet_pixtype_size	internal
 raquet_read_bytes	array-or-out-param:data
-raster_as_hexwkb	array-or-out-param:size_out
-raster_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
-raster_at_value	arg:Raster *
-raster_band_has_nodata_value	arg:Raster *
-raster_band_nodata_value	arg:Raster *
-raster_band_pixel_type	arg:Raster *
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
-raster_copy	ret:Raster *
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
 raster_dump_values	array-or-out-param:nodata; array-or-out-param:count; unsupported-return:double *
-raster_from_hexwkb	ret:Raster *
-raster_from_wkb	array-or-out-param:wkb
-raster_height	arg:Raster *
-raster_map_algebra	ret:Raster *
-raster_mem_size	arg:Raster *
-raster_minus_value	arg:Raster *
-raster_not_same_alignment_reason	arg:Raster *
-raster_num_bands	arg:Raster *
 raster_pixel_as_points	array-or-out-param:count; no-encoder:Pixel
-raster_reclass	ret:Raster *
-raster_rescale	ret:Raster *
-raster_same_alignment	arg:Raster *
 raster_same_alignment_combinefn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
 raster_same_alignment_finalfn	no-decoder:RasterAlignState
 raster_same_alignment_transfn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
-raster_scale_x	arg:Raster *
-raster_scale_y	arg:Raster *
-raster_skew_x	arg:Raster *
-raster_skew_y	arg:Raster *
-raster_slope	ret:Raster *
-raster_srid	arg:Raster *
 raster_summary_stats	no-encoder:BandStats
 raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
 raster_summary_stats_finalfn	no-decoder:RasterStatsState; no-encoder:BandStats
 raster_summary_stats_transfn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
 raster_tile_value_array	internal
 raster_tile_value_quadbin	array-or-out-param:pixels
-raster_to_stbox	arg:Raster *
-raster_tpi	ret:Raster *
-raster_transform	ret:Raster *
-raster_transform_pipeline	ret:Raster *
-raster_transform_raster	ret:Raster *
-raster_tri	ret:Raster *
 raster_union_combinefn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
 raster_union_finalfn	no-decoder:RasterUnionState
 raster_union_transfn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
-raster_upper_left_x	arg:Raster *
-raster_upper_left_y	arg:Raster *
-raster_value	arg:Raster *
 raster_value_count	array-or-out-param:searchvalues; array-or-out-param:count; no-encoder:ValueCount
-raster_width	arg:Raster *
 rasteralignstate_deserialize	array-or-out-param:bytes; no-encoder:RasterAlignState
 rasteralignstate_serialize	no-decoder:RasterAlignState; array-or-out-param:size_out; unsupported-return:uint8_t *
 rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsState
@@ -508,9 +463,6 @@ stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
 stbox_to_gbox	internal
 stboxarr_round	array-or-out-param:boxarr
-sub_float_raster	ret:Raster *
-sub_raster_float	ret:Raster *
-sub_raster_raster	ret:Raster *
 tbigint_time_boxes	array-or-out-param:count
 tbigint_value_bins	array-or-out-param:count
 tbigint_value_boxes	array-or-out-param:count
