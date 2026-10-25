@@ -33,6 +33,12 @@ always_ne_ttext_text	internal
 back_tpcbox_tpcbox	arg:TPCBox *
 back_tpcbox_tpointcloud	arg:TPCBox *
 back_tpointcloud_tpcbox	arg:TPCBox *
+bandstats_count	no-decoder:BandStats
+bandstats_max	no-decoder:BandStats
+bandstats_mean	no-decoder:BandStats
+bandstats_min	no-decoder:BandStats
+bandstats_stddev	no-decoder:BandStats
+bandstats_sum	no-decoder:BandStats
 before_tpcbox_tpcbox	arg:TPCBox *
 before_tpcbox_tpointcloud	arg:TPCBox *
 before_tpointcloud_tpcbox	arg:TPCBox *
@@ -373,13 +379,16 @@ raquet_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
 raquet_pixtype_from_string	ret:MeosPixType
 raquet_pixtype_size	internal
 raquet_read_bytes	array-or-out-param:data
+raster_band_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
 raster_dump_values	array-or-out-param:nodata; array-or-out-param:count; unsupported-return:double *
+raster_make	array-or-out-param:pixels
 raster_pixel_as_points	array-or-out-param:count; no-encoder:Pixel
 raster_same_alignment_combinefn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
 raster_same_alignment_finalfn	no-decoder:RasterAlignState
 raster_same_alignment_transfn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
+raster_set_values	array-or-out-param:values; array-or-out-param:nodata; array-or-out-param:noset
 raster_summary_stats	no-encoder:BandStats
 raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
 raster_summary_stats_finalfn	no-decoder:RasterStatsState; no-encoder:BandStats
