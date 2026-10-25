@@ -1457,8 +1457,12 @@ def _sql_overloads(m, cat, jmeos, layout, skipped, keep):
                                                              f.get('sqlSignatures') or []):
             ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
             yield sqlname, sargs, sdef, ov, why, isset, None
-            for arity, dsig, dargs, ddef, dbound in _null_default_signatures(sig, sargs, sdef,
-                                                                              sbound):
+            # The shorter calls drop the left-out arguments from the order the SQL arguments
+            # take, which the catalog states for the signature or for the whole function
+            # (`raster(pixels, width, ...)` reads its pixels first)
+            order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
+            for arity, dsig, dargs, ddef, dbound in _null_default_signatures(
+                    dict(sig, sqlArgParams=order) if order else sig, sargs, sdef, sbound):
                 dov, _, disset = _signature_overload(m, f, dsig, dargs, sret, jsig, dbound,
                                                      layout)
                 if dov is not None:
