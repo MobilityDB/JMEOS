@@ -1331,7 +1331,9 @@ SETRET_FIELD = {
 def _setret_column(m, f, col, layout):
     """How to read one column of a returned row, as #row_column in codegen_spark_udfs.py reads
     it for Spark: (Flink class, source array, Java read of row `_i` from the array `{a}`,
-    whether each element is a MEOS allocation to free), or None when it cannot be read."""
+    whether each element is a MEOS allocation to free), or None when it cannot be read. The
+    last is (stride, offset) for a pointer field of a struct element, each a MEOS allocation
+    the wrapper frees before the array, as geomval_arr_free frees the geom of each GeomVal."""
     sql, src = col.get('type'), col['from']
     if src == 'ordinal':
         return {'integer': ('Integer', None, '(_i + 1)', False),
@@ -1359,6 +1361,13 @@ def _setret_column(m, f, col, layout):
         if lay is None or col['field'] not in lay[2]:
             return None
         off, ctype = lay[2][col['field']]
+        if _norm(ctype).endswith('*'):                # a pointer field: a value of its own
+            b, vc = _norm(ctype)[:-1].strip(), m.value_class.get(sql)
+            if not vc or m.sql_cbase.get(sql) not in (b, m.subtype_of.get(b)):
+                return None
+            cls = f'{m.pkg}.types.{vc}'
+            return (cls, src, f'MeosSqlRuntime.orNull({{a}}.getPointer((long) _i * {lay[0]}L '
+                    f'+ {off}L), {cls}::encode)', (lay[0], off))
         hit = SETRET_FIELD.get((ctype, sql))
         if not hit:
             return None
@@ -1381,6 +1390,16 @@ def _setret_column(m, f, col, layout):
         return (f'{m.pkg}.types.{vc}', src,
                 f'{m.pkg}.types.{vc}.encode({{a}}.slice((long) _i * {lay[0]}L))', False)
     return None
+
+
+def _free_each(r, cells):
+    """The Java freeing, once the rows are read, the MEOS allocation behind each of the _c rows
+    of the column reader `r` (#_setret_column): each pointer of an array of pointers, or the
+    pointer field of each struct element. `cells` names the out-parameter cell of each array."""
+    src = '_r' if r[1] == 'return' else f'{cells[r[1]]}.getPointer(0L)'
+    if r[3] is True:
+        return f'    MeosSqlRuntime.freeEach({src}, _c);'
+    return f'    MeosSqlRuntime.freeField({src}, _c, {r[3][0]}L, {r[3][1]}L);'
 
 
 def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
@@ -1705,8 +1724,7 @@ def _composition_setret(m, comp, jmeos, layout):
              '} finally {']
     for (_, r) in readers:
         if r[3]:
-            src = '_r' if r[1] == 'return' else f'{cells[r[1]]}.getPointer(0L)'
-            body.append(f'    MeosSqlRuntime.freeEach({src}, _c);')
+            body.append(_free_each(r, cells))
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
     body += ['    MeosSqlRuntime.free(_r);', '}']
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
@@ -1773,8 +1791,7 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
              '} finally {']
     for (_, r) in readers:
         if r[3]:
-            src = '_r' if r[1] == 'return' else f'{cells[r[1]]}.getPointer(0L)'
-            body.append(f'    MeosSqlRuntime.freeEach({src}, _c);')
+            body.append(_free_each(r, cells))
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
     body += ['    MeosSqlRuntime.free(_r);', '}']
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
@@ -2039,6 +2056,22 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
                 free(at(a, i));
             }
         }
+    }
+
+    /** Free the value MEOS allocated whose pointer each of the n structs of the C array a holds
+     * at offset off, the structs size bytes apart, as freeEach frees an array of pointers.
+     * Null-safe. */
+    public static void freeField(Pointer a, int n, long size, long off) {
+        if (a != null) {
+            for (int i = 0; i < n; i++) {
+                free(a.getPointer((long) i * size + off));
+            }
+        }
+    }
+
+    /** The value read from p, or null for a null pointer. */
+    public static <T> T orNull(Pointer p, java.util.function.Function<Pointer, T> read) {
+        return p == null ? null : read.apply(p);
     }
 
     /** Element i of the C array of pointers a. */
