@@ -214,9 +214,11 @@ jsonbset_delete_path	array-or-out-param:path_elems
 jsonbset_exists	array-or-out-param:count; unsupported-return:bool *
 jsonbset_exists_array	array-or-out-param:keys; array-or-out-param:rescount; unsupported-return:bool *
 jsonbset_extract_path	array-or-out-param:path_elems
+jsonbset_extract_path_text	array-or-out-param:path_elems
 jsonbset_insert	array-or-out-param:path_elems
 jsonbset_make	internal
 jsonbset_object_field	internal
+jsonbset_object_field_text	internal
 jsonbset_path_exists	array-or-out-param:count; unsupported-return:bool *
 jsonbset_path_match	array-or-out-param:count; unsupported-return:bool *
 jsonbset_set	array-or-out-param:keys
@@ -582,6 +584,7 @@ tgeo_space_time_boxes	array-or-out-param:count
 tgeo_split_each_n_stboxes	array-or-out-param:count
 tgeo_split_n_stboxes	array-or-out-param:count
 tgeo_stboxes	array-or-out-param:count
+tgeo_time_boxes	array-or-out-param:count
 tgeo_value_at_timestamptz	internal
 tgeo_value_n	internal
 tgeo_values	internal
@@ -670,8 +673,10 @@ tjsonb_exists_all	array-or-out-param:keys
 tjsonb_exists_any	array-or-out-param:keys
 tjsonb_exists_array	array-or-out-param:keys
 tjsonb_extract_path	array-or-out-param:path_elems
+tjsonb_extract_path_text	array-or-out-param:path_elems
 tjsonb_insert	array-or-out-param:keys
 tjsonb_object_field	internal
+tjsonb_object_field_text	internal
 tjsonb_set	array-or-out-param:keys
 tjsonb_value_at_timestamptz	internal
 tjsonb_value_n	internal
@@ -730,9 +735,13 @@ tpcbox_ymax	arg:TPCBox *
 tpcbox_ymin	arg:TPCBox *
 tpcbox_zmax	arg:TPCBox *
 tpcbox_zmin	arg:TPCBox *
+tpcpatch_end_npoints	ret:uint32_t
+tpcpatch_pcid	ret:uint32_t
+tpcpatch_start_npoints	ret:uint32_t
 tpcpatch_value_at_timestamptz	internal
 tpcpatch_value_n	internal
 tpcpatch_values	internal
+tpcpoint_pcid	ret:uint32_t
 tpcpoint_value_at_timestamptz	internal
 tpcpoint_value_n	internal
 tpcpoint_values	internal
@@ -770,6 +779,7 @@ trgeometry_space_time_boxes	array-or-out-param:count
 trgeometry_split_each_n_stboxes	array-or-out-param:count
 trgeometry_split_n_stboxes	array-or-out-param:count
 trgeometry_stboxes	array-or-out-param:count
+trgeometry_time_boxes	array-or-out-param:count
 trgeometry_value_n	internal
 trgeometry_values	internal
 trgeometryseq_make	internal
