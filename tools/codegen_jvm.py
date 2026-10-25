@@ -1318,6 +1318,15 @@ SETRET_SCALAR = {
                                      'MeosSqlRuntime.timestamptz({p}.getLongLong((long) {i} * 8L))'),
 }
 
+# A field of a struct element read in an integer column beside those of SETRET_SCALAR: an
+# unsigned 32-bit count, which the wrapper returns as a 32-bit integer (the count of a
+# ValueCount). An array of uint32_t is not read so: geo_cluster_dbscan answers UINT32_MAX for a
+# noise point, which its wrapper turns into NULL.
+SETRET_FIELD = {
+    **SETRET_SCALAR,
+    ('uint32_t', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
+}
+
 
 def _setret_column(m, f, col, layout):
     """How to read one column of a returned row, as #row_column in codegen_spark_udfs.py reads
@@ -1350,7 +1359,7 @@ def _setret_column(m, f, col, layout):
         if lay is None or col['field'] not in lay[2]:
             return None
         off, ctype = lay[2][col['field']]
-        hit = SETRET_SCALAR.get((ctype, sql))
+        hit = SETRET_FIELD.get((ctype, sql))
         if not hit:
             return None
         return hit[0], src, hit[1].format(p=f'{{a}}.slice((long) _i * {lay[0]}L + {off}L)',
