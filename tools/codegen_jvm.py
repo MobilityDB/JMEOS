@@ -741,14 +741,20 @@ class SqlModel:
         for these engines wins over the bare one, as #_catalog_aggregates takes the catalog's
         own `Agg` name of an aggregate. A type carries no modifier: CREATE FUNCTION discards
         it, so `startValue(tgeompoint)`, declared to return geometry(Point), returns a
-        geometry (#_deployed_type)."""
+        geometry (#_deployed_type). The parameter stating that an argument is given takes
+        the value the catalog's presentBinds states for it, `has_nodata` true beside the
+        nodata value `reclass` passes, so the argument pairs with its value alone; the call
+        leaving the argument out binds both as #_null_default_signatures reads them."""
         fbound = (f.get('shape') or {}).get('boundArgs') or {}
         for s in f.get('sqlSignatures') or []:
             ret = s.get('ret')
+            present = {p: v for binds in (s.get('presentBinds') or {}).values()
+                       for p, v in binds.items()}
             yield (s.get('altSqlName') or s.get('sqlName') or f['sqlfn'],
                    [_deployed_type(a) for a in s.get('args') or []],
                    _deployed_type(ret) if ret else ret,
-                   s.get('argDefaults') or [], {**fbound, **(s.get('boundArgs') or {})})
+                   s.get('argDefaults') or [],
+                   {**fbound, **(s.get('boundArgs') or {}), **present})
 
     def _align(self):
         """The C base type each SQL type stands for, read off the signatures that
