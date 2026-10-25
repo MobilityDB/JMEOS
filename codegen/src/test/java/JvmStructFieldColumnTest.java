@@ -14,39 +14,64 @@ import static org.junit.jupiter.api.Assertions.*;
  * the Flink and Spark surfaces of tools/codegen_jvm.py (#_setret_column there): each column reads
  * its field at its offset in the element of its row, and an unsigned 32-bit count in an integer
  * column reads as a 32-bit integer, as valueCount(raster, ...) answers the count of each
- * ValueCount. The generator runs over a catalog of one function, as JvmStructRowTest runs it, so
- * no jar and no libmeos.
+ * ValueCount. A pointer field is a value of its own, read through the value class of its column,
+ * NULL for a null pointer, and freed in each element before the array, as dumpAsPolygons(raster,
+ * ...) answers the geom of each GeomVal and geomval_arr_free frees it. The generator runs over a
+ * catalog of two functions, as JvmStructRowTest runs it, so no jar and no libmeos.
  */
 class JvmStructFieldColumnTest {
 
     private static final Path TOOLS = Path.of("..", "tools").toAbsolutePath().normalize();
 
-    /** counts(v const Temporal *, count int *) -> Tally *, of the SQL signature
-     * counts(tint) RETURNS SETOF record (value float, count integer). */
-    private static final String CATALOG = "{\"functions\": [{\"name\": \"counts\", \"file\": \"meos.h\","
-        + " \"api\": \"public\", \"sqlfn\": \"counts\","
-        + " \"returnType\": {\"c\": \"Tally *\", \"canonical\": \"Tally *\"},"
-        + " \"params\": [{\"name\": \"v\", \"cType\": \"const Temporal *\", \"canonical\": \"const Temporal *\"},"
-        + "  {\"name\": \"count\", \"cType\": \"int *\", \"canonical\": \"int *\"}],"
-        + " \"shape\": {\"arrayReturn\": {\"lengthFrom\": {\"kind\": \"param\", \"name\": \"count\"},"
-        + "  \"element\": {\"c\": \"Tally\", \"canonical\": \"Tally\"}}, \"outParams\": [\"count\"]},"
-        + " \"sqlSignatures\": [{\"args\": [\"tint\"], \"ret\": \"record\", \"retSet\": true,"
-        + "  \"columns\": [{\"name\": \"value\", \"type\": \"float\", \"from\": \"return\", \"field\": \"value\"},"
-        + "   {\"name\": \"count\", \"type\": \"integer\", \"from\": \"return\", \"field\": \"count\"}]}]}],"
+    /** A function of a tint and a row count, answering an array of the structure elem whose
+     * fields the columns cols read. */
+    private static String rows(String name, String elem, String cols) {
+        return "{\"name\": \"" + name + "\", \"file\": \"meos.h\", \"api\": \"public\", \"sqlfn\": \"" + name + "\","
+            + " \"returnType\": {\"c\": \"" + elem + " *\", \"canonical\": \"" + elem + " *\"},"
+            + " \"params\": [{\"name\": \"v\", \"cType\": \"const Temporal *\", \"canonical\": \"const Temporal *\"},"
+            + "  {\"name\": \"count\", \"cType\": \"int *\", \"canonical\": \"int *\"}],"
+            + " \"shape\": {\"arrayReturn\": {\"lengthFrom\": {\"kind\": \"param\", \"name\": \"count\"},"
+            + "  \"element\": {\"c\": \"" + elem + "\", \"canonical\": \"" + elem + "\"}}, \"outParams\": [\"count\"]},"
+            + " \"sqlSignatures\": [{\"args\": [\"tint\"], \"ret\": \"record\", \"retSet\": true,"
+            + "  \"columns\": [" + cols + "]}]}";
+    }
+
+    /** counts(tint) RETURNS SETOF record (value float, count integer) over the fields of a Tally;
+     * shapes(tint) RETURNS SETOF record (geom geometry, val double precision) over those of a
+     * Shape; centroid(geometry) -> geometry makes geometry a value type of the surface. */
+    private static final String CATALOG = "{\"functions\": ["
+        + rows("counts", "Tally",
+               "{\"name\": \"value\", \"type\": \"float\", \"from\": \"return\", \"field\": \"value\"},"
+               + " {\"name\": \"count\", \"type\": \"integer\", \"from\": \"return\", \"field\": \"count\"}") + ", "
+        + rows("shapes", "Shape",
+               "{\"name\": \"geom\", \"type\": \"geometry\", \"from\": \"return\", \"field\": \"geom\"},"
+               + " {\"name\": \"val\", \"type\": \"double precision\", \"from\": \"return\", \"field\": \"val\"}") + ", "
+        + "{\"name\": \"centroid\", \"file\": \"meos.h\", \"api\": \"public\", \"sqlfn\": \"centroid\","
+        + " \"returnType\": {\"c\": \"GSERIALIZED *\", \"canonical\": \"GSERIALIZED *\"},"
+        + " \"params\": [{\"name\": \"g\", \"cType\": \"const GSERIALIZED *\", \"canonical\": \"const GSERIALIZED *\"}],"
+        + " \"sqlSignatures\": [{\"args\": [\"geometry\"], \"ret\": \"geometry\"}]}],"
         + " \"typeEncodings\": {"
-        + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}}},"
+        + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}},"
+        + "  \"GSERIALIZED\": {\"bytes\": {\"decoder\": \"geo_from_wkb\", \"encoder\": \"geo_as_wkb\"}}},"
         + " \"structs\": [{\"name\": \"Tally\", \"fields\": ["
         + "  {\"name\": \"value\", \"cType\": \"double\", \"offset_bits\": 0},"
         + "  {\"name\": \"count\", \"cType\": \"uint32_t\", \"offset_bits\": 64},"
-        + "  {\"name\": \"percent\", \"cType\": \"double\", \"offset_bits\": 128}]}],"
+        + "  {\"name\": \"percent\", \"cType\": \"double\", \"offset_bits\": 128}]},"
+        + "  {\"name\": \"Shape\", \"fields\": ["
+        + "  {\"name\": \"geom\", \"cType\": \"GSERIALIZED *\", \"offset_bits\": 0},"
+        + "  {\"name\": \"val\", \"cType\": \"double\", \"offset_bits\": 64}]}],"
         + " \"objectModel\": {\"classes\": {}}, \"enums\": [], \"macros\": []}";
 
     private static final String JAR = "{"
         + "\"counts\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\", \"jnr.ffi.Pointer\"]},"
+        + "\"shapes\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\", \"jnr.ffi.Pointer\"]},"
+        + "\"centroid\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\"]},"
         + "\"temporal_from_wkb\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"byte[]\"]},"
-        + "\"temporal_as_wkb\": {\"ret\": \"byte[]\", \"arg_types\": [\"jnr.ffi.Pointer\", \"byte\"]}}";
+        + "\"temporal_as_wkb\": {\"ret\": \"byte[]\", \"arg_types\": [\"jnr.ffi.Pointer\", \"byte\"]},"
+        + "\"geo_from_wkb\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"byte[]\"]},"
+        + "\"geo_as_wkb\": {\"ret\": \"byte[]\", \"arg_types\": [\"jnr.ffi.Pointer\", \"byte\"]}}";
 
-    /** Prints {engine: [{args, why, body}]}, one entry per overload of counts the engine builds. */
+    /** Prints {engine: {name: [{args, why, body}]}}, one entry per overload the engine builds. */
     private static final String DRIVER = String.join("\n",
         "import json, sys",
         "sys.path.insert(0, sys.argv[1])",
@@ -57,10 +82,10 @@ class JvmStructFieldColumnTest {
         "out = {}",
         "for engine, m in (('flink', g.SqlModel(cat, jar)),",
         "                  ('spark', g.SqlModel(cat, jar, g.SPARK_SQL_PKG, 'spark'))):",
-        "    rows = []",
+        "    rows = defaultdict(list)",
         "    for name, sargs, sdef, ov, why, isset, arity in g._sql_overloads(",
         "            m, cat, jar, m.layout, defaultdict(int), lambda f: True):",
-        "        rows.append({'args': sargs, 'why': why, 'body': [] if ov is None else ov[3]})",
+        "        rows[name].append({'args': sargs, 'why': why, 'body': [] if ov is None else ov[3]})",
         "    out[engine] = rows",
         "print(json.dumps(out))",
         "");
@@ -88,17 +113,42 @@ class JvmStructFieldColumnTest {
         }
     }
 
+    /** The one overload of `name` the engine builds, which it does not refuse. */
+    private static JsonNode built(String engine, String name) {
+        JsonNode all = results.get(engine).get(name);
+        assertNotNull(all, engine + " " + name + " " + results.get(engine));
+        assertEquals(1, all.size(), engine + " " + all);
+        JsonNode one = all.get(0);
+        assertEquals("[\"tint\"]", one.get("args").toString(), engine);
+        assertTrue(one.get("why").isNull(), engine + " " + one);
+        return one;
+    }
+
+    private static final String[][] ENGINES = {
+        {"flink", "org.apache.flink.types.Row.of(", "org.mobilitydb.flink.sql"},
+        {"spark", "org.apache.spark.sql.RowFactory.create(", "org.mobilitydb.spark.sql"}};
+
     @Test
     void eachColumnReadsItsFieldAndAnUnsignedCountReadsAsAnInteger() {
         String reads = "_r.slice((long) _i * 24L + 0L).getDouble((long) 0 * 8L), "
             + "_r.slice((long) _i * 24L + 8L).getInt((long) 0 * 4L)";
-        for (String[] e : new String[][] {{"flink", "org.apache.flink.types.Row.of("},
-                                          {"spark", "org.apache.spark.sql.RowFactory.create("}}) {
-            assertEquals(1, results.get(e[0]).size(), e[0] + " " + results.get(e[0]));
-            JsonNode counts = results.get(e[0]).get(0);
-            assertEquals("[\"tint\"]", counts.get("args").toString(), e[0]);
-            assertTrue(counts.get("why").isNull(), e[0] + " " + counts);
+        for (String[] e : ENGINES) {
+            JsonNode counts = built(e[0], "counts");
             assertTrue(counts.get("body").toString().contains(e[1] + reads + ")"), e[0] + " " + counts);
+        }
+    }
+
+    @Test
+    void aPointerFieldIsAValueReadThroughItsColumnAndFreedInEachElement() {
+        for (String[] e : ENGINES) {
+            String body = built(e[0], "shapes").get("body").toString();
+            String geom = "MeosSqlRuntime.orNull(_r.getPointer((long) _i * 16L + 0L), "
+                + e[2] + ".types.Geometry::encode)";
+            assertTrue(body.contains(e[1] + geom + ", _r.slice((long) _i * 16L + 8L).getDouble((long) 0 * 8L))"),
+                e[0] + " " + body);
+            String fields = "MeosSqlRuntime.freeField(_r, _c, 16L, 0L);";
+            String array = "MeosSqlRuntime.free(_r);";
+            assertTrue(body.contains(fields) && body.indexOf(fields) < body.indexOf(array), e[0] + " " + body);
         }
     }
 }
