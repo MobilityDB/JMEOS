@@ -79,7 +79,7 @@ class JvmAggregateResultTest {
         + "\"temporal_from_wkb\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"byte[]\"]},"
         + "\"temporal_as_wkb\": {\"ret\": \"byte[]\", \"arg_types\": [\"jnr.ffi.Pointer\", \"byte\"]}}";
 
-    /** Prints {engine: {case: [class, make, type, encoder] or reason}}. */
+    /** Prints {engine: {case: [class, make, type, encoder, empty] or reason}}. */
     private static final String DRIVER = String.join("\n",
         "import json, sys",
         "sys.path.insert(0, sys.argv[1])",
@@ -155,8 +155,8 @@ class JvmAggregateResultTest {
         String make = "Integer.toUnsignedLong(p.getInt(0L)), p.getDouble(8L), p.getDouble(16L)";
         JsonNode f = result("flink", "row");
         assertEquals("org.apache.flink.types.Row", f.get(0).asText());
-        assertEquals("r -> { Pointer p = (Pointer) r; return org.apache.flink.types.Row.of(" + make + "); }",
-            f.get(1).asText());
+        assertEquals("r -> { if (!(r instanceof Pointer)) return r; Pointer p = (Pointer) r; "
+            + "return org.apache.flink.types.Row.of(" + make + "); }", f.get(1).asText());
         assertEquals("DataTypes.ROW(DataTypes.FIELD(\"count\", DataTypes.BIGINT()), "
             + "DataTypes.FIELD(\"sum\", DataTypes.DOUBLE()), DataTypes.FIELD(\"max\", DataTypes.DOUBLE()))",
             f.get(2).asText());
@@ -164,6 +164,17 @@ class JvmAggregateResultTest {
         assertEquals("org.apache.spark.sql.Row", s.get(0).asText());
         assertTrue(s.get(1).asText().contains("org.apache.spark.sql.RowFactory.create(" + make + ")"), s.toString());
         assertTrue(s.get(3).asText().startsWith("Encoders.row(DataTypes.createStructType("), s.toString());
+    }
+
+    @Test
+    void aFinalAnsweringNoStructureOverAStateGivesTheRowCountingNothing() {
+        assertEquals("org.apache.flink.types.Row.of(0L, null, null)", result("flink", "row").get(4).asText());
+        assertEquals("org.apache.spark.sql.RowFactory.create(0L, null, null)",
+            result("spark", "row").get(4).asText());
+        for (String engine : new String[] {"flink", "spark"}) {
+            assertTrue(result(engine, "value").get(4).isNull(), result(engine, "value").toString());
+            assertTrue(result(engine, "boolean").get(4).isNull(), result(engine, "boolean").toString());
+        }
     }
 
     @Test

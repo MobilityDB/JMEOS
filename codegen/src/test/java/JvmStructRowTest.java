@@ -150,6 +150,8 @@ class JvmStructRowTest {
         String body = f.get("body").toString();
         assertTrue(body.contains("try { Pointer p = _r; return org.apache.flink.types.Row.of(" + reads + "); }"), body);
         assertTrue(body.contains("MeosSqlRuntime.freeResult(_r, _in)"), body);
+        // No structure answered, having raised no error, counts nothing: its count 0, the rest NULL
+        assertTrue(body.contains("if (_r == null) return org.apache.flink.types.Row.of(0L, null, null);"), body);
         assertTrue(f.get("eval").get(0).asText().startsWith("    public org.apache.flink.types.Row eval("),
             f.get("eval").get(0).asText());
         JsonNode s = result("spark", "result");
