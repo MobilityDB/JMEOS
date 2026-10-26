@@ -1056,10 +1056,12 @@ def _ret(m, sql, f, jt, outs):
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql in m.struct_row and jt == 'jnr.ffi.Pointer' and _base(rc) == m.sql_cbase[sql]:
         # A structure MEOS allocated, read into a row of its fields as #_agg_result reads the
-        # one a final answers, and freed after.
+        # one a final answers, and freed after; none, the row of a structure counting nothing
+        # (#_empty_row).
         reads = ', '.join(read.format(o=o) for _, _, read, o, _ in m.struct_row[sql])
+        empty = _empty_row(m.row_of, [c for *_, c in m.struct_row[sql]])
         return (f'{m.row_class}#{sql}',
-                ['if (_r == null) return null;',
+                [f'if (_r == null) return {empty or "null"};',
                  f'try {{ Pointer p = _r; return {m.row_of}({reads}); }}',
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql in ('text', 'cstring') and jt == 'jnr.ffi.Pointer' and rc == 'text *' \
@@ -2329,12 +2331,13 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
 
     /** The C structure of the given size whose fields are written at their offsets, each as
      * its letter in types states (i a 32-bit integer, l a 64-bit one, d a double, b a bool), as
-     * #ints lays out an array, in memory the garbage collector releases.  A null field raises,
-     * as a null array element does. */
+     * #ints lays out an array, in memory the garbage collector releases.  A null field reads as
+     * 0, as MobilityDB's record_bandstats reads a summarystats record: the row of a structure
+     * counting nothing states its count 0 and no other field. */
     public static Pointer struct(int size, long[] offsets, String types, Object[] fields) {
         Pointer b = buffer(1, size);
         for (int i = 0; i < fields.length; i++) {
-            Number v = (Number) element(fields, i);
+            Number v = fields[i] == null ? Integer.valueOf(0) : (Number) fields[i];
             switch (types.charAt(i)) {
                 case 'i': b.putInt(offsets[i], (int) v.longValue()); break;
                 case 'l': b.putLongLong(offsets[i], v.longValue()); break;
@@ -3156,22 +3159,39 @@ _STRUCT_PUT = {'int': 'i', 'int32_t': 'i', 'uint32_t': 'i', 'int64': 'l', 'int64
                'double': 'd', 'bool': 'b'}
 
 
+def _empty_row(row_of, ctypes):
+    """The Java row of a structure that counts nothing, of the C types `ctypes` of its fields, or
+    None for a structure with no count field. The structure readers have no routine for an absent
+    structure, so this is built beside #_STRUCT_FIELD, whose reads give the row of one MEOS
+    answers: where MEOS answers no structure, having raised no error, the values read counted
+    nothing (raster_summary_stats over a band whose every pixel is nodata,
+    raster_summary_stats_finalfn over rows of such bands), and the row is the one MobilityDB's
+    bandstats_record writes for it, as PostGIS's ST_SummaryStats answers it: each unsigned 32-bit
+    count 0, every other field NULL."""
+    if 'uint32_t' not in ctypes:
+        return None
+    return f'{row_of}({", ".join("0L" if c == "uint32_t" else "null" for c in ctypes)})'
+
+
 def _agg_result(m, ret, final):
-    """((class, make, type, encoder), None) of the result of an aggregate of SQL result type
-    `ret` whose final function is `final`, or (None, reason): the class of the engine's value,
-    the Java making it of what the final answers (MeosAggregate.Make), its type in the engine,
-    and its Spark encoder. A value of a type the surface holds is encoded as a function's result
-    is; a final answering a C bool gives a boolean; a final answering a pointer to a structure of
-    the catalog's `structs` whose fields are all scalars (_STRUCT_FIELD) gives a row of those
-    fields under their names, as PostGIS's summarystats is the row of the BandStats a raster
-    summary answers. An aggregate stating no final answers its state, of the value type it is."""
+    """((class, make, type, encoder, empty), None) of the result of an aggregate of SQL result
+    type `ret` whose final function is `final`, or (None, reason): the class of the engine's
+    value, the Java making it of what the final answers (MeosAggregate.Make), its type in the
+    engine, its Spark encoder, and the row the final answers in place of no structure, or None. A
+    value of a type the surface holds is encoded as a function's result is; a final answering a C
+    bool gives a boolean; a final answering a pointer to a structure of the catalog's `structs`
+    whose fields are all scalars (_STRUCT_FIELD) gives a row of those fields under their names,
+    as PostGIS's summarystats is the row of the BandStats a raster summary answers, and where it
+    answers none over a state, the row of a structure counting nothing (#_empty_row), which Make
+    passes as it is; an aggregate that read no row keeps no state and answers NULL. An aggregate
+    stating no final answers its state, of the value type it is."""
     if ret in m.value_class:
         cls = f'{m.pkg}.types.{m.value_class[ret]}'
         return (cls, f'r -> {cls}.encode((Pointer) r)', m.datatype(cls),
-                f'Encoders.bean({cls}.class)'), None
+                f'Encoders.bean({cls}.class)', None), None
     rt = _norm(((final or {}).get('returnType') or {}).get('canonical'))
     if ret == 'boolean' and rt == 'bool':
-        return ('Boolean', 'r -> r', m.datatype('Boolean'), 'Encoders.BOOLEAN()'), None
+        return ('Boolean', 'r -> r', m.datatype('Boolean'), 'Encoders.BOOLEAN()', None), None
     if _single_pointer(rt):
         st = next((x for x in m.cat.get('structs') or [] if x.get('name') == _base(rt)), None)
         fields = [(f['name'],) + _STRUCT_FIELD[f['cType']] for f in (st or {}).get('fields') or []
@@ -3180,8 +3200,11 @@ def _agg_result(m, ret, final):
             reads = ', '.join(read.format(o=f['offset_bits'] // 8)
                               for (_, _, read), f in zip(fields, st['fields']))
             rtype = m.row_type([(n, m.datatype(c)) for n, c, _ in fields])
-            make = f'r -> {{ Pointer p = (Pointer) r; return {m.row_of}({reads}); }}'
-            return (m.row_class, make, rtype, f'Encoders.row({rtype})'), None
+            empty = _empty_row(m.row_of, [f['cType'] for f in st['fields']])
+            make = (f'r -> {{ if (!(r instanceof Pointer)) return r; '
+                    f'Pointer p = (Pointer) r; return {m.row_of}({reads}); }}' if empty else
+                    f'r -> {{ Pointer p = (Pointer) r; return {m.row_of}({reads}); }}')
+            return (m.row_class, make, rtype, f'Encoders.row({rtype})', empty), None
     return None, f'result {ret} of no value type'
 
 
@@ -3256,11 +3279,14 @@ def _catalog_aggregates(m, cat, jmeos):
         else:
             write = f'p -> {cls(stype)}.encode(p).form'
             read = f'b -> new {cls(stype)}(b).decode()'
+        rcls, make, rtype, renc, empty = result
         fin = f'GeneratedFunctions::{meos("final")}' if meos('final') else 'null'
+        if meos('final') and empty:
+            fin = (f's -> {{ Pointer r = GeneratedFunctions.{meos("final")}(s); '
+                   f'return r != null ? r : {empty}; }}')
         ff = m.by_name.get(meos('final')) or {}
         keeps = bool(ff.get('params')) and ff['params'][0]['cType'].startswith('const ')
         comb = f'GeneratedFunctions::{meos("combine")}' if meos('combine') else 'null'
-        rcls, make, rtype, renc = result
         aggs[name].append({'args': classes, 'ret': rcls, 'retType': rtype, 'retEnc': renc,
                            'transition': meos('transition'), 'inputs': got,
                            'gathers': not meos('combine'),
