@@ -1152,6 +1152,19 @@ def _array_arg(m, elem, a, p, jt, name, temps):
         cls = f'{m.pkg}.types.{m.value_class[elem]}'
         temps.append((t, f'{name}, {cls}::decode, {lay[0]}', 'structs'))
         return f'{cls}[]', t
+    # A text array reaches MEOS as the C array of the text values text_in builds (text **),
+    # each released after the call as a text argument is (#_arg).
+    if elem == 'text' and c == 'text **' and 'text_in' in m.jmeos:
+        temps.append((t, name, 'texts'))
+        return 'String[]', t
+    # A cell travels by value, so an array of cells is the contiguous 64-bit integers MEOS
+    # reads (uint64_t *), each the integer a cell argument passes (#_arg).
+    if elem in m.value_class and elem in m.sql_byvalue and c.count('*') == 1 \
+            and _base(el['canonical']) == 'uint64_t':
+        cls = f'{m.pkg}.types.{m.value_class[elem]}'
+        temps.append((t, f'MeosSqlRuntime.longs(java.util.Arrays.stream({name})'
+                         f'.map(v -> v == null ? null : v.decode()).toArray(Long[]::new))', 'buffer'))
+        return f'{cls}[]', t
     hit = SQL_ARRAY_SCALAR.get((elem, _base(el['c']))) \
         or SQL_ARRAY_SCALAR.get((elem, _base(el['canonical'])))
     if hit and c.count('*') == 1:
@@ -1305,7 +1318,7 @@ def _emit_eval(ov, defaults=None):
         L.append('        try {')
         for t, e, kind in temps:
             v = {'value': f'_in.value({e})', 'values': f'_in.values({e})',
-                 'structs': f'_in.structs({e})',
+                 'structs': f'_in.structs({e})', 'texts': f'_in.texts({e})',
                  'buffer': f'_in.hold({e})'}[kind]
             L.append(f'            Pointer {t} = {v};')
         L += [f'            {s}' for s in body]
@@ -1330,6 +1343,7 @@ def _emit_eval(ov, defaults=None):
 SETRET_SCALAR = {
     ('int', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
     ('int32_t', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
+    ('uint32_t', 'integer'): ('Integer', '{p}.getInt((long) {i} * 4L)'),
     ('int64', 'bigint'): ('Long', '{p}.getLongLong((long) {i} * 8L)'),
     ('int64_t', 'bigint'): ('Long', '{p}.getLongLong((long) {i} * 8L)'),
     ('double', 'float'): ('Double', '{p}.getDouble((long) {i} * 8L)'),
@@ -1408,6 +1422,11 @@ def _setret_column(m, f, col, layout):
     hit = SETRET_SCALAR.get((elem, sql))
     if hit:
         return hit[0], src, hit[1].format(p='{a}', i='_i'), False
+    if vc and sql in m.sql_byvalue and elem == 'uint64_t':
+        # A cell travels by value: an array of cells is contiguous 64-bit integers, each
+        # carried as a returned cell is (#_ret).
+        return (f'{m.pkg}.types.{vc}', src,
+                f'{m.pkg}.types.{vc}.encode({{a}}.getLongLong((long) _i * 8L))', False)
     lay = layout(elem) if vc and m.sql_cbase.get(sql) == elem else None
     if lay is not None:                               # contiguous structs: STBox, TBox
         return (f'{m.pkg}.types.{vc}', src,
@@ -1769,7 +1788,15 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     jt = {p['name']: t for p, t in zip(f['params'], jsig['arg_types'])}
     counts = [p for p in outs if _norm(p['canonical']) == 'int *'
               and 'const' not in p['canonical']]
-    if len(counts) != 1:
+    # An array as long as an input array (temparr_round answers one value per value it reads):
+    # the catalog states the input count as the length of both, which the eval passes as the
+    # length of the input array, so the rows number that count.
+    shape = f.get('shape') or {}
+    lf = (shape.get('arrayReturn') or {}).get('lengthFrom') or {}
+    incount = lf.get('name') if lf.get('kind') == 'param' and not counts \
+        and any((a.get('lengthFrom') or {}).get('name') == lf.get('name')
+                for a in shape.get('inputArrays') or []) else None
+    if len(counts) != 1 and incount is None:
         return None, 'setret:count'
     cols = sig.get('columns') or [{'name': None, 'from': 'return', 'type': sig.get('ret')}]
     cols = [dict(c, type=_deployed_type(c['type'])) if c.get('type') else c for c in cols]
@@ -1780,7 +1807,7 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
             return None, f'setret:column/{col["from"]}:{col.get("type")}'
         readers.append((col['name'], r))
     sources = {r[1] for _, r in readers} - {None, 'return'}
-    if any(p is not counts[0] and p['name'] not in sources for p in outs):
+    if any((not counts or p is not counts[0]) and p['name'] not in sources for p in outs):
         return None, 'setret:out'
     got, why = _inputs(m, f, [_deployed_type(a) for a in sig.get('args') or []],
                        [jt[p['name']] for p in vis], bound,
@@ -1789,7 +1816,8 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
         return None, why
     params, call_vis, temps = got
     vcall = dict(zip([p['name'] for p in vis], call_vis))
-    cells = {p['name']: f'_o{k}' for k, p in enumerate(o for o in outs if o is not counts[0])}
+    cells = {p['name']: f'_o{k}' for k, p in enumerate(o for o in outs
+                                                        if not counts or o is not counts[0])}
     call = [vcall.get(p['name']) or cells.get(p['name']) or '_cnt' for p in f['params']]
     single = len(readers) == 1 and readers[0][0] is None
     if single:
@@ -1801,12 +1829,12 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     arr = {'return': '_r', **{n: f'_a{k}' for n, k in
                               ((n, cells[n][2:]) for n in cells)}}
     reads = [r[2] if r[1] is None else r[2].replace('{a}', arr[r[1]]) for _, r in readers]
-    body = ['Pointer _cnt = MeosSqlRuntime.cell(4);']
+    body = [] if incount else ['Pointer _cnt = MeosSqlRuntime.cell(4);']
     body += [f'Pointer {c} = MeosSqlRuntime.cell(8);' for c in cells.values()]
     body += ['Pointer _r = null;', 'int _c = 0;', 'try {',
              f'    _r = GeneratedFunctions.{f["name"]}({", ".join(call)});',
              '    if (_r == null) return null;',
-             '    _c = _cnt.getInt(0L);']
+             f'    _c = {vcall[incount]};' if incount else '    _c = _cnt.getInt(0L);']
     body += [f'    Pointer _a{c[2:]} = {c}.getPointer(0L);' for c in cells.values()]
     body += [f'    {ecls}[] _rows = new {ecls}[_c];',
              '    for (int _i = 0; _i < _c; _i++) {',
@@ -2224,6 +2252,18 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
 
         /** The values decoded one by one by dec into the C array of pointers MEOS reads.  A
          * null element raises, as it does in PostgreSQL. */
+        /** The texts of a SQL text[] as the C array of the text values text_in builds, each
+         * kept for release as {@link #values} keeps the values it decodes.  A null element
+         * raises, as it does in PostgreSQL. */
+        public Pointer texts(String[] ts) {
+            int w = RUNTIME.addressSize();
+            Pointer b = hold(buffer(ts.length, w));
+            for (int i = 0; i < ts.length; i++) {
+                b.putPointer((long) i * w, value(GeneratedFunctions.text_in(element(ts, i))));
+            }
+            return b;
+        }
+
         public <V extends MeosValue> Pointer values(V[] vs,
                 java.util.function.Function<V, Pointer> dec) {
             int w = RUNTIME.addressSize();
