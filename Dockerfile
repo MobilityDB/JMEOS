@@ -5,13 +5,14 @@ LABEL maintainer=nidhalmareghni8@gmail.com
 # The MEOS build dependencies are the set MobilityDB's own MEOS workflow installs
 # (.github/workflows/meos.yml), on the distribution it installs them on: `libh3-dev`
 # is what -DALL=ON needs for the H3 family and Debian bookworm has no such package,
-# while Ubuntu 24.04 carries it. A -DMEOS=ON build needs neither the PostgreSQL
-# server headers nor GSL nor PostGIS, so none of the three is installed.
+# while Ubuntu 24.04 carries it. A -DMEOS=ON build of 1.4 needs neither the
+# PostgreSQL server headers nor GSL nor GEOS nor PostGIS, so none of the four is
+# installed.
 #
 # Corretto is installed after verifying that the key is the one we expect.
 RUN apt-get update \
   && apt-get install -y git curl gnupg build-essential cmake \
-       libgeos-dev libproj-dev libjson-c-dev libgdal-dev libh3-dev libxml2-dev zlib1g-dev \
+       libproj-dev libjson-c-dev libgdal-dev libh3-dev libxml2-dev zlib1g-dev \
   && export GNUPGHOME="$(mktemp -d)" \
   && curl -fL https://apt.corretto.aws/corretto.key | gpg --batch --import \
   && gpg --batch --export '6DC3636DAE534049C8B94623A122542AB04F24E3' > /usr/share/keyrings/corretto.gpg \

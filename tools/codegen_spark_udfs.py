@@ -1738,7 +1738,7 @@ def main():
         "org", "mobilitydb", "spark", "generated"))
     ap.add_argument("--jar", default=os.path.join(here, "..", "libs", "JMEOS-1.4.jar"),
                     help="JMEOS jar; only functions JMEOS actually exposes are emitted "
-                         "(catalog is a superset incl. internal _addmat/above8D/GEOS macros)")
+                         "(catalog is a superset incl. internal _addmat/above8D)")
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--gaps", help="the ledger of the public functions the surface does not reach; "
                     "a function missing from it fails the run")
@@ -1766,7 +1766,7 @@ def main():
 
     # The catalog is the raw extern parse of the MobilityDB headers; JMEOS curates
     # its public surface (e.g. drops matrix internals _addmat/_choldc1, RTree node
-    # predicates above8D/adjacent2D, GEOS conv macros MEOS_GEOS2POSTGIS). Emit ONLY
+    # predicates above8D/adjacent2D). Emit ONLY
     # what JMEOS exposes, so a generated UDF can never call an absent jar symbol.
     jar_syms = None
     if args.jar and os.path.exists(args.jar):
