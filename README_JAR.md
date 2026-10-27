@@ -70,7 +70,7 @@ FROM debian:bookworm-slim
 
 RUN apt-get update \
   && apt-get install -y git curl gnupg build-essential cmake \
-     postgresql-server-dev-15 libproj-dev libjson-c-dev libgsl-dev libgeos-dev postgis \
+     postgresql-server-dev-15 libproj-dev libjson-c-dev postgis \
   && export GNUPGHOME="$(mktemp -d)" \
   && curl -fL https://apt.corretto.aws/corretto.key | gpg --batch --import \
   && gpg --batch --export '6DC3636DAE534049C8B94623A122542AB04F24E3' > /usr/share/keyrings/corretto.gpg \
