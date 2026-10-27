@@ -189,8 +189,6 @@ json_typeof	internal
 jsonb_delete	internal
 jsonb_delete_array	array-or-out-param:keys_elems
 jsonb_delete_path	array-or-out-param:path_elems
-jsonb_each	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
-jsonb_each_text	array-or-out-param:values; array-or-out-param:count; unsupported-return:text **
 jsonb_exists	internal
 jsonb_exists_array	array-or-out-param:keys_elems
 jsonb_extract_path	array-or-out-param:path_elems
@@ -297,14 +295,10 @@ pcpatch_points	internal
 pcpatch_to_tpcbox	ret:TPCBox *
 pcpatchset_make	internal
 pcpatchset_value_n	internal
-pcpoint_get_dim	no-decoder:PCSCHEMA; array-or-out-param:out
 pcpoint_get_pcid	ret:uint32_t
-pcpoint_get_x	no-decoder:PCSCHEMA; array-or-out-param:out
-pcpoint_get_y	no-decoder:PCSCHEMA; array-or-out-param:out
-pcpoint_get_z	no-decoder:PCSCHEMA; array-or-out-param:out
 pcpoint_hash	ret:uint32_t
 pcpoint_make	array-or-out-param:values
-pcpoint_to_tpcbox	no-decoder:PCSCHEMA
+pcpoint_to_tpcbox	ret:TPCBox *
 pcpointset_make	internal
 pcpointset_value_n	internal
 pixel_arr_free	no-decoder:Pixel
@@ -336,14 +330,12 @@ posechain_lt	arg:PoseChain *
 posechain_make	ret:PoseChain *
 posechain_mem_size	arg:PoseChain *
 posechain_ne	arg:PoseChain *
-posechain_nsame	arg:PoseChain *
 posechain_num_poses	arg:PoseChain *
 posechain_out	arg:PoseChain *
 posechain_pose_n	arg:PoseChain *
 posechain_poses	internal
 posechain_prefix_pose	arg:PoseChain *
 posechain_round	ret:PoseChain *
-posechain_same	arg:PoseChain *
 posechain_set_srid	ret:PoseChain *
 posechain_srid	arg:PoseChain *
 posechain_start_pose	arg:PoseChain *
@@ -555,12 +547,6 @@ tgeo_time_boxes	array-or-out-param:count
 tgeo_value_at_timestamptz	internal
 tgeo_value_n	internal
 tgeo_values	internal
-tgeogpoint_h3index_split	array-or-out-param:cells
-tgeogpoint_quadbin_split	array-or-out-param:cells
-tgeogpoint_s2cell_split	array-or-out-param:cells
-tgeompoint_h3index_split	array-or-out-param:cells
-tgeompoint_quadbin_split	array-or-out-param:cells
-tgeompoint_s2cell_split	array-or-out-param:cells
 tgt_text_ttext	internal
 tgt_ttext_text	internal
 th3index_value_at_timestamptz	arg:uint64_t *
