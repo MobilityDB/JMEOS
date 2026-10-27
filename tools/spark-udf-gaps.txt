@@ -426,6 +426,7 @@ same_tpcbox_tpcbox	arg:TPCBox *
 same_tpcbox_tpointcloud	arg:TPCBox *
 same_tpointcloud_tpcbox	arg:TPCBox *
 set_hash	ret:uint32_t
+set_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 set_spans	array-or-out-param:count
 set_split_each_n_spans	array-or-out-param:count
 set_split_n_spans	array-or-out-param:count
@@ -469,6 +470,7 @@ sptree_search_temporal_dedup	no-decoder:SPTree; no-decoder:MeosArray
 stbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 stbox_hash	ret:uint32_t
 stbox_quad_split	array-or-out-param:count
+stbox_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 stbox_tmax	arg:TimestampTz *
 stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
@@ -484,6 +486,7 @@ tbigint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigintbox_time_tiles	array-or-out-param:count
 tbool_values	array-or-out-param:count; unsupported-return:bool *
 tbox_hash	ret:uint32_t
+tbox_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 tbox_tmax	arg:TimestampTz *
 tbox_tmin	arg:TimestampTz *
 tcbuffer_value_at_timestamptz	internal
@@ -495,6 +498,7 @@ temporal_instants	internal
 temporal_merge_array	internal
 temporal_segments	internal
 temporal_sequences	internal
+temporal_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 temporal_spans	array-or-out-param:count
 temporal_split_each_n_spans	array-or-out-param:count
 temporal_split_n_spans	array-or-out-param:count
@@ -686,6 +690,7 @@ tpcbox_out	arg:TPCBox *
 tpcbox_pcid	ret:uint32_t
 tpcbox_round	ret:TPCBox *
 tpcbox_set_srid	ret:TPCBox *
+tpcbox_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 tpcbox_srid	arg:TPCBox *
 tpcbox_tmax	arg:TPCBox *
 tpcbox_tmax_inc	arg:TPCBox *
