@@ -499,11 +499,20 @@ def emit_single(name, f, vis_arity=None):
     # lambdas compile to separate synthetic methods, keeping the chunk method small.
     L = [f'        spark.udf().register("{name}", ({iface}) (' + ", ".join(argnames) + ") -> {"
          if params else f'        spark.udf().register("{name}", ({iface}) () -> {{']
-    if argnames:
-        L.append("        if (" + " || ".join(f"{a} == null" for a in argnames) + ") return null;")
+    # A NULL argument answers NULL, but for a pointer MEOS takes NULL for (`shape.nullable`),
+    # which a NULL argument passes as NULL, as the wrapper passes jsonbSetLax's value
+    nullable = {a for a, p, k in zip(argnames, params, kinds)
+                if k[0] == "ptr" and p["name"] in ((f.get("shape") or {}).get("nullable") or ())}
+    guard = [a for a in argnames if a not in nullable]
+    if guard:
+        L.append("        if (" + " || ".join(f"{a} == null" for a in guard) + ") return null;")
     callargs, frees = [], []
     for a, p, k in zip(argnames, params, kinds):
-        if k[0] == "ptr":
+        if k[0] == "ptr" and a in nullable:
+            L.append(f"        jnr.ffi.Pointer p_{a} = {a} == null ? null : {k[1] % a};")
+            L.append(f"        if ({a} != null && p_{a} == null) return null;")
+            callargs.append(f"p_{a}"); frees.append(f"p_{a}")
+        elif k[0] == "ptr":
             parse = k[1]
             L.append(f"        jnr.ffi.Pointer p_{a} = {parse % a};")
             L.append(f"        if (p_{a} == null) return null;")
