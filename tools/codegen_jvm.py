@@ -1471,7 +1471,10 @@ def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
     if sig.get('arrayShape') and ret and ret.endswith('[]'):
         ov, why = _array_shape_overload(m, f, sig, jsig, bound)
         return ov, why, False
-    order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
+    if sig.get('columns') and not (ret or '').endswith('[]'):
+        ov, why = _row_overload(m, f, sig, jsig, bound)
+        return ov, why, False
+    order =sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
     ov, why = _overload(m, f, args, ret, jsig, bound, order)
     if ov is None and ret and ret.endswith('[]'):
         arr, awhy = _setret_overload(m, f, dict(sig, ret=ret[:-2]), jsig, bound, layout)
@@ -1862,6 +1865,108 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
     body += ['    MeosSqlRuntime.free(_r);', '}']
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
+
+
+# ── signatures returning one row: one Flink row per call ──
+# A SQL function returning one value of a composite type is a MEOS C function writing the
+# members of that row: the elements of the C array it returns (pose_quaternion answers the
+# W, X, Y and Z of a quaternion), or the values it writes through its out-parameters
+# (tpoint_as_mvtgeom writes a geometry and the array of its times, as long as its `int *`
+# count). The catalog names the C value behind each member (sqlSignatures[].columns), as it
+# names those of a set-returning row: `from` is "return" with the `element` of the C array, or
+# an out-parameter, an array of the count when shape.outputArrays lists it.
+
+def _row_column(m, f, col, cell):
+    """How to read one member of a returned row: (Flink class, statements computing it, Java
+    read of it), or None when it cannot be read. `cell` is the Java cell of the out-parameter
+    the member comes from; the value MEOS wrote there is read through `_a<k>`, its name."""
+    sql, src = col.get('type'), col['from']
+    if src == 'return':
+        arr = _norm(f['returnType']['canonical'])
+        hit = SETRET_SCALAR.get((arr[:-1].strip(), sql)) if arr.endswith('*') else None
+        if 'element' not in col or not hit:
+            return None
+        return hit[0], [], hit[1].format(p='_r', i=col['element'])
+    p = next((p for p in f['params'] if p['name'] == src), None)
+    if p is None or cell is None or not _norm(p['canonical']).endswith('**'):
+        return None
+    val = _norm(p['canonical'])[:-1].strip()
+    a = f'_a{cell[2:]}'
+    if src in {o['param'] for o in (f.get('shape') or {}).get('outputArrays') or []}:
+        # An array of the count MEOS writes beside it, read element by element
+        hit = SETRET_SCALAR.get((val[:-1].strip(), (sql or '')[:-2])) \
+            if (sql or '').endswith('[]') else None
+        if not hit:
+            return None
+        v = f'_v{cell[2:]}'
+        return (f'{hit[0]}[]',
+                [f'{hit[0]}[] {v} = new {hit[0]}[_c];',
+                 f'for (int _i = 0; _i < _c; _i++) {v}[_i] = {hit[1].format(p=a, i="_i")};'],
+                v)
+    vc = m.value_class.get(sql)
+    if not vc or m.sql_cbase.get(sql) not in (_base(val), m.subtype_of.get(_base(val))):
+        return None
+    cls = f'{m.pkg}.types.{vc}'
+    return cls, [], f'MeosSqlRuntime.orNull({a}, {cls}::encode)'
+
+
+def _row_overload(m, f, sig, jsig, bound):
+    """The eval of one signature returning one row, or (None, reason), as #_setret_overload
+    builds the eval of a set-returning signature: the arguments #_inputs passes, a zeroed cell
+    for the count and for each out-parameter, and the members read one by one
+    (#_row_column). A NULL C array, or a false answer of a C function writing the row through
+    its out-parameters, is NULL, as the wrapper returns it."""
+    vis, outs = m.visible(f)
+    if len(jsig['arg_types']) != len(f['params']):
+        return None, 'row:arity'
+    cols = [dict(c, type=_deployed_type(c['type'])) if c.get('type') else c
+            for c in sig['columns']]
+    found = jsig['ret'] == 'boolean' and _norm(f['returnType']['canonical']) == 'bool'
+    if jsig['ret'] != 'jnr.ffi.Pointer' and not found:
+        return None, 'row:ret'
+    if found and any(c['from'] == 'return' for c in cols):
+        return None, 'row:ret'
+    counts = [p for p in outs if _norm(p['canonical']) == 'int *'
+              and 'const' not in p['canonical']]
+    if len(counts) > 1:
+        return None, 'row:count'
+    cells = {p['name']: f'_o{k}' for k, p in enumerate(o for o in outs if o not in counts)}
+    readers = []
+    for col in cols:
+        r = _row_column(m, f, col, cells.get(col['from']))
+        if r is None:
+            return None, f'row:column/{col["from"]}:{col.get("type")}'
+        readers.append((col['name'], r))
+    if set(cells) - {c['from'] for c in cols}:
+        return None, 'row:out'
+    jt = {p['name']: t for p, t in zip(f['params'], jsig['arg_types'])}
+    got, why = _inputs(m, f, [_deployed_type(a) for a in sig.get('args') or []],
+                       [jt[p['name']] for p in vis], bound,
+                       sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams'))
+    if got is None:
+        return None, why
+    params, call_vis, temps = got
+    vcall = dict(zip([p['name'] for p in vis], call_vis))
+    call = [vcall.get(p['name']) or cells.get(p['name']) or '_cnt' for p in f['params']]
+    body = ['Pointer _cnt = MeosSqlRuntime.cell(4);'] if counts else []
+    body += [f'Pointer {c} = MeosSqlRuntime.cell(8);' for c in cells.values()]
+    body += [] if found else ['Pointer _r = null;']
+    body += ['try {']
+    if found:
+        body += [f'    if (!GeneratedFunctions.{f["name"]}({", ".join(call)})) return null;']
+    else:
+        body += [f'    _r = GeneratedFunctions.{f["name"]}({", ".join(call)});',
+                 '    if (_r == null) return null;']
+    body += ['    int _c = _cnt.getInt(0L);'] if counts and any(r[1] for _, r in readers) else []
+    body += [f'    Pointer _a{c[2:]} = {c}.getPointer(0L);' for c in cells.values()]
+    for _, r in readers:
+        body += [f'    {s}' for s in r[1]]
+    body += [f'    return {m.row_of}({", ".join(r[2] for _, r in readers)});', '} finally {']
+    body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
+    body += [] if found else ['    MeosSqlRuntime.free(_r);']
+    body += ['}']
+    etype = m.row_type([(n, m.datatype(r[0])) for n, r in readers])
+    return (params, temps, m.row_class, body, etype), None
 
 
 def _array_shape_overload(m, f, sig, jsig, bound):
