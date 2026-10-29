@@ -1572,19 +1572,43 @@ def _composition_inputs(m, comp, jmeos, f):
     """(params, the Java expression of each visible parameter of `f`, temps, raw), or
     (None, reason): each argument operand of `comp` decoded as #_arg decodes an argument for
     the first function it reaches and passed through the MEOS functions of its `casts` in
-    order, a `value` operand passed as the literal #_bound_literal reads, each in the order of
-    the C parameters it names (`param`). `raw` maps an argument to its decoded value before
-    any cast, the value a restore restricts."""
+    order, a `value` operand passed as the literal #_bound_literal reads, a `gather` operand
+    passed as the C array of the arguments it lists, each in the order of the C parameters it
+    names (`param`). An operand of another kind is refused. `raw` maps an argument to its
+    decoded value before any cast, the value a restore restricts."""
     args, temps, raw, params = comp['args'], [], {}, []
     for k, sql in enumerate(args):
         fc = _flink_class(m, sql)
         if fc is None:
             return None, f'sqltype:{sql}'
         params.append((fc, f'a{k}'))
+    arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []}
+
+    def gathered(o, p, jt):
+        # The arguments a wrapper gathers into the C array of `p` (pcpoint(pcid, x, y) fills
+        # the values of pcpoint_make), laid out as #_array_arg lays out a SQL array of the
+        # scalars SQL_ARRAY_SCALAR names, all of the one type of the array's element
+        ks, a = list(o['gather']), arrays.get(p['name'])
+        if a is None or jt != 'jnr.ffi.Pointer' or not ks or _norm(p['canonical']).count('*') != 1:
+            return None
+        sqls = {args[k] for k in ks}
+        el = a['element']
+        hit = len(sqls) == 1 and (SQL_ARRAY_SCALAR.get((args[ks[0]], _base(el['c'])))
+                                  or SQL_ARRAY_SCALAR.get((args[ks[0]], _base(el['canonical']))))
+        if not hit:
+            return None
+        t = f'_p{len(temps)}'
+        temps.append((t, f'MeosSqlRuntime.{hit[1]}(new {hit[0]}[] '
+                         f'{{{", ".join(f"a{k}" for k in ks)}}})', 'buffer'))
+        return t
 
     def operand(o, p, jt):
         if 'value' in o:
             return _bound_literal(m, str(o['value']).strip("'"), jt)
+        if 'gather' in o:
+            return gathered(o, p, jt)
+        if 'arg' not in o:
+            return None
         k, chain = o['arg'], list(o.get('casts') or ())
         if not chain:
             e = _arg(m, args[k], p, jt, f'a{k}', temps)
