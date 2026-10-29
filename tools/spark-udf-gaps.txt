@@ -83,6 +83,9 @@ dateset_value_n	arg:DateADT *
 datespan_bins	array-or-out-param:count
 datespanset_bins	array-or-out-param:count
 datespanset_date_n	arg:DateADT *
+distance_posechain_geo	arg:PoseChain *
+distance_posechain_posechain	arg:PoseChain *
+distance_posechain_stbox	arg:PoseChain *
 eq_date_timestamp	arg:Timestamp
 eq_timestamp_date	arg:Timestamp
 eq_timestamp_timestamp	arg:Timestamp
@@ -245,6 +248,8 @@ minus_time_time	arg:TimeADT
 minus_timestamp_interval	ret:Timestamp
 minus_timestamp_timestamp	arg:Timestamp
 minus_timestamptz_interval_at_zone	internal
+nad_tposechain_posechain	arg:PoseChain *
+nai_tposechain_posechain	arg:PoseChain *
 ne_date_timestamp	arg:Timestamp
 ne_timestamp_date	arg:Timestamp
 ne_timestamp_timestamp	arg:Timestamp
@@ -424,6 +429,7 @@ set_split_each_n_spans	array-or-out-param:count
 set_split_n_spans	array-or-out-param:count
 setstate_deserialize	array-or-out-param:bytes
 setstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
+shortestline_tposechain_posechain	arg:PoseChain *
 span_hash	ret:uint32_t
 span_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 spanset_hash	ret:uint32_t
@@ -484,6 +490,7 @@ tbox_tmin	arg:TimestampTz *
 tcbuffer_value_at_timestamptz	internal
 tcbuffer_value_n	internal
 tcbuffer_values	internal
+tdistance_tposechain_posechain	arg:PoseChain *
 temparr_round	internal
 temporal_hash	ret:uint32_t
 temporal_instants	internal
