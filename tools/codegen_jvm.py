@@ -1238,6 +1238,7 @@ def _inputs(m, f, args, jtypes, bound=None, order=None):
     to 0)."""
     vis, _ = m.visible(f)
     jsig = {'arg_types': jtypes}
+    nullable = set((f.get('shape') or {}).get('nullable') or ())
     folded = _byte_arrays(f)
     arrays = {a['param']: a for a in (f.get('shape') or {}).get('inputArrays') or []
               if a['param'] not in folded}
@@ -1283,6 +1284,12 @@ def _inputs(m, f, args, jtypes, bound=None, order=None):
             e = _arg(m, sql, p, jt, name, temps)
             if e is None:
                 return None, f'arg:{sql}/{_norm(p["canonical"])}'
+            # A parameter MEOS takes NULL for (`shape.nullable`) is passed NULL for a NULL
+            # argument, as the wrapper passes it (jsonbSetLax's value), rather than answering
+            # NULL: its temp is of kind `nullable:<argument>`, read as a value by #_emit_eval
+            if (p['name'] in nullable and temps and temps[-1][0] == e
+                    and temps[-1][2] == 'value'):
+                temps[-1] = (e, f'{name} == null ? null : {temps[-1][1]}', f'nullable:{name}')
         params.append((fc, name))
         call[i] = e
         passed[p['name']] = name
@@ -1300,8 +1307,12 @@ def _emit_eval(ov, defaults=None):
     params, temps, rcls, body, _ = ov
     shown = params if defaults is None else params[:len(params) - len(defaults)]
     L = [f'    public {_jclass(rcls)} eval({", ".join(f"{_jclass(t)} {n}" for t, n in shown)}) {{']
-    if shown:
-        L.append(f'        if ({" || ".join(f"{n} == null" for _, n in shown)}) return null;')
+    # A NULL argument answers NULL, but for one MEOS takes NULL for (#_inputs)
+    nulls = {kind.split(':', 1)[1] for _, _, kind in temps if kind.startswith('nullable:')}
+    temps = [(t, e, 'value' if kind.startswith('nullable:') else kind) for t, e, kind in temps]
+    guard = [n for _, n in shown if n not in nulls]
+    if guard:
+        L.append(f'        if ({" || ".join(f"{n} == null" for n in guard)}) return null;')
     # An argument left to its SQL default is that default, converted like any other.
     for (t, n), lit in zip(params[len(shown):], defaults or []):
         L.append(f'        {_jclass(t)} {n} = {lit};')
@@ -3259,7 +3270,8 @@ def _catalog_aggregates(m, cat, jmeos):
         bound = {**((f.get('shape') or {}).get('boundArgs') or {}), **(sig.get('boundArgs') or {})}
         order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
         got, why = _inputs(m, dict(f, params=f['params'][1:]), args, jt[1:], bound, order)
-        if got is None or any(kind != 'value' for _, _, kind in got[2]):
+        if got is None or any(kind != 'value' and not kind.startswith('nullable:')
+                              for _, _, kind in got[2]):
             left[f'transition input {why or "of no value"}'] += 1
             continue
         classes = [fc for fc, _ in got[0]]
