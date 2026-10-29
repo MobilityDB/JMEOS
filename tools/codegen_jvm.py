@@ -1308,8 +1308,12 @@ def _emit_eval(ov, defaults=None):
     shown = params if defaults is None else params[:len(params) - len(defaults)]
     L = [f'    public {_jclass(rcls)} eval({", ".join(f"{_jclass(t)} {n}" for t, n in shown)}) {{']
     # A NULL argument answers NULL, but for one MEOS takes NULL for (#_inputs)
-    nulls = {kind.split(':', 1)[1] for _, _, kind in temps if kind.startswith('nullable:')}
-    temps = [(t, e, 'value' if kind.startswith('nullable:') else kind) for t, e, kind in temps]
+    # and the C array of an argument MEOS takes NULL for, of kind `nullablebuffer:<argument>`
+    # (#_input_shape_overload), is held as a buffer
+    nulls = {kind.split(':', 1)[1] for _, _, kind in temps
+             if kind.startswith(('nullable:', 'nullablebuffer:'))}
+    temps = [(t, e, 'value' if kind.startswith('nullable:') else
+              'buffer' if kind.startswith('nullablebuffer:') else kind) for t, e, kind in temps]
     guard = [n for _, n in shown if n not in nulls]
     if guard:
         L.append(f'        if ({" || ".join(f"{n} == null" for n in guard)}) return null;')
@@ -1470,6 +1474,9 @@ def _signature_overload(m, f, sig, args, ret, jsig, bound, layout):
         return ov, why, ov is not None
     if sig.get('arrayShape') and ret and ret.endswith('[]'):
         ov, why = _array_shape_overload(m, f, sig, jsig, bound)
+        return ov, why, False
+    if sig.get('inputShape'):
+        ov, why = _input_shape_overload(m, f, sig, ret, jsig, bound)
         return ov, why, False
     if sig.get('columns') and not (ret or '').endswith('[]'):
         ov, why = _row_overload(m, f, sig, jsig, bound)
@@ -1993,6 +2000,98 @@ def _row_overload(m, f, sig, jsig, bound):
     return (params, temps, m.row_class, body, etype), None
 
 
+# The element of a two-dimensional SQL array the surfaces take (#_input_shape_overload): its
+# Java class and the MeosSqlRuntime function laying out its elements row by row.
+_GRID_SCALAR = {'float': ('Double', 'gridDoubles'),
+                'double precision': ('Double', 'gridDoubles'),
+                'boolean': ('Boolean', 'gridBools')}
+
+
+def _input_shape_overload(m, f, sig, ret, jsig, bound):
+    """The eval of a signature taking two-dimensional arrays whose layout its wrapper reads
+    beyond the C arrays (the catalog's inputShape), or (None, reason), as
+    #_array_shape_overload builds the eval of a signature returning one: each such argument
+    is an array of arrays, as PostgreSQL's two-dimensional array, each row as long as the
+    first; its elements reach the C array `values` row by row, its rows and columns the
+    parameters `rows` and `columns`, the number of its elements `count`, and its NULL
+    elements the C array `nulls`, true for them, or the value `nullElement`. A C array MEOS
+    takes NULL for (`shape.nullable`) is NULL for a NULL argument, its size 0. The other
+    arguments reach the other parameters as #_inputs passes them, and the eval takes every
+    argument in the order of the signature: setValues(raster, integer, integer, integer,
+    float[], boolean[], boolean) passes its values and its flags to raster_set_values, each
+    a block of its own size."""
+    args = [_deployed_type(a) for a in sig.get('args') or []]
+    vis, outs = m.visible(f)
+    if len(jsig['arg_types']) != len(vis):
+        return None, 'arity:jmeos'
+    jt = dict(zip((p['name'] for p in vis), jsig['arg_types']))
+    nullable = set((f.get('shape') or {}).get('nullable') or ())
+    bound = bound or {}
+    shape = {}
+    for k, st in ((int(k), st) for k, st in sig['inputShape'].items()):
+        if k < len(args) and args[k].endswith('[]'):
+            shape[k] = st
+        elif not all(st[x] in bound for x in ('values', 'rows', 'columns')):
+            # An array a shorter call leaves to its default is passed as the wrapper binds it
+            return None, 'inputShape:args'
+    filled, temps, grid, call = set(), [], {}, {}
+    for k, st in sorted(shape.items()):
+        hit = _GRID_SCALAR.get(args[k][:-2])
+        names = [st[x] for x in ('values', 'rows', 'columns', 'count', 'nulls') if st.get(x)]
+        if hit is None or any(n not in jt for n in names) \
+                or any(jt[st[x]] != 'jnr.ffi.Pointer' for x in ('values', 'nulls') if st.get(x)) \
+                or any(jt[st[x]] != 'int' for x in ('rows', 'columns', 'count') if st.get(x)):
+            return None, f'inputShape:{args[k]}'
+        # The array arguments are named apart from the ones #_inputs names (a0, a1, ...)
+        g = f'g{k}'
+        if hit[0] == 'Boolean' and st.get('nullElement') in ('true', 'false') \
+                and not st.get('nulls'):
+            values = f'MeosSqlRuntime.{hit[1]}({g}, {st["nullElement"]})'
+        elif hit[0] == 'Double' and st.get('nulls'):
+            values = f'MeosSqlRuntime.{hit[1]}({g})'
+        else:
+            return None, f'inputShape:null/{args[k]}'
+        absent = st['values'] in nullable
+        kind = f'nullablebuffer:{g}' if absent else 'buffer'
+        for param, expr in [(st['values'], values)] + (
+                [(st['nulls'], f'MeosSqlRuntime.gridNulls({g})')] if st.get('nulls') else []):
+            t = f'_g{len(temps)}'
+            temps.append((t, f'{g} == null ? null : {expr}' if absent else expr, kind))
+            call[param] = t
+        rows, cols = f'{g}.length', f'MeosSqlRuntime.columns({g})'
+        if absent:
+            rows, cols = f'({g} == null ? 0 : {rows})', f'({g} == null ? 0 : {cols})'
+        call[st['rows']], call[st['columns']] = rows, cols
+        if st.get('count'):
+            call[st['count']] = f'{rows} * {cols}'
+        grid[k] = (f'{hit[0]}[][]', g)
+        filled |= set(names)
+    # The other arguments, passed by #_inputs to the parameters left
+    fshape = dict(f.get('shape') or {})
+    fshape['inputArrays'] = [x for x in fshape.get('inputArrays') or ()
+                             if x['param'] not in filled]
+    rest = dict(f, params=[p for p in f['params'] if p['name'] not in filled], shape=fshape)
+    rvis = [p for p in vis if p['name'] not in filled]
+    order = sig.get('sqlArgParams') or fshape.get('sqlArgParams')
+    order = [n for n in order if n not in filled] if order else None
+    got, why = _inputs(m, rest, [x for k, x in enumerate(args) if k not in shape],
+                       [jt[p['name']] for p in rvis], bound, order)
+    if got is None:
+        return None, why
+    rparams, rcall, rtemps = got
+    call.update(zip((p['name'] for p in rvis), rcall))
+    others = iter(rparams)
+    params = [grid[k] if k in shape else next(others) for k in range(len(args))]
+    outs = [p for p in outs if _norm(p['canonical']) != 'size_t *']
+    r = _ret(m, ret, f, jsig['ret'], outs)
+    if r is None:
+        return None, f'ret:{ret}/{_norm(f["returnType"]["canonical"])}'
+    rcls, rstmts = r
+    body = [f'{_jshort(jsig["ret"])} _r = GeneratedFunctions.{f["name"]}('
+            f'{", ".join(call[p["name"]] for p in vis)});']
+    return (params, rtemps + temps, rcls, body + rstmts, m.datatype(rcls)), None
+
+
 def _array_shape_overload(m, f, sig, jsig, bound):
     """The eval of a signature returning a SQL array whose layout its wrapper gives beyond the
     C array (the catalog's arrayShape), or (None, reason), as #_setret_overload builds the eval
@@ -2504,6 +2603,57 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
         return b;
     }
 
+    /** The number of columns of a two-dimensional array, each row as long as the first, as
+     * the rows of PostgreSQL's arrays are: a ragged array, or a missing row, raises. */
+    public static int columns(Object[][] g) {
+        int w = g.length == 0 ? 0 : (g[0] == null ? -1 : g[0].length);
+        for (Object[] row : g) {
+            if (row == null || row.length != w) {
+                throw new IllegalArgumentException("the rows of an array differ in length");
+            }
+        }
+        return w;
+    }
+
+    /** The elements of a two-dimensional array row by row, as #doubles lays out an array, a
+     * NULL element 0, which #gridNulls states. */
+    public static Pointer gridDoubles(Double[][] g) {
+        int w = columns(g);
+        Pointer b = buffer(g.length * w, 8);
+        for (int j = 0; j < g.length; j++) {
+            for (int i = 0; i < w; i++) {
+                b.putDouble(8L * (j * w + i), g[j][i] == null ? 0.0 : g[j][i]);
+            }
+        }
+        return b;
+    }
+
+    /** True for each NULL element of a two-dimensional array, row by row, a C bool each. */
+    public static Pointer gridNulls(Object[][] g) {
+        int w = columns(g);
+        Pointer b = buffer(g.length * w, 1);
+        for (int j = 0; j < g.length; j++) {
+            for (int i = 0; i < w; i++) {
+                b.putByte(j * w + i, (byte) (g[j][i] == null ? 1 : 0));
+            }
+        }
+        return b;
+    }
+
+    /** The booleans of a two-dimensional array row by row, a C bool each, a NULL element
+     * taking nullAs. */
+    public static Pointer gridBools(Boolean[][] g, boolean nullAs) {
+        int w = columns(g);
+        Pointer b = buffer(g.length * w, 1);
+        for (int j = 0; j < g.length; j++) {
+            for (int i = 0; i < w; i++) {
+                boolean v = g[j][i] == null ? nullAs : g[j][i];
+                b.putByte(j * w + i, (byte) (v ? 1 : 0));
+            }
+        }
+        return b;
+    }
+
     public static Pointer doubles(Double[] xs) {
         Pointer b = buffer(xs.length, 8);
         for (int i = 0; i < xs.length; i++) {
@@ -2820,6 +2970,8 @@ def _spark_arg(cls, i):
         return f'MeosSqlRuntime.localDates({a})'
     if cls == 'byte[]':
         return f'(byte[]) {a}'
+    if cls.endswith('[][]'):
+        return f'MeosSqlRuntime.grid({a}, new {cls[:-4]}[0])'
     if cls.endswith('[]'):
         return f'MeosSqlRuntime.array({a}, new {cls[:-2]}[0])'
     return f'({_jclass(cls)}) {a}'
@@ -3062,6 +3214,18 @@ def _spark_planning(arity):
         }
         return java.util.Arrays.copyOf((Object[]) o, ((Object[]) o).length,
             (Class<T[]>) empty.getClass());
+    }
+
+    /** A two-dimensional array as Spark hands it, a sequence of sequences, as the Java array
+     * of its rows, each read as #array reads an array. */
+    @SuppressWarnings("unchecked")
+    public static <T> T[][] grid(Object o, T[] row) {
+        Object[] rows = array(o, new Object[0]);
+        T[][] g = (T[][]) java.lang.reflect.Array.newInstance(row.getClass(), rows.length);
+        for (int i = 0; i < rows.length; i++) {
+            g[i] = rows[i] == null ? null : array(rows[i], row);
+        }
+        return g;
     }
 
 '''
