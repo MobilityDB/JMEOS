@@ -6,8 +6,7 @@ above_tpcbox_tpcbox	arg:TPCBox *
 above_tpcbox_tpointcloud	arg:TPCBox *
 above_tpointcloud_tpcbox	arg:TPCBox *
 add_timestamp_interval	ret:Timestamp
-add_timestamptz_interval	ret:Timestamp
-add_timestamptz_interval_at_zone	ret:Timestamp
+add_timestamptz_interval_at_zone	internal
 adjacent_tpcbox_tpcbox	arg:TPCBox *
 adjacent_tpcbox_tpointcloud	arg:TPCBox *
 adjacent_tpointcloud_tpcbox	arg:TPCBox *
@@ -601,6 +600,7 @@ timestamp_to_timestamptz	arg:Timestamp
 timestamp_trunc	ret:Timestamp
 timestamp_zone	arg:Timestamp
 timestamptz_extract	internal
+timestamptz_hash	ret:uint32_t
 timestamptz_izone	ret:Timestamp
 timestamptz_make_at_timezone	internal
 timestamptz_part	internal
