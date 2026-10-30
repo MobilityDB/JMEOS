@@ -42,7 +42,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * ValueCount. A pointer field is a value of its own, read through the value class of its column,
  * NULL for a null pointer, and freed in each element before the array, as dumpAsPolygons(raster,
  * ...) answers the geom of each GeomVal and geomval_arr_free frees it. The generator runs over a
- * catalog of two functions, as JvmStructRowTest runs it, so no jar and no libmeos.
+ * catalog of two functions, as JvmStructRowTest runs it, so no jar and no libmeos. A constant
+ * string field reads as the text it holds, and a constant array, as the static table
+ * geoPoseFrames() answers, is freed by nobody.
  */
 class JvmStructFieldColumnTest {
 
@@ -71,6 +73,9 @@ class JvmStructFieldColumnTest {
         + rows("shapes", "Shape",
                "{\"name\": \"geom\", \"type\": \"geometry\", \"from\": \"return\", \"field\": \"geom\"},"
                + " {\"name\": \"val\", \"type\": \"double precision\", \"from\": \"return\", \"field\": \"val\"}") + ", "
+        + rows("labels", "const Label",
+               "{\"name\": \"code\", \"type\": \"integer\", \"from\": \"return\", \"field\": \"code\"},"
+               + " {\"name\": \"name\", \"type\": \"text\", \"from\": \"return\", \"field\": \"name\"}") + ", "
         + "{\"name\": \"centroid\", \"file\": \"meos.h\", \"api\": \"public\", \"sqlfn\": \"centroid\","
         + " \"returnType\": {\"c\": \"GSERIALIZED *\", \"canonical\": \"GSERIALIZED *\"},"
         + " \"params\": [{\"name\": \"g\", \"cType\": \"const GSERIALIZED *\", \"canonical\": \"const GSERIALIZED *\"}],"
@@ -84,12 +89,16 @@ class JvmStructFieldColumnTest {
         + "  {\"name\": \"percent\", \"cType\": \"double\", \"offset_bits\": 128}]},"
         + "  {\"name\": \"Shape\", \"fields\": ["
         + "  {\"name\": \"geom\", \"cType\": \"GSERIALIZED *\", \"offset_bits\": 0},"
-        + "  {\"name\": \"val\", \"cType\": \"double\", \"offset_bits\": 64}]}],"
+        + "  {\"name\": \"val\", \"cType\": \"double\", \"offset_bits\": 64}]},"
+        + "  {\"name\": \"Label\", \"fields\": ["
+        + "  {\"name\": \"code\", \"cType\": \"int32_t\", \"offset_bits\": 0},"
+        + "  {\"name\": \"name\", \"cType\": \"const char *\", \"offset_bits\": 64}]}],"
         + " \"objectModel\": {\"classes\": {}}, \"enums\": [], \"macros\": []}";
 
     private static final String JAR = "{"
         + "\"counts\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\", \"jnr.ffi.Pointer\"]},"
         + "\"shapes\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\", \"jnr.ffi.Pointer\"]},"
+        + "\"labels\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\", \"jnr.ffi.Pointer\"]},"
         + "\"centroid\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"jnr.ffi.Pointer\"]},"
         + "\"temporal_from_wkb\": {\"ret\": \"jnr.ffi.Pointer\", \"arg_types\": [\"byte[]\"]},"
         + "\"temporal_as_wkb\": {\"ret\": \"byte[]\", \"arg_types\": [\"jnr.ffi.Pointer\", \"byte\"]},"
@@ -174,6 +183,17 @@ class JvmStructFieldColumnTest {
             String fields = "MeosSqlRuntime.freeField(_r, _c, 16L, 0L);";
             String array = "MeosSqlRuntime.free(_r);";
             assertTrue(body.contains(fields) && body.indexOf(fields) < body.indexOf(array), e[0] + " " + body);
+        }
+    }
+
+    @Test
+    void aConstantStringFieldIsItsTextAndAConstantArrayIsNotFreed() {
+        for (String[] e : ENGINES) {
+            String body = built(e[0], "labels").get("body").toString();
+            String name = "MeosSqlRuntime.cstring(_r.getPointer((long) _i * 16L + 8L))";
+            assertTrue(body.contains(e[1] + "_r.slice((long) _i * 16L + 0L).getInt((long) 0 * 4L), " + name + ")"),
+                e[0] + " " + body);
+            assertFalse(body.contains("MeosSqlRuntime.free(_r);"), e[0] + " " + body);
         }
     }
 }

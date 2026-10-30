@@ -1415,6 +1415,16 @@ def _setret_column(m, f, col, layout):
         if lay is None or col['field'] not in lay[2]:
             return None
         off, ctype = lay[2][col['field']]
+        # The field as the catalog declares it, its const the layout normalizes away (the
+        # struct read as the generator reads the struct of a returned value)
+        declared = next((fd.get('cType') or '' for st in m.cat.get('structs') or []
+                         if st.get('name') == elem for fd in st.get('fields') or []
+                         if fd.get('name') == col['field']), '')
+        if _norm(ctype) == 'char *' and 'const' in declared and sql in ('text', 'cstring'):
+            # A constant string the element points at, as the names of geopose_frames' static
+            # table: read as the text it holds, NULL for a null pointer, and freed by nobody
+            return ('String', src, f'MeosSqlRuntime.cstring({{a}}.getPointer((long) _i * '
+                    f'{lay[0]}L + {off}L))', False)
         if _norm(ctype).endswith('*'):                # a pointer field: a value of its own
             b, vc = _norm(ctype)[:-1].strip(), m.value_class.get(sql)
             if not vc or m.sql_cbase.get(sql) not in (b, m.subtype_of.get(b)):
@@ -1818,7 +1828,10 @@ def _composition_setret(m, comp, jmeos, layout):
         if r[3]:
             body.append(_free_each(r, cells))
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
-    body += ['    MeosSqlRuntime.free(_r);', '}']
+    # A constant array is MEOS's own, as the static table geopose_frames answers: never freed
+    if not f['returnType']['canonical'].lstrip().startswith('const '):
+        body.append('    MeosSqlRuntime.free(_r);')
+    body.append('}')
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
 
 
@@ -1894,7 +1907,10 @@ def _setret_overload(m, f, sig, jsig, bound, layout):
         if r[3]:
             body.append(_free_each(r, cells))
     body += [f'    MeosSqlRuntime.free({c}.getPointer(0L));' for c in cells.values()]
-    body += ['    MeosSqlRuntime.free(_r);', '}']
+    # A constant array is MEOS's own, as the static table geopose_frames answers: never freed
+    if not f['returnType']['canonical'].lstrip().startswith('const '):
+        body.append('    MeosSqlRuntime.free(_r);')
+    body.append('}')
     return (params, temps, f'{ecls}[]', body, m.array_type(etype)), None
 
 
@@ -2638,6 +2654,11 @@ _RUNTIME_CORE = '''    /** Free each value MEOS allocated.  Null-safe. */
             }
         }
         return b;
+    }
+
+    /** The text a C string holds, null for a null pointer, the string left to its owner. */
+    public static String cstring(Pointer p) {
+        return p == null ? null : p.getString(0L);
     }
 
     /** The booleans of a two-dimensional array row by row, a C bool each, a NULL element
