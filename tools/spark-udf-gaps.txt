@@ -720,6 +720,7 @@ tposechain_minus_value	arg:PoseChain *
 tposechain_start_value	ret:PoseChain *
 tposechain_unnest	array-or-out-param:values
 tposechain_value	ret:PoseChain *
+tposechain_value_at_timestamptz	internal
 tposechain_value_n	internal
 tposechain_values	internal
 tposechainarr_as_geopose	internal
