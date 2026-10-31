@@ -73,7 +73,7 @@ public class GeometrySet extends GeoSet{
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
 }
