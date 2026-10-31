@@ -244,6 +244,18 @@ implements <a href="Box.html" title="interface in types.boxes">Box</a></span></d
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the union of "this" with "other".</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#as_ewkb()" class="member-name-link">as_ewkb</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#as_hexewkb()" class="member-name-link">as_hexewkb</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#as_hexwkb()" class="member-name-link">as_hexwkb</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -282,27 +294,37 @@ implements <a href="Box.html" title="interface in types.boxes">Box</a></span></d
  both.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry(org.locationtech.jts.geom.Geometry)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_ewkb(byte%5B%5D)" class="member-name-link">from_ewkb</a><wbr>(byte[]&nbsp;ewkb)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns a "STBox" from its EWKB representation, which states its SRID.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry(org.locationtech.jts.geom.Geometry,boolean)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry(org.locationtech.jts.geom.Geometry)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry(org.locationtech.jts.geom.Geometry,boolean)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom,
  boolean&nbsp;geodetic)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a "STBox" from a "Geometry".</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry_datetime(org.locationtech.jts.geom.Geometry,java.time.LocalDateTime,boolean)" class="member-name-link">from_geometry_datetime</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry_datetime(org.locationtech.jts.geom.Geometry,java.time.LocalDateTime,boolean)" class="member-name-link">from_geometry_datetime</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/LocalDateTime.html" title="class or interface in java.time" class="external-link">LocalDateTime</a>&nbsp;datetime,
+ boolean&nbsp;geodetic)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns a "STBox" from a space and time dimension.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry_tstzspan(org.locationtech.jts.geom.Geometry,types.collections.time.tstzset,boolean)" class="member-name-link">from_geometry_tstzspan</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
+ <a href="../collections/time/tstzset.html" title="class in types.collections.time">tstzset</a>&nbsp;tstzset,
  boolean&nbsp;geodetic)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a "STBox" from a space and time dimension.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_geometry_tstzspan(org.locationtech.jts.geom.Geometry,types.collections.time.tstzset,boolean)" class="member-name-link">from_geometry_tstzspan</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
- <a href="../collections/time/tstzset.html" title="class in types.collections.time">tstzset</a>&nbsp;tstzset,
- boolean&nbsp;geodetic)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_hexewkb(java.lang.String)" class="member-name-link">from_hexewkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexewkb)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Returns a "STBox" from a space and time dimension.</div>
+<div class="block">Returns a "STBox" from its EWKB representation in hex-encoded ASCII, which states its SRID.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="STBox.html" title="class in types.boxes">STBox</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexwkb)</code></div>
@@ -913,6 +935,68 @@ implements <a href="Box.html" title="interface in types.boxes">Box</a></span></d
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The hex-encoded WKB string</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="from_ewkb(byte[])">
+<h3>from_ewkb</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="STBox.html" title="class in types.boxes">STBox</a></span>&nbsp;<span class="element-name">from_ewkb</span><wbr><span class="parameters">(byte[]&nbsp;ewkb)</span></div>
+<div class="block">Returns a "STBox" from its EWKB representation, which states its SRID.
+ <p>
+         MEOS Functions:
+             <li>stbox_from_wkb</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ewkb</code> - EWKB representation</dd>
+<dt>Returns:</dt>
+<dd>a new STBox instance</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="from_hexewkb(java.lang.String)">
+<h3>from_hexewkb</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="STBox.html" title="class in types.boxes">STBox</a></span>&nbsp;<span class="element-name">from_hexewkb</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexewkb)</span></div>
+<div class="block">Returns a "STBox" from its EWKB representation in hex-encoded ASCII, which states its SRID.
+ <p>
+         MEOS Functions:
+             <li>stbox_from_hexwkb</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>hexewkb</code> - EWKB representation in hex-encoded ASCII</dd>
+<dt>Returns:</dt>
+<dd>a new STBox instance</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_ewkb()">
+<h3>as_ewkb</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">as_ewkb</span>()</div>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.
+ <p>
+         MEOS Functions:
+             <li>stbox_as_ewkb</li></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The EWKB bytes</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_hexewkb()">
+<h3>as_hexewkb</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">as_hexewkb</span>()</div>
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.
+ <p>
+         MEOS Functions:
+             <li>stbox_as_hexewkb</li></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The hex-encoded EWKB string</dd>
 </dl>
 </section>
 </li>

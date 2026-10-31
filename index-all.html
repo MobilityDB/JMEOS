@@ -1714,6 +1714,21 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="functions/ArrangeStatus.html#%3Cinit%3E(int)" class="member-name-link">ArrangeStatus(int)</a> - Constructor for enum class functions.<a href="functions/ArrangeStatus.html" title="enum class in functions">ArrangeStatus</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/basic/tpoint/TPoint.html#as_ewkb()" class="member-name-link">as_ewkb()</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.</div>
+</dd>
+<dt><a href="types/boxes/STBox.html#as_ewkb()" class="member-name-link">as_ewkb()</a> - Method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.</div>
+</dd>
+<dt><a href="types/collections/geo/GeoSet.html#as_ewkb()" class="member-name-link">as_ewkb()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.</div>
+</dd>
 <dt><a href="types/collections/geo/GeoSet.html#as_ewkt()" class="member-name-link">as_ewkt()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
 <div class="block">Returns the EWKT representation of "this", its WKT preceded by its SRID.</div>
@@ -1732,6 +1747,21 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="types/basic/tpoint/TPoint.html#as_geojson(int,int,java.lang.String)" class="member-name-link">as_geojson(int, int, String)</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/basic/tpoint/TPoint.html#as_hexewkb()" class="member-name-link">as_hexewkb()</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.</div>
+</dd>
+<dt><a href="types/boxes/STBox.html#as_hexewkb()" class="member-name-link">as_hexewkb()</a> - Method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.</div>
+</dd>
+<dt><a href="types/collections/geo/GeoSet.html#as_hexewkb()" class="member-name-link">as_hexewkb()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
+<dd>
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.</div>
+</dd>
 <dt><a href="types/boxes/STBox.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
 <dd>
 <div class="block">Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
@@ -1744,21 +1774,28 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="types/collections/base/Set.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
-<div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+ without an SRID, as MobilityDB's asHexWKB writes it</div>
 </dd>
 <dt><a href="types/collections/base/Span.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Span.html" title="class in types.collections.base">Span</a></dt>
 <dd>
-<div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+ without an SRID, as MobilityDB's asHexWKB writes it</div>
 </dd>
 <dt><a href="types/collections/base/SpanSet.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.collections.base.<a href="types/collections/base/SpanSet.html" title="class in types.collections.base">SpanSet</a></dt>
 <dd>
-<div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+ without an SRID, as MobilityDB's asHexWKB writes it</div>
 </dd>
 <dt><a href="types/collections/text/TextSet.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.collections.text.<a href="types/collections/text/TextSet.html" title="class in types.collections.text">TextSet</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="types/temporal/Temporal.html#as_hexwkb(jnr.ffi.Pointer,long)" class="member-name-link">as_hexwkb(Pointer, long)</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
 <dd>
-<div class="block">Returns the temporal object as a hex-encoded WKB string.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine,
+ as MobilityDB's asHexWKB writes it</div>
+</dd>
+<dt><a href="types/temporal/Temporal.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
+<dd>
+<div class="block">Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and without an SRID, as MobilityDB's asHexWKB writes it.</div>
 </dd>
 <dt><a href="types/temporal/Temporal.html#as_mfjson()" class="member-name-link">as_mfjson()</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
 <dd>
@@ -1814,19 +1851,23 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="types/collections/base/Set.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
-<div class="block">Returns the WKB representation</div>
+<div class="block">Returns the WKB representation, in the byte order of the machine and without an SRID,
+ as MobilityDB's asBinary writes it</div>
 </dd>
 <dt><a href="types/collections/base/Span.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Span.html" title="class in types.collections.base">Span</a></dt>
 <dd>
-<div class="block">Returns the WKB representation</div>
+<div class="block">Returns the WKB representation, in the byte order of the machine and without an SRID,
+ as MobilityDB's asBinary writes it</div>
 </dd>
 <dt><a href="types/collections/base/SpanSet.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.collections.base.<a href="types/collections/base/SpanSet.html" title="class in types.collections.base">SpanSet</a></dt>
 <dd>
-<div class="block">Returns the WKB representation</div>
+<div class="block">Returns the WKB representation, in the byte order of the machine and without an SRID,
+ as MobilityDB's asBinary writes it</div>
 </dd>
 <dt><a href="types/temporal/Temporal.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
 <dd>
-<div class="block">Returns the temporal object as a hex-encoded WKB string.</div>
+<div class="block">Returns the WKB representation of "this", in the byte order of the machine and without
+ an SRID, as MobilityDB's asBinary writes it.</div>
 </dd>
 <dt><a href="types/basic/tbool/TBool.html#as_wkt()" class="member-name-link">as_wkt()</a> - Method in interface types.basic.tbool.<a href="types/basic/tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></dt>
 <dd>
@@ -9142,6 +9183,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a temporal geometric point from a base geometry and a time value.</div>
 </dd>
+<dt><a href="types/boxes/STBox.html#from_ewkb(byte%5B%5D)" class="member-name-link">from_ewkb(byte[])</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns a "STBox" from its EWKB representation, which states its SRID.</div>
+</dd>
+<dt><a href="types/collections/geo/GeographySet.html#from_ewkb(byte%5B%5D)" class="member-name-link">from_ewkb(byte[])</a> - Static method in class types.collections.geo.<a href="types/collections/geo/GeographySet.html" title="class in types.collections.geo">GeographySet</a></dt>
+<dd>
+<div class="block">Returns a "GeographySet" from its EWKB representation, which states its SRID.</div>
+</dd>
+<dt><a href="types/collections/geo/GeometrySet.html#from_ewkb(byte%5B%5D)" class="member-name-link">from_ewkb(byte[])</a> - Static method in class types.collections.geo.<a href="types/collections/geo/GeometrySet.html" title="class in types.collections.geo">GeometrySet</a></dt>
+<dd>
+<div class="block">Returns a "GeometrySet" from its EWKB representation, which states its SRID.</div>
+</dd>
 <dt><a href="types/boxes/STBox.html#from_geometry(org.locationtech.jts.geom.Geometry)" class="member-name-link">from_geometry(Geometry)</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="types/boxes/STBox.html#from_geometry(org.locationtech.jts.geom.Geometry,boolean)" class="member-name-link">from_geometry(Geometry, boolean)</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
@@ -9155,6 +9208,18 @@ loadScripts(document, 'script');</script>
 <dt><a href="types/boxes/STBox.html#from_geometry_tstzspan(org.locationtech.jts.geom.Geometry,types.collections.time.tstzset,boolean)" class="member-name-link">from_geometry_tstzspan(Geometry, tstzset, boolean)</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
 <dd>
 <div class="block">Returns a "STBox" from a space and time dimension.</div>
+</dd>
+<dt><a href="types/boxes/STBox.html#from_hexewkb(java.lang.String)" class="member-name-link">from_hexewkb(String)</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns a "STBox" from its EWKB representation in hex-encoded ASCII, which states its SRID.</div>
+</dd>
+<dt><a href="types/collections/geo/GeographySet.html#from_hexewkb(java.lang.String)" class="member-name-link">from_hexewkb(String)</a> - Static method in class types.collections.geo.<a href="types/collections/geo/GeographySet.html" title="class in types.collections.geo">GeographySet</a></dt>
+<dd>
+<div class="block">Returns a "GeographySet" from its EWKB representation in hex-encoded ASCII, which states its SRID.</div>
+</dd>
+<dt><a href="types/collections/geo/GeometrySet.html#from_hexewkb(java.lang.String)" class="member-name-link">from_hexewkb(String)</a> - Static method in class types.collections.geo.<a href="types/collections/geo/GeometrySet.html" title="class in types.collections.geo">GeometrySet</a></dt>
+<dd>
+<div class="block">Returns a "GeometrySet" from its EWKB representation in hex-encoded ASCII, which states its SRID.</div>
 </dd>
 <dt><a href="types/boxes/STBox.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
 <dd>

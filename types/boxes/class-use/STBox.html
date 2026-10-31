@@ -132,27 +132,37 @@ loadScripts(document, 'script');</script>
  both.</div>
 </div>
 <div class="col-first even-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry(org.locationtech.jts.geom.Geometry)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_ewkb(byte%5B%5D)" class="member-name-link">from_ewkb</a><wbr>(byte[]&nbsp;ewkb)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns a "STBox" from its EWKB representation, which states its SRID.</div>
+</div>
 <div class="col-first odd-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry(org.locationtech.jts.geom.Geometry,boolean)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom,
+<div class="col-second odd-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry(org.locationtech.jts.geom.Geometry)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry(org.locationtech.jts.geom.Geometry,boolean)" class="member-name-link">from_geometry</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geom,
  boolean&nbsp;geodetic)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Returns a "STBox" from a "Geometry".</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry_datetime(org.locationtech.jts.geom.Geometry,java.time.LocalDateTime,boolean)" class="member-name-link">from_geometry_datetime</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
+<div class="col-first odd-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry_datetime(org.locationtech.jts.geom.Geometry,java.time.LocalDateTime,boolean)" class="member-name-link">from_geometry_datetime</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/LocalDateTime.html" title="class or interface in java.time" class="external-link">LocalDateTime</a>&nbsp;datetime,
+ boolean&nbsp;geodetic)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Returns a "STBox" from a space and time dimension.</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry_tstzspan(org.locationtech.jts.geom.Geometry,types.collections.time.tstzset,boolean)" class="member-name-link">from_geometry_tstzspan</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
+ <a href="../../collections/time/tstzset.html" title="class in types.collections.time">tstzset</a>&nbsp;tstzset,
  boolean&nbsp;geodetic)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Returns a "STBox" from a space and time dimension.</div>
 </div>
 <div class="col-first odd-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_geometry_tstzspan(org.locationtech.jts.geom.Geometry,types.collections.time.tstzset,boolean)" class="member-name-link">from_geometry_tstzspan</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;geometry,
- <a href="../../collections/time/tstzset.html" title="class in types.collections.time">tstzset</a>&nbsp;tstzset,
- boolean&nbsp;geodetic)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_hexewkb(java.lang.String)" class="member-name-link">from_hexewkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexewkb)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Returns a "STBox" from a space and time dimension.</div>
+<div class="block">Returns a "STBox" from its EWKB representation in hex-encoded ASCII, which states its SRID.</div>
 </div>
 <div class="col-first even-row-color"><code>static <a href="../STBox.html" title="class in types.boxes">STBox</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">STBox.</span><code><a href="../STBox.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexwkb)</code></div>

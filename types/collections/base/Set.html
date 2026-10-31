@@ -161,12 +161,14 @@ implements <a href="Collection.html" title="interface in types.collections.base"
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#as_hexwkb()" class="member-name-link">as_hexwkb</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+ without an SRID, as MobilityDB's asHexWKB writes it</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#as_wkb()" class="member-name-link">as_wkb</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the WKB representation</div>
+<div class="block">Returns the WKB representation, in the byte order of the machine and without an SRID,
+ as MobilityDB's asBinary writes it</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#contains(types.collections.base.Base)" class="member-name-link">contains</a><wbr>(<a href="Base.html" title="interface in types.collections.base">Base</a>&nbsp;other)</code></div>
@@ -482,7 +484,8 @@ implements <a href="Collection.html" title="interface in types.collections.base"
 <section class="detail" id="as_wkb()">
 <h3>as_wkb</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">as_wkb</span>()</div>
-<div class="block">Returns the WKB representation</div>
+<div class="block">Returns the WKB representation, in the byte order of the machine and without an SRID,
+ as MobilityDB's asBinary writes it</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>byte[] type</dd>
@@ -493,7 +496,8 @@ implements <a href="Collection.html" title="interface in types.collections.base"
 <section class="detail" id="as_hexwkb()">
 <h3>as_hexwkb</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">as_hexwkb</span>()</div>
-<div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+ without an SRID, as MobilityDB's asHexWKB writes it</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>String type</dd>

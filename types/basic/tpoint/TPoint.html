@@ -150,24 +150,36 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the angular_difference of the temporal point.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_ewkt(int)" class="member-name-link">as_ewkt</a><wbr>(int&nbsp;decimals)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default byte[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_ewkb()" class="member-name-link">as_ewkb</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Returns the temporal point as an EWKT string.</div>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_geojson(boolean,int,int,java.lang.String)" class="member-name-link">as_geojson</a><wbr>(boolean&nbsp;unary_union,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_ewkt(int)" class="member-name-link">as_ewkt</a><wbr>(int&nbsp;decimals)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the temporal point as an EWKT string.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_geojson(boolean,int,int,java.lang.String)" class="member-name-link">as_geojson</a><wbr>(boolean&nbsp;unary_union,
  int&nbsp;option,
  int&nbsp;precision,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;srs)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the trajectory of the temporal point as a GeoJSON string.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_geojson(int,int,java.lang.String)" class="member-name-link">as_geojson</a><wbr>(int&nbsp;option,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_geojson(int,int,java.lang.String)" class="member-name-link">as_geojson</a><wbr>(int&nbsp;option,
  int&nbsp;precision,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;srs)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_hexewkb()" class="member-name-link">as_hexewkb</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_text()" class="member-name-link">as_text</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
@@ -623,6 +635,36 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <dd><code>decimals</code> - The precision of the returned geometry.</dd>
 <dt>Returns:</dt>
 <dd>A new <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representing the temporal point.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_ewkb()">
+<h3>as_ewkb</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">as_ewkb</span>()</div>
+<div class="block">Returns the EWKB representation of "this", in the byte order of the machine and with its
+ SRID, as MobilityDB's asEWKB writes it.
+ <p>
+         MEOS Functions:
+             <li>tspatial_as_ewkb</li></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The EWKB bytes</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_hexewkb()">
+<h3>as_hexewkb</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">as_hexewkb</span>()</div>
+<div class="block">Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine and with its SRID, as MobilityDB's asHexEWKB writes it.
+ <p>
+         MEOS Functions:
+             <li>tspatial_as_hexewkb</li></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The hex-encoded EWKB string</dd>
 </dl>
 </section>
 </li>
