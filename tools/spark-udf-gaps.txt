@@ -52,7 +52,6 @@ box3d_in	internal
 box3d_make	internal
 box3d_out	internal
 box3d_to_stbox	internal
-cbuffer_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 cbuffer_hash	ret:uint32_t
 cbufferarr_round	internal
 cbufferarr_to_geom	internal
@@ -122,13 +121,11 @@ ge_timestamp_date	arg:Timestamp
 ge_timestamp_timestamp	arg:Timestamp
 ge_timestamp_timestamptz	arg:Timestamp
 ge_timestamptz_timestamp	arg:Timestamp
-geo_as_ewkb	array-or-out-param:size; unsupported-return:uint8_t *
 geo_cluster_dbscan	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:uint32_t *
 geo_cluster_intersecting	array-or-out-param:geoms
 geo_cluster_kmeans	array-or-out-param:geoms; array-or-out-param:count; unsupported-return:int *
 geo_cluster_within	array-or-out-param:geoms
 geo_collect_garray	internal
-geo_from_ewkb	array-or-out-param:wkb
 geo_makeline_garray	internal
 geo_pointarr	internal
 geo_split_each_n_stboxes	array-or-out-param:count
@@ -147,9 +144,7 @@ gt_timestamp_date	arg:Timestamp
 gt_timestamp_timestamp	arg:Timestamp
 gt_timestamp_timestamptz	arg:Timestamp
 gt_timestamptz_timestamp	arg:Timestamp
-h3index_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 h3index_cell_to_parent	arg:uint32_t
-h3index_from_wkb	array-or-out-param:wkb
 h3index_get_resolution	ret:uint32_t
 h3index_hash	ret:uint32_t
 h3indexset_make	array-or-out-param:values
@@ -254,11 +249,9 @@ ne_timestamp_date	arg:Timestamp
 ne_timestamp_timestamp	arg:Timestamp
 ne_timestamp_timestamptz	arg:Timestamp
 ne_timestamptz_timestamp	arg:Timestamp
-npoint_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 npoint_hash	ret:uint32_t
 npointset_make	array:Npoint *
 npointset_value_n	internal
-nsegment_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 overabove_tpcbox_tpcbox	arg:TPCBox *
 overabove_tpcbox_tpointcloud	arg:TPCBox *
 overabove_tpointcloud_tpcbox	arg:TPCBox *
@@ -307,7 +300,6 @@ pcpointset_make	internal
 pcpointset_value_n	internal
 pixel_arr_free	no-decoder:Pixel
 plus_time_interval	ret:TimeADT
-pose_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 pose_hash	ret:uint32_t
 pose_to_posechain	ret:PoseChain *
 posearr_round	internal
@@ -359,10 +351,8 @@ posechainset_value_n	internal
 posechainset_values	internal
 poseset_make	internal
 poseset_value_n	internal
-quadbin_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 quadbin_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
 quadbin_cell_to_parent	arg:uint32_t
-quadbin_from_wkb	array-or-out-param:wkb
 quadbin_get_resolution	ret:uint32_t
 quadbin_hash	ret:uint32_t
 quadbin_point_to_cell	arg:uint32_t
@@ -370,16 +360,10 @@ quadbin_tile_to_cell	arg:uint32_t
 quadbinset_make	array-or-out-param:values
 quadbinset_value_n	arg:uint64_t *
 raquet_hash	ret:uint32_t
-raquet_make	array-or-out-param:pixels
-raquet_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
-raquet_pixtype_from_string	ret:MeosPixType
 raquet_pixtype_size	internal
-raquet_read_bytes	array-or-out-param:data
-raster_band_pixels	array-or-out-param:size_out; unsupported-return:uint8_t *
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
 raster_dump_as_polygons	array-or-out-param:count; no-encoder:GeomVal
 raster_dump_values	array-or-out-param:nodata; array-or-out-param:count; unsupported-return:double *
-raster_make	array-or-out-param:pixels
 raster_pixel_as_points	array-or-out-param:count; no-encoder:Pixel
 raster_same_alignment_combinefn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
 raster_same_alignment_finalfn	no-decoder:RasterAlignState
@@ -390,7 +374,6 @@ raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterSta
 raster_summary_stats_finalfn	no-decoder:RasterStatsState; no-encoder:BandStats
 raster_summary_stats_transfn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
 raster_tile_value_array	internal
-raster_tile_value_quadbin	array-or-out-param:pixels
 raster_union_combinefn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
 raster_union_finalfn	no-decoder:RasterUnionState
 raster_union_transfn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
@@ -406,12 +389,10 @@ right_text_set	internal
 right_tpcbox_tpcbox	arg:TPCBox *
 right_tpcbox_tpointcloud	arg:TPCBox *
 right_tpointcloud_tpcbox	arg:TPCBox *
-s2cell_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 s2cell_cell_to_child	arg:uint32_t
 s2cell_cell_to_children	array-or-out-param:count; unsupported-return:uint64_t *
 s2cell_cell_to_parent	arg:uint32_t
 s2cell_edge_length	arg:uint32_t
-s2cell_from_wkb	array-or-out-param:wkb
 s2cell_get_face	ret:uint32_t
 s2cell_get_resolution	ret:uint32_t
 s2cell_hash	ret:uint32_t
@@ -422,25 +403,17 @@ same_tpcbox_tpcbox	arg:TPCBox *
 same_tpcbox_tpointcloud	arg:TPCBox *
 same_tpointcloud_tpcbox	arg:TPCBox *
 set_hash	ret:uint32_t
-set_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 set_spans	array-or-out-param:count
 set_split_each_n_spans	array-or-out-param:count
 set_split_n_spans	array-or-out-param:count
-setstate_deserialize	array-or-out-param:bytes
-setstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
 shortestline_tposechain_posechain	arg:PoseChain *
 span_hash	ret:uint32_t
-span_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 spanset_hash	ret:uint32_t
 spanset_make	array:Span *
-spanset_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 spanset_spanarr	internal
 spanset_spans	array-or-out-param:count
 spanset_split_each_n_spans	array-or-out-param:count
 spanset_split_n_spans	array-or-out-param:count
-spansetstate_deserialize	array-or-out-param:bytes
-spansetstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
-spatialset_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 sptree_create_bigintspan	no-encoder:SPTree
 sptree_create_datespan	no-encoder:SPTree
 sptree_create_floatspan	no-encoder:SPTree
@@ -464,10 +437,8 @@ sptree_num_entries	no-decoder:SPTree
 sptree_search	no-decoder:SPTree; no-decoder:void; no-decoder:MeosArray
 sptree_search_temporal	no-decoder:SPTree; no-decoder:MeosArray
 sptree_search_temporal_dedup	no-decoder:SPTree; no-decoder:MeosArray
-stbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 stbox_hash	ret:uint32_t
 stbox_quad_split	array-or-out-param:count
-stbox_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 stbox_tmax	arg:TimestampTz *
 stbox_tmin	arg:TimestampTz *
 stbox_to_box3d	internal
@@ -483,7 +454,6 @@ tbigint_wsum_transfn	no-decoder:SkipList; no-encoder:SkipList
 tbigintbox_time_tiles	array-or-out-param:count
 tbool_values	array-or-out-param:count; unsupported-return:bool *
 tbox_hash	ret:uint32_t
-tbox_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 tbox_tmax	arg:TimestampTz *
 tbox_tmin	arg:TimestampTz *
 tcbuffer_value_at_timestamptz	internal
@@ -496,7 +466,6 @@ temporal_instants	internal
 temporal_merge_array	internal
 temporal_segments	internal
 temporal_sequences	internal
-temporal_sortkey	array-or-out-param:size; unsupported-return:uint8_t *
 temporal_spans	array-or-out-param:count
 temporal_split_each_n_spans	array-or-out-param:count
 temporal_split_n_spans	array-or-out-param:count
@@ -754,7 +723,6 @@ ts2cellseqset_make	array-or-out-param:sequences
 tsequence_make	internal
 tsequenceset_make	array-or-out-param:sequences
 tsequenceset_make_gaps	internal
-tspatial_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tstzset_make	arg:TimestampTz *
 tstzset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList
 tstzset_value_n	arg:TimestampTz *
