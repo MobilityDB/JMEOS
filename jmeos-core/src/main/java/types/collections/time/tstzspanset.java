@@ -118,7 +118,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 
 	@Override
 	public Pointer createInner(Pointer inner){
-		return _inner;
+		return inner;
 	}
 
 	public Pointer createListInner(List<tstzspan> periods){

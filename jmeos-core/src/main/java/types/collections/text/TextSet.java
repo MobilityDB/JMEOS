@@ -70,7 +70,7 @@ public class TextSet extends Set<String> {
 
     @Override
     public Pointer createInner(Pointer inner){
-        return _inner;
+        return inner;
     }
 
 
