@@ -163,6 +163,16 @@ extends <a href="../tnumber/TNumber.html" title="interface in types.basic.tnumbe
 <div class="block">Returns whether the values of "this" are always not equal to "value".</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_text()" class="member-name-link">as_text</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values with at most 15 decimal digits.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_text(int)" class="member-name-link">as_text</a><wbr>(int&nbsp;max_decimals)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#as_wkt(int)" class="member-name-link">as_wkt</a><wbr>(int&nbsp;max_decimals)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns a string representation of "this".</div>
@@ -515,6 +525,36 @@ extends <a href="../tnumber/TNumber.html" title="interface in types.basic.tnumbe
 <dd><code>max_decimals</code> - </dd>
 <dt>Returns:</dt>
 <dd>A string representation of "this".</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_text()">
+<h3>as_text</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">as_text</span>()</div>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values with at most 15 decimal digits.
+ <p>
+         MEOS Functions:
+             <li>tfloat_out</li></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A new <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> instance</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="as_text(int)">
+<h3>as_text</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">as_text</span><wbr><span class="parameters">(int&nbsp;max_decimals)</span></div>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values.
+ <p>
+         MEOS Functions:
+             <li>tfloat_out</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>max_decimals</code> - The maximum number of decimal digits</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> instance</dd>
 </dl>
 </section>
 </li>

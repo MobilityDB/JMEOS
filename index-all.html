@@ -1758,9 +1758,37 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the temporal object as a MF-JSON string.</div>
 </dd>
+<dt><a href="types/basic/tbool/TBool.html#as_text()" class="member-name-link">as_text()</a> - Method in interface types.basic.tbool.<a href="types/basic/tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it.</div>
+</dd>
+<dt><a href="types/basic/tfloat/TFloat.html#as_text()" class="member-name-link">as_text()</a> - Method in interface types.basic.tfloat.<a href="types/basic/tfloat/TFloat.html" title="interface in types.basic.tfloat">TFloat</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values with at most 15 decimal digits.</div>
+</dd>
+<dt><a href="types/basic/tint/TInt.html#as_text()" class="member-name-link">as_text()</a> - Method in interface types.basic.tint.<a href="types/basic/tint/TInt.html" title="interface in types.basic.tint">TInt</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it.</div>
+</dd>
+<dt><a href="types/basic/tpoint/TPoint.html#as_text()" class="member-name-link">as_text()</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the points as WKT with at most 15 decimal digits.</div>
+</dd>
+<dt><a href="types/basic/ttext/TText.html#as_text()" class="member-name-link">as_text()</a> - Method in interface types.basic.ttext.<a href="types/basic/ttext/TText.html" title="interface in types.basic.ttext">TText</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it.</div>
+</dd>
 <dt><a href="types/collections/geo/GeoSet.html#as_text()" class="member-name-link">as_text()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
 <div class="block">Returns the WKT representation of "this".</div>
+</dd>
+<dt><a href="types/basic/tfloat/TFloat.html#as_text(int)" class="member-name-link">as_text(int)</a> - Method in interface types.basic.tfloat.<a href="types/basic/tfloat/TFloat.html" title="interface in types.basic.tfloat">TFloat</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the values.</div>
+</dd>
+<dt><a href="types/basic/tpoint/TPoint.html#as_text(int)" class="member-name-link">as_text(int)</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
+<dd>
+<div class="block">Returns the text of "this", as MobilityDB's asText writes it, the points as WKT.</div>
 </dd>
 <dt><a href="types/collections/geo/GeoSet.html#as_text(int)" class="member-name-link">as_text(int)</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
@@ -30747,6 +30775,54 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="types/basic/tbool/TBoolSeqSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tbool.<a href="types/basic/tbool/TBoolSeqSet.html" title="class in types.basic.tbool">TBoolSeqSet</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/basic/tfloat/TFloatInst.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tfloat.<a href="types/basic/tfloat/TFloatInst.html" title="class in types.basic.tfloat">TFloatInst</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tfloat/TFloatSeq.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tfloat.<a href="types/basic/tfloat/TFloatSeq.html" title="class in types.basic.tfloat">TFloatSeq</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tfloat/TFloatSeqSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tfloat.<a href="types/basic/tfloat/TFloatSeqSet.html" title="class in types.basic.tfloat">TFloatSeqSet</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tint/TIntInst.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tint.<a href="types/basic/tint/TIntInst.html" title="class in types.basic.tint">TIntInst</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tint/TIntSeq.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tint.<a href="types/basic/tint/TIntSeq.html" title="class in types.basic.tint">TIntSeq</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tint/TIntSeqSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tint.<a href="types/basic/tint/TIntSeqSet.html" title="class in types.basic.tint">TIntSeqSet</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tpoint/TPointInst.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tpoint.<a href="types/basic/tpoint/TPointInst.html" title="class in types.basic.tpoint">TPointInst</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tpoint/TPointSeq.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tpoint.<a href="types/basic/tpoint/TPointSeq.html" title="class in types.basic.tpoint">TPointSeq</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/tpoint/TPointSeqSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.tpoint.<a href="types/basic/tpoint/TPointSeqSet.html" title="class in types.basic.tpoint">TPointSeqSet</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/ttext/TTextInst.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.ttext.<a href="types/basic/ttext/TTextInst.html" title="class in types.basic.ttext">TTextInst</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/ttext/TTextSeq.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.ttext.<a href="types/basic/ttext/TTextSeq.html" title="class in types.basic.ttext">TTextSeq</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
+<dt><a href="types/basic/ttext/TTextSeqSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.basic.ttext.<a href="types/basic/ttext/TTextSeqSet.html" title="class in types.basic.ttext">TTextSeqSet</a></dt>
+<dd>
+<div class="block">Returns the text of "this", its <code>as_text</code>.</div>
+</dd>
 <dt><a href="types/boxes/TBox.html#toString()" class="member-name-link">toString()</a> - Method in class types.boxes.<a href="types/boxes/TBox.html" title="class in types.boxes">TBox</a></dt>
 <dd>
 <div class="block">Returns a string representation of "this".</div>
