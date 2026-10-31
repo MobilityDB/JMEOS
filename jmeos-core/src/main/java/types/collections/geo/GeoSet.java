@@ -84,56 +84,63 @@ public abstract class GeoSet extends Set<Geometry> {
 
 
     /**
-     * Return the string representation of the content of "this".
+     * Return the string representation of the content of "this", its WKT.
      *  <p>
      *         MEOS Functions:
-     *             <li>geoset_out</li>
+     *             <li>spatialset_as_text</li>
      * @return A new {@link String} instance
      */
+    @Override
     public String toString(){
-        int max_decimals = 15;
-        return GeneratedFunctions.tspatial_out(this._inner,max_decimals);
-    }
-
-
-
-    /**
-     * Returns the EWKT representation of "this".
-     *
-     *
-     *         MEOS Functions:
-     *             <li>geoset_as_ewkt</li>
-     * @return A {@link String} instance.
-     */
-    protected String as_ewkt(){
-        int max_decimals = 15;
-        return GeneratedFunctions.tspatial_as_ewkt(this._inner,max_decimals);
+        return as_text();
     }
 
     /**
-     * Returns the WKT representation of "this".
-     *
+     * Returns the EWKT representation of "this", its WKT preceded by its SRID.
      *
      *         MEOS Functions:
-     *             <li>geoset_as_text</li>
+     *             <li>spatialset_as_ewkt</li>
      * @return A {@link String} instance.
      */
-    protected String as_wkt(){
-        int max_decimals = 15;
-        return GeneratedFunctions.tspatial_as_text(this._inner,max_decimals);
+    public String as_ewkt(){
+        return as_ewkt(15);
+    }
+
+    /**
+     * Returns the EWKT representation of "this", its WKT preceded by its SRID.
+     *
+     *         MEOS Functions:
+     *             <li>spatialset_as_ewkt</li>
+     * @param max_decimals The maximum number of decimal digits of a coordinate
+     * @return A {@link String} instance.
+     */
+    public String as_ewkt(int max_decimals){
+        return GeneratedFunctions.spatialset_as_ewkt(this._inner, max_decimals);
     }
 
     /**
      * Returns the WKT representation of "this".
      *
      *         MEOS Functions:
-     *             <li>geoset_as_text</li>
+     *             <li>spatialset_as_text</li>
      *
      * @return A {@link String} instance.
      */
-    protected String as_text(){
-        int max_decimals = 15;
-        return GeneratedFunctions.tspatial_as_text(this._inner,max_decimals);
+    public String as_text(){
+        return as_text(15);
+    }
+
+    /**
+     * Returns the WKT representation of "this".
+     *
+     *         MEOS Functions:
+     *             <li>spatialset_as_text</li>
+     *
+     * @param max_decimals The maximum number of decimal digits of a coordinate
+     * @return A {@link String} instance.
+     */
+    public String as_text(int max_decimals){
+        return GeneratedFunctions.spatialset_as_text(this._inner, max_decimals);
     }
 
     /* ------------------------- Accessors ------------------------------------- */
@@ -173,12 +180,12 @@ public abstract class GeoSet extends Set<Geometry> {
      * Returns the SRID of "this".
      *
      *         MEOS Functions:
-     *             <li>geoset_srid</li>
+     *             <li>spatialset_srid</li>
      *
      * @return An integer
      */
-    protected int srid(){
-        return GeneratedFunctions.tspatial_srid(this._inner);
+    public int srid(){
+        return GeneratedFunctions.spatialset_srid(this._inner);
     }
 
 
@@ -303,13 +310,13 @@ public abstract class GeoSet extends Set<Geometry> {
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>tpoint_roundgeoset_round</li>
+     *             <li>set_round</li>
      * @param decimals The number of decimal places to use for the coordinates.
      * @param type the type of GeoSet
      * @return A new {@link GeoSet} object of the same subtype of "this".
      */
     public GeoSet round(int decimals, String type){
-        return factory(type, GeneratedFunctions.temporal_round(this._inner,decimals));
+        return factory(type, GeneratedFunctions.set_round(this._inner,decimals));
     }
 
 
