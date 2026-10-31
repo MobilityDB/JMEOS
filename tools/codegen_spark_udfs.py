@@ -37,10 +37,13 @@ Two emission modes:
     name) -> ONE UDF that classifies each String arg by its MEOS type and routes
     to the catalog-determined backing.
 
-Wire format: temporals, spans, span sets and sets travel as their WKB bytes (a
-BinaryType column), and an argument of those kinds is also read from hex-WKB text;
-boxes, cbuffer/npoint/pose and geometries travel as TEXT; scalars are typed Spark
-columns (Integer/Double/Boolean/Long/Timestamp).
+Wire format: a type whose byte codec the catalog states (temporals, spans, span sets,
+sets, boxes, circular buffers, network points, poses ...) travels as its EWKB bytes, a
+BinaryType column, and an argument of such a type is also read from its hex-WKB text; a
+type with a text codec alone travels as that text, and a geometry as its EWKT
+(#derive_codecs); bytes MEOS reads or writes (asBinary, asEWKB, the FromBinary and FromEWKB
+readers) are a BinaryType column; scalars are typed Spark columns
+(Integer/Double/Boolean/Long/Timestamp).
 
 Usage: python3 tools/codegen_spark_udfs.py [--catalog PATH] [--out DIR] [--report]
 """
@@ -232,6 +235,10 @@ def arg_kind(canon):
     # scalar ONLY when not a pointer: int* / DateADT* are arrays/out-params, not ints.
     if b in SCALAR_ARG and "*" not in nc:
         return ("scalar",) + SCALAR_ARG[b]
+    # A byte buffer MEOS reads (the WKB of a *_from_wkb reader): the bytes of a BinaryType
+    # column, which the jar takes as a byte[] with the length that follows it folded in.
+    if nc == "uint8_t *":
+        return ("scalar", "BinaryType", "byte[]", "%s")
     # C string: a single `const char *` is a Java String (jnr marshals it), passed
     # straight to JMEOS — this is how the *_in(text) parsers take their WKT literal.
     # (char** / multi-pointer stay unmapped; the jar arity cross-check guards mismatches.)
@@ -255,6 +262,11 @@ def classify(f):
     # JMEOS swallows them and returns the buffer directly, so they are never visible.
     vis = [p for p in params
            if not (p["name"] in outset and norm(p["canonical"]) == "size_t *")]
+    # The length of an input byte buffer: the jar takes the buffer as a byte[] whose length
+    # is its own, so the size_t following a uint8_t * is never visible.
+    vis = [p for i, p in enumerate(vis)
+           if not (norm(p["canonical"]) == "size_t" and i > 0
+                   and norm(vis[i - 1]["canonical"]) == "uint8_t *")]
     rt = norm(f["returnType"]["canonical"])
     results = [p for p in vis if p["name"] in outset
                and "const" not in p["canonical"]
@@ -279,6 +291,10 @@ def ret_emit(canon, sqlop):
         return ("ptr",) + SERIAL[b]
     if t == "text *":
         return ("ptr",) + TEXT_RET
+    # A byte buffer MEOS writes (asBinary, asEWKB): the jar answers it as a byte[], its length
+    # read from the size_t * classify drops, so the UDF answers it as a BinaryType value.
+    if t == "uint8_t *":
+        return ("scalar", "BinaryType", "%s")
     if b == "TimestampTz":            # JMEOS maps TimestampTz -> OffsetDateTime
         return ("dt", "StringType", "UdfMarshal.tsOut(%s)")
     if t in INT32 or b in INT32:
@@ -360,10 +376,13 @@ def class_for(group):
 
 # Default literals for SQL-OPTIONAL trailing args (params in [sqlArity, sqlArityMax))
 # that a generated UDF supplies so it can expose the SQL-required arity instead of the
-# wider C one — e.g. asHexWKB(temporal) calls temporal_as_hexwkb(p, (byte) 4),
+# wider C one — e.g. asHexWKB(temporal) calls temporal_as_hexwkb(p, (byte) 0),
 # trajectory(temporal) calls tpoint_trajectory(p, false). Only scalar flags are
-# defaultable; if a hidden arg isn't here the UDF keeps the full C arity.
-HIDE_DEFAULT = {"bool": "false", "uint8_t": "(byte) 4", "int": "0", "int32_t": "0",
+# defaultable; if a hidden arg isn't here the UDF keeps the full C arity. Every uint8_t
+# parameter of the public API is a WKB variant, and a SQL call leaving its endian to the
+# default '' passes 0: plain WKB in the byte order of the machine for asBinary and asHexWKB,
+# the SRID for asEWKB and asHexEWKB, whose MEOS functions set WKB_EXTENDED themselves.
+HIDE_DEFAULT = {"bool": "false", "uint8_t": "(byte) 0", "int": "0", "int32_t": "0",
                 "double": "0.0", "int64_t": "0L", "uint64_t": "0L"}
 
 
@@ -392,6 +411,27 @@ def _java_bound(v, ctype):
     if re.fullmatch(r"-?\d+\.\d+", v):
         return v
     return None
+
+
+# The functions that write a type's bytes, from the catalog's typeEncodings, and the
+# SQL names of the support functions of its aggregates, from its aggregates section. Filled in
+# main() before any emit pass reads them (#type_support).
+BYTES_ENCODERS = set()
+AGGREGATE_ROLES = set()
+
+
+def type_support(f, s):
+    """Whether signature `s` of `f` is a support function CREATE TYPE binds, the receive or the
+    send of a type, which PostgreSQL calls implicitly and the dialect never names (rule 3 of
+    the input and output plan of MobilityDB #2861): a UDF names its portable reader and writer,
+    <type>FromBinary and asBinary, instead. A receive takes PostgreSQL's pseudo-type internal
+    and is no support function of an aggregate (the sqlNames of the aggregates' roles); a send
+    is the signature of a type's byte encoder taking the value alone and answering bytea,
+    where asBinary also takes the endian."""
+    args = s.get("args") or []
+    if "internal" in args:
+        return (s.get("sqlName") or f.get("sqlfn")) not in AGGREGATE_ROLES
+    return f["name"] in BYTES_ENCODERS and len(args) == 1 and s.get("ret") == "bytea"
 
 
 def published_name(f, s):
@@ -685,6 +725,29 @@ ENUM_PARSER = {}
 CONST = {}
 
 
+# MeosType name -> value for every type of the catalog's MeosType enum, filled in main(). A
+# span, span set or set states its MeosType after the byte-order byte of its WKB as a temporal
+# value does, so an overload named after a concrete one (intspan_out, tstzset_out) reads its
+# receiver through the reader of that type alone.
+TYPE_CODE = {}
+# The kind of a receiver -> the suffix of the MeosType names of that kind and the typed reader
+# of one of them in UdfMarshal.
+_CONCRETE_READER = {"K_SPAN": ("span", "spanFromOf"), "K_SPANSET": ("spanset", "spansetFromOf"),
+                    "K_SET": ("set", "setFromOf")}
+
+
+def _expected_settype(f, kind):
+    """The concrete span, span set or set type of kind `kind` a C overload takes, from its
+    name, or None: the longest MeosType name of that kind the function name starts with, as
+    #_expected_temptype reads a temporal type. spatialset_as_text, built on a type class,
+    matches none and reads every set."""
+    suffix = _CONCRETE_READER[kind][0]
+    n = f["name"]
+    cands = [t for t in TYPE_CODE if n.startswith(t + "_") and t.endswith(suffix)
+             and not (suffix == "span" and t.endswith("spanset"))]
+    return max(cands, key=len) if cands else None
+
+
 def _expected_temptype(f):
     """The concrete temporal type a C overload takes, from its name, or None.
 
@@ -714,6 +777,16 @@ def _argkinds(f):
                 ks[i] = ("ptr", "UdfMarshal.tFromOf(%%s, %d)" % TEMPTYPE_CODE[t],
                          "K_TEMPORAL:" + t)
                 break
+    # The receiver of an overload named after a concrete span, span set or set type parses
+    # through the reader of that type, so asText of an intspan reaches intspan_out and that of
+    # a tstzspan tstzspan_out, where the generic reader holds them as one overload.
+    for i, k in enumerate(ks):
+        if k and k[0] == "ptr" and k[2] in _CONCRETE_READER:
+            st = _expected_settype(f, k[2])
+            if st is not None:
+                ks[i] = ("ptr", "UdfMarshal.%s(%%s, %d)" % (_CONCRETE_READER[k[2]][1], TYPE_CODE[st]),
+                         k[2] + ":" + st)
+            break
     return ks
 
 
@@ -756,7 +829,9 @@ def emit_dispatch(name, cands, vis_arity=None):
     def geocount(f):
         return sum(1 for p in classify(f)[0] if base(p["canonical"]) == "GSERIALIZED")
     def permissiveness(f):
-        return (geocount(f), 0 if _expected_temptype(f) else 1)
+        concrete = _expected_temptype(f) or any(
+            k and k[0] == "ptr" and ":" in k[2] for k in _argkinds(f))
+        return (geocount(f), 0 if concrete else 1)
     for f in sorted(cands, key=permissiveness):
         cps = classify(f)[0]
         ks = _argkinds(f)
@@ -1536,6 +1611,21 @@ __WKB_KINDS__
         return read(o, SET_WKB, GeneratedFunctions::set_from_wkb,
             GeneratedFunctions::set_from_hexwkb, null);
     }
+    // The same parses restricted to ONE span, span set or set type, for an overload named
+    // after a concrete type (intspan_out, tstzset_out): `code` is that type's MeosType value,
+    // which its WKB states, as tFromOf restricts a temporal value.
+    static Pointer spanFromOf(Object o, int code) {
+        return read(o, java.util.Set.of(code), GeneratedFunctions::span_from_wkb,
+            GeneratedFunctions::span_from_hexwkb, null);
+    }
+    static Pointer spansetFromOf(Object o, int code) {
+        return read(o, java.util.Set.of(code), GeneratedFunctions::spanset_from_wkb,
+            GeneratedFunctions::spanset_from_hexwkb, null);
+    }
+    static Pointer setFromOf(Object o, int code) {
+        return read(o, java.util.Set.of(code), GeneratedFunctions::set_from_wkb,
+            GeneratedFunctions::set_from_hexwkb, null);
+    }
 
     // Time-restrict polymorphism (atTime / minusTime): MobilityDB resolves the time arg
     // by type (timestamptz / tstzspan / tstzset / tstzspanset), but Spark cannot overload
@@ -1765,6 +1855,8 @@ def main():
         _val = _v.get("value") if isinstance(_v, dict) else None
         if _val is not None and _nm and _nm.startswith("T_T") and "BOX" not in _nm:
             TEMPTYPE_CODE[_nm[2:].lower()] = _val
+        if _val is not None and _nm and _nm.startswith("T_"):
+            TYPE_CODE[_nm[2:].lower()] = _val
     # The value of each macro and enum member a wrapper binds or a SQL default names.
     CONST.update({x["name"]: x["value"] for x in cat.get("macros", [])
                   if isinstance(x.get("value"), (int, float))})
@@ -1788,6 +1880,16 @@ def main():
             jret, jname, jargs = m.group(1), m.group(2), m.group(3).strip()
             JSIG[jname] = (jret if "." in jret else jret.lower(),
                            0 if not jargs else len(jargs.split(",")))
+    # The byte codecs of the types and the aggregates' support functions, which #type_support
+    # reads to leave the receive and the send of a type unregistered.
+    for _e in (cat.get("typeEncodings") or {}).values():
+        _b = _e.get("bytes") or {}
+        if _b.get("encoder"):
+            BYTES_ENCODERS.add(_b["encoder"])
+    for _a in cat.get("aggregates") or []:
+        for _role in ("transition", "combine", "final", "serialize", "deserialize"):
+            if (_a.get(_role) or {}).get("sqlName"):
+                AGGREGATE_ROLES.add(_a[_role]["sqlName"])
     # The codec each value travels in, from the catalog, before any emit pass reads it.
     derive_codecs(cat, lambda n: bool(n) and (jar_syms is None or n in jar_syms))
     # The public parser of each enum the catalog states, before any emit pass reads it.
@@ -2031,8 +2133,11 @@ def main():
         # tbigintFromHexWKB …, temporal_as_tinstant behind tintInst, tfloatInst …) states each
         # name on its signatures, sqlfn being the representative: the function joins the
         # group of every name its signatures carry, as _omitted reads them.
-        for s in {published_name(f, sig) for sig in f.get("sqlSignatures") or []} \
-                or {f["sqlfn"]}:
+        sigs = f.get("sqlSignatures") or []
+        names_f = {published_name(f, sig) for sig in sigs if not type_support(f, sig)}
+        if sigs and not names_f:
+            continue
+        for s in names_f or {f["sqlfn"]}:
             if s not in names and s not in portable_names:
                 sqlgroups.setdefault(s, []).append(f)
     nsql = nsqldisp = ndropped = nskip = 0
