@@ -90,4 +90,13 @@ public class TFloatInst extends TInstant<Float> implements TFloat{
 	public Pointer getNumberInner(){
 		return inner;
 	}
+
+	/**
+	 * Returns the text of "this", its {@code as_text}.
+	 * @return A new {@link String} instance
+	 */
+	@Override
+	public String toString() {
+		return this.as_text();
+	}
 }

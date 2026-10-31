@@ -146,6 +146,17 @@ public interface TInt extends TNumber {
 	}
 
 	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tint_out</li>
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(){
+		return GeneratedFunctions.tint_out(getNumberInner());
+	}
+
+	/**
 	 * Returns a string representation of "this".
 	 *
 	 * <p>

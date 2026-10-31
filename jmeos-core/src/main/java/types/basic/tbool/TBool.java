@@ -136,6 +136,17 @@ public interface TBool {
         return GeneratedFunctions.tbool_out(getBoolInner());
     }
 
+	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tbool_out</li>
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(){
+		return GeneratedFunctions.tbool_out(getBoolInner());
+	}
+
     /**
      * Returns the string representation of "this" in WKT format.
      * <p>

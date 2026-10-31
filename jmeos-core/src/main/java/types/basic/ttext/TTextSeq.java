@@ -114,4 +114,12 @@ public class TTextSeq extends TSequence<String> implements TText{
 		return inner;
 	}
 
+	/**
+	 * Returns the text of "this", its {@code as_text}.
+	 * @return A new {@link String} instance
+	 */
+	@Override
+	public String toString() {
+		return this.as_text();
+	}
 }

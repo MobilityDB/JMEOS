@@ -62,4 +62,13 @@ public abstract class TPointSeq extends TSequence<TPoint> implements TPoint {
 
     public abstract Pointer createStringInner(String str);
     public abstract Pointer createInner(Pointer inner);
+
+	/**
+	 * Returns the text of "this", its {@code as_text}.
+	 * @return A new {@link String} instance
+	 */
+	@Override
+	public String toString() {
+		return this.as_text();
+	}
 }
