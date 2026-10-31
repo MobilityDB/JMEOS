@@ -106,7 +106,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return Pointer type
      */
 
-    public <T> T from_wkb(byte[] wkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static <T> T from_wkb(byte[] wkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = GeneratedFunctions.set_from_wkb(wkb);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);
@@ -117,7 +117,7 @@ public abstract class Set<T extends Object> implements Collection, Base {
      * @return T type
      */
 
-    public <T> T from_hexwkb(String hexwkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static <T> T from_hexwkb(String hexwkb, Class<T> spansetType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Pointer spanPointer = GeneratedFunctions.set_from_hexwkb(hexwkb);
         Constructor<T> constructor = spansetType.getConstructor(Pointer.class);
         return constructor.newInstance(spanPointer);

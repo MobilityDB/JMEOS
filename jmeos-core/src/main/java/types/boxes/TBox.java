@@ -182,6 +182,41 @@ public class TBox implements Box {
 		return new TBox(GeneratedFunctions.tbox_from_hexwkb(hexwkb));
 	}
 
+	/**
+	 * Returns a "TBox" from its WKB representation.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tbox_from_wkb</li>
+	 * @param wkb WKB representation
+	 * @return a new TBox instance
+	 */
+	public static TBox from_wkb(byte[] wkb) {
+		return new TBox(GeneratedFunctions.tbox_from_wkb(wkb));
+	}
+
+	/**
+	 * Returns the WKB representation of "this", in the byte order of the machine.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tbox_as_wkb</li>
+	 * @return The WKB bytes
+	 */
+	public byte[] as_wkb() {
+		return GeneratedFunctions.tbox_as_wkb(this._inner, (byte) 0);
+	}
+
+	/**
+	 * Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
+	 * machine.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tbox_as_hexwkb</li>
+	 * @return The hex-encoded WKB string
+	 */
+	public String as_hexwkb() {
+		return GeneratedFunctions.tbox_as_hexwkb(this._inner, (byte) 0);
+	}
+
 
 
 	public static TBox from_value_number(Number value)  {

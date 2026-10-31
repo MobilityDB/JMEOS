@@ -25,6 +25,7 @@
 
 package collections.time;
 
+import types.collections.base.Set;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -90,8 +91,8 @@ class DateSetTest {
     @Test
     public void testFromAsConstructor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         assertEquals(dset.toString(), new dateset(dset.toString()).toString());
-        String wkb= dset.from_wkb(dset.as_wkb(), dateset.class).toString();
-        String hexwkb= dset.from_hexwkb(dset.as_hexwkb(), dateset.class).toString();
+        String wkb= Set.from_wkb(dset.as_wkb(), dateset.class).toString();
+        String hexwkb= Set.from_hexwkb(dset.as_hexwkb(), dateset.class).toString();
         assertEquals(dset.toString(), wkb);
         System.out.println(wkb);
         assertEquals(dset.toString(), hexwkb);

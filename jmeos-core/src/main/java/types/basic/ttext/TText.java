@@ -123,9 +123,8 @@ public interface TText {
         MEOS Functions:
             ttext_from_mfjson
 */
-    default TText from_mfjson(String mfjson){
-        Pointer result= GeneratedFunctions.ttext_from_mfjson(mfjson);
-        return (TText) Factory.create_temporal(result, getCustomType(), getTemporalType());
+    static TText from_mfjson(String mfjson){
+        return (TText) Factory.create_temporal(GeneratedFunctions.ttext_from_mfjson(mfjson));
     }
 
 

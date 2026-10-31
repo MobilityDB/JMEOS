@@ -24,6 +24,8 @@
  *****************************************************************************/
 
 package types.temporal;
+import functions.GeneratedFunctions;
+import functions.MeosType;
 import jnr.ffi.Pointer;
 import types.basic.tbool.TBoolInst;
 import types.basic.tbool.TBoolSeq;
@@ -54,6 +56,45 @@ import static types.temporal.TemporalType.*;
 public final class Factory{
 
     private Factory(){
+    }
+
+    /**
+     * The byte offset of the temporal type in a MEOS Temporal, after its int32 varlena header,
+     * as the catalog's structure Temporal states it (temptype at bit 32).
+     */
+    private static final long TEMPTYPE_OFFSET = 4;
+
+    /**
+     * Returns the object of the class of a temporal value MEOS returns, chosen by the temporal
+     * type and the subtype the value states, so a reader needs no value of that class.
+     * <p>
+     *         MEOS Functions:
+     *             <li>temporal_subtype</li>
+     *
+     * @param inner The temporal value, or null
+     * @return The object of the class of the value, or null for a null pointer
+     * @throws IllegalArgumentException for a temporal type JMEOS has no class of
+     */
+    public static Temporal create_temporal(Pointer inner){
+        if (inner == null)
+            return null;
+        int temptype = inner.getByte(TEMPTYPE_OFFSET) & 0xFF;
+        String customType;
+        if (temptype == MeosType.T_TBOOL.getValue()) customType = "Boolean";
+        else if (temptype == MeosType.T_TINT.getValue()) customType = "Integer";
+        else if (temptype == MeosType.T_TFLOAT.getValue()) customType = "Float";
+        else if (temptype == MeosType.T_TTEXT.getValue()) customType = "String";
+        else if (temptype == MeosType.T_TGEOMPOINT.getValue()) customType = "Geom";
+        else if (temptype == MeosType.T_TGEOGPOINT.getValue()) customType = "Geog";
+        else
+            throw new IllegalArgumentException("JMEOS has no class of the temporal type " + temptype);
+        TemporalType temporalType = switch (GeneratedFunctions.temporal_subtype(inner)) {
+            case "Instant" -> TEMPORAL_INSTANT;
+            case "Sequence" -> TEMPORAL_SEQUENCE;
+            case "SequenceSet" -> TEMPORAL_SEQUENCE_SET;
+            default -> throw new IllegalArgumentException("unknown temporal subtype");
+        };
+        return create_temporal(inner, customType, temporalType);
     }
 
     public static Temporal create_temporal(Pointer inner, String customType, TemporalType temporalType){

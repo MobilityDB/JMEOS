@@ -138,15 +138,23 @@ public class IntSpan extends Span<Integer> implements Number{
     public IntSpan copy(){
         return new IntSpan(GeneratedFunctions.span_copy(this._inner));
     }
-    /*
-    public IntSpan from_wkb(Byte b){
-        return new IntSpan(GeneratedFunctions.span_from_wkb(b));
+    /**
+     * Returns an IntSpan from its WKB representation.
+     *
+     *  <p>
+     *
+     *         MEOS Functions:
+     *             <li>span_from_wkb</li>
+     *
+     * @param wkb WKB representation
+     * @return a new IntSpan instance
+     */
+    public static IntSpan from_wkb(byte[] wkb){
+        return new IntSpan(GeneratedFunctions.span_from_wkb(wkb));
     }
 
-     */
-
     /**
-     * Returns a tstzspan from its WKB representation in hex-encoded ASCII.
+     * Returns an IntSpan from its WKB representation in hex-encoded ASCII.
      *
      *  <p>
      *
@@ -154,9 +162,9 @@ public class IntSpan extends Span<Integer> implements Number{
      *             <li>span_from_hexwkb</li>
      *
      * @param str WKB representation in hex-encoded ASCII
-     * @return
+     * @return a new IntSpan instance
      */
-    public IntSpan from_hexwkb(String str){
+    public static IntSpan from_hexwkb(String str){
         return new IntSpan(GeneratedFunctions.span_from_hexwkb(str));
     }
 

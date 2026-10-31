@@ -120,9 +120,8 @@ public interface TFloat extends TNumber {
         MEOS Functions:
             tfloat_from_mfjson
 */
-	default TFloat from_mfjson(String mfjson) {
-			Pointer resPointer= GeneratedFunctions.tfloat_from_mfjson(mfjson);
-			return (TFloat) Factory.create_temporal(resPointer, getCustomType(), getTemporalType());
+	static TFloat from_mfjson(String mfjson){
+		return (TFloat) Factory.create_temporal(GeneratedFunctions.tfloat_from_mfjson(mfjson));
 	}
 		
 
