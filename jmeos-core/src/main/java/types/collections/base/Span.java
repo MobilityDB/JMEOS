@@ -134,21 +134,21 @@ public abstract class Span<T extends Object> implements Collection, Base{
     }
 
     /**
-     * Returns the WKB representation
+     * Returns the WKB representation, in the byte order of the machine and without an SRID,
+     * as MobilityDB's asBinary writes it
      * @return byte[] type
      */
     public byte[] as_wkb() {
-        return GeneratedFunctions.span_as_wkb(this._inner, (byte) 4);
+        return GeneratedFunctions.span_as_wkb(this._inner, (byte) 0);
     }
 
     /**
-     * Returns the WKB representation in hex-encoded ASCII.
+     * Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine and
+     * without an SRID, as MobilityDB's asHexWKB writes it
      * @return String type
      */
     public String as_hexwkb() {
-        String[] result= new String[]{GeneratedFunctions.span_as_hexwkb(this._inner, (byte) -1)};
-//        System.out.println(result[0]);
-        return result[0];
+        return GeneratedFunctions.span_as_hexwkb(this._inner, (byte) 0);
     }
 
     /**

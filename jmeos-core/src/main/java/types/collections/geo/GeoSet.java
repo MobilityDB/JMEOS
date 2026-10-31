@@ -96,6 +96,30 @@ public abstract class GeoSet extends Set<Geometry> {
     }
 
     /**
+     * Returns the EWKB representation of "this", in the byte order of the machine and with its
+     * SRID, as MobilityDB's asEWKB writes it.
+     * <p>
+     *         MEOS Functions:
+     *             <li>spatialset_as_ewkb</li>
+     * @return The EWKB bytes
+     */
+    public byte[] as_ewkb(){
+    	return GeneratedFunctions.spatialset_as_ewkb(this.get_inner(), (byte) 0);
+    }
+
+    /**
+     * Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+     * machine and with its SRID, as MobilityDB's asHexEWKB writes it.
+     * <p>
+     *         MEOS Functions:
+     *             <li>spatialset_as_hexewkb</li>
+     * @return The hex-encoded EWKB string
+     */
+    public String as_hexewkb(){
+    	return GeneratedFunctions.spatialset_as_hexewkb(this.get_inner(), (byte) 0);
+    }
+
+    /**
      * Returns the EWKT representation of "this", its WKT preceded by its SRID.
      *
      *         MEOS Functions:

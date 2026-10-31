@@ -61,6 +61,30 @@ public class GeometrySet extends GeoSet{
 
     public String getType(){return type;}
 
+    /**
+     * Returns a "GeometrySet" from its EWKB representation, which states its SRID.
+     * <p>
+     *         MEOS Functions:
+     *             <li>set_from_wkb</li>
+     * @param ewkb EWKB representation
+     * @return a new GeometrySet instance
+     */
+    public static GeometrySet from_ewkb(byte[] ewkb) {
+        return new GeometrySet(GeneratedFunctions.set_from_wkb(ewkb));
+    }
+
+    /**
+     * Returns a "GeometrySet" from its EWKB representation in hex-encoded ASCII, which states its SRID.
+     * <p>
+     *         MEOS Functions:
+     *             <li>set_from_hexwkb</li>
+     * @param hexewkb EWKB representation in hex-encoded ASCII
+     * @return a new GeometrySet instance
+     */
+    public static GeometrySet from_hexewkb(String hexewkb) {
+        return new GeometrySet(GeneratedFunctions.set_from_hexwkb(hexewkb));
+    }
+
     @Override
     public Pointer get_inner(){
         return this._inner;

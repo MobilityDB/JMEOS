@@ -62,6 +62,30 @@ public class GeographySet extends GeoSet{
 
     public String getType(){return type;}
 
+    /**
+     * Returns a "GeographySet" from its EWKB representation, which states its SRID.
+     * <p>
+     *         MEOS Functions:
+     *             <li>set_from_wkb</li>
+     * @param ewkb EWKB representation
+     * @return a new GeographySet instance
+     */
+    public static GeographySet from_ewkb(byte[] ewkb) {
+        return new GeographySet(GeneratedFunctions.set_from_wkb(ewkb));
+    }
+
+    /**
+     * Returns a "GeographySet" from its EWKB representation in hex-encoded ASCII, which states its SRID.
+     * <p>
+     *         MEOS Functions:
+     *             <li>set_from_hexwkb</li>
+     * @param hexewkb EWKB representation in hex-encoded ASCII
+     * @return a new GeographySet instance
+     */
+    public static GeographySet from_hexewkb(String hexewkb) {
+        return new GeographySet(GeneratedFunctions.set_from_hexwkb(hexewkb));
+    }
+
     @Override
     public Pointer get_inner(){
         return this._inner;

@@ -139,6 +139,30 @@ public interface TPoint extends Serializable {
 		return GeneratedFunctions.tspatial_as_ewkt(getPointInner(),decimals);
 	}
 
+	/**
+	 * Returns the EWKB representation of "this", in the byte order of the machine and with its
+	 * SRID, as MobilityDB's asEWKB writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tspatial_as_ewkb</li>
+	 * @return The EWKB bytes
+	 */
+	default byte[] as_ewkb(){
+		return GeneratedFunctions.tspatial_as_ewkb(getPointInner(), (byte) 0);
+	}
+
+	/**
+	 * Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+	 * machine and with its SRID, as MobilityDB's asHexEWKB writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tspatial_as_hexewkb</li>
+	 * @return The hex-encoded EWKB string
+	 */
+	default String as_hexewkb(){
+		return GeneratedFunctions.tspatial_as_hexewkb(getPointInner(), (byte) 0);
+	}
+
 
 	/**
 	 * Returns the trajectory of the temporal point as a GeoJSON string.
