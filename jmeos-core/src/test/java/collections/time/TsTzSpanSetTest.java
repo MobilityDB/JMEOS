@@ -443,4 +443,11 @@ class TsTzSpanSetTest {
 		assertFalse(this.pset.greaterThanOrEqual(t));
 	}
 
+	/** A span set built from a pointer is the span set it points to, also to the methods of SpanSet. */
+	@Test
+	public void testFromPointer(){
+		tstzspanset copy = new tstzspanset(pset.get_inner());
+		assertEquals(pset.toString(), copy.toString());
+		assertEquals(pset.as_hexwkb(), copy.as_hexwkb());
+	}
 }

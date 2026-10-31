@@ -124,4 +124,13 @@ public class TextSetTest {
         assertEquals(tset.union(new TextSet("{A}")).toString(),"{\"A\", \"BB\", \"ccc\"}");
         assertEquals(tset.union(new TextSet("{a, BB, ccc}")).toString(),"{\"A\", \"BB\", \"a\", \"ccc\"}");
     }
+
+    /** A set built from a pointer is the set it points to, also to the methods of Set. */
+    @Test
+    public void testFromPointer(){
+        TextSet copy = new TextSet(tset.get_inner());
+        assertEquals(tset.toString(), copy.toString());
+        assertEquals(tset.num_elements(), copy.num_elements());
+        assertArrayEquals(tset.as_wkb(), copy.as_wkb());
+    }
 }

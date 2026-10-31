@@ -214,7 +214,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 
 	@Override
 	public Pointer createInner(Pointer inner){
-		return _inner;
+		return inner;
 	}
 
 	@Override

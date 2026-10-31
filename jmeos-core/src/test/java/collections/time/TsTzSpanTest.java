@@ -588,4 +588,12 @@ class TsTzSpanTest {
 		assertFalse(this.tstzspan.greaterThanOrEqual(t));
 	}
 
+	/** A span built from a pointer is the span it points to, also to the methods of Span. */
+	@Test
+	public void testFromPointer(){
+		tstzspan span = new tstzspan("[2019-09-01 00:00:00+00, 2019-09-02 00:00:00+00]");
+		tstzspan copy = new tstzspan(span.get_inner());
+		assertEquals(span.toString(), copy.toString());
+		assertEquals(span.as_hexwkb(), copy.as_hexwkb());
+	}
 }
