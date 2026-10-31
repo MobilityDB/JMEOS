@@ -272,6 +272,54 @@ public class STBox implements Box {
 		return GeneratedFunctions.stbox_as_hexwkb(this._inner, (byte) 0);
 	}
 
+	/**
+	 * Returns a "STBox" from its EWKB representation, which states its SRID.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_from_wkb</li>
+	 * @param ewkb EWKB representation
+	 * @return a new STBox instance
+	 */
+	public static STBox from_ewkb(byte[] ewkb) {
+		return new STBox(GeneratedFunctions.stbox_from_wkb(ewkb));
+	}
+
+	/**
+	 * Returns a "STBox" from its EWKB representation in hex-encoded ASCII, which states its SRID.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_from_hexwkb</li>
+	 * @param hexewkb EWKB representation in hex-encoded ASCII
+	 * @return a new STBox instance
+	 */
+	public static STBox from_hexewkb(String hexewkb) {
+		return new STBox(GeneratedFunctions.stbox_from_hexwkb(hexewkb));
+	}
+
+	/**
+	 * Returns the EWKB representation of "this", in the byte order of the machine and with its
+	 * SRID, as MobilityDB's asEWKB writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_as_ewkb</li>
+	 * @return The EWKB bytes
+	 */
+	public byte[] as_ewkb(){
+		return GeneratedFunctions.stbox_as_ewkb(this._inner, (byte) 0);
+	}
+
+	/**
+	 * Returns the EWKB representation of "this" in hex-encoded ASCII, in the byte order of the
+	 * machine and with its SRID, as MobilityDB's asHexEWKB writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>stbox_as_hexewkb</li>
+	 * @return The hex-encoded EWKB string
+	 */
+	public String as_hexewkb(){
+		return GeneratedFunctions.stbox_as_hexewkb(this._inner, (byte) 0);
+	}
+
 
 	/**
 	 * Returns a "STBox" from a "Geometry".

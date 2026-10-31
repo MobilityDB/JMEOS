@@ -74,9 +74,14 @@ public class TextSet extends Set<String> {
     }
 
 
+    /**
+     * Returns the WKB representation in hex-encoded ASCII, in the byte order of the machine,
+     * as MobilityDB's asHexWKB writes it
+     * @return String type
+     */
+    @Override
     public String as_hexwkb(){
-        String pr = GeneratedFunctions.set_as_hexwkb(this.get_inner(),(byte) -1);
-        return pr;
+        return GeneratedFunctions.set_as_hexwkb(this.get_inner(), (byte) 0);
     }
 
 

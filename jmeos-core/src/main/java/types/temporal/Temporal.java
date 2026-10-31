@@ -117,32 +117,30 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return Factory.create_temporal(GeneratedFunctions.temporal_from_wkb(wkb));
     }
 
-/**
-        Returns the temporal object as a hex-encoded WKB string.
-
-        Returns:
-            The temporal object as a hex-encoded WKB string.
-
-        MEOS Functions:
-            temporal_as_hexwkb
-*/
-    public String as_hexwkb(Pointer wkb, long size){
-        String[] result= new String[]{GeneratedFunctions.temporal_as_hexwkb(this.inner, (byte) -1)};
-//        System.out.println(result[0]);
-        return result[0];
+    /**
+     * Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
+     * machine and without an SRID, as MobilityDB's asHexWKB writes it.
+     * <p>
+     *         MEOS Functions:
+     *             <li>temporal_as_hexwkb</li>
+     *
+     * @return The hex-encoded WKB string.
+     */
+    public String as_hexwkb(){
+        return GeneratedFunctions.temporal_as_hexwkb(this.inner, (byte) 0);
     }
 
-/**
-        Returns the temporal object as a hex-encoded WKB string.
-
-        Returns:
-            The temporal object as a hex-encoded WKB string.
-
-        MEOS Functions:
-            temporal_as_wkb
-*/
+    /**
+     * Returns the WKB representation of "this", in the byte order of the machine and without
+     * an SRID, as MobilityDB's asBinary writes it.
+     * <p>
+     *         MEOS Functions:
+     *             <li>temporal_as_wkb</li>
+     *
+     * @return The WKB bytes.
+     */
     public byte[] as_wkb(){
-        return GeneratedFunctions.temporal_as_wkb(this.inner, (byte) 4);
+        return GeneratedFunctions.temporal_as_wkb(this.inner, (byte) 0);
     }
 
 
