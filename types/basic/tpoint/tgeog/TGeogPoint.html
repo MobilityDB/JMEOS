@@ -167,43 +167,48 @@ extends <a href="../TPoint.html" title="interface in types.basic.tpoint">TPoint<
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Creates a temporal geographic point from a base geometry and a time value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCustomType()" class="member-name-link">getCustomType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPointInner()" class="member-name-link">getPointInner</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="TGeogPoint.html" title="interface in types.basic.tpoint.tgeog">TGeogPoint</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;mfjson)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">Returns the temporal point an MF-JSON string writes, of the class of its subtype.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCustomType()" class="member-name-link">getCustomType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../../temporal/TemporalType.html" title="enum class in types.temporal">TemporalType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTemporalType()" class="member-name-link">getTemporalType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPointInner()" class="member-name-link">getPointInner</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#never_equal(org.locationtech.jts.geom.Geometry)" class="member-name-link">never_equal</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../../temporal/TemporalType.html" title="enum class in types.temporal">TemporalType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTemporalType()" class="member-name-link">getTemporalType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#never_equal(org.locationtech.jts.geom.Geometry)" class="member-name-link">never_equal</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns whether "this" is never equal to "value".</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#never_not_equal(org.locationtech.jts.geom.Geometry)" class="member-name-link">never_not_equal</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#never_not_equal(org.locationtech.jts.geom.Geometry)" class="member-name-link">never_not_equal</a><wbr>(org.locationtech.jts.geom.Geometry&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns whether "self" is never different to "value".</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#temporal_equal(org.locationtech.jts.geom.Point)" class="member-name-link">temporal_equal</a><wbr>(org.locationtech.jts.geom.Point&nbsp;other)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#temporal_equal(org.locationtech.jts.geom.Point)" class="member-name-link">temporal_equal</a><wbr>(org.locationtech.jts.geom.Point&nbsp;other)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the temporal equality relation between "this" and "other".</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#temporal_not_equal(org.locationtech.jts.geom.Point)" class="member-name-link">temporal_not_equal</a><wbr>(org.locationtech.jts.geom.Point&nbsp;other)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#temporal_not_equal(org.locationtech.jts.geom.Point)" class="member-name-link">temporal_not_equal</a><wbr>(org.locationtech.jts.geom.Point&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the temporal inequality relation between "this" and "other".</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../tgeom/TGeomPoint.html" title="interface in types.basic.tpoint.tgeom">TGeomPoint</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#to_geometric()" class="member-name-link">to_geometric</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../tgeom/TGeomPoint.html" title="interface in types.basic.tpoint.tgeom">TGeomPoint</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#to_geometric()" class="member-name-link">to_geometric</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns a copy of "this" converted to geometric coordinates.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../../collections/geo/GeographySet.html" title="class in types.collections.geo">GeographySet</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#value_set(int)" class="member-name-link">value_set</a><wbr>(int&nbsp;precision)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../../collections/geo/GeographySet.html" title="class in types.collections.geo">GeographySet</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#value_set(int)" class="member-name-link">value_set</a><wbr>(int&nbsp;precision)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -260,6 +265,22 @@ extends <a href="../TPoint.html" title="interface in types.basic.tpoint">TPoint<
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../TPoint.html#getCustomType()">getCustomType</a></code>&nbsp;in interface&nbsp;<code><a href="../TPoint.html" title="interface in types.basic.tpoint">TPoint</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="from_mfjson(java.lang.String)">
+<h3>from_mfjson</h3>
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="TGeogPoint.html" title="interface in types.basic.tpoint.tgeog">TGeogPoint</a></span>&nbsp;<span class="element-name">from_mfjson</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;mfjson)</span></div>
+<div class="block">Returns the temporal point an MF-JSON string writes, of the class of its subtype.
+ <p>
+         MEOS Functions:
+             <li>tgeogpoint_from_mfjson</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mfjson</code> - The MF-JSON string</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="TGeogPoint.html" title="interface in types.basic.tpoint.tgeog"><code>TGeogPoint</code></a> instance</dd>
 </dl>
 </section>
 </li>

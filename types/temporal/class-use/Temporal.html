@@ -588,172 +588,178 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;customType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static <a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Factory.</span><code><a href="../Factory.html#create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner,
+<div class="col-second even-row-color"><span class="type-name-label">Factory.</span><code><a href="../Factory.html#create_temporal(jnr.ffi.Pointer)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the object of the class of a temporal value MEOS returns, chosen by the temporal
+ type and the subtype the value states, so a reader needs no value of that class.</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Factory.</span><code><a href="../Factory.html#create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;customType,
  <a href="../TemporalType.html" title="enum class in types.temporal">TemporalType</a>&nbsp;temporalType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#delete(java.lang.Object,java.lang.Boolean)" class="member-name-link">delete</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#delete(java.lang.Object,java.lang.Boolean)" class="member-name-link">delete</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&nbsp;connect)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Returns a new :class:`Temporal` object equal to `self` with elements at
         `other` removed.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#end_instant()" class="member-name-link">end_instant</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#end_instant()" class="member-name-link">end_instant</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns the last instant in "this".</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;str)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Returns a temporal object from a hex-encoded WKB string.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_merge(jnr.ffi.Pointer)" class="member-name-link">from_merge</a><wbr>(jnr.ffi.Pointer&nbsp;temporals)</code></div>
+<div class="col-first even-row-color"><code>static <a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexwkb)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Returns a temporal object that is the result of merging the given
-            temporal objects.</div>
+<div class="block">Returns the temporal value a hex-encoded WKB string writes, of the class of its type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_merge_array(java.util.List)" class="member-name-link">from_merge_array</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&gt;&nbsp;temporals)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_merge(jnr.ffi.Pointer)" class="member-name-link">from_merge</a><wbr>(jnr.ffi.Pointer&nbsp;temporals)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Returns a temporal object that is the result of merging the given
             temporal objects.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb</a><wbr>(byte[]&nbsp;wkb)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_merge_array(java.util.List)" class="member-name-link">from_merge_array</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&gt;&nbsp;temporals)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Returns a temporal object from WKB bytes.</div>
+<div class="block">Returns a temporal object that is the result of merging the given
+            temporal objects.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#insert(types.temporal.Temporal)" class="member-name-link">insert</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other)</code></div>
+<div class="col-first odd-row-color"><code>static <a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb</a><wbr>(byte[]&nbsp;wkb)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Returns the temporal value WKB bytes write, of the class of its type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#insert(types.temporal.Temporal)" class="member-name-link">insert</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new <a href="../Temporal.html" title="class in types.temporal"><code>Temporal</code></a> object equal to "this" with "other"
          inserted.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#insert(types.temporal.Temporal,boolean)" class="member-name-link">insert</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other,
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#insert(types.temporal.Temporal,boolean)" class="member-name-link">insert</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other,
  boolean&nbsp;connect)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Returns a new <a href="../Temporal.html" title="class in types.temporal"><code>Temporal</code></a> object equal to "this" with "other"
          inserted.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#instant_n(int)" class="member-name-link">instant_n</a><wbr>(int&nbsp;n)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#instant_n(int)" class="member-name-link">instant_n</a><wbr>(int&nbsp;n)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns the n-th instant in "this".</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#max_instant()" class="member-name-link">max_instant</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#max_instant()" class="member-name-link">max_instant</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns the instant in "this" with the maximum value.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#merge(java.lang.Object)" class="member-name-link">merge</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#merge(java.lang.Object)" class="member-name-link">merge</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new :class:`Temporal` object that is the result of merging
             `self` with `other`.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#min_instant()" class="member-name-link">min_instant</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#min_instant()" class="member-name-link">min_instant</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns the instant in "this" with the minimum value.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus(types.collections.time.Time)" class="member-name-link">minus</a><wbr>(<a href="../../collections/time/Time.html" title="interface in types.collections.time">Time</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus(types.collections.time.Time)" class="member-name-link">minus</a><wbr>(<a href="../../collections/time/Time.html" title="interface in types.collections.time">Time</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new temporal object with the values of "this" removing those
          happening at "other".</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus_max()" class="member-name-link">minus_max</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus_max()" class="member-name-link">minus_max</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns a new temporal object containing the times "this" is not at
          its maximum value.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus_min()" class="member-name-link">minus_min</a>()</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#minus_min()" class="member-name-link">minus_min</a>()</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new temporal object containing the times "this" is not at
          its minimum value.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#scale_time(java.time.Duration)" class="member-name-link">scale_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#scale_time(java.time.Duration)" class="member-name-link">scale_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns a new :class:`Temporal` scaled so the temporal dimension has
             duration ``duration``.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#set_interpolation(types.temporal.TInterpolation)" class="member-name-link">set_interpolation</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#set_interpolation(types.temporal.TInterpolation)" class="member-name-link">set_interpolation</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new <a href="../Temporal.html" title="class in types.temporal"><code>Temporal</code></a> object equal to "this" with the given
          interpolation.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#shift_scale_time(java.time.Duration,java.time.Duration)" class="member-name-link">shift_scale_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;shift,
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#shift_scale_time(java.time.Duration,java.time.Duration)" class="member-name-link">shift_scale_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;shift,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;scale)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Returns a new :class:`Temporal` with the time dimension shifted by
             ``shift`` and scaled so the temporal dimension has duration
             ``duration``.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#shift_time(java.time.Duration)" class="member-name-link">shift_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#shift_time(java.time.Duration)" class="member-name-link">shift_time</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new :class:`Temporal` with the temporal dimension shifted by
         ``delta``.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#start_instant()" class="member-name-link">start_instant</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#start_instant()" class="member-name-link">start_instant</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns the first instant in "this".</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#stops(double,java.time.Duration)" class="member-name-link">stops</a><wbr>(double&nbsp;max_distance,
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#stops(double,java.time.Duration)" class="member-name-link">stops</a><wbr>(double&nbsp;max_distance,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;max_duration)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Return the subsequences where the objects stay within an area with a
         given maximum size for at least the specified duration.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#temporal_precision(java.lang.Object,java.lang.Object)" class="member-name-link">temporal_precision</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;duration,
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#temporal_precision(java.lang.Object,java.lang.Object)" class="member-name-link">temporal_precision</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;duration,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;start)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Returns a new :class:`Temporal` with precision reduced to ``duration``.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#temporal_sample(java.lang.Object,java.lang.Object,types.temporal.TInterpolation)" class="member-name-link">temporal_sample</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;duration,
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#temporal_sample(java.lang.Object,java.lang.Object,types.temporal.TInterpolation)" class="member-name-link">temporal_sample</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;duration,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;start,
  <a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Returns a new :class:`Temporal` downsampled with respect to ``duration``.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_instant()" class="member-name-link">to_instant</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_instant()" class="member-name-link">to_instant</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns "this" as a <a href="../TInstant.html" title="class in types.temporal"><code>TInstant</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_sequence(types.temporal.TInterpolation)" class="member-name-link">to_sequence</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_sequence(types.temporal.TInterpolation)" class="member-name-link">to_sequence</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Converts "this" into a <a href="../TSequence.html" title="class in types.temporal"><code>TSequence</code></a>.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_sequenceset(types.temporal.TInterpolation)" class="member-name-link">to_sequenceset</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#to_sequenceset(types.temporal.TInterpolation)" class="member-name-link">to_sequenceset</a><wbr>(<a href="../TInterpolation.html" title="enum class in types.temporal">TInterpolation</a>&nbsp;interpolation)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns "this" as a new <a href="../TSequenceSet.html" title="class in types.temporal"><code>TSequenceSet</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#update(types.temporal.Temporal)" class="member-name-link">update</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#update(types.temporal.Temporal)" class="member-name-link">update</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a new <a href="../Temporal.html" title="class in types.temporal"><code>Temporal</code></a> object equal to "this" updated with
          "other".</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#update(types.temporal.Temporal,boolean)" class="member-name-link">update</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other,
+<div class="col-first odd-row-color"><code><a href="../Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Temporal.</span><code><a href="../Temporal.html#update(types.temporal.Temporal,boolean)" class="member-name-link">update</a><wbr>(<a href="../Temporal.html" title="class in types.temporal">Temporal</a>&nbsp;other,
  boolean&nbsp;connect)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Returns a new <a href="../Temporal.html" title="class in types.temporal"><code>Temporal</code></a> object equal to "this" updated with
          "other".</div>
 </div>

@@ -311,10 +311,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the Frechet distance between "this" and "other".</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;str)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a temporal object from a hex-encoded WKB string.</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexwkb)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the temporal value a hex-encoded WKB string writes, of the class of its type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#from_merge(jnr.ffi.Pointer)" class="member-name-link">from_merge</a><wbr>(jnr.ffi.Pointer&nbsp;temporals)</code></div>
@@ -328,10 +328,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="block">Returns a temporal object that is the result of merging the given
             temporal objects.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb</a><wbr>(byte[]&nbsp;wkb)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a temporal object from WKB bytes.</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb</a><wbr>(byte[]&nbsp;wkb)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the temporal value WKB bytes write, of the class of its type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCustomType()" class="member-name-link">getCustomType</a>()</code></div>
@@ -767,33 +767,33 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <li>
 <section class="detail" id="from_hexwkb(java.lang.String)">
 <h3>from_hexwkb</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Temporal.html" title="class in types.temporal">Temporal</a></span>&nbsp;<span class="element-name">from_hexwkb</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;str)</span></div>
-<div class="block">Returns a temporal object from a hex-encoded WKB string.
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Temporal.html" title="class in types.temporal">Temporal</a></span>&nbsp;<span class="element-name">from_hexwkb</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hexwkb)</span></div>
+<div class="block">Returns the temporal value a hex-encoded WKB string writes, of the class of its type.
  <p>
          MEOS Functions:
              <li>temporal_from_hexwkb</li></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>str</code> - The hex-encoded WKB string.</dd>
+<dd><code>hexwkb</code> - The hex-encoded WKB string.</dd>
 <dt>Returns:</dt>
-<dd>A temporal object from a hex-encoded WKB string.</dd>
+<dd>The temporal value, an object of the class of its type and subtype.</dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="from_wkb(byte[])">
 <h3>from_wkb</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Temporal.html" title="class in types.temporal">Temporal</a></span>&nbsp;<span class="element-name">from_wkb</span><wbr><span class="parameters">(byte[]&nbsp;wkb)</span></div>
-<div class="block">Returns a temporal object from WKB bytes.
-
-        Args:
-            wkb: The WKB string.
-
-        Returns:
-            A temporal object from WKB bytes.
-
-        MEOS Functions:
-            temporal_from_wkb</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Temporal.html" title="class in types.temporal">Temporal</a></span>&nbsp;<span class="element-name">from_wkb</span><wbr><span class="parameters">(byte[]&nbsp;wkb)</span></div>
+<div class="block">Returns the temporal value WKB bytes write, of the class of its type.
+ <p>
+         MEOS Functions:
+             <li>temporal_from_wkb</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>wkb</code> - The WKB bytes.</dd>
+<dt>Returns:</dt>
+<dd>The temporal value, an object of the class of its type and subtype.</dd>
+</dl>
 </section>
 </li>
 <li>

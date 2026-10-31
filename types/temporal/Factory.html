@@ -38,7 +38,7 @@ loadScripts(document, 'script');</script>
 <p>Summary:</p>
 <ul>
 <li>Nested</li>
-<li>Field</li>
+<li><a href="#field-summary">Field</a></li>
 <li><a href="#constructor-summary">Constr</a></li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li><a href="#constructor-detail">Constr</a></li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -58,13 +58,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -99,6 +99,24 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>private static final long</code></div>
+<div class="col-second even-row-color"><code><a href="#TEMPTYPE_OFFSET" class="member-name-link">TEMPTYPE_OFFSET</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The byte offset of the temporal type in a MEOS Temporal, after its int32 varlena header,
+ as the catalog's structure Temporal states it (temptype at bit 32).</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -138,10 +156,16 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;customType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create_temporal(jnr.ffi.Pointer)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the object of the class of a temporal value MEOS returns, chosen by the temporal
+ type and the subtype the value states, so a reader needs no value of that class.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Temporal.html" title="class in types.temporal">Temporal</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)" class="member-name-link">create_temporal</a><wbr>(jnr.ffi.Pointer&nbsp;inner,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;customType,
  <a href="TemporalType.html" title="enum class in types.temporal">TemporalType</a>&nbsp;temporalType)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -154,6 +178,30 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="TEMPTYPE_OFFSET">
+<h3>TEMPTYPE_OFFSET</h3>
+<div class="member-signature"><span class="modifiers">private static final</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">TEMPTYPE_OFFSET</span></div>
+<div class="block">The byte offset of the temporal type in a MEOS Temporal, after its int32 varlena header,
+ as the catalog's structure Temporal states it (temptype at bit 32).</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../constant-values.html#types.temporal.Factory.TEMPTYPE_OFFSET">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -173,6 +221,25 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="create_temporal(jnr.ffi.Pointer)">
+<h3>create_temporal</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Temporal.html" title="class in types.temporal">Temporal</a></span>&nbsp;<span class="element-name">create_temporal</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;inner)</span></div>
+<div class="block">Returns the object of the class of a temporal value MEOS returns, chosen by the temporal
+ type and the subtype the value states, so a reader needs no value of that class.
+ <p>
+         MEOS Functions:
+             <li>temporal_subtype</li></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>inner</code> - The temporal value, or null</dd>
+<dt>Returns:</dt>
+<dd>The object of the class of the value, or null for a null pointer</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - for a temporal type JMEOS has no class of</dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)">
 <h3>create_temporal</h3>

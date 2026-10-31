@@ -1732,6 +1732,16 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="types/basic/tpoint/TPoint.html#as_geojson(int,int,java.lang.String)" class="member-name-link">as_geojson(int, int, String)</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/boxes/STBox.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine.</div>
+</dd>
+<dt><a href="types/boxes/TBox.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.boxes.<a href="types/boxes/TBox.html" title="class in types.boxes">TBox</a></dt>
+<dd>
+<div class="block">Returns the WKB representation of "this" in hex-encoded ASCII, in the byte order of the
+ machine.</div>
+</dd>
 <dt><a href="types/collections/base/Set.html#as_hexwkb()" class="member-name-link">as_hexwkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
 <div class="block">Returns the WKB representation in hex-encoded ASCII.</div>
@@ -1793,6 +1803,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="types/collections/geo/GeoSet.html#as_text(int)" class="member-name-link">as_text(int)</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
 <div class="block">Returns the WKT representation of "this".</div>
+</dd>
+<dt><a href="types/boxes/STBox.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
+<dd>
+<div class="block">Returns the WKB representation of "this", in the byte order of the machine.</div>
+</dd>
+<dt><a href="types/boxes/TBox.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.boxes.<a href="types/boxes/TBox.html" title="class in types.boxes">TBox</a></dt>
+<dd>
+<div class="block">Returns the WKB representation of "this", in the byte order of the machine.</div>
 </dd>
 <dt><a href="types/collections/base/Set.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
@@ -3680,6 +3698,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="types/temporal/Factory.html#create_sequenceset(jnr.ffi.Pointer,java.lang.String)" class="member-name-link">create_sequenceset(Pointer, String)</a> - Static method in class types.temporal.<a href="types/temporal/Factory.html" title="class in types.temporal">Factory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/temporal/Factory.html#create_temporal(jnr.ffi.Pointer)" class="member-name-link">create_temporal(Pointer)</a> - Static method in class types.temporal.<a href="types/temporal/Factory.html" title="class in types.temporal">Factory</a></dt>
+<dd>
+<div class="block">Returns the object of the class of a temporal value MEOS returns, chosen by the temporal
+ type and the subtype the value states, so a reader needs no value of that class.</div>
+</dd>
 <dt><a href="types/temporal/Factory.html#create_temporal(jnr.ffi.Pointer,java.lang.String,types.temporal.TemporalType)" class="member-name-link">create_temporal(Pointer, String, TemporalType)</a> - Static method in class types.temporal.<a href="types/temporal/Factory.html" title="class in types.temporal">Factory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#create_trip(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,long,boolean,int)" class="member-name-link">create_trip(Pointer, Pointer, Pointer, int, long, boolean, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
@@ -9141,9 +9164,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a "TBox" from its WKB representation in hex-encoded ASCII.</div>
 </dd>
-<dt><a href="types/collections/number/IntSpan.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Method in class types.collections.number.<a href="types/collections/number/IntSpan.html" title="class in types.collections.number">IntSpan</a></dt>
+<dt><a href="types/collections/number/IntSpan.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Static method in class types.collections.number.<a href="types/collections/number/IntSpan.html" title="class in types.collections.number">IntSpan</a></dt>
 <dd>
-<div class="block">Returns a tstzspan from its WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns an IntSpan from its WKB representation in hex-encoded ASCII.</div>
 </dd>
 <dt><a href="types/collections/time/tstzset.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Static method in class types.collections.time.<a href="types/collections/time/tstzset.html" title="class in types.collections.time">tstzset</a></dt>
 <dd>
@@ -9153,15 +9176,15 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a tstzspan from its WKB representation in hex-encoded ASCII.</div>
 </dd>
-<dt><a href="types/collections/time/tstzspanset.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Method in class types.collections.time.<a href="types/collections/time/tstzspanset.html" title="class in types.collections.time">tstzspanset</a></dt>
+<dt><a href="types/collections/time/tstzspanset.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Static method in class types.collections.time.<a href="types/collections/time/tstzspanset.html" title="class in types.collections.time">tstzspanset</a></dt>
 <dd>
 <div class="block">Returns a "tstzspanset" from its WKB representation in hex-encoded ASCII.</div>
 </dd>
-<dt><a href="types/temporal/Temporal.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
+<dt><a href="types/temporal/Temporal.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb(String)</a> - Static method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
 <dd>
-<div class="block">Returns a temporal object from a hex-encoded WKB string.</div>
+<div class="block">Returns the temporal value a hex-encoded WKB string writes, of the class of its type.</div>
 </dd>
-<dt><a href="types/collections/base/Set.html#from_hexwkb(java.lang.String,java.lang.Class)" class="member-name-link">from_hexwkb(String, Class&lt;T&gt;)</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
+<dt><a href="types/collections/base/Set.html#from_hexwkb(java.lang.String,java.lang.Class)" class="member-name-link">from_hexwkb(String, Class&lt;T&gt;)</a> - Static method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
 <div class="block">Returns a `TsTzSpan` from its WKB representation in hex-encoded ASCII.</div>
 </dd>
@@ -9183,17 +9206,25 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a temporal object that is the result of merging the given
             temporal objects.</div>
 </dd>
-<dt><a href="types/basic/tbool/TBool.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Method in interface types.basic.tbool.<a href="types/basic/tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></dt>
+<dt><a href="types/basic/tbool/TBool.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.tbool.<a href="types/basic/tbool/TBool.html" title="interface in types.basic.tbool">TBool</a></dt>
 <dd>
 <div class="block">Returns a temporal object from a MF-JSON string.</div>
 </dd>
-<dt><a href="types/basic/tfloat/TFloat.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Method in interface types.basic.tfloat.<a href="types/basic/tfloat/TFloat.html" title="interface in types.basic.tfloat">TFloat</a></dt>
+<dt><a href="types/basic/tfloat/TFloat.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.tfloat.<a href="types/basic/tfloat/TFloat.html" title="interface in types.basic.tfloat">TFloat</a></dt>
 <dd>
 <div class="block">Returns a temporal object from a MF-JSON string.</div>
 </dd>
-<dt><a href="types/basic/tint/TInt.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Method in interface types.basic.tint.<a href="types/basic/tint/TInt.html" title="interface in types.basic.tint">TInt</a></dt>
+<dt><a href="types/basic/tint/TInt.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.tint.<a href="types/basic/tint/TInt.html" title="interface in types.basic.tint">TInt</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="types/basic/ttext/TText.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Method in interface types.basic.ttext.<a href="types/basic/ttext/TText.html" title="interface in types.basic.ttext">TText</a></dt>
+<dt><a href="types/basic/tpoint/tgeog/TGeogPoint.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.tpoint.tgeog.<a href="types/basic/tpoint/tgeog/TGeogPoint.html" title="interface in types.basic.tpoint.tgeog">TGeogPoint</a></dt>
+<dd>
+<div class="block">Returns the temporal point an MF-JSON string writes, of the class of its subtype.</div>
+</dd>
+<dt><a href="types/basic/tpoint/tgeom/TGeomPoint.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.tpoint.tgeom.<a href="types/basic/tpoint/tgeom/TGeomPoint.html" title="interface in types.basic.tpoint.tgeom">TGeomPoint</a></dt>
+<dd>
+<div class="block">Returns the temporal point an MF-JSON string writes, of the class of its subtype.</div>
+</dd>
+<dt><a href="types/basic/ttext/TText.html#from_mfjson(java.lang.String)" class="member-name-link">from_mfjson(String)</a> - Static method in interface types.basic.ttext.<a href="types/basic/ttext/TText.html" title="interface in types.basic.ttext">TText</a></dt>
 <dd>
 <div class="block">Returns a temporal object from a MF-JSON string.</div>
 </dd>
@@ -9223,19 +9254,31 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a "TBox" from a numerical and a temporal object.</div>
 </dd>
-<dt><a href="types/temporal/Temporal.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb(byte[])</a> - Method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
+<dt><a href="types/boxes/STBox.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb(byte[])</a> - Static method in class types.boxes.<a href="types/boxes/STBox.html" title="class in types.boxes">STBox</a></dt>
 <dd>
-<div class="block">Returns a temporal object from WKB bytes.</div>
+<div class="block">Returns a "STBox" from its WKB representation.</div>
 </dd>
-<dt><a href="types/collections/base/Set.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
+<dt><a href="types/boxes/TBox.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb(byte[])</a> - Static method in class types.boxes.<a href="types/boxes/TBox.html" title="class in types.boxes">TBox</a></dt>
+<dd>
+<div class="block">Returns a "TBox" from its WKB representation.</div>
+</dd>
+<dt><a href="types/collections/number/IntSpan.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb(byte[])</a> - Static method in class types.collections.number.<a href="types/collections/number/IntSpan.html" title="class in types.collections.number">IntSpan</a></dt>
+<dd>
+<div class="block">Returns an IntSpan from its WKB representation.</div>
+</dd>
+<dt><a href="types/temporal/Temporal.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb(byte[])</a> - Static method in class types.temporal.<a href="types/temporal/Temporal.html" title="class in types.temporal">Temporal</a></dt>
+<dd>
+<div class="block">Returns the temporal value WKB bytes write, of the class of its type.</div>
+</dd>
+<dt><a href="types/collections/base/Set.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Static method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
 <div class="block">Returns a `TsTzSpan` from its WKB representation.</div>
 </dd>
-<dt><a href="types/collections/base/Span.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Method in class types.collections.base.<a href="types/collections/base/Span.html" title="class in types.collections.base">Span</a></dt>
+<dt><a href="types/collections/base/Span.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Static method in class types.collections.base.<a href="types/collections/base/Span.html" title="class in types.collections.base">Span</a></dt>
 <dd>
 <div class="block">Returns a `TsTzSpan` from its WKB representation.</div>
 </dd>
-<dt><a href="types/collections/base/SpanSet.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Method in class types.collections.base.<a href="types/collections/base/SpanSet.html" title="class in types.collections.base">SpanSet</a></dt>
+<dt><a href="types/collections/base/SpanSet.html#from_wkb(byte%5B%5D,java.lang.Class)" class="member-name-link">from_wkb(byte[], Class&lt;T&gt;)</a> - Static method in class types.collections.base.<a href="types/collections/base/SpanSet.html" title="class in types.collections.base">SpanSet</a></dt>
 <dd>
 <div class="block">Returns a `TsTzSpan` from its WKB representation.</div>
 </dd>
@@ -26766,6 +26809,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#temptype_basetype(int)" class="member-name-link">temptype_basetype(int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="types/temporal/Factory.html#TEMPTYPE_OFFSET" class="member-name-link">TEMPTYPE_OFFSET</a> - Static variable in class types.temporal.<a href="types/temporal/Factory.html" title="class in types.temporal">Factory</a></dt>
+<dd>
+<div class="block">The byte offset of the temporal type in a MEOS Temporal, after its int32 varlena header,
+ as the catalog's structure Temporal states it (temptype at bit 32).</div>
+</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#temptype_subtype(int)" class="member-name-link">temptype_subtype(int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#temptype_subtype(int)" class="member-name-link">temptype_subtype(int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>

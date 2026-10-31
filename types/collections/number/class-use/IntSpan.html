@@ -99,52 +99,57 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#end_span()" class="member-name-link">end_span</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-first even-row-color"><code>static <a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#from_hexwkb(java.lang.String)" class="member-name-link">from_hexwkb</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;str)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Returns a tstzspan from its WKB representation in hex-encoded ASCII.</div>
+<div class="block">Returns an IntSpan from its WKB representation in hex-encoded ASCII.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#intersection(java.lang.Object)" class="member-name-link">intersection</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static <a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#from_wkb(byte%5B%5D)" class="member-name-link">from_wkb</a><wbr>(byte[]&nbsp;wkb)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Returns an IntSpan from its WKB representation.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#scale(int)" class="member-name-link">scale</a><wbr>(int&nbsp;width)</code></div>
-<div class="col-last even-row-color">
+<div class="col-second even-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#intersection(java.lang.Object)" class="member-name-link">intersection</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#scale(int)" class="member-name-link">scale</a><wbr>(int&nbsp;width)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Return a new "IntSpanSet" with the lower and upper bounds scaled so
          that the width is "width".</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#shift(int)" class="member-name-link">shift</a><wbr>(int&nbsp;delta)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#shift(int)" class="member-name-link">shift</a><wbr>(int&nbsp;delta)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Return a new "IntSpanSet" with the lower and upper bounds shifted by
          "delta".</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#shift_scale(int,int)" class="member-name-link">shift_scale</a><wbr>(int&nbsp;delta,
+<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntSpan.</span><code><a href="../IntSpan.html#shift_scale(int,int)" class="member-name-link">shift_scale</a><wbr>(int&nbsp;delta,
  int&nbsp;width)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Return a new "IntSpanSet" with the lower and upper bounds shifted by
          "delta" and scaled so that the width is "width".</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#span_n(int)" class="member-name-link">span_n</a><wbr>(int&nbsp;n)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#start_span()" class="member-name-link">start_span</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#span_n(int)" class="member-name-link">span_n</a><wbr>(int&nbsp;n)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FloatSpan.</span><code><a href="../FloatSpan.html#to_intspan()" class="member-name-link">to_intspan</a>()</code></div>
-<div class="col-last odd-row-color">
+<div class="col-second odd-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#start_span()" class="member-name-link">start_span</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FloatSpan.</span><code><a href="../FloatSpan.html#to_intspan()" class="member-name-link">to_intspan</a>()</code></div>
+<div class="col-last even-row-color">
 <div class="block">Converts "this" to a <a href="../IntSpan.html" title="class in types.collections.number"><code>IntSpan</code></a> instance.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntSet.</span><code><a href="../IntSet.html#to_span()" class="member-name-link">to_span</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntSet.</span><code><a href="../IntSet.html#to_span()" class="member-name-link">to_span</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns a span that encompasses "this".</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#to_span()" class="member-name-link">to_span</a>()</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code><a href="../IntSpan.html" title="class in types.collections.number">IntSpan</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntSpanSet.</span><code><a href="../IntSpanSet.html#to_span()" class="member-name-link">to_span</a>()</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns a span that encompasses "this".</div>
 </div>
 </div>
