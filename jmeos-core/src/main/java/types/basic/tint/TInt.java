@@ -124,9 +124,8 @@ public interface TInt extends TNumber {
             tint_from_mfjson
 */
 
-	default TInt from_mfjson(String mfjson){
-		Pointer result= GeneratedFunctions.tint_from_mfjson(mfjson);
-		return (TInt) Factory.create_temporal(result, getCustomType(), getTemporalType());
+	static TInt from_mfjson(String mfjson){
+		return (TInt) Factory.create_temporal(GeneratedFunctions.tint_from_mfjson(mfjson));
 	}
 
 

@@ -116,9 +116,8 @@ public interface TBool {
         MEOS Functions:
             tbool_from_mfjson
 */
-    default TBool from_mfjson(String mfjson){
-        Pointer result= GeneratedFunctions.tbool_from_mfjson(mfjson);
-        return (TBool) Factory.create_temporal(result, getCustomType(), getTemporalType());
+    static TBool from_mfjson(String mfjson){
+        return (TBool) Factory.create_temporal(GeneratedFunctions.tbool_from_mfjson(mfjson));
     }
 
 

@@ -92,35 +92,29 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
     }
 
     /**
-     * Returns a temporal object from a hex-encoded WKB string.
+     * Returns the temporal value a hex-encoded WKB string writes, of the class of its type.
      * <p>
      *         MEOS Functions:
      *             <li>temporal_from_hexwkb</li>
      *
-     * @param str The hex-encoded WKB string.
-     * @return  A temporal object from a hex-encoded WKB string.
+     * @param hexwkb The hex-encoded WKB string.
+     * @return The temporal value, an object of the class of its type and subtype.
      */
-    public Temporal from_hexwkb(String str){
-        Pointer result = GeneratedFunctions.temporal_from_hexwkb(str);
-        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    public static Temporal from_hexwkb(String hexwkb){
+        return Factory.create_temporal(GeneratedFunctions.temporal_from_hexwkb(hexwkb));
     }
 
-/**
-        Returns a temporal object from WKB bytes.
-
-        Args:
-            wkb: The WKB string.
-
-        Returns:
-            A temporal object from WKB bytes.
-
-        MEOS Functions:
-            temporal_from_wkb
-*/
-
-    public Temporal from_wkb(byte[] wkb){
-        Pointer result= GeneratedFunctions.temporal_from_wkb(wkb);
-        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
+    /**
+     * Returns the temporal value WKB bytes write, of the class of its type.
+     * <p>
+     *         MEOS Functions:
+     *             <li>temporal_from_wkb</li>
+     *
+     * @param wkb The WKB bytes.
+     * @return The temporal value, an object of the class of its type and subtype.
+     */
+    public static Temporal from_wkb(byte[] wkb){
+        return Factory.create_temporal(GeneratedFunctions.temporal_from_wkb(wkb));
     }
 
 /**
@@ -151,19 +145,6 @@ public abstract class Temporal<V extends Serializable> implements Serializable, 
         return GeneratedFunctions.temporal_as_wkb(this.inner, (byte) 4);
     }
 
-    /**
-     * Returns a temporal object from a MF-JSON string.
-     * <p>
-     *         MEOS Functions:
-     *             <li>temporal_from_mfjson</li>
-     *
-     * @param str The MF-JSON string.
-     * @return A temporal object from a MF-JSON string.
-     */
-//    public Temporal from_mfjson(String str){
-//        Pointer result = GeneratedFunctions.temporal_as_(str);
-//        return Factory.create_temporal(result, this.getCustomType(), this.getTemporalType());
-//    }
 
 
 

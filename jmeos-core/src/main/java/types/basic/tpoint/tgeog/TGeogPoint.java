@@ -63,6 +63,18 @@ public interface TGeogPoint extends TPoint {
 	String customType = "Geog";
 	Pointer getPointInner();
 	String getCustomType();
+
+	/**
+	 * Returns the temporal point an MF-JSON string writes, of the class of its subtype.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tgeogpoint_from_mfjson</li>
+	 * @param mfjson The MF-JSON string
+	 * @return A new {@link TGeogPoint} instance
+	 */
+	static TGeogPoint from_mfjson(String mfjson){
+		return (TGeogPoint) Factory.create_temporal(GeneratedFunctions.tgeogpoint_from_mfjson(mfjson));
+	}
 	TemporalType getTemporalType();
 
 

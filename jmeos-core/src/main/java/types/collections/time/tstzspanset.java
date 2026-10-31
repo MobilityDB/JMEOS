@@ -159,8 +159,8 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @param str WKB representation in hex-encoded ASCII
 	 * @return a new tstzspanset instance
 	 */
-	public Pointer from_hexwkb(String str)  {
-        return GeneratedFunctions.spanset_from_hexwkb(str);
+	public static tstzspanset from_hexwkb(String str)  {
+		return new tstzspanset(GeneratedFunctions.spanset_from_hexwkb(str));
 	}
 
 
