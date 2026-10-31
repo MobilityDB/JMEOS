@@ -478,7 +478,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#adjacent_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">adjacent_stbox_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#adjacent_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">adjacent_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#adjacent_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">adjacent_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#adjacent_stbox_tspatial(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">adjacent_stbox_tspatial(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -1716,11 +1716,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="types/collections/geo/GeoSet.html#as_ewkt()" class="member-name-link">as_ewkt()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
-<div class="block">Returns the EWKT representation of "this".</div>
+<div class="block">Returns the EWKT representation of "this", its WKT preceded by its SRID.</div>
 </dd>
 <dt><a href="types/basic/tpoint/TPoint.html#as_ewkt(int)" class="member-name-link">as_ewkt(int)</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
 <dd>
 <div class="block">Returns the temporal point as an EWKT string.</div>
+</dd>
+<dt><a href="types/collections/geo/GeoSet.html#as_ewkt(int)" class="member-name-link">as_ewkt(int)</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
+<dd>
+<div class="block">Returns the EWKT representation of "this", its WKT preceded by its SRID.</div>
 </dd>
 <dt><a href="types/basic/tpoint/TPoint.html#as_geojson(boolean,int,int,java.lang.String)" class="member-name-link">as_geojson(boolean, int, int, String)</a> - Method in interface types.basic.tpoint.<a href="types/basic/tpoint/TPoint.html" title="interface in types.basic.tpoint">TPoint</a></dt>
 <dd>
@@ -1758,6 +1762,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the WKT representation of "this".</div>
 </dd>
+<dt><a href="types/collections/geo/GeoSet.html#as_text(int)" class="member-name-link">as_text(int)</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
+<dd>
+<div class="block">Returns the WKT representation of "this".</div>
+</dd>
 <dt><a href="types/collections/base/Set.html#as_wkb()" class="member-name-link">as_wkb()</a> - Method in class types.collections.base.<a href="types/collections/base/Set.html" title="class in types.collections.base">Set</a></dt>
 <dd>
 <div class="block">Returns the WKB representation</div>
@@ -1785,10 +1793,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="types/basic/ttext/TText.html#as_wkt()" class="member-name-link">as_wkt()</a> - Method in interface types.basic.ttext.<a href="types/basic/ttext/TText.html" title="interface in types.basic.ttext">TText</a></dt>
 <dd>
 <div class="block">Returns the Well-Known Text representation of "this".</div>
-</dd>
-<dt><a href="types/collections/geo/GeoSet.html#as_wkt()" class="member-name-link">as_wkt()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
-<dd>
-<div class="block">Returns the WKT representation of "this".</div>
 </dd>
 <dt><a href="types/basic/tfloat/TFloat.html#as_wkt(int)" class="member-name-link">as_wkt(int)</a> - Method in interface types.basic.tfloat.<a href="types/basic/tfloat/TFloat.html" title="interface in types.basic.tfloat">TFloat</a></dt>
 <dd>
@@ -2009,7 +2013,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#basetype_byvalue(int)" class="member-name-link">basetype_byvalue(int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.html#basetype_in(java.lang.String,int,boolean,jnr.ffi.Pointer)" class="member-name-link">basetype_in(String, int, boolean, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dt><a href="functions/GeneratedFunctions.html#basetype_in(java.lang.String,int,boolean)" class="member-name-link">basetype_in(String, int, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#basetype_in(java.lang.String,int,boolean,jnr.ffi.Pointer)" class="member-name-link">basetype_in(String, int, boolean, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
@@ -3127,7 +3131,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#contained_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contained_stbox_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#contained_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contained_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#contained_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contained_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#contained_stbox_tspatial(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contained_stbox_tspatial(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -3486,7 +3490,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#contains_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contains_stbox_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#contains_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contains_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#contains_stbox_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contains_stbox_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#contains_stbox_tspatial(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">contains_stbox_tspatial(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -6770,6 +6774,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="functions/GeneratedFunctions.html#ensure_not_nan_geo(jnr.ffi.Pointer)" class="member-name-link">ensure_not_nan_geo(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#ensure_not_nan_geo(jnr.ffi.Pointer)" class="member-name-link">ensure_not_nan_geo(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#ensure_not_nan_result(double)" class="member-name-link">ensure_not_nan_result(double)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#ensure_not_nan_result(double)" class="member-name-link">ensure_not_nan_result(double)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#ensure_not_negative(int)" class="member-name-link">ensure_not_negative(int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -11889,7 +11897,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#inter_tbox_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">inter_tbox_tbox(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.html#inter_tpcbox_tpcbox(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">inter_tpcbox_tpcbox(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dt><a href="functions/GeneratedFunctions.html#inter_tpcbox_tpcbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">inter_tpcbox_tpcbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#inter_tpcbox_tpcbox(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">inter_tpcbox_tpcbox(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
@@ -15895,6 +15903,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#nad_intspan_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_intspan_tbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#nad_numspan_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_numspan_tbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#nad_numspan_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_numspan_tbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#nad_stbox_geo(jnr.ffi.Pointer,jnr.ffi.Pointer,boolean)" class="member-name-link">nad_stbox_geo(Pointer, Pointer, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#nad_stbox_geo(jnr.ffi.Pointer,jnr.ffi.Pointer,boolean)" class="member-name-link">nad_stbox_geo(Pointer, Pointer, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -16026,6 +16038,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#nad_tnumber_number(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_tnumber_number(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#nad_tnumber_number(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_tnumber_number(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#nad_tnumber_numspan(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_tnumber_numspan(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#nad_tnumber_numspan(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_tnumber_numspan(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#nad_tnumber_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">nad_tnumber_tbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
@@ -19537,7 +19553,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#point_segment_shortestline_exact(jnr.ffi.Pointer,double,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">point_segment_shortestline_exact(Pointer, double, Pointer, Pointer, Pointer, Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#point_transf_pj(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">point_transf_pj(Pointer, int, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#point_transf_pj(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">point_transf_pj(Pointer, int, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#point_transf_pj(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">point_transf_pj(Pointer, int, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -19553,7 +19569,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#point3d_min_dist(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">point3d_min_dist(Pointer, Pointer, Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#point4d_transf_pj(jnr.ffi.Pointer,boolean,jnr.ffi.Pointer)" class="member-name-link">point4d_transf_pj(Pointer, boolean, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#point4d_transf_pj(jnr.ffi.Pointer,boolean,jnr.ffi.Pointer)" class="member-name-link">point4d_transf_pj(Pointer, boolean, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#point4d_transf_pj(jnr.ffi.Pointer,boolean,jnr.ffi.Pointer)" class="member-name-link">point4d_transf_pj(Pointer, boolean, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -19805,6 +19821,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#pose_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">pose_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#pose_sortkey_put(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">pose_sortkey_put(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#pose_sortkey_put(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">pose_sortkey_put(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#pose_sortkey_size(jnr.ffi.Pointer)" class="member-name-link">pose_sortkey_size(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#pose_sortkey_size(jnr.ffi.Pointer)" class="member-name-link">pose_sortkey_size(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#pose_srid(jnr.ffi.Pointer)" class="member-name-link">pose_srid(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#pose_srid(jnr.ffi.Pointer)" class="member-name-link">pose_srid(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -20020,6 +20044,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="functions/GeneratedFunctions.html#posechain_set_stbox(jnr.ffi.Pointer)" class="member-name-link">posechain_set_stbox(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#posechain_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">posechain_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#posechain_sortkey_put(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">posechain_sortkey_put(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#posechain_sortkey_put(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">posechain_sortkey_put(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#posechain_sortkey_size(jnr.ffi.Pointer)" class="member-name-link">posechain_sortkey_size(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#posechain_sortkey_size(jnr.ffi.Pointer)" class="member-name-link">posechain_sortkey_size(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#posechain_srid(jnr.ffi.Pointer)" class="member-name-link">posechain_srid(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
 <dd>&nbsp;</dd>
@@ -22089,18 +22121,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="functions/SetOper.html#%3Cinit%3E(int)" class="member-name-link">SetOper(int)</a> - Constructor for enum class functions.<a href="functions/SetOper.html" title="enum class in functions">SetOper</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#setPath(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int)" class="member-name-link">setPath(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.html#setPath(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int)" class="member-name-link">setPath(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#setPathArray(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,int)" class="member-name-link">setPathArray(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.html#setPathArray(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,int)" class="member-name-link">setPathArray(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#setPathObject(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,int)" class="member-name-link">setPathObject(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.html#setPathObject(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,jnr.ffi.Pointer,int,int)" class="member-name-link">setPathObject(Pointer, Pointer, Pointer, int, Pointer, int, Pointer, int, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#setstate_deserialize(byte%5B%5D)" class="member-name-link">setstate_deserialize(byte[])</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#setstate_deserialize(jnr.ffi.Pointer,long)" class="member-name-link">setstate_deserialize(Pointer, long)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
@@ -23004,15 +23024,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#spatialarr_set_bbox(jnr.ffi.Pointer,int,int,jnr.ffi.Pointer)" class="member-name-link">spatialarr_set_bbox(Pointer, int, int, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#spatialarr_wkt_out(jnr.ffi.Pointer,int,int,int,boolean)" class="member-name-link">spatialarr_wkt_out(Pointer, int, int, int, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#spatialarr_wkt_out(jnr.ffi.Pointer,int,int,int,boolean)" class="member-name-link">spatialarr_wkt_out(Pointer, int, int, int, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#spatialarr_wkt_out(jnr.ffi.Pointer,int,int,int,boolean)" class="member-name-link">spatialarr_wkt_out(Pointer, int, int, int, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#spatialbase_as_ewkt(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_ewkt(Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#spatialbase_as_ewkt(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_ewkt(Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#spatialbase_as_ewkt(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_ewkt(Pointer, int, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#spatialbase_as_text(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_text(Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#spatialbase_as_text(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_text(Pointer, int, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#spatialbase_as_text(jnr.ffi.Pointer,int,int)" class="member-name-link">spatialbase_as_text(Pointer, int, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -23650,6 +23670,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_same(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_same(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#stbox_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_scale_time(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#stbox_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_scale_time(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#stbox_set(boolean,boolean,boolean,int,double,double,double,double,double,double,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_set(boolean, boolean, boolean, int, double, double, double, double, double, double, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_set(boolean,boolean,boolean,int,double,double,double,double,double,double,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_set(boolean, boolean, boolean, int, double, double, double, double, double, double, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -23669,6 +23693,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#stbox_shift_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_scale_time(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_shift_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_scale_time(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#stbox_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#stbox_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#stbox_shift_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_time(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#stbox_shift_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">stbox_shift_time(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_sortkey(jnr.ffi.Pointer)" class="member-name-link">stbox_sortkey(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -23766,11 +23798,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_to_tstzspan(jnr.ffi.Pointer)" class="member-name-link">stbox_to_tstzspan(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#stbox_transform(jnr.ffi.Pointer,int)" class="member-name-link">stbox_transform(Pointer, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#stbox_transform(jnr.ffi.Pointer,int)" class="member-name-link">stbox_transform(Pointer, int)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_transform(jnr.ffi.Pointer,int)" class="member-name-link">stbox_transform(Pointer, int)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#stbox_transform_pipeline(jnr.ffi.Pointer,java.lang.String,int,boolean)" class="member-name-link">stbox_transform_pipeline(Pointer, String, int, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#stbox_transform_pipeline(jnr.ffi.Pointer,java.lang.String,int,boolean)" class="member-name-link">stbox_transform_pipeline(Pointer, String, int, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#stbox_transform_pipeline(jnr.ffi.Pointer,java.lang.String,int,boolean)" class="member-name-link">stbox_transform_pipeline(Pointer, String, int, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -24852,6 +24884,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tbox_same(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_same(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tbox_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_scale_time(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tbox_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_scale_time(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tbox_set(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_set(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tbox_set(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_set(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -24860,9 +24896,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tbox_shift_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_shift_scale_time(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tbox_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tbox_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tbox_shift_scale_value(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,boolean,boolean)" class="member-name-link">tbox_shift_scale_value(Pointer, Pointer, Pointer, boolean, boolean)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tbox_shift_scale_value(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,boolean,boolean)" class="member-name-link">tbox_shift_scale_value(Pointer, Pointer, Pointer, boolean, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tbox_shift_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_shift_time(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tbox_shift_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tbox_shift_time(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tbox_sortkey(jnr.ffi.Pointer)" class="member-name-link">tbox_sortkey(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -26349,6 +26393,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#temporal_shift_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">temporal_shift_scale_time(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#temporal_shift_scale_time(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">temporal_shift_scale_time(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#temporal_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">temporal_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#temporal_shift_scale_time_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">temporal_shift_scale_time_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#temporal_shift_time(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">temporal_shift_time(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
@@ -27860,11 +27908,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tgeoinst_restrict_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer,boolean,boolean)" class="member-name-link">tgeoinst_restrict_stbox(Pointer, Pointer, boolean, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tgeoinst_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoinst_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tgeoinst_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoinst_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tgeoinst_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoinst_set_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tgeoinstarr_set_stbox(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tgeoinstarr_set_stbox(Pointer, int, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tgeoinstarr_set_stbox(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tgeoinstarr_set_stbox(Pointer, int, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tgeoinstarr_set_stbox(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tgeoinstarr_set_stbox(Pointer, int, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -28066,7 +28114,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tgeomseqset_tgeogseqset(jnr.ffi.Pointer,boolean)" class="member-name-link">tgeomseqset_tgeogseqset(Pointer, boolean)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tgeoseq_expand_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoseq_expand_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tgeoseq_expand_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoseq_expand_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tgeoseq_expand_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tgeoseq_expand_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -30705,7 +30753,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="types/collections/geo/GeoSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.collections.geo.<a href="types/collections/geo/GeoSet.html" title="class in types.collections.geo">GeoSet</a></dt>
 <dd>
-<div class="block">Return the string representation of the content of "this".</div>
+<div class="block">Return the string representation of the content of "this", its WKT.</div>
 </dd>
 <dt><a href="types/collections/number/IntSet.html#toString()" class="member-name-link">toString()</a> - Method in class types.collections.number.<a href="types/collections/number/IntSet.html" title="class in types.collections.number">IntSet</a></dt>
 <dd>
@@ -31745,7 +31793,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tpose_minus_geom(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_minus_geom(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tpose_minus_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_minus_pose(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#tpose_minus_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_minus_pose(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tpose_minus_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_minus_pose(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
@@ -33569,6 +33617,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzset_out(jnr.ffi.Pointer)" class="member-name-link">tstzset_out(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzset_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_scale(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzset_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_scale(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tstzset_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzset_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_set_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -33577,9 +33629,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzset_set_tbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_set_tbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzset_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzset_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzset_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift_scale(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzset_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift_scale(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tstzset_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzset_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzset_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzset_start_value(jnr.ffi.Pointer)" class="member-name-link">tstzset_start_value(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
@@ -33696,6 +33756,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspan_out(jnr.ffi.Pointer)" class="member-name-link">tstzspan_out(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspan_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_scale(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspan_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_scale(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tstzspan_set_datespan(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_set_datespan(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspan_set_datespan(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_set_datespan(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
@@ -33712,9 +33776,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspan_set_tpcbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_set_tpcbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspan_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspan_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspan_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift_scale(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspan_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift_scale(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tstzspan_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspan_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartD.html#tstzspan_shift_scale1(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspan_shift_scale1(Pointer, Pointer, Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartD.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartD</a></dt>
 <dd>&nbsp;</dd>
@@ -33788,13 +33860,25 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspanset_out(jnr.ffi.Pointer)" class="member-name-link">tstzspanset_out(Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspanset_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_scale(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspanset_scale(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_scale(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartC.html#tstzspanset_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_set_stbox(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartC.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspanset_set_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_set_stbox(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspanset_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift(Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspanset_shift(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift(Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspanset_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift_scale(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.html#tstzspanset_shift_scale(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift_scale(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.MeosLibraryPartB.html#tstzspanset_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartB.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartB</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="functions/GeneratedFunctions.html#tstzspanset_shift_scale_intl(jnr.ffi.Pointer,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tstzspanset_shift_scale_intl(Pointer, Pointer, Pointer)</a> - Static method in class functions.<a href="functions/GeneratedFunctions.html" title="class in functions">GeneratedFunctions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="functions/GeneratedFunctions.MeosLibraryPartA.html#tstzspanset_start_timestamptz(jnr.ffi.Pointer)" class="member-name-link">tstzspanset_start_timestamptz(Pointer)</a> - Method in interface functions.<a href="functions/GeneratedFunctions.MeosLibraryPartA.html" title="interface in functions">GeneratedFunctions.MeosLibraryPartA</a></dt>
 <dd>&nbsp;</dd>
