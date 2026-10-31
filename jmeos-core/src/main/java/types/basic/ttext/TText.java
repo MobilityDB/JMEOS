@@ -145,6 +145,17 @@ public interface TText {
 
 
 
+	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>ttext_out</li>
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(){
+		return GeneratedFunctions.ttext_out(getTextInner());
+	}
+
     /**
      * Returns the Well-Known Text representation of "this".
      * <p>

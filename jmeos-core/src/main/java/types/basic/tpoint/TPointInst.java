@@ -79,5 +79,12 @@ public abstract class TPointInst extends TInstant<Point> implements TPoint{
 		return this.start_value(precision);
 	}
 
-
+	/**
+	 * Returns the text of "this", its {@code as_text}.
+	 * @return A new {@link String} instance
+	 */
+	@Override
+	public String toString() {
+		return this.as_text();
+	}
 }

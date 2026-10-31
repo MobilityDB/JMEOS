@@ -144,6 +144,29 @@ public interface TFloat extends TNumber {
 	}
 
 	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it, the values with at most 15 decimal digits.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tfloat_out</li>
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(){
+		return as_text(15);
+	}
+
+	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it, the values.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tfloat_out</li>
+	 * @param max_decimals The maximum number of decimal digits
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(int max_decimals){
+		return GeneratedFunctions.tfloat_out(getNumberInner(), max_decimals);
+	}
+
+	/**
 	 * Returns a string representation of "this".
 	 *
 	 * <p>

@@ -90,4 +90,13 @@ public class TTextSeqSet extends TSequenceSet<String> implements TText{
 	public Pointer getTextInner(){
 		return inner;
 	}
+
+	/**
+	 * Returns the text of "this", its {@code as_text}.
+	 * @return A new {@link String} instance
+	 */
+	@Override
+	public String toString() {
+		return this.as_text();
+	}
 }

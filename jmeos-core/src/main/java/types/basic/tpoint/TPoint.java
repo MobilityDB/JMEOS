@@ -86,6 +86,29 @@ public interface TPoint extends Serializable {
 
 
 	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it, the points as WKT with at most 15 decimal digits.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tspatial_as_text</li>
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(){
+		return as_text(15);
+	}
+
+	/**
+	 * Returns the text of "this", as MobilityDB's asText writes it, the points as WKT.
+	 * <p>
+	 *         MEOS Functions:
+	 *             <li>tspatial_as_text</li>
+	 * @param max_decimals The maximum number of decimal digits
+	 * @return A new {@link String} instance
+	 */
+	default String as_text(int max_decimals){
+		return GeneratedFunctions.tspatial_as_text(getPointInner(), max_decimals);
+	}
+
+	/**
 	 * Returns the temporal point as a WKT string.
 	 *
 	 * <p>
