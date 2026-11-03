@@ -206,7 +206,7 @@ public class ObjectLayerGenerator {
                 if (fn == null) {
                     continue;
                 }
-                String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c"));
+                String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType")));
                 if (!retC.equals("Span *") && !retC.equals("SpanSet *") && !retC.equals("Set *")) {
                     continue; // only the base-generic value-collection returns are specialised here
                 }
@@ -259,7 +259,7 @@ public class ObjectLayerGenerator {
         int offset = 0;
         int widest = 1;
         for (JsonNode f : structOf(root, name).path("fields")) {
-            int[] sa = sizeAlign(root, f.path("cType").asText().trim());
+            int[] sa = sizeAlign(root, FunctionsGenerator.slotType(f).trim());
             widest = Math.max(widest, sa[1]);
             offset = (offset + sa[1] - 1) / sa[1] * sa[1] + sa[0];
         }
@@ -270,7 +270,7 @@ public class ObjectLayerGenerator {
     private static int structAlign(JsonNode root, String name) {
         int widest = 1;
         for (JsonNode f : structOf(root, name).path("fields")) {
-            widest = Math.max(widest, sizeAlign(root, f.path("cType").asText().trim())[1]);
+            widest = Math.max(widest, sizeAlign(root, FunctionsGenerator.slotType(f).trim())[1]);
         }
         return widest;
     }
@@ -290,8 +290,23 @@ public class ObjectLayerGenerator {
         if (isStruct(root, cType)) {
             return new int[]{structSize(root, cType), structAlign(root, cType)};
         }
-        int size = scalarBytes(cType);
+        int size = scalarBytes(resolveTypedef(root, cType));
         return new int[]{size, size};
+    }
+
+    /**
+     * The type a name MEOS keeps from PostgreSQL (TimestampTz, DateADT, Datum, Oid, ...) stands for,
+     * through the catalog's {@code typedefs}, after the {@code const} qualifier is dropped; any other
+     * type as it is.
+     */
+    private static String resolveTypedef(JsonNode root, String cType) {
+        String type = cType.replace("const ", "").trim();
+        for (JsonNode t : root.path("typedefs")) {
+            if (t.path("name").asText().equals(type)) {
+                return resolveTypedef(root, t.path("canonical").asText());
+            }
+        }
+        return type;
     }
 
     /** Whether the catalog defines a struct of this name. */
@@ -313,10 +328,10 @@ public class ObjectLayerGenerator {
         List<StructField> fields = new ArrayList<>();
         int offset = 0;
         for (JsonNode f : structOf(root, name).path("fields")) {
-            String cType = f.path("cType").asText().trim();
+            String cType = resolveTypedef(root, FunctionsGenerator.slotType(f));
             int bracket = cType.indexOf('[');
             if (bracket >= 0) { // a fixed-size array field (padding); contributes to the offset only
-                int base = scalarBytes(cType.substring(0, bracket).trim());
+                int base = scalarBytes(resolveTypedef(root, cType.substring(0, bracket)));
                 int count = Integer.parseInt(cType.substring(bracket + 1, cType.indexOf(']')).trim());
                 offset = (offset + base - 1) / base * base + base * count;
                 continue;
@@ -348,11 +363,10 @@ public class ObjectLayerGenerator {
             return 8;
         }
         return switch (cType) {
-            case "bool", "char", "int8", "int8_t", "uint8", "uint8_t" -> 1;
-            case "short", "int16", "int16_t", "uint16", "uint16_t" -> 2;
-            case "int", "int32", "int32_t", "uint32", "uint32_t", "float", "Oid", "DateADT" -> 4;
-            case "long", "int64", "int64_t", "uint64", "uint64_t", "double", "float8",
-                 "Datum", "Timestamp", "TimestampTz", "TimeADT", "size_t", "uintptr_t" -> 8;
+            case "bool", "char", "int8_t", "uint8_t" -> 1;
+            case "short", "int16_t", "uint16_t" -> 2;
+            case "int", "int32_t", "uint32_t", "unsigned int", "float" -> 4;
+            case "long", "int64_t", "uint64_t", "double", "size_t", "uintptr_t" -> 8;
             default -> throw new IllegalStateException("unhandled struct field type: " + cType);
         };
     }
@@ -360,9 +374,9 @@ public class ObjectLayerGenerator {
     /** The Java type of a scalar struct field; an unhandled type is an error. */
     private static String fieldJavaType(String cType) {
         return switch (cType.replace("const ", "").trim()) {
-            case "int", "int32", "int32_t", "uint32", "uint32_t" -> "int";
-            case "long", "int64", "int64_t", "uint64", "uint64_t" -> "long";
-            case "double", "float8" -> "double";
+            case "int", "int32_t", "uint32_t" -> "int";
+            case "long", "int64_t", "uint64_t" -> "long";
+            case "double" -> "double";
             case "float" -> "float";
             default -> throw new IllegalStateException("unmodelled record field type: " + cType);
         };
@@ -371,9 +385,9 @@ public class ObjectLayerGenerator {
     /** The jnr {@code Pointer} reader for a scalar struct field; an unhandled type is an error. */
     private static String fieldGetter(String cType) {
         return switch (cType.replace("const ", "").trim()) {
-            case "int", "int32", "int32_t", "uint32", "uint32_t" -> "getInt";
-            case "long", "int64", "int64_t", "uint64", "uint64_t" -> "getLong";
-            case "double", "float8" -> "getDouble";
+            case "int", "int32_t", "uint32_t" -> "getInt";
+            case "long", "int64_t", "uint64_t" -> "getLong";
+            case "double" -> "getDouble";
             case "float" -> "getFloat";
             default -> throw new IllegalStateException("unmodelled record field type: " + cType);
         };
@@ -433,13 +447,13 @@ public class ObjectLayerGenerator {
         // Receiver: the first parameter must be a single pointer to the class type, so getInner()
         // (a Temporal*) is the argument. A double pointer (e.g. temporal_merge_array's Temporal**)
         // is an array, not a receiver.
-        String recv = cleanType(FunctionsGenerator.slotType(params.get(0), "cType"));
+        String recv = cleanType(FunctionsGenerator.slotType(params.get(0)));
         if (!recv.equals("Temporal *")) {
             // A constructor over an array of temporals (merge_array) takes a List, writes each element's
             // inner pointer into a buffer and passes the size as the count.
             if (recv.equals("Temporal **") && params.size() == 2
                     && params.get(1).path("name").asText().equals("count")
-                    && cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c")).equals("Temporal *")) {
+                    && cleanType(FunctionsGenerator.slotType(fn.path("returnType"))).equals("Temporal *")) {
                 Arg list = new Arg("java.util.List<Temporal>",
                         sanitize(params.get(0).path("name").asText()), null);
                 return new Method(ooName, fnName, "Temporal", "arrayInput", null, List.of(list));
@@ -448,7 +462,7 @@ public class ObjectLayerGenerator {
             // from a receiver, so every parameter is an argument, the call omits getInner(), and the
             // result is wrapped with the type contract — symmetric to the as* output methods. It stays
             // an instance method.
-            if (cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c")).equals("Temporal *")) {
+            if (cleanType(FunctionsGenerator.slotType(fn.path("returnType"))).equals("Temporal *")) {
                 List<Arg> ctorArgs = new ArrayList<>();
                 boolean marshalled = true;
                 for (int i = 0; i < params.size(); i++) {
@@ -459,7 +473,7 @@ public class ObjectLayerGenerator {
                         i++;
                         continue;
                     }
-                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
+                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p)),
                             sanitize(p.path("name").asText()), fnName);
                     if (a == null) {
                         marshalled = false;
@@ -478,7 +492,7 @@ public class ObjectLayerGenerator {
         for (JsonNode o : fn.path("shape").path("outParams")) {
             outParams.add(o.asText());
         }
-        String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType"), "c"));
+        String retC = cleanType(FunctionsGenerator.slotType(fn.path("returnType")));
 
         // Array-fold: a trailing `count` out-parameter alongside an array return folds to a List. The
         // fold forwards the receiver, the visible arguments and the count buffer, then reads each element
@@ -499,7 +513,7 @@ public class ObjectLayerGenerator {
             boolean marshalled = true;
             for (int i = 1; i < last; i++) {
                 JsonNode p = params.get(i);
-                Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
+                Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p)),
                         sanitize(p.path("name").asText()), fnName);
                 if (a == null) {
                     marshalled = false;
@@ -554,7 +568,7 @@ public class ObjectLayerGenerator {
                 boolean marshalled = true;
                 for (int i = 1; i < minOut; i++) {
                     JsonNode p = params.get(i);
-                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p, "cType")),
+                    Arg a = marshalArg(cleanType(FunctionsGenerator.slotType(p)),
                             sanitize(p.path("name").asText()), fnName);
                     if (a == null) {
                         marshalled = false;
@@ -660,7 +674,7 @@ public class ObjectLayerGenerator {
             if (outParams.contains(p.path("name").asText())) {
                 continue; // a folded size_t* out-param the wrapper supplies itself
             }
-            String pC = cleanType(FunctionsGenerator.slotType(p, "cType"));
+            String pC = cleanType(FunctionsGenerator.slotType(p));
             String name = sanitize(p.path("name").asText());
             if (isByteInput(params, i)) {
                 args.add(new Arg("byte[]", name, name));
@@ -715,11 +729,9 @@ public class ObjectLayerGenerator {
     private static String scalarReturn(String retC) {
         return switch (retC) {
             case "bool"                              -> "boolean";
-            case "int", "int32", "int32_t",
-                 "uint32", "uint32_t"                -> "int";
-            case "long", "int64", "int64_t",
-                 "uint64", "uint64_t"                -> "long";
-            case "double", "float8"                  -> "double";
+            case "int", "int32_t", "uint32_t"        -> "int";
+            case "long", "int64_t", "uint64_t"       -> "long";
+            case "double"                            -> "double";
             case "float"                             -> "float";
             case "char *"                            -> "String";
             case "TimestampTz"                       -> "java.time.OffsetDateTime";
@@ -738,14 +750,11 @@ public class ObjectLayerGenerator {
     private static Arg marshalArg(String pC, String name, String fnName) {
         String scalar = switch (pC) {
             case "bool"                              -> "boolean";
-            case "int8", "int8_t",
-                 "uint8", "uint8_t"                  -> "byte";
-            case "int", "int32", "int32_t",
-                 "uint32", "uint32_t"                -> "int";
-            case "long", "int64", "int64_t",
-                 "uint64", "uint64_t",
+            case "int8_t", "uint8_t"                 -> "byte";
+            case "int", "int32_t", "uint32_t"        -> "int";
+            case "long", "int64_t", "uint64_t",
                  "size_t", "uintptr_t"               -> "long";
-            case "double", "float8"                  -> "double";
+            case "double"                            -> "double";
             case "float"                             -> "float";
             default                                  -> null;
         };
@@ -789,15 +798,15 @@ public class ObjectLayerGenerator {
      */
     private static boolean isByteInput(JsonNode params, int i) {
         return i + 1 < params.size()
-                && cleanType(FunctionsGenerator.slotType(params.get(i), "cType")).equals("uint8_t *")
-                && cleanType(FunctionsGenerator.slotType(params.get(i + 1), "cType")).equals("size_t");
+                && cleanType(FunctionsGenerator.slotType(params.get(i))).equals("uint8_t *")
+                && cleanType(FunctionsGenerator.slotType(params.get(i + 1))).equals("size_t");
     }
 
     /** Whether the named parameter is a {@code size_t *} out-parameter the wrapper folds internally. */
     private static boolean isSizeOut(JsonNode params, String name) {
         for (JsonNode p : params) {
             if (p.path("name").asText().equals(name)) {
-                return cleanType(FunctionsGenerator.slotType(p, "cType")).contains("size_t");
+                return cleanType(FunctionsGenerator.slotType(p)).contains("size_t");
             }
         }
         return false;
@@ -807,7 +816,7 @@ public class ObjectLayerGenerator {
     private static String paramCType(JsonNode params, String name) {
         for (JsonNode p : params) {
             if (p.path("name").asText().equals(name)) {
-                return cleanType(FunctionsGenerator.slotType(p, "cType"));
+                return cleanType(FunctionsGenerator.slotType(p));
             }
         }
         return "";

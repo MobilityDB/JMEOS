@@ -58,11 +58,24 @@ public class FunctionsGenerator {
     private final Set<String> returnedStructs = new LinkedHashSet<>();
     /** Functions left out because their return is a by-value struct; reported at the end. */
     private final List<String> byValueStructReturns = new ArrayList<>();
+    /**
+     * C types a slot can state that jnr-ffi cannot pass: a {@code long double} has no Java
+     * primitive of its width, and passing it as any other type misreads the call.
+     */
+    private static final Set<String> NO_JAVA_FFI_TYPE = Set.of("long double");
+    /** Functions left out because a slot states a type of {@link #NO_JAVA_FFI_TYPE}; reported. */
+    private final List<String> unpassableSlots = new ArrayList<>();
+    /**
+     * The definition of each name MEOS keeps from PostgreSQL in its declarations (TimestampTz,
+     * DateADT, Datum, Oid, text, ...), from the catalog's {@code typedefs}: a slot spelling one of
+     * these names is mapped by the type it stands for.
+     */
+    private final Map<String, String> typedefs = new HashMap<>();
+    /** The callback types the catalog defines, each passed to MEOS as the address of a function. */
+    private final Set<String> callbackNames = new HashSet<>();
 
-    // DateADT      → typedef int32_t  → Java int
-    // Timestamp    → typedef int64_t  → Java long  (no timezone)
-    // TimestampTz  → typedef int64_t  → Java long  (with timezone)
-    private static final Set<String> DATE_C_TYPES = Set.of("DateADT");
+    // A TimestampTz or a Timestamp is an int64_t the wrapper carries as a java.time value: an
+    // OffsetDateTime for the one with a timezone, a LocalDateTime for the one without.
     private static final Set<String> TIMESTAMP_C_TYPES = Set.of("Timestamp", "TimestampTz");
 
     /** Name of the leading parameter carrying the address of a struct returned through memory. */
@@ -201,8 +214,10 @@ public class FunctionsGenerator {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(new File(inputPath));
 
-        // 1. Collect enum names so they can be mapped to int
+        // 1. Collect the names a slot's canonical type can spell besides a C type: the enums,
+        //    mapped to int, the structures, the callbacks and the definitions of the kept names
         collectEnumNames(root);
+        collectTypedefs(root);
         collectStructNames(root);
         System.out.println("Enums collected: " + enumNames);
 
@@ -222,6 +237,11 @@ public class FunctionsGenerator {
         for (JsonNode fn : functionsNode) {
             if (!familyEnabled(familyOf(fn))) {
                 continue; // function belongs to a disabled type family
+            }
+            String unpassable = unpassableSlot(fn);
+            if (unpassable != null) {
+                unpassableSlots.add(fn.get("name").asText() + " (" + unpassable + ")");
+                continue;
             }
             FunctionDef def = parseFunctionDef(fn);
             if (returnsStructByValue(def)) {
@@ -247,6 +267,10 @@ public class FunctionsGenerator {
         if (!byValueStructReturns.isEmpty()) {
             System.out.println("Left out, returning a struct small enough to travel in registers ("
                     + byValueStructReturns.size() + "): " + byValueStructReturns);
+        }
+        if (!unpassableSlots.isEmpty()) {
+            System.out.println("Left out, a slot of a type jnr-ffi cannot pass ("
+                    + unpassableSlots.size() + "): " + unpassableSlots);
         }
 
         // 3. Generate file content
@@ -276,6 +300,26 @@ public class FunctionsGenerator {
     // JSON parsing helpers
     // -------------------------------------------------------------------------
 
+    /** Reads the catalog's {@code typedefs} and {@code callbacks} into {@link #typedefs} and {@link #callbackNames}. */
+    private void collectTypedefs(JsonNode root) {
+        for (JsonNode t : root.path("typedefs")) {
+            typedefs.put(t.get("name").asText(), t.get("canonical").asText());
+        }
+        for (JsonNode c : root.path("callbacks")) {
+            callbackNames.add(c.get("name").asText());
+        }
+    }
+
+    /**
+     * The type a kept name stands for, through the catalog's {@code typedefs}, after the
+     * {@code const} qualifier is dropped; any other type as it is.
+     */
+    private String resolveTypedef(String cType) {
+        String type = cType.replace("const ", "").trim();
+        String definition = typedefs.get(type);
+        return definition == null ? type : resolveTypedef(definition);
+    }
+
     private void collectStructNames(JsonNode root) {
         JsonNode structs = root.get("structs");
         if (structs != null && structs.isArray()) {
@@ -289,10 +333,11 @@ public class FunctionsGenerator {
                 JsonNode fieldsNode = st.get("fields");
                 if (fieldsNode != null && fieldsNode.isArray()) {
                     for (JsonNode f : fieldsNode) {
-                        JsonNode fname = f.get("name");
-                        JsonNode fctype = f.get("cType");
-                        if (fname != null && fctype != null) {
-                            fields.add(new StructField(fname.asText(), fctype.asText().trim()));
+                        try {
+                            fields.add(new StructField(f.get("name").asText(), slotType(f).trim()));
+                        } catch (IllegalStateException e) {
+                            throw new IllegalStateException("struct " + nameNode.asText() + ": "
+                                    + e.getMessage(), e);
                         }
                     }
                 }
@@ -301,16 +346,21 @@ public class FunctionsGenerator {
         }
     }
 
-    /** Size in bytes of a struct field on the 64-bit targets the binding ships for. */
-    private static int fieldSize(String cType) {
+    /**
+     * Size in bytes of a struct field on the 64-bit targets the binding ships for; a type of no
+     * known size stops the generation.
+     */
+    private int fieldSize(String cType) {
         if (cType.endsWith("*")) {
             return 8;
         }
-        return switch (cType.replace("const ", "").trim()) {
-            case "bool", "char", "int8", "int8_t", "uint8", "uint8_t" -> 1;
-            case "short", "int16", "int16_t", "uint16", "uint16_t" -> 2;
-            case "int", "int32", "int32_t", "uint32", "uint32_t", "float", "Oid", "DateADT" -> 4;
-            default -> 8;
+        return switch (resolveTypedef(cType)) {
+            case "bool", "char", "int8_t", "uint8_t" -> 1;
+            case "short", "int16_t", "uint16_t" -> 2;
+            case "int", "int32_t", "uint32_t", "unsigned int", "float" -> 4;
+            case "long", "int64_t", "uint64_t", "double", "size_t", "uintptr_t" -> 8;
+            default -> throw new IllegalStateException(
+                    "no size for the struct field type '" + cType + "'");
         };
     }
 
@@ -470,23 +520,28 @@ public class FunctionsGenerator {
         return sb.toString();
     }
 
-    /** The jnr Struct member type that holds a field of this C type. */
-    private static String structFieldType(String cType) {
+    /**
+     * The jnr Struct member type that holds a field of this C type; a type no member holds stops
+     * the generation.
+     */
+    private String structFieldType(String cType) {
         if (cType.endsWith("*")) {
             return "Pointer";
         }
-        return switch (cType.replace("const ", "").trim()) {
+        return switch (resolveTypedef(cType)) {
             case "bool" -> "Boolean";
-            case "char", "int8", "int8_t" -> "Signed8";
-            case "uint8", "uint8_t" -> "Unsigned8";
-            case "short", "int16", "int16_t" -> "Signed16";
-            case "uint16", "uint16_t" -> "Unsigned16";
-            case "uint32", "uint32_t", "Oid" -> "Unsigned32";
-            case "int", "int32", "int32_t", "DateADT" -> "Signed32";
+            case "char", "int8_t" -> "Signed8";
+            case "uint8_t" -> "Unsigned8";
+            case "short", "int16_t" -> "Signed16";
+            case "uint16_t" -> "Unsigned16";
+            case "uint32_t", "unsigned int" -> "Unsigned32";
+            case "int", "int32_t" -> "Signed32";
             case "float" -> "Float";
             case "double" -> "Double";
-            case "uint64", "uint64_t" -> "Unsigned64";
-            default -> "Signed64";
+            case "uint64_t", "size_t", "uintptr_t" -> "Unsigned64";
+            case "long", "int64_t" -> "Signed64";
+            default -> throw new IllegalStateException(
+                    "no jnr Struct member for the struct field type '" + cType + "'");
         };
     }
 
@@ -500,6 +555,31 @@ public class FunctionsGenerator {
     private boolean returnsStructByValue(FunctionDef fn) {
         String ret = fn.retCType().replace("const ", "").trim();
         return !ret.endsWith("*") && structNames.contains(ret);
+    }
+
+    /**
+     * The first slot of a function, its return or a parameter, whose type is one jnr-ffi cannot
+     * pass, as "return long double" or "ratio long double"; null when every slot can be passed.
+     */
+    private String unpassableSlot(JsonNode fn) {
+        JsonNode ret = fn.get("returnType");
+        if (ret != null && NO_JAVA_FFI_TYPE.contains(slotType(ret))) {
+            return "return " + slotType(ret);
+        }
+        JsonNode params = fn.get("params");
+        if (params != null && params.isArray()) {
+            for (JsonNode p : params) {
+                if (NO_JAVA_FFI_TYPE.contains(slotType(p))) {
+                    return p.path("name").asText() + " " + slotType(p);
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Whether a type is a structure: one the catalog defines, or a {@code struct} tag. */
+    private boolean isStructType(String type) {
+        return structNames.contains(type) || type.startsWith("struct ");
     }
 
     private void collectEnumNames(JsonNode root) {
@@ -542,19 +622,21 @@ public class FunctionsGenerator {
     }
 
     /**
-     * The C type a catalog type slot is mapped by. A slot whose header names a type of its
-     * own over a C standard integer (H3Index, Quadbin, S2CellId) carries that name as
-     * {@code typedef} and its width as {@code canonical}, and the width is what the library
-     * reads; any other slot is mapped by the type the header declares, its {@code field}
-     * ({@code c} for a return, {@code cType} for a parameter). Read as {@link #enumSource}
-     * reads an enum of the catalog.
+     * The C type a catalog type slot is mapped by: its {@code canonical}, which states the width
+     * and shape of the slot as MEOS declares it. A width is a C standard type ({@code int32_t},
+     * {@code double}), a structure or a callback is named, and a name MEOS keeps from PostgreSQL
+     * (TimestampTz, DateADT, Datum, Oid, text) is spelled as such and defined by the catalog's
+     * {@code typedefs}. A slot whose header names a type of its own over a width (H3Index,
+     * Quadbin, S2CellId) states that name as {@code typedef} and the width as {@code canonical},
+     * and the width is what the library reads. A slot stating no canonical type stops the
+     * generation.
      */
-    static String slotType(JsonNode slot, String field) {
-        JsonNode width = slot.path("canonical");
-        if (slot.hasNonNull("typedef") && width.isTextual()) {
-            return width.asText();
+    static String slotType(JsonNode slot) {
+        JsonNode canonical = slot.path("canonical");
+        if (!canonical.isTextual()) {
+            throw new IllegalStateException("the catalog slot " + slot + " states no canonical type");
         }
-        return slot.path(field).asText();
+        return canonical.asText();
     }
 
     /** The Java source of an enum of the catalog. */
@@ -583,20 +665,17 @@ public class FunctionsGenerator {
     private FunctionDef parseFunctionDef(JsonNode fn) {
         String name = fn.get("name").asText();
 
-        // Return type: prefer the "c" field over "canonical"
         JsonNode retNode = fn.get("returnType");
 
         if (retNode == null) {
             throw new IllegalStateException("Json node of the return type of function \"" + name + "\" is null");
         }
 
-        String retCType = slotType(retNode, "c");
-
-        if (retCType.equals("null")) {
-            throw new IllegalStateException("Null return type:" + retNode.asText());
-        }
-
-        String retJava  = mapCTypeToJava(retCType);
+        String retCType = slotType(retNode);
+        // A structure returned by value reaches the caller through memory it supplies, read
+        // back as a Pointer to it (see withResultParam), or is left out (see run).
+        String retJava  = structNames.contains(retCType.replace("const ", "").trim())
+                ? "Pointer" : javaTypeOf(retCType, name);
 
         // Parameters
         // ParamDef carries the original C type so that
@@ -618,8 +697,8 @@ public class FunctionsGenerator {
                 if (p != null && p.isObject()) {
                     String rawName = p.get("name").asText();
                     String pName  = sanitizeParamName(rawName);
-                    String pCType = slotType(p, "cType");
-                    String pJava  = mapCTypeToJava(pCType);
+                    String pCType = slotType(p);
+                    String pJava  = javaTypeOf(pCType, name);
 
                     params.add(new ParamDef(pName, pJava, pCType, outParams.contains(rawName)));
                 }
@@ -633,25 +712,41 @@ public class FunctionsGenerator {
     // C → Java type mapping (interface level)
     // -------------------------------------------------------------------------
 
+    /** The Java type of a slot of a function; a type with none stops the generation, naming both. */
+    private String javaTypeOf(String cType, String function) {
+        try {
+            return mapCTypeToJava(cType);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("function " + function + ": " + e.getMessage(), e);
+        }
+    }
+
     /**
-     * Maps a C type to the JNR-FFI Java type used in the inner MeosLibrary
-     * interface (the low-level native binding layer).
-     *
-     * Added cases for PostgreSQL temporal typedefs that previously
-     * fell through to the default branch and became Pointer:
-     *   DateADT     → int
-     *   Timestamp   → long
-     *   TimestampTz → long
+     * Maps a C type, as a slot's {@code canonical} spells it, to the JNR-FFI Java type used in the
+     * inner MeosLibrary interface (the low-level native binding layer). A name MEOS keeps from
+     * PostgreSQL is mapped by its definition in the catalog's {@code typedefs}: TimestampTz and
+     * Timestamp (int64_t) to long, DateADT (int32_t) to int, Datum (uintptr_t) to long, Oid
+     * (unsigned int) to int. A type this mapping does not know throws IllegalArgumentException.
      */
     private String mapCTypeToJava(String cType) {
         cType = cType.replace("const ", "").trim();
 
         // Function pointers
-        if (cType.contains("(*)") || cType.contains("(*)(")) {
+        if (cType.contains("(*)")) {
             return "Pointer";
         }
         if (CALLBACK_TYPES.contains(cType)) {
             return cType;
+        }
+        // Any other callback of the catalog is passed as the address of a function.
+        if (callbackNames.contains(cType)) {
+            return "Pointer";
+        }
+
+        // An array parameter, T[N], is passed as a pointer to its first element, as C adjusts it;
+        // a char[N] is a buffer the function may write, so it stays a Pointer, not a String.
+        if (cType.endsWith("]")) {
+            return "Pointer";
         }
 
         // Double pointer → always Pointer
@@ -673,37 +768,26 @@ public class FunctionsGenerator {
             return "int";
         }
 
+        // A name MEOS keeps from PostgreSQL is mapped by the type the catalog defines it as.
+        String resolved = resolveTypedef(cType);
+        if (!resolved.equals(cType)) {
+            return mapCTypeToJava(resolved);
+        }
+
         return switch (cType) {
             case "void"                             -> "void";
             case "bool"                             -> "boolean";
-            case "char"                             -> "String";
             case "float"                            -> "float";
-            case "double", "float8"                 -> "double";
-            // Oid is a PostgreSQL object identifier, a by-value unsigned int — the
-            // collation a text comparison or hash runs under. Without a case here it
-            // reaches the default branch and becomes Pointer, so the call passes an
-            // address where the library reads a 32-bit value.
-            case "int", "int32", "int32_t",
-                 "uint32", "uint32_t", "Oid"        -> "int";
-            case "short", "int16", "int16_t",
-                 "uint16", "uint16_t"               -> "short";
-            case "int8", "int8_t",
-                 "uint8", "uint8_t"                 -> "byte";
-            case "long", "int64", "int64_t",
-                 "uint64", "uint64_t"               -> "long";
+            case "double"                           -> "double";
+            case "int", "int32_t",
+                 "uint32_t", "unsigned int"         -> "int";
+            case "short", "int16_t", "uint16_t"     -> "short";
+            // A char passed by value is one byte; a char * is a String.
+            case "char", "int8_t", "uint8_t"        -> "byte";
+            case "long", "int64_t", "uint64_t"      -> "long";
             case "size_t", "uintptr_t"              -> "long";
-
-            // PostgreSQL temporal typedefs previously all hit
-            // the default branch and became Pointer.
-            // DateADT is int32 under the hood; Timestamp/TimestampTz are int64.
-            case "DateADT"                          -> "int";
-            case "Timestamp", "TimestampTz"         -> "long";
-            // H3Index is a uint64 cell identifier (DGGRID/H3), not an opaque
-            // struct pointer; without this it hits the default branch and
-            // becomes Pointer, breaking every h3index/th3index binding.
-            case "H3Index"                          -> "long";
-
-            default                                 -> "Pointer";
+            default -> throw new IllegalArgumentException(
+                    "the catalog type '" + cType + "' maps to no Java type");
         };
     }
 
@@ -789,38 +873,42 @@ public class FunctionsGenerator {
      * Derives the {@link ResultStrategy} from the C type of the output parameter
      * (e.g. {@code "double *"}, {@code "Span *"}, {@code "TimestampTz *"}).
      *
-     * The base type (after stripping {@code const} and {@code *}) determines the
-     * allocation size and whether the buffer should be dereferenced.
-     * Unknown / struct-pointer types fall through to the default branch.
+     * The pointed-to type, resolved through the catalog's {@code typedefs}, determines the
+     * allocation size and whether the buffer should be dereferenced: a pointer or a structure
+     * is an address, a scalar is read at the width of its Java type.
      */
+    private ResultStrategy resultStrategyOf(String resultCType, String function) {
+        try {
+            return resolveResultStrategy(resultCType);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("function " + function + ": " + e.getMessage(), e);
+        }
+    }
+
     private ResultStrategy resolveResultStrategy(String resultCType) {
         String base = resultCType.replace("const ", "").trim();
         if (base.endsWith("*")) {
             base = base.substring(0, base.length() - 1).trim();
         }
+        base = resolveTypedef(base);
 
-        return switch (base) {
-            // Scalar types: allocate the correct size, return the buffer directly.
-            // Callers read the value themselves: .getDouble(0), .getLong(0), etc.
-            case "double", "float8"
-                    -> new ResultStrategy("Double.BYTES",   false);
-            case "float"
-                    -> new ResultStrategy("Float.BYTES",    false);
-            case "int", "int32", "int32_t", "uint32", "uint32_t"
-                    -> new ResultStrategy("Integer.BYTES",  false);
-            case "short", "int16", "int16_t", "uint16", "uint16_t"
-                    -> new ResultStrategy("Short.BYTES",    false);
-            case "long", "int64", "int64_t", "uint64", "uint64_t", "size_t", "uintptr_t"
-                    -> new ResultStrategy("Long.BYTES",     false);
-            case "bool"
-                    -> new ResultStrategy("Byte.BYTES",     false);
-            case "DateADT"
-                    -> new ResultStrategy("Integer.BYTES",  false);
-            case "Timestamp", "TimestampTz"
-                    -> new ResultStrategy("Long.BYTES",     false);
-            // Struct pointers (Span*, STBox*, GSERIALIZED*, …): the buffer holds a
-            // native address → dereference with getPointer(0) to get the actual pointer.
-            default -> new ResultStrategy("Long.BYTES",     true);
+        // Struct pointers (Span*, STBox*, GSERIALIZED*, …): the buffer holds a
+        // native address → dereference with getPointer(0) to get the actual pointer.
+        if (base.endsWith("*") || isStructType(base)) {
+            return new ResultStrategy("Long.BYTES", true);
+        }
+
+        // Scalar types: allocate the correct size, return the buffer directly.
+        // Callers read the value themselves: .getDouble(0), .getLong(0), etc.
+        return switch (mapCTypeToJava(base)) {
+            case "double"           -> new ResultStrategy("Double.BYTES",   false);
+            case "float"            -> new ResultStrategy("Float.BYTES",    false);
+            case "int"              -> new ResultStrategy("Integer.BYTES",  false);
+            case "short"            -> new ResultStrategy("Short.BYTES",    false);
+            case "long"             -> new ResultStrategy("Long.BYTES",     false);
+            case "boolean", "byte"  -> new ResultStrategy("Byte.BYTES",     false);
+            default -> throw new IllegalArgumentException(
+                    "the out-parameter type '" + resultCType + "' has no width to read");
         };
     }
 
@@ -1055,7 +1143,7 @@ public class FunctionsGenerator {
                 ? fn.params.stream()
                 .filter(FunctionsGenerator::isResultOut)
                 .findFirst()
-                .map(p -> resolveResultStrategy(p.cType))
+                .map(p -> resultStrategyOf(p.cType, fn.name))
                 .orElse(new ResultStrategy("Long.BYTES", true))
                 : null;
 
