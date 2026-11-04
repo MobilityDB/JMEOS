@@ -215,6 +215,7 @@ jsonbset_object_field_text	internal
 jsonbset_path_exists	array-or-out-param:count; unsupported-return:bool *
 jsonbset_path_match	array-or-out-param:count; unsupported-return:bool *
 jsonbset_set	array-or-out-param:keys
+jsonbset_set_lax	array-or-out-param:keys
 jsonbset_to_alphanumset	internal
 jsonbset_value_n	internal
 le_date_timestamp	arg:Timestamp
@@ -242,6 +243,8 @@ minus_time_time	arg:TimeADT
 minus_timestamp_interval	ret:Timestamp
 minus_timestamp_timestamp	arg:Timestamp
 minus_timestamptz_interval_at_zone	internal
+nad_tpcbox_tpcbox	arg:TPCBox *
+nad_tpointcloud_tpcbox	arg:TPCBox *
 nad_tposechain_posechain	arg:PoseChain *
 nai_tposechain_posechain	arg:PoseChain *
 ne_date_timestamp	arg:Timestamp
@@ -306,8 +309,8 @@ posearr_round	internal
 posechain_append	ret:PoseChain *
 posechain_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 posechain_as_ewkt	arg:PoseChain *
-posechain_as_hexewkb	array-or-out-param:size_out
-posechain_as_hexwkb	array-or-out-param:size_out
+posechain_as_hexewkb	arg:PoseChain *
+posechain_as_hexwkb	arg:PoseChain *
 posechain_as_text	arg:PoseChain *
 posechain_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 posechain_cmp	arg:PoseChain *
@@ -428,7 +431,6 @@ sptree_insert	no-decoder:SPTree; no-decoder:void
 sptree_insert_temporal	no-decoder:SPTree
 sptree_insert_temporal_split	no-decoder:SPTree
 sptree_join	no-decoder:SPTree; no-decoder:MeosArray
-sptree_load	no-decoder:SPTree; no-decoder:void; array-or-out-param:ids
 sptree_mem_size	no-decoder:SPTree
 sptree_nn_cursor_close	no-decoder:SPNNCursor
 sptree_nn_cursor_next	no-decoder:SPNNCursor; array-or-out-param:id_out; array-or-out-param:dist_out
@@ -527,7 +529,7 @@ tgt_ttext_text	internal
 th3index_value_at_timestamptz	arg:uint64_t *
 th3index_value_n	arg:uint64_t *
 th3indexseq_make	array-or-out-param:values
-th3indexseqset_make	array-or-out-param:sequences
+th3indexseqset_make	internal
 time_cmp	arg:TimeADT
 time_eq	arg:TimeADT
 time_extract	arg:TimeADT
@@ -607,6 +609,7 @@ tjsonb_insert	array-or-out-param:keys
 tjsonb_object_field	internal
 tjsonb_object_field_text	internal
 tjsonb_set	array-or-out-param:keys
+tjsonb_set_lax	array-or-out-param:keys
 tjsonb_value_at_timestamptz	internal
 tjsonb_value_n	internal
 tjsonb_values	internal
@@ -628,8 +631,8 @@ tnumber_tboxes	array-or-out-param:count
 tnumber_wavg_transfn	no-decoder:SkipList; no-encoder:SkipList
 tpc_extent_transfn	ret:TPCBox *
 tpcbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
-tpcbox_as_hexewkb	array-or-out-param:size_out
-tpcbox_as_hexwkb	array-or-out-param:size_out
+tpcbox_as_hexewkb	arg:TPCBox *
+tpcbox_as_hexwkb	arg:TPCBox *
 tpcbox_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tpcbox_cmp	arg:TPCBox *
 tpcbox_copy	ret:TPCBox *
@@ -700,7 +703,7 @@ tposechainseqset_from_base_tstzspanset	arg:PoseChain *
 tquadbin_value_at_timestamptz	arg:uint64_t *
 tquadbin_value_n	arg:uint64_t *
 tquadbinseq_make	array-or-out-param:values
-tquadbinseqset_make	array-or-out-param:sequences
+tquadbinseqset_make	internal
 trgeometry_instants	internal
 trgeometry_merge_array	internal
 trgeometry_segments	internal
@@ -711,17 +714,18 @@ trgeometry_split_each_n_stboxes	array-or-out-param:count
 trgeometry_split_n_stboxes	array-or-out-param:count
 trgeometry_stboxes	array-or-out-param:count
 trgeometry_time_boxes	array-or-out-param:count
+trgeometry_value_at_timestamptz	internal
 trgeometry_value_n	internal
 trgeometry_values	internal
 trgeometryseq_make	internal
-trgeometryseqset_make	array-or-out-param:sequences
+trgeometryseqset_make	internal
 trgeometryseqset_make_gaps	internal
 ts2cell_value_at_timestamptz	arg:uint64_t *
 ts2cell_value_n	arg:uint64_t *
 ts2cellseq_make	array-or-out-param:values
-ts2cellseqset_make	array-or-out-param:sequences
+ts2cellseqset_make	internal
 tsequence_make	internal
-tsequenceset_make	array-or-out-param:sequences
+tsequenceset_make	internal
 tsequenceset_make_gaps	internal
 tstzset_make	arg:TimestampTz *
 tstzset_tcount_transfn	no-decoder:SkipList; no-encoder:SkipList

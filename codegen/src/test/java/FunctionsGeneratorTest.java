@@ -114,6 +114,34 @@ class FunctionsGeneratorTest {
         return resolveResultStrategy.invoke(generator, cType);
     }
 
+    /** The PostgreSQL names MEOS keeps, defined as the catalog's {@code typedefs} defines them. */
+    private static final String TYPEDEFS = """
+            "typedefs": [{"name": "DateADT", "canonical": "int32_t"},
+                         {"name": "Datum", "canonical": "uintptr_t"},
+                         {"name": "Oid", "canonical": "unsigned int"},
+                         {"name": "TimeADT", "canonical": "int64_t"},
+                         {"name": "Timestamp", "canonical": "int64_t"},
+                         {"name": "TimestampTz", "canonical": "int64_t"},
+                         {"name": "text", "canonical": "struct varlena"}]
+            """;
+
+    /** Reads {@link #TYPEDEFS} and the named structures into the generator, as a run does. */
+    private void readCatalogNames(String... structs) throws Exception {
+        StringBuilder json = new StringBuilder("{").append(TYPEDEFS).append(", \"structs\": [");
+        for (int i = 0; i < structs.length; i++) {
+            json.append(i == 0 ? "" : ", ").append("{\"name\": \"").append(structs[i]).append("\"}");
+        }
+        JsonNode root = new ObjectMapper().readTree(json.append("]}").toString());
+        reflect("collectTypedefs", JsonNode.class).invoke(generator, root);
+        reflect("collectStructNames", JsonNode.class).invoke(generator, root);
+    }
+
+    /** The message of what a reflected call throws, which the generation stops with. */
+    private static String thrownBy(org.junit.jupiter.api.function.Executable call) {
+        Throwable t = assertThrows(java.lang.reflect.InvocationTargetException.class, call).getCause();
+        return t.getMessage();
+    }
+
     private String sanitize(String name) throws Exception {
         return (String) sanitizeParamName.invoke(generator, name);
     }
@@ -147,15 +175,18 @@ class FunctionsGeneratorTest {
 
         @Test void void_() throws Exception        { assertEquals("void",    mapJava("void")); }
         @Test void bool_() throws Exception        { assertEquals("boolean", mapJava("bool")); }
-        @Test void char_() throws Exception        { assertEquals("String",    mapJava("char")); }
+        /** A char passed by value is one byte; only a char * is a String. */
+        @Test void char_() throws Exception        { assertEquals("byte",    mapJava("char")); }
+        /** An array parameter is passed as a pointer to its first element, a char[N] included. */
+        @Test void charArray() throws Exception    { assertEquals("Pointer", mapJava("char[10]")); }
+        @Test void constArray() throws Exception   { assertEquals("Pointer", mapJava("const double[3]")); }
+        @Test void nestedArray() throws Exception  { assertEquals("Pointer", mapJava("double[11][2]")); }
         @Test void float_() throws Exception       { assertEquals("float",   mapJava("float")); }
         @Test void double_() throws Exception      { assertEquals("double",  mapJava("double")); }
-        @Test void float8() throws Exception       { assertEquals("double",  mapJava("float8")); }
         @Test void int_() throws Exception         { assertEquals("int",     mapJava("int")); }
         @Test void int32_t() throws Exception      { assertEquals("int",     mapJava("int32_t")); }
         @Test void uint32_t() throws Exception     { assertEquals("int",     mapJava("uint32_t")); }
-        /** Oid is an unsigned int passed by value, so it maps like one rather than to Pointer. */
-        @Test void oid() throws Exception          { assertEquals("int",     mapJava("Oid")); }
+        @Test void unsignedInt() throws Exception  { assertEquals("int",     mapJava("unsigned int")); }
         @Test void long_() throws Exception        { assertEquals("long",    mapJava("long")); }
         @Test void int64_t() throws Exception      { assertEquals("long",    mapJava("int64_t")); }
         @Test void uint64_t() throws Exception     { assertEquals("long",    mapJava("uint64_t")); }
@@ -163,24 +194,51 @@ class FunctionsGeneratorTest {
         @Test void uintptr_t() throws Exception    { assertEquals("long",    mapJava("uintptr_t")); }
         @Test void int16_t() throws Exception      { assertEquals("short",   mapJava("int16_t")); }
         @Test void int8_t() throws Exception       { assertEquals("byte",    mapJava("int8_t")); }
-        @Test void DateADT() throws Exception      { assertEquals("int",     mapJava("DateADT")); }
-        @Test void Timestamp() throws Exception    { assertEquals("long",    mapJava("Timestamp")); }
-        @Test void TimestampTz() throws Exception  { assertEquals("long",    mapJava("TimestampTz")); }
-        @Test void H3Index() throws Exception      { assertEquals("long",    mapJava("H3Index")); }
 
         @Test
-        @DisplayName("a cell slot is mapped by the width its canonical states, any other by its C type")
-        void slotTypeOfACell() throws Exception {
+        @DisplayName("a name MEOS keeps from PostgreSQL is mapped by the type the catalog defines it as")
+        void keptNamesResolveThroughTypedefs() throws Exception {
+            readCatalogNames();
+            assertEquals("int",  mapJava("DateADT"));
+            assertEquals("long", mapJava("Timestamp"));
+            assertEquals("long", mapJava("TimestampTz"));
+            assertEquals("long", mapJava("const TimestampTz"));
+            assertEquals("long", mapJava("TimeADT"));
+            assertEquals("long", mapJava("Datum"));
+            assertEquals("int",  mapJava("Oid"));
+            assertEquals("Pointer", mapJava("text *"));
+        }
+
+        @Test
+        @DisplayName("a kept name the catalog defines no type for stops the mapping")
+        void keptNameWithoutTypedefStops() {
+            assertTrue(thrownBy(() -> mapJava("TimestampTz")).contains("'TimestampTz'"));
+        }
+
+        @Test
+        @DisplayName("a slot is mapped by its canonical type, whatever its declared spelling")
+        void slotTypeIsTheCanonical() throws Exception {
             ObjectMapper m = new ObjectMapper();
             JsonNode quadbin = m.readTree(
-                    "{\"cType\": \"Quadbin\", \"canonical\": \"uint64_t\", \"typedef\": \"Quadbin\"}");
+                    "{\"cType\": \"uint64_t\", \"canonical\": \"uint64_t\", \"typedef\": \"Quadbin\"}");
             JsonNode cells = m.readTree(
-                    "{\"c\": \"S2CellId *\", \"canonical\": \"uint64_t *\", \"typedef\": \"S2CellId\"}");
+                    "{\"c\": \"uint64_t *\", \"canonical\": \"uint64_t *\", \"typedef\": \"S2CellId\"}");
             JsonNode bigint = m.readTree("{\"cType\": \"int64\", \"canonical\": \"int64_t\"}");
-            assertEquals("long",    mapJava(FunctionsGenerator.slotType(quadbin, "cType")));
-            assertEquals("uint64_t *", FunctionsGenerator.slotType(cells, "c"));
-            assertEquals("int64",   FunctionsGenerator.slotType(bigint, "cType"));
-            assertEquals("long",    mapJava(FunctionsGenerator.slotType(bigint, "cType")));
+            JsonNode real = m.readTree("{\"cType\": \"float4\", \"canonical\": \"float\"}");
+            assertEquals("long",       mapJava(FunctionsGenerator.slotType(quadbin)));
+            assertEquals("uint64_t *", FunctionsGenerator.slotType(cells));
+            assertEquals("int64_t",    FunctionsGenerator.slotType(bigint));
+            assertEquals("long",       mapJava(FunctionsGenerator.slotType(bigint)));
+            assertEquals("float",      mapJava(FunctionsGenerator.slotType(real)));
+        }
+
+        @Test
+        @DisplayName("a slot stating no canonical type stops the generation")
+        void slotWithoutCanonicalStops() throws Exception {
+            JsonNode slot = new ObjectMapper().readTree("{\"cType\": \"float4\"}");
+            IllegalStateException e = assertThrows(IllegalStateException.class,
+                    () -> FunctionsGenerator.slotType(slot));
+            assertTrue(e.getMessage().contains("states no canonical type"));
         }
 
         @Test void charPointer() throws Exception  { assertEquals("String",  mapJava("char *")); }
@@ -190,23 +248,32 @@ class FunctionsGeneratorTest {
         @Test void errorHandlerFn() throws Exception { assertEquals("error_handler_fn", mapJava("error_handler_fn")); }
 
         @Test
-        @DisplayName("const prefix is stripped before mapping")
-        void constPrefix() throws Exception {
-            assertEquals("Pointer", mapJava("const STBox *"));
-            assertEquals("long",    mapJava("const TimestampTz"));
+        @DisplayName("a callback of the catalog not bound to an interface is the address of a function")
+        void catalogCallback() throws Exception {
+            JsonNode root = new ObjectMapper().readTree("{\"callbacks\": [{\"name\": \"meos_free_fn\"}]}");
+            reflect("collectTypedefs", JsonNode.class).invoke(generator, root);
+            assertEquals("Pointer", mapJava("meos_free_fn"));
         }
 
         @Test
-        @DisplayName("unknown type falls through to Pointer")
-        void unknownType() throws Exception {
-            assertEquals("Pointer", mapJava("SomeUnknownStruct"));
+        @DisplayName("const prefix is stripped before mapping")
+        void constPrefix() throws Exception {
+            assertEquals("Pointer", mapJava("const STBox *"));
+            assertEquals("double",  mapJava("const double"));
+        }
+
+        @Test
+        @DisplayName("a type with no Java type stops the mapping, naming it")
+        void unknownType() {
+            assertTrue(thrownBy(() -> mapJava("SomeUnknownStruct"))
+                    .contains("the catalog type 'SomeUnknownStruct' maps to no Java type"));
         }
 
         @ParameterizedTest
         @ValueSource(strings = {"interpType", "IndexSearchOp", "tempSubtype", "spatialRel", "errorCode"})
         @DisplayName("a name the catalog states no enum of is not an enum")
-        void enumOnlyFromCatalog(String cType) throws Exception {
-            assertEquals("Pointer", mapJava(cType));
+        void enumOnlyFromCatalog(String cType) {
+            assertTrue(thrownBy(() -> mapJava(cType)).contains("'" + cType + "'"));
         }
 
         @Test
@@ -252,6 +319,7 @@ class FunctionsGeneratorTest {
         }
 
         @Test void DateADT_staysInt() throws Exception {
+            readCatalogNames();
             assertEquals("int", mapWrapper("DateADT"));
         }
 
@@ -342,33 +410,42 @@ class FunctionsGeneratorTest {
         }
 
         @Test void DateADT_scalar() throws Exception {
+            readCatalogNames();
             Object s = resolveStrategy("DateADT *");
             assertEquals("Integer.BYTES", allocExpr(s));
             assertFalse(isPointer(s));
         }
 
         @Test void TimestampTz_scalar() throws Exception {
+            readCatalogNames();
             Object s = resolveStrategy("TimestampTz *");
             assertEquals("Long.BYTES", allocExpr(s));
             assertFalse(isPointer(s));
         }
 
+        /** A Datum is a uintptr_t, a scalar read at its width, never dereferenced as an address. */
+        @Test void Datum_scalar() throws Exception {
+            readCatalogNames();
+            Object s = resolveStrategy("Datum *");
+            assertEquals("Long.BYTES", allocExpr(s));
+            assertFalse(isPointer(s));
+        }
+
         @Test void structPointer_pointer() throws Exception {
+            readCatalogNames("Span");
             Object s = resolveStrategy("Span *");
             assertEquals("Long.BYTES", allocExpr(s));
             assertTrue(isPointer(s));
         }
 
-        @Test void unknownType_defaultsToPointer() throws Exception {
-            Object s = resolveStrategy("SomeStruct *");
+        @Test void structTag_pointer() throws Exception {
+            Object s = resolveStrategy("struct Pose **");
             assertEquals("Long.BYTES", allocExpr(s));
             assertTrue(isPointer(s));
         }
 
-        @Test void float8_scalar() throws Exception {
-            Object s = resolveStrategy("float8 *");
-            assertEquals("Double.BYTES", allocExpr(s));
-            assertFalse(isPointer(s));
+        @Test void unknownType_stops() {
+            assertTrue(thrownBy(() -> resolveStrategy("SomeStruct *")).contains("'SomeStruct'"));
         }
     }
 
@@ -566,7 +643,7 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "meos_initialize",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": []
                   }]
                 }
@@ -587,10 +664,10 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "overlaps_stbox_stbox",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "params": [
-                      {"name": "box1", "cType": "STBox *"},
-                      {"name": "box2", "cType": "STBox *"}
+                      {"name": "box1", "cType": "STBox *", "canonical": "STBox *"},
+                      {"name": "box2", "cType": "STBox *", "canonical": "STBox *"}
                     ]
                   }]
                 }
@@ -607,9 +684,9 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "meos_initialize_error_handler",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": [
-                      {"name": "err_handler", "cType": "error_handler_fn"}
+                      {"name": "err_handler", "cType": "error_handler_fn", "canonical": "error_handler_fn"}
                     ]
                   }]
                 }
@@ -630,11 +707,12 @@ class FunctionsGeneratorTest {
         void pointerCallbackIsNotHeld() throws Exception {
             String json = """
                 {
+                  "callbacks": [{"name": "interrupt_handler_fn"}],
                   "functions": [{
                     "name": "meos_initialize_interrupt_handler",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": [
-                      {"name": "handler", "cType": "interrupt_handler_fn"}
+                      {"name": "handler", "cType": "interrupt_handler_fn", "canonical": "interrupt_handler_fn"}
                     ]
                   }]
                 }
@@ -650,7 +728,7 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "meos_initialize",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": []
                   }]
                 }
@@ -673,7 +751,7 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "meos_finalize",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": []
                   }]
                 }
@@ -691,11 +769,11 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "stbox_xmax",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "shape": {"outParams": ["result"]},
                     "params": [
-                      {"name": "box",    "cType": "STBox *"},
-                      {"name": "result", "cType": "double *"}
+                      {"name": "box",    "cType": "STBox *", "canonical": "STBox *"},
+                      {"name": "result", "cType": "double *", "canonical": "double *"}
                     ]
                   }]
                 }
@@ -715,13 +793,14 @@ class FunctionsGeneratorTest {
         void boolResultPointerPattern() throws Exception {
             String json = """
                 {
+                  "structs": [{"name": "STBox"}],
                   "functions": [{
                     "name": "temporal_bbox",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "shape": {"outParams": ["result"]},
                     "params": [
-                      {"name": "temp",   "cType": "Temporal *"},
-                      {"name": "result", "cType": "STBox *"}
+                      {"name": "temp",   "cType": "Temporal *", "canonical": "Temporal *"},
+                      {"name": "result", "cType": "STBox *", "canonical": "STBox *"}
                     ]
                   }]
                 }
@@ -739,11 +818,11 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "set_as_wkb",
-                    "returnType": {"c": "uint8_t *"},
+                    "returnType": {"c": "uint8_t *", "canonical": "uint8_t *"},
                     "shape": {"outParams": ["size_out"]},
                     "params": [
-                      {"name": "s",        "cType": "Set *"},
-                      {"name": "size_out", "cType": "size_t *"}
+                      {"name": "s",        "cType": "Set *", "canonical": "Set *"},
+                      {"name": "size_out", "cType": "size_t *", "canonical": "size_t *"}
                     ]
                   }]
                 }
@@ -762,12 +841,12 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "temporal_as_wkb",
-                    "returnType": {"c": "uint8_t *"},
+                    "returnType": {"c": "uint8_t *", "canonical": "uint8_t *"},
                     "shape": {"outParams": ["size_out"]},
                     "params": [
-                      {"name": "temp",     "cType": "const Temporal *"},
-                      {"name": "variant",  "cType": "uint8_t"},
-                      {"name": "size_out", "cType": "size_t *"}
+                      {"name": "temp",     "cType": "const Temporal *", "canonical": "const Temporal *"},
+                      {"name": "variant",  "cType": "uint8_t", "canonical": "uint8_t"},
+                      {"name": "size_out", "cType": "size_t *", "canonical": "size_t *"}
                     ]
                   }]
                 }
@@ -786,10 +865,10 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "temporal_from_wkb",
-                    "returnType": {"c": "Temporal *"},
+                    "returnType": {"c": "Temporal *", "canonical": "Temporal *"},
                     "params": [
-                      {"name": "wkb",  "cType": "const uint8_t *"},
-                      {"name": "size", "cType": "size_t"}
+                      {"name": "wkb",  "cType": "const uint8_t *", "canonical": "const uint8_t *"},
+                      {"name": "size", "cType": "size_t", "canonical": "size_t"}
                     ]
                   }]
                 }
@@ -810,12 +889,12 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "temporal_as_hexwkb",
-                    "returnType": {"c": "char *"},
+                    "returnType": {"c": "char *", "canonical": "char *"},
                     "shape": {"outParams": ["size_out"]},
                     "params": [
-                      {"name": "temp",     "cType": "const Temporal *"},
-                      {"name": "variant",  "cType": "uint8_t"},
-                      {"name": "size_out", "cType": "size_t *"}
+                      {"name": "temp",     "cType": "const Temporal *", "canonical": "const Temporal *"},
+                      {"name": "variant",  "cType": "uint8_t", "canonical": "uint8_t"},
+                      {"name": "size_out", "cType": "size_t *", "canonical": "size_t *"}
                     ]
                   }]
                 }
@@ -837,12 +916,12 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "tint_value_at_timestamptz",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "shape": {"outParams": ["value"]},
                     "params": [
-                      {"name": "temp",   "cType": "Temporal *"},
-                      {"name": "strict", "cType": "bool"},
-                      {"name": "value",  "cType": "int *"}
+                      {"name": "temp",   "cType": "Temporal *", "canonical": "Temporal *"},
+                      {"name": "strict", "cType": "bool", "canonical": "bool"},
+                      {"name": "value",  "cType": "int *", "canonical": "int *"}
                     ]
                   }]
                 }
@@ -863,12 +942,12 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "index_result_id",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "shape": {"outParams": ["id"]},
                     "params": [
-                      {"name": "result", "cType": "const MeosArray *"},
-                      {"name": "n",      "cType": "int"},
-                      {"name": "id",     "cType": "int64_t *"}
+                      {"name": "result", "cType": "const MeosArray *", "canonical": "const MeosArray *"},
+                      {"name": "n",      "cType": "int", "canonical": "int"},
+                      {"name": "id",     "cType": "int64_t *", "canonical": "int64_t *"}
                     ]
                   }]
                 }
@@ -890,10 +969,10 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "contains_set_geo",
-                    "returnType": {"c": "bool"},
+                    "returnType": {"c": "bool", "canonical": "bool"},
                     "params": [
-                      {"name": "s",  "cType": "Set *"},
-                      {"name": "gs", "cType": "GSERIALIZED *"}
+                      {"name": "s",  "cType": "Set *", "canonical": "Set *"},
+                      {"name": "gs", "cType": "GSERIALIZED *", "canonical": "GSERIALIZED *"}
                     ]
                   }]
                 }
@@ -910,11 +989,12 @@ class FunctionsGeneratorTest {
         void timestampTzConversion() throws Exception {
             String json = """
                 {
+                  "typedefs": [{"name": "TimestampTz", "canonical": "int64_t"}],
                   "functions": [{
                     "name": "timestamptz_to_stbox",
-                    "returnType": {"c": "STBox *"},
+                    "returnType": {"c": "STBox *", "canonical": "STBox *"},
                     "params": [
-                      {"name": "t", "cType": "TimestampTz"}
+                      {"name": "t", "cType": "TimestampTz", "canonical": "TimestampTz"}
                     ]
                   }]
                 }
@@ -934,11 +1014,12 @@ class FunctionsGeneratorTest {
         void timestampTzReturnType() throws Exception {
             String json = """
                 {
+                  "typedefs": [{"name": "TimestampTz", "canonical": "int64_t"}],
                   "functions": [{
                     "name": "tinstant_timestamptz",
-                    "returnType": {"c": "TimestampTz"},
+                    "returnType": {"c": "TimestampTz", "canonical": "TimestampTz"},
                     "params": [
-                      {"name": "inst", "cType": "TInstant *"}
+                      {"name": "inst", "cType": "TInstant *", "canonical": "TInstant *"}
                     ]
                   }]
                 }
@@ -950,6 +1031,85 @@ class FunctionsGeneratorTest {
         }
 
         @Test
+        @DisplayName("a float4 slot passes a float, the width its canonical states")
+        void float4SlotPassesAFloat() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "add_float4_float4",
+                    "returnType": {"c": "float4", "canonical": "float"},
+                    "params": [
+                      {"name": "num1", "cType": "float4", "canonical": "float"},
+                      {"name": "num2", "cType": "float4", "canonical": "float"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertTrue(out.contains("float add_float4_float4(float num1, float num2);"));
+            assertTrue(out.contains("public static float add_float4_float4(float num1, float num2)"));
+        }
+
+        @Test
+        @DisplayName("a Datum is passed as the uintptr_t the catalog defines it as")
+        void datumSlotPassesALong() throws Exception {
+            String json = """
+                {
+                  "typedefs": [{"name": "Datum", "canonical": "uintptr_t"}],
+                  "functions": [{
+                    "name": "datum_floor",
+                    "returnType": {"c": "Datum", "canonical": "Datum"},
+                    "params": [{"name": "d", "cType": "Datum", "canonical": "Datum"}]
+                  }]
+                }
+                """;
+            assertTrue(generateFromJson(json).contains("public static long datum_floor(long d)"));
+        }
+
+        @Test
+        @DisplayName("a slot whose type maps to no Java type stops the generation, naming type and function")
+        void unmappedTypeStopsTheGeneration() {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "time_make",
+                    "returnType": {"c": "TimeADT", "canonical": "TimeADT"},
+                    "params": []
+                  }]
+                }
+                """;
+            Throwable t = assertThrows(java.lang.reflect.InvocationTargetException.class,
+                    () -> generateFromJson(json)).getCause();
+            assertEquals("function time_make: the catalog type 'TimeADT' maps to no Java type",
+                    t.getMessage());
+        }
+
+        @Test
+        @DisplayName("a function with a long double slot is left out and the others are generated")
+        void longDoubleSlotLeavesTheFunctionOut() throws Exception {
+            String json = """
+                {
+                  "functions": [
+                    {"name": "cbuffersegm_interpolate",
+                     "returnType": {"c": "Cbuffer *", "canonical": "Cbuffer *"},
+                     "params": [{"name": "ratio", "cType": "long double", "canonical": "long double"}]},
+                    {"name": "cbuffersegm_locate",
+                     "returnType": {"c": "long double", "canonical": "long double"},
+                     "params": [{"name": "start", "cType": "const Cbuffer *",
+                                 "canonical": "const Cbuffer *"}]},
+                    {"name": "meos_initialize",
+                     "returnType": {"c": "void", "canonical": "void"},
+                     "params": []}
+                  ]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertFalse(out.contains("cbuffersegm_interpolate"));
+            assertFalse(out.contains("cbuffersegm_locate"));
+            assertTrue(out.contains("public static void meos_initialize()"));
+        }
+
+        @Test
         @DisplayName("duplicate name#arity functions are deduplicated")
         void deduplication() throws Exception {
             String json = """
@@ -957,12 +1117,12 @@ class FunctionsGeneratorTest {
           "functions": [
             {
               "name": "meos_initialize",
-              "returnType": {"c": "void"},
+              "returnType": {"c": "void", "canonical": "void"},
               "params": []
             },
             {
               "name": "meos_initialize",
-              "returnType": {"c": "void"},
+              "returnType": {"c": "void", "canonical": "void"},
               "params": []
             }
           ]
@@ -986,9 +1146,9 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "some_function",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": [
-                      {"name": "int", "cType": "int32_t"}
+                      {"name": "int", "cType": "int32_t", "canonical": "int32_t"}
                     ]
                   }]
                 }
@@ -1006,12 +1166,12 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [{
                     "name": "tint_value_split",
-                    "returnType": {"c": "Temporal **"},
+                    "returnType": {"c": "Temporal **", "canonical": "Temporal **"},
                     "params": [
-                      {"name": "temp",     "cType": "const Temporal *"},
-                      {"name": "size",     "cType": "int"},
-                      {"name": "wkb_size", "cType": "int32_t"},
-                      {"name": "vsize",    "cType": "size_t"}
+                      {"name": "temp",     "cType": "const Temporal *", "canonical": "const Temporal *"},
+                      {"name": "size",     "cType": "int", "canonical": "int"},
+                      {"name": "wkb_size", "cType": "int32_t", "canonical": "int32_t"},
+                      {"name": "vsize",    "cType": "size_t", "canonical": "size_t"}
                     ]
                   }]
                 }
@@ -1053,9 +1213,9 @@ class FunctionsGeneratorTest {
                   "enums": [{"name": "MyOp", "file": "meos.h", "family": "CORE", "values": [{"name": "MY_OP", "value": 0}]}],
                   "functions": [{
                     "name": "do_op",
-                    "returnType": {"c": "void"},
+                    "returnType": {"c": "void", "canonical": "void"},
                     "params": [
-                      {"name": "op", "cType": "MyOp"}
+                      {"name": "op", "cType": "MyOp", "canonical": "MyOp"}
                     ]
                   }]
                 }
@@ -1086,11 +1246,11 @@ class FunctionsGeneratorTest {
             {
               "functions": [
                 {"name": "temporal_num_instants", "family": "CORE",
-                 "returnType": {"c": "int"},
-                 "params": [{"name": "temp", "cType": "Temporal *"}]},
+                 "returnType": {"c": "int", "canonical": "int"},
+                 "params": [{"name": "temp", "cType": "Temporal *", "canonical": "Temporal *"}]},
                 {"name": "pcpatch_num_points", "family": "POINTCLOUD",
-                 "returnType": {"c": "int"},
-                 "params": [{"name": "patch", "cType": "Pointer"}]}
+                 "returnType": {"c": "int", "canonical": "int"},
+                 "params": [{"name": "patch", "cType": "const Pcpatch *", "canonical": "const struct Pcpatch *"}]}
               ]
             }
             """;
@@ -1123,8 +1283,8 @@ class FunctionsGeneratorTest {
                 {
                   "functions": [
                     {"name": "cbuffer_out", "file": "meos_cbuffer.h",
-                     "returnType": {"c": "char *"},
-                     "params": [{"name": "cb", "cType": "Pointer"}]}
+                     "returnType": {"c": "char *", "canonical": "char *"},
+                     "params": [{"name": "cb", "cType": "const Cbuffer *", "canonical": "const struct Cbuffer *"}]}
                   ]
                 }
                 """;
