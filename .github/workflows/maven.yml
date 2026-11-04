@@ -16,7 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # git names the branch a repository it initialises starts on, so the checkout prints no
+      # hint about an unset default.
+      - name: Name git's default branch
+        run: git config --global init.defaultBranch main
+
+      - uses: actions/checkout@v5
 
       - name: Refuse tracked build output, skipped suites and stale pins
         uses: MobilityDB/MEOS-API/.github/actions/check-tree-hygiene@master
@@ -25,11 +30,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Name git's default branch
+        run: git config --global init.defaultBranch main
+
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -49,7 +57,7 @@ jobs:
           mvn -version
 
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -79,10 +87,10 @@ jobs:
       # Copy the installed library to the project's src directory (the action installs
       # libmeos under /usr/local) and expose it via LD_LIBRARY_PATH.
       - name: Copy MEOS library to JMEOS/src/
-        run: cp /usr/local/lib/libmeos.so $GITHUB_WORKSPACE/jmeos-core/src/
+        run: cp /usr/local/lib/libmeos.so "$GITHUB_WORKSPACE/jmeos-core/src/"
 
       - name: Set up LD_LIBRARY_PATH
-        run: echo "LD_LIBRARY_PATH=$(pwd)/jmeos-core/src/" >> $GITHUB_ENV
+        run: echo "LD_LIBRARY_PATH=$(pwd)/jmeos-core/src/" >> "$GITHUB_ENV"
 
       - name: Build with Maven
         run: |
