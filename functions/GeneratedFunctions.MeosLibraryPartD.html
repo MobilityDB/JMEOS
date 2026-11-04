@@ -4137,6 +4137,19 @@ loadScripts(document, 'script');</script>
  jnr.ffi.Pointer&nbsp;vspan)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#raster_dump_as_polygons(jnr.ffi.Pointer,int,boolean,jnr.ffi.Pointer)" class="member-name-link">raster_dump_as_polygons</a><wbr>(jnr.ffi.Pointer&nbsp;rast,
+ int&nbsp;band,
+ boolean&nbsp;exclude_nodata,
+ jnr.ffi.Pointer&nbsp;count)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#raster_dump_values(jnr.ffi.Pointer,int,boolean,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">raster_dump_values</a><wbr>(jnr.ffi.Pointer&nbsp;rast,
+ int&nbsp;band,
+ boolean&nbsp;exclude_nodata,
+ jnr.ffi.Pointer&nbsp;nodata,
+ jnr.ffi.Pointer&nbsp;count)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#raster_map_algebra(jnr.ffi.Pointer,int,java.lang.String,java.lang.String,java.lang.String,jnr.ffi.Pointer,int,int)" class="member-name-link">raster_map_algebra</a><wbr>(jnr.ffi.Pointer&nbsp;rast,
  int&nbsp;band,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;stat,
@@ -7435,6 +7448,25 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="raster_dump_as_polygons(jnr.ffi.Pointer,int,boolean,jnr.ffi.Pointer)">
+<h3>raster_dump_as_polygons</h3>
+<div class="member-signature"><span class="return-type">jnr.ffi.Pointer</span>&nbsp;<span class="element-name">raster_dump_as_polygons</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;rast,
+ int&nbsp;band,
+ boolean&nbsp;exclude_nodata,
+ jnr.ffi.Pointer&nbsp;count)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="raster_dump_values(jnr.ffi.Pointer,int,boolean,jnr.ffi.Pointer,jnr.ffi.Pointer)">
+<h3>raster_dump_values</h3>
+<div class="member-signature"><span class="return-type">jnr.ffi.Pointer</span>&nbsp;<span class="element-name">raster_dump_values</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;rast,
+ int&nbsp;band,
+ boolean&nbsp;exclude_nodata,
+ jnr.ffi.Pointer&nbsp;nodata,
+ jnr.ffi.Pointer&nbsp;count)</span></div>
+</section>
+</li>
 <li>
 <section class="detail" id="raster_pixel_as_points(jnr.ffi.Pointer,int,boolean,jnr.ffi.Pointer)">
 <h3>raster_pixel_as_points</h3>
