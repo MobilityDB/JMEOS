@@ -318,7 +318,7 @@ public class GeneratedTemporalParityTest {
         GeneratedTemporal g = gen(a);
 
         // The hex-WKB and MF-JSON strings match the direct call; the size_out is folded by the wrapper.
-        assertEquals(GeneratedFunctions.temporal_as_hexwkb(p, (byte) 4), g.asHEXWKB((byte) 4));
+        assertEquals(GeneratedFunctions.temporal_as_hexwkb(p, (byte) 4), g.asHexWKB((byte) 4));
         assertEquals(GeneratedFunctions.temporal_as_mfjson(p, 1, 3, 6, null),
                 g.asMFJSON(1, 3, 6, null));
         // The WKB buffer is returned as a raw pointer.
@@ -376,10 +376,10 @@ public class GeneratedTemporalParityTest {
         Pointer p = a.getInner();
         GeneratedTemporal g = gen(a);
 
-        // fromHEXWKB is the input constructor symmetric to asHEXWKB; it round-trips the output.
-        String hex = g.asHEXWKB((byte) 4);
-        assertEquals(id(GeneratedFunctions.temporal_from_hexwkb(hex)), id(g.fromHEXWKB(hex)));
-        assertEquals(id(p), id(g.fromHEXWKB(hex)));
+        // fromHexWKB is the input constructor symmetric to asHexWKB; it round-trips the output.
+        String hex = g.asHexWKB((byte) 4);
+        assertEquals(id(GeneratedFunctions.temporal_from_hexwkb(hex)), id(g.fromHexWKB(hex)));
+        assertEquals(id(p), id(g.fromHexWKB(hex)));
 
         // fromWKB round-trips the WKB bytes, which are the hex string decoded.
         byte[] wkb = g.asWKB((byte) 4);
