@@ -6424,8 +6424,11 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;segmentize,
  jnr.ffi.Pointer&nbsp;result)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointsegm_tdwithin_at(long,long,long,long,long,long,long,long)" class="member-name-link">tpointsegm_tdwithin_at</a><wbr>(long&nbsp;start1,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointcloud_to_tpcbox(jnr.ffi.Pointer)" class="member-name-link">tpointcloud_to_tpcbox</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointsegm_tdwithin_at(long,long,long,long,long,long,long,long)" class="member-name-link">tpointsegm_tdwithin_at</a><wbr>(long&nbsp;start1,
  long&nbsp;end1,
  long&nbsp;start2,
  long&nbsp;end2,
@@ -6433,9 +6436,9 @@ loadScripts(document, 'script');</script>
  long&nbsp;lower,
  long&nbsp;upper,
  long&nbsp;t)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointsegm_tdwithin_turnpt(long,long,long,long,long,long,long,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointsegm_tdwithin_turnpt</a><wbr>(long&nbsp;start1,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointsegm_tdwithin_turnpt(long,long,long,long,long,long,long,jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointsegm_tdwithin_turnpt</a><wbr>(long&nbsp;start1,
  long&nbsp;end1,
  long&nbsp;start2,
  long&nbsp;end2,
@@ -6444,116 +6447,119 @@ loadScripts(document, 'script');</script>
  long&nbsp;upper,
  jnr.ffi.Pointer&nbsp;t1,
  jnr.ffi.Pointer&nbsp;t2)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_azimuth(jnr.ffi.Pointer)" class="member-name-link">tpointseq_azimuth</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_cumulative_length(jnr.ffi.Pointer,double,boolean)" class="member-name-link">tpointseq_cumulative_length</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_azimuth(jnr.ffi.Pointer)" class="member-name-link">tpointseq_azimuth</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_cumulative_length(jnr.ffi.Pointer,double,boolean)" class="member-name-link">tpointseq_cumulative_length</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
  double&nbsp;prevlength,
  boolean&nbsp;spheroid)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_is_simple(jnr.ffi.Pointer)" class="member-name-link">tpointseq_is_simple</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseq_length</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
- boolean&nbsp;spheroid)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_is_simple(jnr.ffi.Pointer)" class="member-name-link">tpointseq_is_simple</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_linear_trajectory(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseq_linear_trajectory</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
- boolean&nbsp;unary_union)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseq_length</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
+ boolean&nbsp;spheroid)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_make_simple(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointseq_make_simple</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
- jnr.ffi.Pointer&nbsp;count)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_linear_trajectory(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseq_linear_trajectory</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
+ boolean&nbsp;unary_union)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_stops_iter(jnr.ffi.Pointer,double,long,jnr.ffi.Pointer)" class="member-name-link">tpointseq_stops_iter</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_make_simple(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointseq_make_simple</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
+ jnr.ffi.Pointer&nbsp;count)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_stops_iter(jnr.ffi.Pointer,double,long,jnr.ffi.Pointer)" class="member-name-link">tpointseq_stops_iter</a><wbr>(jnr.ffi.Pointer&nbsp;seq,
  double&nbsp;maxdist,
  long&nbsp;mintunits,
  jnr.ffi.Pointer&nbsp;result)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_twcentroid(jnr.ffi.Pointer)" class="member-name-link">tpointseq_twcentroid</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_azimuth(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_azimuth</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseq_twcentroid(jnr.ffi.Pointer)" class="member-name-link">tpointseq_twcentroid</a><wbr>(jnr.ffi.Pointer&nbsp;seq)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_cumulative_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseqset_cumulative_length</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
- boolean&nbsp;spheroid)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_is_simple(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_is_simple</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseqset_length</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
- boolean&nbsp;spheroid)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_azimuth(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_azimuth</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_make_simple(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointseqset_make_simple</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_cumulative_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseqset_cumulative_length</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
+ boolean&nbsp;spheroid)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_is_simple(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_is_simple</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_length(jnr.ffi.Pointer,boolean)" class="member-name-link">tpointseqset_length</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
+ boolean&nbsp;spheroid)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_make_simple(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpointseqset_make_simple</a><wbr>(jnr.ffi.Pointer&nbsp;ss,
  jnr.ffi.Pointer&nbsp;count)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_twcentroid(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_twcentroid</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_angular_speed(jnr.ffi.Pointer)" class="member-name-link">tpose_angular_speed</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpointseqset_twcentroid(jnr.ffi.Pointer)" class="member-name-link">tpointseqset_twcentroid</a><wbr>(jnr.ffi.Pointer&nbsp;ss)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_apply_geo(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_apply_geo</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_angular_speed(jnr.ffi.Pointer)" class="member-name-link">tpose_angular_speed</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_apply_geo(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_apply_geo</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  jnr.ffi.Pointer&nbsp;body)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose(jnr.ffi.Pointer,int,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose(jnr.ffi.Pointer,int,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  int&nbsp;conformance,
  int&nbsp;precision,
  jnr.ffi.Pointer&nbsp;size_out)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
- int&nbsp;precision,
- jnr.ffi.Pointer&nbsp;size_out)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream_element(jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream_element</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+ int&nbsp;precision,
+ jnr.ffi.Pointer&nbsp;size_out)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream_element(jnr.ffi.Pointer,jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream_element</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  jnr.ffi.Pointer&nbsp;inst,
  int&nbsp;precision,
  jnr.ffi.Pointer&nbsp;size_out)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream_header(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream_header</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_as_geopose_stream_header(jnr.ffi.Pointer,int,jnr.ffi.Pointer)" class="member-name-link">tpose_as_geopose_stream_header</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  int&nbsp;precision,
  jnr.ffi.Pointer&nbsp;size_out)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_elevation(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_elevation</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_elevation(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_elevation</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  jnr.ffi.Pointer&nbsp;s)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_geom(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_geom</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
- jnr.ffi.Pointer&nbsp;gs)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_pose</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
- jnr.ffi.Pointer&nbsp;pose)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_geom(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_geom</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+ jnr.ffi.Pointer&nbsp;gs)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer,boolean)" class="member-name-link">tpose_at_stbox</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_at_pose</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
+ jnr.ffi.Pointer&nbsp;pose)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_at_stbox(jnr.ffi.Pointer,jnr.ffi.Pointer,boolean)" class="member-name-link">tpose_at_stbox</a><wbr>(jnr.ffi.Pointer&nbsp;temp,
  jnr.ffi.Pointer&nbsp;box,
  boolean&nbsp;border_inc)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_compose_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_compose_pose</a><wbr>(jnr.ffi.Pointer&nbsp;body,
+ jnr.ffi.Pointer&nbsp;frame)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_compose_pose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_compose_pose</a><wbr>(jnr.ffi.Pointer&nbsp;body,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_compose_tpose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_compose_tpose</a><wbr>(jnr.ffi.Pointer&nbsp;body,
  jnr.ffi.Pointer&nbsp;frame)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_compose_tpose(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_compose_tpose</a><wbr>(jnr.ffi.Pointer&nbsp;body,
- jnr.ffi.Pointer&nbsp;frame)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_end_value(jnr.ffi.Pointer)" class="member-name-link">tpose_end_value</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_end_value(jnr.ffi.Pointer)" class="member-name-link">tpose_end_value</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_force2d(jnr.ffi.Pointer)" class="member-name-link">tpose_force2d</a><wbr>(jnr.ffi.Pointer&nbsp;temp)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>jnr.ffi.Pointer</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tpose_from_base_temp(jnr.ffi.Pointer,jnr.ffi.Pointer)" class="member-name-link">tpose_from_base_temp</a><wbr>(jnr.ffi.Pointer&nbsp;pose,
@@ -14542,6 +14548,12 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="tpointcloud_to_tpcbox(jnr.ffi.Pointer)">
+<h3>tpointcloud_to_tpcbox</h3>
+<div class="member-signature"><span class="return-type">jnr.ffi.Pointer</span>&nbsp;<span class="element-name">tpointcloud_to_tpcbox</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;temp)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="tpcbox_hasx(jnr.ffi.Pointer)">
 <h3>tpcbox_hasx</h3>
 <div class="member-signature"><span class="return-type">byte</span>&nbsp;<span class="element-name">tpcbox_hasx</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;box)</span></div>
@@ -16173,6 +16185,12 @@ loadScripts(document, 'script');</script>
 <h3>tpose_rotate_y</h3>
 <div class="member-signature"><span class="return-type">jnr.ffi.Pointer</span>&nbsp;<span class="element-name">tpose_rotate_y</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;temp,
  double&nbsp;angle)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="tpose_force2d(jnr.ffi.Pointer)">
+<h3>tpose_force2d</h3>
+<div class="member-signature"><span class="return-type">jnr.ffi.Pointer</span>&nbsp;<span class="element-name">tpose_force2d</span><wbr><span class="parameters">(jnr.ffi.Pointer&nbsp;temp)</span></div>
 </section>
 </li>
 <li>
