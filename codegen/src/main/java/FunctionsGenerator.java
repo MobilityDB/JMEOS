@@ -1358,7 +1358,17 @@ public class FunctionsGenerator {
             sb.append("\t\tPointer _result = ").append(call).append("\n").append(fence);
             sb.append("\t\tMeosErrorHandler.checkError();\n");
             sb.append("\t\tif (_result == null) return null;\n");
-            sb.append("\t\tString _str = _result.getString(0);\n");
+            // MEOS writes the size of the string it answers, its terminator included, so the
+            // string is copied for that size as a byte buffer is (#isByteResult) rather than
+            // scanned for its terminator: Pointer.getString costs twice this copy and decode.
+            if (internalSizeParams.size() == 1) {
+                sb.append("\t\tbyte[] _bytes = new byte[(int) ").append(internalSizeParams.get(0))
+                        .append(".getLong(0) - 1];\n");
+                sb.append("\t\t_result.get(0, _bytes, 0, _bytes.length);\n");
+                sb.append("\t\tString _str = new String(_bytes, java.nio.charset.StandardCharsets.UTF_8);\n");
+            } else {
+                sb.append("\t\tString _str = _result.getString(0);\n");
+            }
             sb.append("\t\t_freeCStr(_result);\n");
             sb.append("\t\treturn _str;\n");
         } else {
