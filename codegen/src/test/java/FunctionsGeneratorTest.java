@@ -859,6 +859,48 @@ class FunctionsGeneratorTest {
         }
 
         @Test
+        @DisplayName("a returned string is read for the size MEOS writes, less its terminator")
+        void sizedStringIsReadForItsSize() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "ttext_out",
+                    "returnType": {"c": "char *", "canonical": "char *"},
+                    "shape": {"outParams": ["size_out"]},
+                    "params": [
+                      {"name": "temp",     "cType": "const Temporal *", "canonical": "const Temporal *"},
+                      {"name": "size_out", "cType": "size_t *", "canonical": "size_t *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertTrue(out.contains("public static String ttext_out(Pointer temp)"));
+            assertTrue(out.contains("byte[] _bytes = new byte[(int) size_out.getLong(0) - 1];"));
+            assertTrue(out.contains("new String(_bytes, java.nio.charset.StandardCharsets.UTF_8)"));
+            assertTrue(out.contains("_freeCStr(_result);"));
+            assertFalse(out.contains("getString"));
+        }
+
+        @Test
+        @DisplayName("a returned string with no size is scanned for its terminator")
+        void unsizedStringIsScanned() throws Exception {
+            String json = """
+                {
+                  "functions": [{
+                    "name": "some_name",
+                    "returnType": {"c": "char *", "canonical": "char *"},
+                    "params": [
+                      {"name": "temp", "cType": "const Temporal *", "canonical": "const Temporal *"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            assertTrue(out.contains("String _str = _result.getString(0);"));
+        }
+
+        @Test
         @DisplayName("an input WKB buffer and its length are one byte[] argument")
         void byteInputTakesBytes() throws Exception {
             String json = """
