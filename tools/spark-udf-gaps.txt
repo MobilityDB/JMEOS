@@ -431,6 +431,7 @@ sptree_insert	no-decoder:SPTree; no-decoder:void
 sptree_insert_temporal	no-decoder:SPTree
 sptree_insert_temporal_split	no-decoder:SPTree
 sptree_join	no-decoder:SPTree; no-decoder:MeosArray
+sptree_load	no-decoder:SPTree; no-decoder:void; array-or-out-param:ids
 sptree_mem_size	no-decoder:SPTree
 sptree_nn_cursor_close	no-decoder:SPNNCursor
 sptree_nn_cursor_next	no-decoder:SPNNCursor; array-or-out-param:id_out; array-or-out-param:dist_out
@@ -681,6 +682,7 @@ tpcpoint_values	internal
 tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
 tpoint_make_simple	internal
 tpoint_tfloat_to_geomeas	internal
+tpointcloud_to_tpcbox	ret:TPCBox *
 tpointseq_make_coords	array-or-out-param:xcoords; array-or-out-param:ycoords; array-or-out-param:zcoords
 tpose_value_at_timestamptz	internal
 tpose_value_n	internal
