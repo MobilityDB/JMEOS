@@ -583,6 +583,10 @@ SQL_DATATYPE = {
 
 # The WKB variant the WKB writers take: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
+# The catalog encodings that carry a value as its hex WKB, in the order a codec takes them: the
+# plain form where the C type states it, else the extended one (geometry and geography state
+# only `hexewkb`). The catalog's `wkb` and `ewkb` are the binary forms.
+HEX_WKB_ENCODINGS = ('hexwkb', 'hexewkb')
 
 # A SQL array MEOS reads as a contiguous C array of scalars, keyed by the SQL element type
 # and the C element type together: the Flink-side element class and the MeosSqlRuntime
@@ -836,7 +840,11 @@ class SqlModel:
         geog_from_hexewkb), written by the C type's WKB encoder with the inputs the catalog
         states for it.  Text otherwise, and only for a C type a single SQL type stands for,
         since a text decoder cannot tell those SQL types apart.  The Spark generator chooses
-        by the same rule (#derive_codecs in codegen_spark_udfs.py)."""
+        by the same rule (#derive_codecs in codegen_spark_udfs.py).
+
+        The hex WKB is the catalog's `hexwkb` encoding, or its `hexewkb` where the C type
+        states no `hexwkb` (geometry and geography); its `wkb` is the binary WKB, which a hex
+        string cannot be read with (HEX_WKB_ENCODINGS)."""
         hexwkb = {}
         for f in self.fns:
             if f.get('sqlfn') == 'asHexWKB' and f['params'] and f['name'] in self.jmeos:
@@ -854,12 +862,13 @@ class SqlModel:
             byt = (e.get('bytes') or {})
             if byt.get('decoder') in self.jmeos and byt.get('encoder') in self.jmeos:
                 self.codec[sql] = ('bytes', byt['decoder'], byt['encoder'], [], [])
-            elif dec.get('wkb') in self.jmeos and cb in hexwkb:
-                self.codec[sql] = ('wkb', dec['wkb'], hexwkb[cb], [], [])
-            elif ((e.get('readers') or {}).get('wkb') or {}).get(sql) in self.jmeos \
-                    and encd.get('wkb') in self.jmeos:
-                self.codec[sql] = ('wkb', e['readers']['wkb'][sql], encd['wkb'],
-                                   e['readerAux']['wkb'][sql], e['encoderAux']['wkb'])
+            elif dec.get('hexwkb') in self.jmeos and cb in hexwkb:
+                self.codec[sql] = ('wkb', dec['hexwkb'], hexwkb[cb], [], [])
+            elif (k := next((k for k in HEX_WKB_ENCODINGS
+                             if ((e.get('readers') or {}).get(k) or {}).get(sql) in self.jmeos
+                             and encd.get(k) in self.jmeos), None)):
+                self.codec[sql] = ('wkb', e['readers'][k][sql], encd[k],
+                                   e['readerAux'][k][sql], e['encoderAux'][k])
             elif len(by_cbase[cb]) == 1 and dec.get('text') in self.jmeos \
                     and encd.get('text') in self.jmeos:
                 self.codec[sql] = ('text', dec['text'], encd['text'],

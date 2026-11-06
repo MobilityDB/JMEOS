@@ -63,6 +63,10 @@ PARSE = {}
 SERIAL = {}
 # The WKB variant the byte writers take: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
+# The catalog encodings that carry a value as its hex WKB, in the order a reader takes them: the
+# plain form where the C type states it, else the extended one. The catalog's `wkb` and `ewkb`
+# are the binary forms (HEX_WKB_ENCODINGS in codegen_jvm.py).
+HEX_WKB_ENCODINGS = ("hexwkb", "hexewkb")
 # The types whose WKB states its MeosType after the byte-order byte, each with the typed reader
 # UdfMarshal holds for it. A *_from_wkb / *_from_hexwkb parser CRASHES (SIGSEGV) on a
 # well-formed buffer of the wrong TYPE (a span fed to temporal_from_wkb); a typed reader reads
@@ -134,9 +138,10 @@ def derive_codecs(cat, have):
             if base in TYPED_READER:
                 PARSE[base] = TYPED_READER[base]
                 continue
-            hexr = dec.get("wkb") if have(dec.get("wkb")) else None
-            text = e.get("in") if (e.get("in") == base.lower() + "_in" and have(e.get("in"))
-                                   and not e.get("in_aux")) else None
+            hexr = next((dec[k] for k in HEX_WKB_ENCODINGS if have(dec.get(k))), None)
+            # The text reader the catalog states, where it takes the string alone
+            text = dec.get("text") if (have(dec.get("text"))
+                                       and not (e.get("decoderAux") or {}).get("text")) else None
             PARSE[base] = ("UdfMarshal.read(%%s, null, GeneratedFunctions::%s, %s, %s)"
                            % (byt["decoder"],
                               "GeneratedFunctions::%s" % hexr if hexr else "null",
