@@ -73,7 +73,7 @@ public class ObjectLayerGenerator {
             new ClassSpec("TNumber", "GeneratedTNumber", "GeneratedTemporal", false),
             new ClassSpec("TInt", "GeneratedTInt", "GeneratedTNumber", false),
             new ClassSpec("TFloat", "GeneratedTFloat", "GeneratedTNumber", false),
-            new ClassSpec("TBigint", "GeneratedTBigint", "GeneratedTNumber", false));
+            new ClassSpec("TBigInt", "GeneratedTBigint", "GeneratedTNumber", false));
 
     /** The interface this run emits. */
     private ClassSpec spec;
