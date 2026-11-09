@@ -339,6 +339,7 @@ posechain_set_srid	ret:PoseChain *
 posechain_srid	arg:PoseChain *
 posechain_start_pose	arg:PoseChain *
 posechain_timestamptz_to_stbox	arg:PoseChain *
+posechain_to_geog	arg:PoseChain *
 posechain_to_point	arg:PoseChain *
 posechain_to_pose	arg:PoseChain *
 posechain_to_set	arg:PoseChain *
@@ -387,6 +388,12 @@ rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsSta
 rasterstatsstate_serialize	no-decoder:RasterStatsState; array-or-out-param:size_out; unsupported-return:uint8_t *
 rasterunionstate_deserialize	array-or-out-param:bytes; no-encoder:RasterUnionState
 rasterunionstate_serialize	no-decoder:RasterUnionState; array-or-out-param:size_out; unsupported-return:uint8_t *
+reachabilitystate_deserialize	array-or-out-param:bytes; no-encoder:ReachabilityState
+reachabilitystate_instants	no-decoder:ReachabilityState
+reachabilitystate_kept	no-decoder:ReachabilityState
+reachabilitystate_reports	no-decoder:ReachabilityState
+reachabilitystate_serialize	no-decoder:ReachabilityState; array-or-out-param:size_out; unsupported-return:uint8_t *
+reachabilitystate_unreachable	no-decoder:ReachabilityState
 right_set_text	internal
 right_text_set	internal
 right_tpcbox_tpcbox	arg:TPCBox *
@@ -467,6 +474,8 @@ temparr_round	internal
 temporal_hash	ret:uint32_t
 temporal_instants	internal
 temporal_merge_array	internal
+temporal_reachability_filter_finalfn	no-decoder:ReachabilityState
+temporal_reachability_filter_transfn	no-decoder:ReachabilityState; no-encoder:ReachabilityState
 temporal_segments	internal
 temporal_sequences	internal
 temporal_spans	array-or-out-param:count
@@ -679,7 +688,7 @@ tpcpoint_pcid	ret:uint32_t
 tpcpoint_value_at_timestamptz	internal
 tpcpoint_value_n	internal
 tpcpoint_values	internal
-tpoint_as_mvtgeom	array-or-out-param:gsarr; array-or-out-param:timesarr; array-or-out-param:count
+tpoint_as_mvtgeom	array-or-out-param:timesarr; array-or-out-param:count
 tpoint_make_simple	internal
 tpoint_tfloat_to_geomeas	internal
 tpointcloud_to_tpcbox	ret:TPCBox *
