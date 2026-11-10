@@ -40,9 +40,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * so an intspan reaches intspan_out, a tstzspan tstzspan_out and an intset intset_out, and a
  * set of no concrete overload spatialset_as_text, tried last; asHexWKB writes plain WKB,
  * variant 0, as MobilityDB's asHexWKB with its endian left to its default; a WKB reader takes
- * the bytes of a BinaryType column and asBinary answers them; the receive and the send of a
- * type, which CREATE TYPE binds, are told from the portable reader and writer and from an
- * aggregate's support function (#type_support there). The generator runs over the
+ * the bytes of a BinaryType column and asBinary answers them; the input, output, receive and
+ * send of a type, which CREATE TYPE binds, are told from the portable reader and writer and
+ * from an aggregate's support function by the catalog's typeSupport (#type_support there),
+ * and a function marked alone is its type's plumbing (#only_type_support). The generator runs over the
  * functions alone, as JvmNullableArgumentTest runs it, so no jar and no libmeos.
  */
 class SparkTextWriterDispatchTest {
@@ -82,16 +83,26 @@ class SparkTextWriterDispatchTest {
         "       'asHexWKB': s.emit_single('asHexWKB', hexw, vis_arity=1),",
         "       'asBinary': s.emit_single('asBinary', binw, vis_arity=1),",
         "       'intspanFromBinary': s.emit_single('intspanFromBinary', binr)}",
-        "s.BYTES_ENCODERS.add('span_as_wkb')",
-        "s.AGGREGATE_ROLES.add('spanUnionFinal')",
         "recv = fn('span_from_wkb', [], 'Span *', 'intspan_recv')",
         "agg = fn('span_union_finalfn', [], 'Span *', 'spanUnionFinal')",
+        "send_sig = {'args': ['intspan'], 'ret': 'bytea', 'sqlName': 'intspan_send', 'typeSupport': 'send'}",
+        "recv_sig = {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'intspan_recv', 'typeSupport': 'receive'}",
+        "in_sig = {'args': ['cstring'], 'ret': 'intspan', 'sqlName': 'intspan_in', 'typeSupport': 'input'}",
+        "out_sig = {'args': ['intspan'], 'ret': 'cstring', 'sqlName': 'intspan_out', 'typeSupport': 'output'}",
+        "text_sig = {'args': ['intspan'], 'ret': 'text', 'sqlName': 'asText'}",
         "out['support'] = {",
-        "    'send': s.type_support(binw, {'args': ['intspan'], 'ret': 'bytea', 'sqlName': 'intspan_send'}),",
+        "    'send': s.type_support(binw, send_sig),",
         "    'asBinary': s.type_support(binw, {'args': ['intspan', 'text'], 'ret': 'bytea', 'sqlName': 'asBinary'}),",
-        "    'recv': s.type_support(recv, {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'intspan_recv'}),",
+        "    'recv': s.type_support(recv, recv_sig),",
         "    'fromBinary': s.type_support(recv, {'args': ['bytea'], 'ret': 'intspan', 'sqlName': 'intspanFromBinary'}),",
-        "    'aggregate': s.type_support(agg, {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'spanUnionFinal'})}",
+        "    'aggregate': s.type_support(agg, {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'spanUnionFinal'}),",
+        "    'input': s.type_support(text[0], in_sig),",
+        "    'output': s.type_support(text[0], out_sig),",
+        "    'asText': s.type_support(text[0], text_sig),",
+        "    'onlyPlumbing': s.only_type_support(fn('pose_out', [], 'char *', 'pose_out',",
+        "        {'sqlSignatures': [dict(out_sig, sqlName='pose_out')]})),",
+        "    'alsoPortable': s.only_type_support(fn('intspan_out', [], 'char *', 'asText',",
+        "        {'sqlSignatures': [out_sig, text_sig]}))}",
         "s.TYPE_CODE.update({'floatset': 12, 'geomset': 45, 'geogset': 43})",
         "templ = [fn('set_out', [p('s', 'const Set *')], 'char *', 'intset_out',",
         "            {'sqlSignatures': [{'args': ['intset'], 'ret': 'text', 'sqlName': 'asText'},",
@@ -177,13 +188,23 @@ class SparkTextWriterDispatchTest {
     }
 
     @Test
-    void theReceiveAndTheSendOfATypeAreTypeSupport() {
+    void theFourFunctionsOfATypeAreTypeSupportAsTheCatalogMarksThem() {
         JsonNode support = results.get("support");
         assertTrue(support.get("send").asBoolean(), "intspan_send");
         assertTrue(support.get("recv").asBoolean(), "intspan_recv");
+        assertTrue(support.get("input").asBoolean(), "intspan_in");
+        assertTrue(support.get("output").asBoolean(), "intspan_out");
         assertFalse(support.get("asBinary").asBoolean(), "asBinary");
         assertFalse(support.get("fromBinary").asBoolean(), "intspanFromBinary");
+        assertFalse(support.get("asText").asBoolean(), "asText");
         assertFalse(support.get("aggregate").asBoolean(), "an aggregate's final function");
+    }
+
+    @Test
+    void aFunctionOfTypeSupportAloneIsThePlumbingOfItsType() {
+        JsonNode support = results.get("support");
+        assertTrue(support.get("onlyPlumbing").asBoolean(), "pose_out, marked alone");
+        assertFalse(support.get("alsoPortable").asBoolean(), "intspan_out, also asText");
     }
 
     @Test

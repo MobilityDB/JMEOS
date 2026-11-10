@@ -465,25 +465,21 @@ def _java_bound(v, ctype):
     return None
 
 
-# The functions that write a type's bytes, from the catalog's typeEncodings, and the
-# SQL names of the support functions of its aggregates, from its aggregates section. Filled in
-# main() before any emit pass reads them (#type_support).
-BYTES_ENCODERS = set()
-AGGREGATE_ROLES = set()
-
-
 def type_support(f, s):
-    """Whether signature `s` of `f` is a support function CREATE TYPE binds, the receive or the
-    send of a type, which PostgreSQL calls implicitly and the dialect never names (rule 3 of
-    the input and output plan of MobilityDB #2861): a UDF names its portable reader and writer,
-    <type>FromBinary and asBinary, instead. A receive takes PostgreSQL's pseudo-type internal
-    and is no support function of an aggregate (the sqlNames of the aggregates' roles); a send
-    is the signature of a type's byte encoder taking the value alone and answering bytea,
-    where asBinary also takes the endian."""
-    args = s.get("args") or []
-    if "internal" in args:
-        return (s.get("sqlName") or f.get("sqlfn")) not in AGGREGATE_ROLES
-    return f["name"] in BYTES_ENCODERS and len(args) == 1 and s.get("ret") == "bytea"
+    """Whether signature `s` of `f` is one a type's CREATE TYPE binds, its input, output,
+    receive or send, which PostgreSQL calls implicitly and the dialect never names (rule 3 of
+    the input and output notes of MobilityDB, doc/contributing/io/00-INDEX.md): a UDF names its
+    portable reader and writer, <type>FromText and asText, <type>FromBinary and asBinary,
+    instead. The catalog states the role as the signature's typeSupport (MEOS-API #265)."""
+    return bool(s.get("typeSupport"))
+
+
+def only_type_support(f):
+    """Whether every SQL signature of `f` is one a type's CREATE TYPE binds (#type_support):
+    such a function is the plumbing of a type, reached under no name of its own, the type's
+    portable reader and writer being other functions (pose_from_text, not pose_in)."""
+    sigs = f.get("sqlSignatures") or []
+    return bool(sigs) and all(type_support(f, s) for s in sigs)
 
 
 def published_name(f, s):
@@ -2029,16 +2025,6 @@ def main():
             jret, jname, jargs = m.group(1), m.group(2), m.group(3).strip()
             JSIG[jname] = (jret if "." in jret else jret.lower(),
                            0 if not jargs else len(jargs.split(",")))
-    # The byte codecs of the types and the aggregates' support functions, which #type_support
-    # reads to leave the receive and the send of a type unregistered.
-    for _e in (cat.get("typeEncodings") or {}).values():
-        _b = _e.get("bytes") or {}
-        if _b.get("encoder"):
-            BYTES_ENCODERS.add(_b["encoder"])
-    for _a in cat.get("aggregates") or []:
-        for _role in ("transition", "combine", "final", "serialize", "deserialize"):
-            if (_a.get(_role) or {}).get("sqlName"):
-                AGGREGATE_ROLES.add(_a[_role]["sqlName"])
     # The codec each value travels in, from the catalog, before any emit pass reads it.
     derive_codecs(cat, lambda n: bool(n) and (jar_syms is None or n in jar_syms))
     # The public parser of each enum the catalog states, before any emit pass reads it.
@@ -2066,6 +2052,12 @@ def main():
             continue
         total += 1
         if name in names:
+            continue
+        # A function a type's CREATE TYPE binds (#type_support) takes no C name: what it reads
+        # or writes is reached through the type's portable reader or writer, under the SQL
+        # name the @sqlfn pass registers (intsetFromText, not intset_in).
+        if any(type_support(f, s) for s in f.get("sqlSignatures") or []):
+            skips["type support"] += 1
             continue
         why = supported(f)
         if why:
@@ -2527,7 +2519,7 @@ def main():
             why = [r.strip() for r in ((f.get("network") or {}).get("reason") or "").split(";")
                    if r.strip()]
             if f.get("api") != "public" or any(r in ("internal", "lifecycle", "index")
-                                               for r in why):
+                                               for r in why) or only_type_support(f):
                 continue
             gaps[nm] = "; ".join(why) or supported(f) or "not emitted"
         if args.rebaseline:

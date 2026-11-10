@@ -329,7 +329,6 @@ posechain_make	ret:PoseChain *
 posechain_mem_size	arg:PoseChain *
 posechain_ne	arg:PoseChain *
 posechain_num_poses	arg:PoseChain *
-posechain_out	arg:PoseChain *
 posechain_pose_n	arg:PoseChain *
 posechain_poses	internal
 posechain_prefix_pose	arg:PoseChain *
