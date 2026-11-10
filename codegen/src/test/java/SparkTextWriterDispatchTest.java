@@ -92,6 +92,18 @@ class SparkTextWriterDispatchTest {
         "    'recv': s.type_support(recv, {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'intspan_recv'}),",
         "    'fromBinary': s.type_support(recv, {'args': ['bytea'], 'ret': 'intspan', 'sqlName': 'intspanFromBinary'}),",
         "    'aggregate': s.type_support(agg, {'args': ['internal'], 'ret': 'intspan', 'sqlName': 'spanUnionFinal'})}",
+        "s.TYPE_CODE.update({'floatset': 12, 'geomset': 45, 'geogset': 43})",
+        "templ = [fn('set_out', [p('s', 'const Set *')], 'char *', 'intset_out',",
+        "            {'sqlSignatures': [{'args': ['intset'], 'ret': 'text', 'sqlName': 'asText'},",
+        "                               {'args': ['floatset'], 'ret': 'text', 'sqlName': 'asText'},",
+        "                               {'args': ['intset'], 'ret': 'cstring', 'sqlName': 'intset_out',",
+        "                                'typeSupport': 'output'}]}),",
+        "         fn('spatialset_as_text', [p('s', 'const Set *')], 'char *', 'asText',",
+        "            {'sqlSignatures': [{'args': ['geomset'], 'ret': 'text', 'sqlName': 'asText'},",
+        "                               {'args': ['geogset'], 'ret': 'text', 'sqlName': 'asText'}]})]",
+        "templ = s._declared_receivers(templ, 'asText')",
+        "out['template'] = s.emit_dispatch('asText', templ)",
+        "out['templateDistinct'] = len({s._parsetuple(f) for f in templ}) == len(templ)",
         "print(json.dumps(out))",
         "");
 
@@ -133,6 +145,14 @@ class SparkTextWriterDispatchTest {
         route(code, "UdfMarshal.spanFromOf(a0, 39)", "tstzspan_out");
         route(code, "UdfMarshal.spansetFromOf(a0, 20)", "intspanset_out");
         route(code, "UdfMarshal.setFromOf(a0, 18)", "intset_out");
+    }
+
+    @Test
+    void twoWritersOfOneTemplateEachReadTheTypesTheyDeclare() {
+        assertTrue(results.get("templateDistinct").asBoolean(), "the two writers parse apart");
+        String code = results.get("template").asText();
+        route(code, "UdfMarshal.setFromOf(a0, 12, 18)", "set_out");
+        route(code, "UdfMarshal.setFromOf(a0, 43, 45)", "spatialset_as_text");
     }
 
     @Test
