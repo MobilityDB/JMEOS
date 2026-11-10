@@ -324,6 +324,46 @@ PAIRS_HOLDER = [
 ]
 
 
+# The portable input and output names of chapter 18 of MobilityDB: a writer as<Format>, a reader
+# <type>From<Format>, for each format the dialect names.
+PORTABLE_IO = re.compile(r'^(as(Text|EWKT|Binary|EWKB|HexWKB|HexEWKB|MFJSON)'
+                         r'|\w+From(Text|EWKT|Binary|EWKB|HexWKB|HexEWKB|MFJSON))$')
+
+
+def portable_io_names(f):
+    """The portable input and output names of public function `f`, in signature order: each
+    signature's name as #SqlModel.signatures reads it, its altSqlName where the catalog states
+    one, else its sqlName, else the function's sqlfn, where it is a reader or writer of chapter
+    18 (#PORTABLE_IO) and no type support function, which the dialect never names (the
+    signature's typeSupport, rule 3 of MobilityDB's doc/contributing/io/00-INDEX.md)."""
+    if not f or f.get('api') != 'public':
+        return []
+    out = []
+    for s in f.get('sqlSignatures') or []:
+        n = s.get('altSqlName') or s.get('sqlName') or f.get('sqlfn')
+        if n and PORTABLE_IO.match(n) and not s.get('typeSupport') and n not in out:
+            out.append(n)
+    return out
+
+
+def emit_portable(r):
+    """A method under each portable input or output name of the row's function (#portable_io_names),
+    forwarding to the C-named method beside it, whose guards it keeps."""
+    args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
+    call_args = ', '.join(n for (t, n) in r['java_params'])
+    ret = short_type(r['java_ret'])
+    ret_stmt = '' if ret == 'void' else 'return '
+    L = []
+    for n in portable_io_names(r.get('cat')):
+        L += ['    /**',
+              f'     * {{@code {n}}}, the portable name of MEOS {{@code {r["name"]}}}.',
+              '     */',
+              f'    public static {ret} {n}({args}) {{',
+              f'        {ret_stmt}{r["name"]}({call_args});',
+              '    }', '']
+    return L
+
+
 def emit_method(r, prop):
     fname = r['name']
     args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
@@ -361,6 +401,7 @@ def emit_method(r, prop):
     fold = folded_nxn(r)
     if fold:
         L += emit_folded(r, fold, prop)
+    L += emit_portable(r)
     return L
 
 
