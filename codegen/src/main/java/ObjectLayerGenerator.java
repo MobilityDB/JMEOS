@@ -411,7 +411,7 @@ public class ObjectLayerGenerator {
      * One argument of an emitted method: the Java type the caller passes, its name, and the
      * expression forwarded to the wrapper (the name itself for a pass-through, or a conversion).
      */
-    private record Arg(String javaType, String name, String callExpr) {}
+    record Arg(String javaType, String name, String callExpr) {}
 
     /**
      * One bin dimension of a split. A split's backing function fills one bin-start out-parameter array
@@ -726,7 +726,7 @@ public class ObjectLayerGenerator {
      * return, matching {@code FunctionsGenerator.mapCTypeToJavaWrapper}, or {@code null} if the return
      * is not one this slice returns directly.
      */
-    private static String scalarReturn(String retC) {
+    static String scalarReturn(String retC) {
         return switch (retC) {
             case "bool"                              -> "boolean";
             case "int", "int32_t", "uint32_t"        -> "int";
@@ -747,7 +747,7 @@ public class ObjectLayerGenerator {
      * argument is a time wrapper when the method restricts by time (its backing function names the tstz
      * type) and the generic collection over the base value otherwise.
      */
-    private static Arg marshalArg(String pC, String name, String fnName) {
+    static Arg marshalArg(String pC, String name, String fnName) {
         String scalar = switch (pC) {
             case "bool"                              -> "boolean";
             case "int8_t", "uint8_t"                 -> "byte";
@@ -796,14 +796,14 @@ public class ObjectLayerGenerator {
      * Whether parameter {@code i} is a byte buffer followed by its {@code size_t} length, which the
      * wrapper takes as one {@code byte[]} (FunctionsGenerator.isByteInput), so the method does too.
      */
-    private static boolean isByteInput(JsonNode params, int i) {
+    static boolean isByteInput(JsonNode params, int i) {
         return i + 1 < params.size()
                 && cleanType(FunctionsGenerator.slotType(params.get(i))).equals("uint8_t *")
                 && cleanType(FunctionsGenerator.slotType(params.get(i + 1))).equals("size_t");
     }
 
     /** Whether the named parameter is a {@code size_t *} out-parameter the wrapper folds internally. */
-    private static boolean isSizeOut(JsonNode params, String name) {
+    static boolean isSizeOut(JsonNode params, String name) {
         for (JsonNode p : params) {
             if (p.path("name").asText().equals(name)) {
                 return cleanType(FunctionsGenerator.slotType(p)).contains("size_t");
@@ -822,7 +822,7 @@ public class ObjectLayerGenerator {
         return "";
     }
 
-    private static String cleanType(String c) {
+    static String cleanType(String c) {
         return c.replace("const ", "").trim();
     }
 
@@ -1133,7 +1133,7 @@ public class ObjectLayerGenerator {
             "transient","try","void","volatile","while"
     );
 
-    private static String sanitize(String name) {
+    static String sanitize(String name) {
         if (name.equals("synchronized")) {
             return "synchronize";
         }
