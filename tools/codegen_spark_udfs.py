@@ -81,6 +81,12 @@ TYPED_READER = {
     "SpanSet":  ("UdfMarshal.spansetFrom(%s)", "K_SPANSET"),
     "Set":      ("UdfMarshal.setFrom(%s)",     "K_SET"),
 }
+# The cells, a type whose value MEOS passes by value as a 64-bit integer and whose WKB states
+# the type in its header (#derive_codecs): the C typedef a parameter or return names -> (its
+# MeosType value, its WKB reader, its hex-WKB reader, its WKB writer). A cell travels as its WKB,
+# as every other value does, so that the WKB tells a quadbin from an h3index where the integer
+# does not.
+CELL = {}
 # The readers that check the kind of what they read, so an overload using them can be told
 # apart from its siblings at run time. The one test #_safe_dispatch and #_dispatchable both ask.
 TYPE_CHECKED = ("UdfMarshal.tFrom", "UdfMarshal.spanFrom", "UdfMarshal.spansetFrom",
@@ -135,6 +141,14 @@ def derive_codecs(cat, have):
         if base in DEFERRED_TYPES or base in INTERNAL:
             continue
         if e.get("in") in ret_of and "*" not in ret_of[e["in"]]:
+            # A cell whose WKB states its type travels as that WKB (#CELL); the other values
+            # passed by value (the time types) stay scalars.
+            byt = e.get("bytes") or {}
+            hexr = (e.get("decoders") or {}).get("hexwkb")
+            sqlt = {s["args"][0] for s in sigs_of.get(byt.get("encoder"), []) if s.get("args")}
+            if (len(sqlt) == 1 and sqlt <= header_typed and next(iter(sqlt)) in TYPE_CODE
+                    and have(byt.get("decoder")) and have(byt.get("encoder")) and have(hexr)):
+                CELL[base] = (TYPE_CODE[next(iter(sqlt))], byt["decoder"], hexr, byt["encoder"])
             continue
         dec = e.get("decoders") or {}
         byt = e.get("bytes") or {}
@@ -242,8 +256,18 @@ OUTPRIM = {
 }
 
 
-def arg_kind(canon):
-    """('ptr', parse, KIND) | ('scalar', DataType, Box, expr) | ('ts',) | None."""
+def arg_kind(canon, typedef=None):
+    """('ptr', parse, KIND) | ('scalar', DataType, Box, expr) | ('ts',) | None.
+
+    A cell (#CELL), named by the C typedef of the parameter, is a scalar read from its WKB:
+    ('scalar', 'BinaryType', 'Object', the read refusing a value of another type, the read
+    answering null for it, its KIND), so a single overload takes it as any scalar and a
+    dispatcher tells the cells apart by the reader of the fifth element."""
+    if typedef in CELL and norm(canon) == "uint64_t":
+        code, dec, hexr, _ = CELL[typedef]
+        refs = "%d, GeneratedFunctions::%s, GeneratedFunctions::%s" % (code, dec, hexr)
+        return ("scalar", "BinaryType", "Object", "UdfMarshal.cellOf(%%s, %s)" % refs,
+                "UdfMarshal.cellFrom(%%s, %s)" % refs, "K_CELL:" + typedef)
     nc = norm(canon)
     b = base(canon)
     if b == "TimestampTz" and nc == "TimestampTz":
@@ -297,6 +321,9 @@ def classify(f):
         lastc = p["canonical"]
         lastn = norm(lastc)
         in_params = [q for q in vis if q is not p]
+        if p.get("typedef") in CELL and lastn == "uint64_t *":
+            return in_params, ("BinaryType", "GeneratedFunctions.%s(%%s.getLongLong(0), (byte) %d)"
+                               % (CELL[p["typedef"]][3], WKB_VARIANT))
         if lastn in OUTPRIM:
             return in_params, OUTPRIM[lastn]
         if base(lastc) in SERIAL:
@@ -304,8 +331,12 @@ def classify(f):
     return vis, None
 
 
-def ret_emit(canon, sqlop):
-    """('ptr', DataType, serialize) | ('scalar', DataType, serialize) | None."""
+def ret_emit(canon, sqlop, typedef=None):
+    """('ptr', DataType, serialize) | ('scalar', DataType, serialize) | None. A cell (#CELL)
+    is answered as its WKB."""
+    if typedef in CELL and norm(canon) == "uint64_t":
+        return ("scalar", "BinaryType", "GeneratedFunctions.%s(%%s, (byte) %d)"
+                % (CELL[typedef][3], WKB_VARIANT))
     t = norm(canon)
     b = base(t)
     if b in SERIAL and t.endswith("*"):
@@ -338,7 +369,7 @@ def supported(f):
         return "internal"
     in_params, out = classify(f)
     if out is None:
-        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"))
+        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"), f["returnType"].get("typedef"))
         if r is None:
             b = base(f["returnType"]["canonical"])
             return ("internal" if b in INTERNAL or b == "__INTERNAL__" else "ret:"+norm(f["returnType"]["canonical"]))
@@ -348,10 +379,10 @@ def supported(f):
     # such an array (#_array_arg of codegen_jvm.py); here it is refused.
     arrays = {a["param"] for a in (f.get("shape") or {}).get("inputArrays") or ()}
     for p in in_params:
-        if p["name"] in arrays and (arg_kind(p["canonical"]) or ("",))[0] == "ptr":
+        if p["name"] in arrays and (arg_kind(p["canonical"], p.get("typedef")) or ("",))[0] == "ptr":
             return "array:" + norm(p["canonical"])
     for p in in_params:
-        if arg_kind(p["canonical"]) is None:
+        if arg_kind(p["canonical"], p.get("typedef")) is None:
             b = base(p["canonical"])
             return ("internal" if b in INTERNAL or b == "__INTERNAL__" else "arg:"+norm(p["canonical"]))
     # cross-check against the jar: my call arity must match JMEOS's. A mismatch means
@@ -363,7 +394,7 @@ def supported(f):
     # return is a scalar (or vice versa), the catalog collapsed a type (LWGEOM/Jsonb
     # -> int) — exclude rather than miscompile.
     if out is None and JSIG and f["name"] in JSIG:
-        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"))
+        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"), f["returnType"].get("typedef"))
         if (JSIG[f["name"]][0] == "jnr.ffi.Pointer") != (r[0] == "ptr"):
             return "ret:jmeos-kind-mismatch"
     return None
@@ -539,7 +570,7 @@ def emit_single(name, f, vis_arity=None):
             hidden = tail
             params = params[:vis_arity]
     if out is None:
-        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"))
+        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"), f["returnType"].get("typedef"))
         ret_dt, ret_ser, ret_ptr, ret_out = r[1], r[2], (r[0] == "ptr"), False
         # trust the jar for plain numeric returns: the catalog collapses uint64->int,
         # but JMEOS exposes the true width (e.g. *_hash_extended returns long).
@@ -551,7 +582,7 @@ def emit_single(name, f, vis_arity=None):
     argnames = [_javaid(p["name"] or ("a%d" % i)) for i, p in enumerate(params)]
     argboxes, kinds = [], []
     for p in params:
-        k = arg_kind(p["canonical"])
+        k = arg_kind(p["canonical"], p.get("typedef"))
         kinds.append(k)
         argboxes.append({"ptr": "Object", "ts": "Object", "scalar": k[2] if k[0] == "scalar" else "String"}[k[0]])
     iface = "UDF%d<%s, %s>" % (len(params), ", ".join(argboxes), box) if params else "UDF0<%s>" % box
@@ -622,14 +653,14 @@ def _sig(f):
     params, out = classify(f)
     slots = []
     for p in params:
-        k = arg_kind(p["canonical"])
+        k = arg_kind(p["canonical"], p.get("typedef"))
         if k is None:
             return None
-        slots.append("P" if k[0] == "ptr" else ("T" if k[0] == "ts" else k[2]))
+        slots.append("P" if k[0] == "ptr" or len(k) > 4 else ("T" if k[0] == "ts" else k[2]))
     if out is not None:
         ret = ("out", out[0], out[1])
     else:
-        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"))
+        r = ret_emit(f["returnType"]["canonical"], f.get("sqlop"), f["returnType"].get("typedef"))
         if r is None:
             return None
         ret = (("ptr" if r[0] == "ptr" else "scalar"), r[1], r[2])
@@ -685,7 +716,7 @@ def _safe_dispatch(f):
     pose_in / jsonb_in) are NOT: fed a hex-WKB or WKT string they may mis-parse, so an
     overload using one cannot be told apart at runtime and must not enter a dispatcher."""
     for p in classify(f)[0]:
-        k = arg_kind(p["canonical"])
+        k = arg_kind(p["canonical"], p.get("typedef"))
         if k and k[0] == "ptr" and not type_checked(k[1]):
             return False
     return True
@@ -720,7 +751,8 @@ def _parsetuple(f):
     ones that carry different concrete types can, and both are kept."""
     out = []
     for k in _argkinds(f):
-        out.append(k[2] if k[0] == "ptr" else ("TS" if k[0] == "ts" else "S"))
+        out.append(k[2] if k[0] == "ptr" else k[5] if len(k) > 4
+                   else ("TS" if k[0] == "ts" else "S"))
     return tuple(out)
 
 
@@ -790,7 +822,7 @@ def _argkinds(f):
     to a parse-based dispatcher and one of them is answered by the other's C function. The
     WKB type byte distinguishes them, so the receiver of a typed overload parses through
     the type-checked parser and carries that type in its kind."""
-    ks = [arg_kind(p["canonical"]) for p in _visparams(f)]
+    ks = [arg_kind(p["canonical"], p.get("typedef")) for p in _visparams(f)]
     t = _expected_temptype(f)
     if t is not None:
         for i, k in enumerate(ks):
@@ -895,13 +927,17 @@ def emit_dispatch(name, cands, vis_arity=None):
     for f in sorted(cands, key=permissiveness):
         cps = classify(f)[0]
         ks = _argkinds(f)
-        callargs, ptrs, classes = [], [], []
+        callargs, ptrs, classes, cells = [], [], [], []
         L.append("        {")
         for i, (a, k) in enumerate(zip(argnames, ks)):
             if k[0] == "ptr":
                 pv = "P_%s" % a
                 L.append("          jnr.ffi.Pointer %s = %s;" % (pv, k[1] % a))
                 ptrs.append(pv); callargs.append(pv)
+            elif len(k) > 4:
+                cv = "C_%s" % a
+                L.append("          Long %s = %s;" % (cv, k[4] % a))
+                cells.append(cv); callargs.append(cv)
             elif k[0] == "ts":
                 L.append("          java.time.OffsetDateTime D_%s = UdfMarshal.tsOdt(%s);" % (a, a))
                 callargs.append("D_%s" % a)
@@ -915,7 +951,7 @@ def emit_dispatch(name, cands, vis_arity=None):
         # candidate's remaining params are the flags).
         for p in cps[vis:]:
             callargs.append(hidden_arg(f, p, vis, name))
-        cond = " && ".join(classes + ["%s != null" % p for p in ptrs]) or "true"
+        cond = " && ".join(classes + ["%s != null" % p for p in ptrs + cells]) or "true"
         free = " ".join("MeosMemory.free(%s);" % p for p in ptrs)
         call = "GeneratedFunctions.%s(%s)" % (f["name"], ", ".join(callargs))
         L.append("          if (%s) {" % cond)
@@ -1102,8 +1138,13 @@ def scalar_values_shape(f):
     # every non-count input must marshal (a stray `int *`/pointer-out among the inputs is
     # arg_kind None -> excluded, so array-in kernels like intset_make never match here).
     for p in ins:
-        if arg_kind(p["canonical"]) is None:
+        if arg_kind(p["canonical"], p.get("typedef")) is None:
             return None
+    # An array of cells (#CELL) answers the WKB of each, as a cell result does.
+    td = f["returnType"].get("typedef")
+    if td in CELL and rb == "uint64_t":
+        return {"elem": ("BinaryType", "readCellArr"), "ins": ins,
+                "cell": "c -> GeneratedFunctions.%s(c, (byte) %d)" % (CELL[td][3], WKB_VARIANT)}
     return {"elem": SCALAR_ELEM[rb], "ins": ins}
 
 
@@ -1116,11 +1157,11 @@ def emit_scalar_values(name, f, shape):
     argnames = [_javaid(p["name"] or ("a%d" % i)) for i, p in enumerate(ins)]
     argboxes, kinds = [], []
     for p in ins:
-        k = arg_kind(p["canonical"]); kinds.append(k)
+        k = arg_kind(p["canonical"], p.get("typedef")); kinds.append(k)
         argboxes.append({"ptr": "Object", "ts": "Object",
                          "scalar": k[2] if k[0] == "scalar" else "String"}[k[0]])
     retbox = "java.util.List<%s>" % {"IntegerType": "Integer", "LongType": "Long",
-                                     "DoubleType": "Double"}[ret_dt]
+                                     "DoubleType": "Double", "BinaryType": "byte[]"}[ret_dt]
     iface = ("UDF%d<%s, %s>" % (len(ins), ", ".join(argboxes), retbox)) if ins else "UDF0<%s>" % retbox
     L = ['        spark.udf().register("%s", (%s) (%s) -> {' % (name, iface, ", ".join(argnames))]
     if argnames:
@@ -1142,7 +1183,8 @@ def emit_scalar_values(name, f, shape):
     call = "GeneratedFunctions.%s(%s)" % (f["name"], ", ".join(callargs))
     L.append("        try {")
     L.append("            jnr.ffi.Pointer _res = %s;" % call)
-    L.append("            return UdfMarshal.%s(_res, _cnt.getInt(0L));" % reader)
+    L.append("            return UdfMarshal.%s(_res, _cnt.getInt(0L)%s);"
+             % (reader, ", " + shape["cell"] if shape.get("cell") else ""))
     L.append("        } finally {")
     for fr in frees:
         L.append("            MeosMemory.free(%s);" % fr)
@@ -1256,6 +1298,12 @@ def row_column(f, col):
             return {"src": src, "dt": "StringType", "free": True,
                     "read": "GeneratedFunctions.text_out(%s.getPointer((long) _i * 8L))"}
         return None
+    # A cell (#CELL), named by the typedef of the array, is written as its WKB.
+    td = (f["returnType"] if src == "return" else p).get("typedef")
+    if td in CELL and elem == "uint64_t":
+        return {"src": src, "dt": "BinaryType", "free": False,
+                "read": "GeneratedFunctions.%s(%%s.getLongLong((long) _i * 8L), (byte) %d)"
+                        % (CELL[td][3], WKB_VARIANT)}
     if elem in ROW_SCALAR:
         return {"src": src, "dt": ROW_SCALAR[elem][0], "free": False,
                 "read": ROW_SCALAR[elem][1] % ("%s", "_i")}
@@ -1286,7 +1334,7 @@ def setret_shape(f, sig, vis=None):
             hidden, ins = tail, ins[:vis]
     counts = [p for p in params if p["name"] in outs and norm(p["canonical"]) == "int *"
               and "const" not in p["canonical"]]
-    if len(counts) != 1 or not ins or any(arg_kind(p["canonical"]) is None for p in ins):
+    if len(counts) != 1 or not ins or any(arg_kind(p["canonical"], p.get("typedef")) is None for p in ins):
         return None
     cols = sig.get("columns") or [{"name": None, "from": "return"}]
     readers = []
@@ -1318,7 +1366,7 @@ def _setret_key(shape):
     """What two overloads must share to answer one Spark UDF, as #_sig is for the @sqlfn pass:
     the kinds of their inputs and the Spark types of their columns (the column names follow the
     group, see #emit_setret)."""
-    return (tuple(arg_kind(p["canonical"]) for p in shape["ins"]),
+    return (tuple(arg_kind(p["canonical"], p.get("typedef")) for p in shape["ins"]),
             tuple(c["dt"] for c in shape["cols"]),
             len(shape["cols"]) == 1 and shape["cols"][0]["name"] is None)
 
@@ -1335,7 +1383,7 @@ def emit_setret(name, cands, colnames):
     argnames = [_javaid(p["name"] or ("a%d" % i)) for i, p in enumerate(rep["ins"])]
     argboxes = []
     for p in rep["ins"]:
-        k = arg_kind(p["canonical"])
+        k = arg_kind(p["canonical"], p.get("typedef"))
         argboxes.append({"ptr": "Object", "ts": "Object",
                          "scalar": k[2] if k[0] == "scalar" else "String"}[k[0]])
     single = len(rep["cols"]) == 1 and rep["cols"][0]["name"] is None
@@ -1349,7 +1397,7 @@ def emit_setret(name, cands, colnames):
         L.append("        {")
         callargs, ptrs = [], []
         for a, p in zip(argnames, shape["ins"]):
-            k = arg_kind(p["canonical"])
+            k = arg_kind(p["canonical"], p.get("typedef"))
             if k[0] == "ptr" and t is not None and k[2] == "K_TEMPORAL" and not ptrs:
                 k = ("ptr", "UdfMarshal.tFromOf(%%s, %d)" % TEMPTYPE_CODE[t], k[2])
             if k[0] == "ptr":
@@ -1579,6 +1627,15 @@ final class UdfMarshal {
         MeosMemory.free(p);
         return o;
     }
+    // An array of cells, each written as its WKB by `wkb` (#CELL of the generator).
+    static java.util.List<byte[]> readCellArr(Pointer p, int cnt,
+            java.util.function.LongFunction<byte[]> wkb) {
+        java.util.ArrayList<byte[]> o = new java.util.ArrayList<>();
+        if (p == null) return o;
+        for (int i = 0; i < cnt; i++) o.add(wkb.apply(p.getLongLong((long) i * 8L)));
+        MeosMemory.free(p);
+        return o;
+    }
     static java.util.List<Double> readDoubleArr(Pointer p, int cnt) {
         java.util.ArrayList<Double> o = new java.util.ArrayList<>();
         if (p == null) return o;
@@ -1670,6 +1727,27 @@ __WKB_KINDS__
             java.util.function.Function<byte[], Pointer> bytes,
             java.util.function.Function<String, Pointer> hex) {
         return read(o, java.util.Set.of(code), bytes, hex, null);
+    }
+    // The reader of a cell (#CELL of the generator): the value its WKB bytes or hex WKB state
+    // when they state the MeosType `code`, else null, as typedFrom reads a box.
+    static Long cellFrom(Object o, int code,
+            java.util.function.Function<byte[], Long> bytes,
+            java.util.function.Function<String, Long> hex) {
+        o = wire(o);
+        if (o instanceof byte[])
+            return wkbType(o) == code ? bytes.apply((byte[]) o) : null;
+        if (o instanceof String && isHex((String) o))
+            return wkbType(o) == code ? hex.apply((String) o) : null;
+        return null;
+    }
+    // The same read for an argument of a single overload, which refuses a value of another type.
+    static long cellOf(Object o, int code,
+            java.util.function.Function<byte[], Long> bytes,
+            java.util.function.Function<String, Long> hex) {
+        Long c = cellFrom(o, code, bytes, hex);
+        if (c == null)
+            throw new IllegalArgumentException("not the WKB of a value of MeosType " + code);
+        return c;
     }
     static Pointer spanFrom(Object o) {
         return read(o, SPAN_WKB, GeneratedFunctions::span_from_wkb,
