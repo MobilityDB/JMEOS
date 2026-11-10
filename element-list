@@ -14,6 +14,7 @@ types.collections.geo
 types.collections.number
 types.collections.text
 types.collections.time
+types.generated
 types.temporal
 types.temporal.generated
 utils
