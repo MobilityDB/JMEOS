@@ -279,6 +279,27 @@
                             </arguments>
                         </configuration>
                     </execution>
+
+                    <!-- Generate a class, with its readers, writers and toString, for every class of
+                         the MEOS object model the hand layer under src/main/java/types has none for. -->
+                    <execution>
+                        <id>generate-object-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ObjectClassGenerator</mainClass>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.basedir}/../codegen/target/classes</additionalClasspathElement>
+                            </additionalClasspathElements>
+                            <arguments>
+                                <argument>${project.basedir}/../codegen/input/meos-idl.json</argument>
+                                <argument>${project.build.directory}/generated-sources/jmeos/types/generated</argument>
+                                <argument>${project.basedir}/src/main/java/types</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
