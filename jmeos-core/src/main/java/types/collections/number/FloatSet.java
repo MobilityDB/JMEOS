@@ -84,14 +84,14 @@ public class FloatSet extends Set<Float> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>floatset_out</li>
+     *             <li>set_out</li>
      *
      *
      * @param max_decimals number of maximum decimals
      * @return A new {@link String} instance
      */
     public String toString(int max_decimals){
-        return GeneratedFunctions.floatset_out(this._inner, max_decimals);
+        return GeneratedFunctions.set_out(this._inner, max_decimals);
     }
 
 

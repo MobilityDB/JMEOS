@@ -175,7 +175,7 @@ public class tstzspanset extends SpanSet<LocalDateTime> implements Time, TimeCol
 	 * @return a new String instance
 	 */
 	public String toString(){
-		return GeneratedFunctions.tstzspanset_out(this._inner);
+		return GeneratedFunctions.spanset_out(this._inner, 0);
 	}
     /* ------------------------- Conversions ----------------------------------- */
 

@@ -203,7 +203,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
     }
 
     public String toString(){
-        return GeneratedFunctions.datespanset_out(this.get_inner());
+        return GeneratedFunctions.spanset_out(this.get_inner(), 0);
     }
 
 /**

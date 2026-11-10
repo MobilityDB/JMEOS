@@ -142,14 +142,14 @@ public class FloatSpan extends Span<Float> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>floatspan_out</li>
+     *             <li>span_out</li>
      *
      *
      * @param max_decimals number of maximum decimals
      * @return A new {@link String} instance
      */
     public String toString(int max_decimals){
-        return GeneratedFunctions.floatspan_out(this._inner, max_decimals);
+        return GeneratedFunctions.span_out(this._inner, max_decimals);
     }
 
 

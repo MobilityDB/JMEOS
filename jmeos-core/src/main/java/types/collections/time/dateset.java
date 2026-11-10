@@ -127,7 +127,7 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
 
 
     public String toString(){
-        return GeneratedFunctions.dateset_out(this.get_inner());
+        return GeneratedFunctions.set_out(this.get_inner(), 0);
     }
 
 /**

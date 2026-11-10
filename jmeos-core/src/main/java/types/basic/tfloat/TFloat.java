@@ -134,19 +134,19 @@ public interface TFloat extends TNumber {
 	 *
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tfloat_out</li>
+	 *             <li>temporal_out</li>
 	 * @param max_decimals
 	 * @return A string representation of "this".
 	 */
 	default String to_string(int max_decimals){
-		return GeneratedFunctions.tfloat_out(getNumberInner(), max_decimals);
+		return GeneratedFunctions.temporal_out(getNumberInner(), max_decimals);
 	}
 
 	/**
 	 * Returns the text of "this", as MobilityDB's asText writes it, the values with at most 15 decimal digits.
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tfloat_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A new {@link String} instance
 	 */
 	default String as_text(){
@@ -157,12 +157,12 @@ public interface TFloat extends TNumber {
 	 * Returns the text of "this", as MobilityDB's asText writes it, the values.
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tfloat_out</li>
+	 *             <li>temporal_out</li>
 	 * @param max_decimals The maximum number of decimal digits
 	 * @return A new {@link String} instance
 	 */
 	default String as_text(int max_decimals){
-		return GeneratedFunctions.tfloat_out(getNumberInner(), max_decimals);
+		return GeneratedFunctions.temporal_out(getNumberInner(), max_decimals);
 	}
 
 	/**
@@ -170,12 +170,12 @@ public interface TFloat extends TNumber {
 	 *
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tfloat_out</li>
+	 *             <li>temporal_out</li>
 	 * @param max_decimals
 	 * @return A string representation of "this".
 	 */
 	default String as_wkt(int max_decimals){
-		return GeneratedFunctions.tfloat_out(getNumberInner(),max_decimals);
+		return GeneratedFunctions.temporal_out(getNumberInner(),max_decimals);
 	}
 
 	/* ------------------------- Conversions ---------------------------------- */

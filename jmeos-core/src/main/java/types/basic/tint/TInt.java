@@ -137,22 +137,22 @@ public interface TInt extends TNumber {
 	 *
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tint_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A string representation of "this".
 	 */
 	default String to_string(){
-		return GeneratedFunctions.tint_out(getNumberInner());
+		return GeneratedFunctions.temporal_out(getNumberInner(), 0);
 	}
 
 	/**
 	 * Returns the text of "this", as MobilityDB's asText writes it.
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tint_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A new {@link String} instance
 	 */
 	default String as_text(){
-		return GeneratedFunctions.tint_out(getNumberInner());
+		return GeneratedFunctions.temporal_out(getNumberInner(), 0);
 	}
 
 	/**
@@ -160,11 +160,11 @@ public interface TInt extends TNumber {
 	 *
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tint_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A string representation of "this".
 	 */
 	default String as_wkt(){
-		return GeneratedFunctions.tint_out(getNumberInner());
+		return GeneratedFunctions.temporal_out(getNumberInner(), 0);
 	}
 
 

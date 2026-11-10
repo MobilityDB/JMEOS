@@ -128,33 +128,33 @@ public interface TBool {
      * Returns the string representation of "this".
      * <p>
      *         MEOS Function:
-     *             <li>tbool_out</li>
+     *             <li>temporal_out</li>
      * @return Returns the string representation of "this"
      */
     default String to_string(){
-        return GeneratedFunctions.tbool_out(getBoolInner());
+        return GeneratedFunctions.temporal_out(getBoolInner(), 0);
     }
 
 	/**
 	 * Returns the text of "this", as MobilityDB's asText writes it.
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>tbool_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A new {@link String} instance
 	 */
 	default String as_text(){
-		return GeneratedFunctions.tbool_out(getBoolInner());
+		return GeneratedFunctions.temporal_out(getBoolInner(), 0);
 	}
 
     /**
      * Returns the string representation of "this" in WKT format.
      * <p>
      *         MEOS Function:
-     *             <li>tbool_out</li>
+     *             <li>temporal_out</li>
      * @return Returns the string representation of "this"
      */
     default String as_wkt(){
-        return GeneratedFunctions.tbool_out(getBoolInner());
+        return GeneratedFunctions.temporal_out(getBoolInner(), 0);
     }
 
 
@@ -567,10 +567,10 @@ default boolean value_at_timestamp(LocalDateTime ts){
      * Returns the value-timestamp pair of the calling TBool
      *
      * MEOS Function:
-     *      tbool_out
+     *      temporal_out
      */
     default String asString() {
-        return GeneratedFunctions.tbool_out(getBoolInner());
+        return GeneratedFunctions.temporal_out(getBoolInner(), 0);
     }
 	
 }

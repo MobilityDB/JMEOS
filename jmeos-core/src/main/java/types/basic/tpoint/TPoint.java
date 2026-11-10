@@ -685,7 +685,7 @@ public interface TPoint extends Serializable {
 	 *
 	 *         MEOS Functions:
 	 *         <ul>
-	 *             <li>tpoint_at_value</li>
+	 *             <li>tgeo_at_value</li>
 	 *             <li>tgeo_at_stbox</li>
 	 *             <li>temporal_at_values</li>
 	 *             <li>temporal_at_timestamp</li>
@@ -700,7 +700,7 @@ public interface TPoint extends Serializable {
 	default TPoint at(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
-			return (TPoint) Factory.create_temporal(GeneratedFunctions.tpoint_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tgeo_at_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
 		} else if (other instanceof GeoSet) {
 			return (TPoint) Factory.create_temporal(GeneratedFunctions.temporal_at_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {
@@ -718,7 +718,7 @@ public interface TPoint extends Serializable {
 	 * <p>
 	 *
 	 *         MEOS Functions:
-	 *             <li>tpoint_minus_value</li>
+	 *             <li>tgeo_minus_value</li>
 	 *             <li>tgeo_minus_stbox</li>
 	 *             <li>temporal_minus_values</li>
 	 *             <li>temporal_minus_timestamp</li>
@@ -732,7 +732,7 @@ public interface TPoint extends Serializable {
 	default TPoint minus(Object other) throws OperationNotSupportedException {
 		if (other instanceof Geometry){
 			boolean geodetic = this instanceof TGeomPoint;
-			return (TPoint) Factory.create_temporal(GeneratedFunctions.tpoint_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
+			return (TPoint) Factory.create_temporal(GeneratedFunctions.tgeo_minus_value(getPointInner(),ConversionUtils.geo_to_gserialized((Geometry) other, geodetic)),getCustomType(),getTemporalType());
 		} else if (other instanceof GeoSet) {
 			return (TPoint) Factory.create_temporal(GeneratedFunctions.temporal_minus_values(getPointInner(),((GeoSet) other).get_inner()),getCustomType(),getTemporalType());
 		} else if (other instanceof STBox) {

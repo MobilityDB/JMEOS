@@ -44,13 +44,13 @@ public class StringSizeTest {
     @Test
     public void aValueHoldingTwoByteCharactersReadsBackWhole() {
         String text = "{\"Zürich\"@2001-01-01 00:00:00+00, \"Liège\"@2001-01-02 00:00:00+00}";
-        assertEquals(text, GeneratedFunctions.ttext_out(GeneratedFunctions.ttext_in(text)));
+        assertEquals(text, GeneratedFunctions.temporal_out(GeneratedFunctions.ttext_in(text), 0));
     }
 
     @Test
     public void aLongStringReadsBackWhole() {
         String text = "\"" + "x".repeat(200000) + "\"@2001-01-01 00:00:00+00";
-        assertEquals(text, GeneratedFunctions.ttext_out(GeneratedFunctions.ttext_in(text)));
+        assertEquals(text, GeneratedFunctions.temporal_out(GeneratedFunctions.ttext_in(text), 0));
     }
 
     @Test
