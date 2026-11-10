@@ -72,7 +72,9 @@ HEX_WKB_ENCODINGS = ("hexwkb", "hexewkb")
 # well-formed buffer of the wrong TYPE (a span fed to temporal_from_wkb); a typed reader reads
 # the type first and calls the C parser only when it matches, else returns null, so a foreign
 # value is refused and the arg-kind dispatch can safely try every candidate. The other byte
-# codecs (boxes, circular buffers, network points, poses) state no type in their WKB.
+# codecs state their type in the header of their WKB where the catalog's membership predicate
+# wkb_header_states_type holds their SQL type (the boxes, circular buffers, network points
+# and poses), and #derive_codecs reads them through UdfMarshal.typedFrom.
 TYPED_READER = {
     "Temporal": ("UdfMarshal.tFrom(%s)",       "K_TEMPORAL"),
     "Span":     ("UdfMarshal.spanFrom(%s)",    "K_SPAN"),
@@ -82,7 +84,7 @@ TYPED_READER = {
 # The readers that check the kind of what they read, so an overload using them can be told
 # apart from its siblings at run time. The one test #_safe_dispatch and #_dispatchable both ask.
 TYPE_CHECKED = ("UdfMarshal.tFrom", "UdfMarshal.spanFrom", "UdfMarshal.spansetFrom",
-                "UdfMarshal.setFrom", "UdfMarshal.geoFromText")
+                "UdfMarshal.setFrom", "UdfMarshal.typedFrom", "UdfMarshal.geoFromText")
 
 
 def type_checked(parse):
@@ -124,6 +126,11 @@ def derive_codecs(cat, have):
     # passes by value (TimestampTz, DateADT, Timestamp, TimeADT): arg_kind and ret_emit carry
     # it as one, so it takes no pointer codec here.
     ret_of = {f["name"]: f["returnType"]["canonical"] for f in cat.get("functions") or []}
+    sigs_of = {f["name"]: f.get("sqlSignatures") or [] for f in cat.get("functions") or []}
+    # The SQL types whose WKB states the type in its header, which MEOS reads only from a WKB
+    # of that type (type_from_wkb_read refuses another), from the catalog's predicate.
+    header_typed = set(((cat.get("typeRelations") or {}).get("predicates") or {})
+                       .get("wkb_header_states_type") or [])
     for base, e in (cat.get("typeEncodings") or {}).items():
         if base in DEFERRED_TYPES or base in INTERNAL:
             continue
@@ -139,6 +146,15 @@ def derive_codecs(cat, have):
                 PARSE[base] = TYPED_READER[base]
                 continue
             hexr = next((dec[k] for k in HEX_WKB_ENCODINGS if have(dec.get(k))), None)
+            # A type whose WKB states it is read from its WKB alone, after its type is checked,
+            # as the temporal values, spans, span sets and sets are: the SQL type is the one its
+            # byte encoder's signatures take, and its MeosType value is what the header states.
+            sqlt = {s["args"][0] for s in sigs_of.get(byt["encoder"], []) if s.get("args")}
+            if len(sqlt) == 1 and sqlt <= header_typed and next(iter(sqlt)) in TYPE_CODE:
+                PARSE[base] = ("UdfMarshal.typedFrom(%%s, %d, GeneratedFunctions::%s, %s)"
+                               % (TYPE_CODE[next(iter(sqlt))], byt["decoder"],
+                                  "GeneratedFunctions::%s" % hexr if hexr else "null"), kind)
+                continue
             # The text reader the catalog states, where it takes the string alone
             text = dec.get("text") if (have(dec.get("text"))
                                        and not (e.get("decoderAux") or {}).get("text")) else None
@@ -1647,6 +1663,13 @@ __WKB_KINDS__
     static java.util.Set<Integer> codeSet(int... codes) {
         return java.util.Arrays.stream(codes).boxed()
             .collect(java.util.stream.Collectors.toUnmodifiableSet());
+    }
+    // The reader of a type whose WKB states the type in its header: `code` is its MeosType
+    // value, so a value of another type is refused here instead of being read by its parser.
+    static Pointer typedFrom(Object o, int code,
+            java.util.function.Function<byte[], Pointer> bytes,
+            java.util.function.Function<String, Pointer> hex) {
+        return read(o, java.util.Set.of(code), bytes, hex, null);
     }
     static Pointer spanFrom(Object o) {
         return read(o, SPAN_WKB, GeneratedFunctions::span_from_wkb,
