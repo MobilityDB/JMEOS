@@ -156,7 +156,7 @@ public class tstzset extends Set<LocalDateTime> implements Time, TimeCollection 
 	 * @return a new String instance
 	 */
 	public String toString(){
-		return GeneratedFunctions.tstzset_out(this._inner);
+		return GeneratedFunctions.set_out(this._inner, 0);
 	}
 
 

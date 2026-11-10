@@ -135,11 +135,11 @@ public interface TText {
      * Returns the string representation of "this".
      * <p>
      *         MEOS Function:
-     *             <li>ttext_out</li>
+     *             <li>temporal_out</li>
      * @return Returns the string representation of "this"
      */
     default String to_string(){
-        return GeneratedFunctions.ttext_out(getTextInner());
+        return GeneratedFunctions.temporal_out(getTextInner(), 0);
     }
 
 
@@ -148,22 +148,22 @@ public interface TText {
 	 * Returns the text of "this", as MobilityDB's asText writes it.
 	 * <p>
 	 *         MEOS Functions:
-	 *             <li>ttext_out</li>
+	 *             <li>temporal_out</li>
 	 * @return A new {@link String} instance
 	 */
 	default String as_text(){
-		return GeneratedFunctions.ttext_out(getTextInner());
+		return GeneratedFunctions.temporal_out(getTextInner(), 0);
 	}
 
     /**
      * Returns the Well-Known Text representation of "this".
      * <p>
      *         MEOS Function:
-     *             <li>ttext_out</li>
+     *             <li>temporal_out</li>
      * @return A string with the Well-Known Text representation of "this".
      */
     default String as_wkt(){
-        return GeneratedFunctions.ttext_out(getTextInner());
+        return GeneratedFunctions.temporal_out(getTextInner(), 0);
     }
 
 

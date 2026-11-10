@@ -83,13 +83,13 @@ public class IntSet extends Set<Integer> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>intset_out</li>
+     *             <li>set_out</li>
      *
      *
      * @return A new {@link String} instance
      */
     public String toString(){
-        return GeneratedFunctions.intset_out(this._inner);
+        return GeneratedFunctions.set_out(this._inner, 0);
     }
 
     /* ------------------------- Conversions ----------------------------------- */

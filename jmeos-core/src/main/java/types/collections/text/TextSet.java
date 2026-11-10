@@ -93,12 +93,12 @@ public class TextSet extends Set<String> {
      * <p>
      *
      *         MEOS Functions:
-     *             <li>textset_out</li>
+     *             <li>set_out</li>
      *
      * @return A new {@link String} instance
      */
     public String toString(){
-        return GeneratedFunctions.textset_out(this._inner);
+        return GeneratedFunctions.set_out(this._inner, 0);
     }
 
 

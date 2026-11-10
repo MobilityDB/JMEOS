@@ -175,13 +175,13 @@ public class IntSpan extends Span<Integer> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>intspan_out</li>
+     *             <li>span_out</li>
      *
      *
      * @return A new {@link String} instance
      */
     public String toString(){
-        return GeneratedFunctions.intspan_out(this._inner);
+        return GeneratedFunctions.span_out(this._inner, 0);
     }
 
 

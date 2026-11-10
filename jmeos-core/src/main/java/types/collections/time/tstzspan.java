@@ -288,7 +288,7 @@ public class tstzspan extends Span<LocalDateTime> implements Time, TimeCollectio
 	 * @return string instance
 	 */
 	public String toString(){
-		return GeneratedFunctions.tstzspan_out(this._inner);
+		return GeneratedFunctions.span_out(this._inner, 0);
 	}
 
 

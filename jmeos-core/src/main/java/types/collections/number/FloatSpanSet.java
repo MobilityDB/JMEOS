@@ -92,14 +92,14 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>floatspanset_out</li>
+     *             <li>spanset_out</li>
      *
      *
      * @param max_decimals number of maximum decimals
      * @return A new {@link String} instance
      */
     public String toString(int max_decimals){
-        return GeneratedFunctions.floatspanset_out(this._inner, max_decimals);
+        return GeneratedFunctions.spanset_out(this._inner, max_decimals);
     }
 
 

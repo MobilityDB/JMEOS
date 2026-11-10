@@ -98,13 +98,13 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      *
      *  <p>
      *         MEOS Functions:
-     *             <li>intspanset_out</li>
+     *             <li>spanset_out</li>
      *
      *
      * @return A new {@link String} instance
      */
     public String toString(){
-        return GeneratedFunctions.intspanset_out(this._inner);
+        return GeneratedFunctions.spanset_out(this._inner, 0);
     }
 
 

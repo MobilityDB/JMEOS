@@ -212,7 +212,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 
 
     public String toString(){
-        return GeneratedFunctions.datespan_out(this.get_inner());
+        return GeneratedFunctions.span_out(this.get_inner(), 0);
     }
 
 /**
