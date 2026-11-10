@@ -388,7 +388,9 @@ rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsSta
 rasterstatsstate_serialize	no-decoder:RasterStatsState; array-or-out-param:size_out; unsupported-return:uint8_t *
 rasterunionstate_deserialize	array-or-out-param:bytes; no-encoder:RasterUnionState
 rasterunionstate_serialize	no-decoder:RasterUnionState; array-or-out-param:size_out; unsupported-return:uint8_t *
+reachabilitystate_close	no-decoder:ReachabilityState
 reachabilitystate_deserialize	array-or-out-param:bytes; no-encoder:ReachabilityState
+reachabilitystate_free	no-decoder:ReachabilityState
 reachabilitystate_instants	no-decoder:ReachabilityState
 reachabilitystate_kept	no-decoder:ReachabilityState
 reachabilitystate_reports	no-decoder:ReachabilityState
@@ -643,6 +645,7 @@ tpc_extent_transfn	ret:TPCBox *
 tpcbox_as_ewkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tpcbox_as_hexewkb	arg:TPCBox *
 tpcbox_as_hexwkb	arg:TPCBox *
+tpcbox_as_text	arg:TPCBox *
 tpcbox_as_wkb	array-or-out-param:size_out; unsupported-return:uint8_t *
 tpcbox_cmp	arg:TPCBox *
 tpcbox_copy	ret:TPCBox *
