@@ -792,7 +792,46 @@ def _argkinds(f):
                 ks[i] = ("ptr", "UdfMarshal.%s(%%s, %d)" % (_CONCRETE_READER[k[2]][1], TYPE_CODE[st]),
                          k[2] + ":" + st)
             break
+    # The receiver of an overload sharing its reader with a sibling of the same SQL name
+    # parses through the reader of the types its own signatures declare under that name
+    # (#_declared_receivers), as the two refinements above read one type: asText of an intset
+    # reaches set_out and that of a geomset spatialset_as_text, the two taking a Set *.
+    declared = f.get("_declared")
+    if declared:
+        for i, k in enumerate(ks):
+            if k and k[0] == "ptr" and (k[2] == "K_TEMPORAL" or k[2] in _CONCRETE_READER):
+                reader = "tFromOf" if k[2] == "K_TEMPORAL" else _CONCRETE_READER[k[2]][1]
+                ks[i] = ("ptr", "UdfMarshal.%s(%%s, %s)"
+                         % (reader, ", ".join(str(TYPE_CODE[t]) for t in declared)),
+                         k[2] + ":" + "|".join(declared))
+            break
     return ks
+
+
+def _declared_receivers(group, sname):
+    """The overloads of SQL name `sname`, each one whose receiver reader a sibling shares
+    marked with the types its own signatures declare under the name (#_argkinds reads them).
+
+    Two overloads reading their receiver with one generic reader (set_out and
+    spatialset_as_text, both a Set *) are one parse shape, and the dispatcher keeps one of
+    them. The catalog states which types each answers (asText(intset) is set_out,
+    asText(geomset) spatialset_as_text), and the WKB states the type of a value, so each
+    reads those types alone and both stay. An overload whose declared types are not all
+    MeosTypes keeps its reader."""
+    shape = lambda f: _parsetuple(f)[:1]
+    count = {}
+    for f in group:
+        count[shape(f)] = count.get(shape(f), 0) + 1
+    out = []
+    for f in group:
+        types = sorted({s["args"][0] for s in f.get("sqlSignatures") or []
+                        if s.get("args") and published_name(f, s) == sname
+                        and not type_support(f, s)})
+        if (count[shape(f)] > 1 and types and all(t in TYPE_CODE for t in types)
+                and ":" not in (shape(f)[0] if shape(f) else ":")):
+            f = dict(f, _declared=types)
+        out.append(f)
+    return out
 
 
 def emit_dispatch(name, cands, vis_arity=None):
@@ -1596,13 +1635,18 @@ __WKB_KINDS__
         return read(o, TEMPORAL_WKB, GeneratedFunctions::temporal_from_wkb,
             GeneratedFunctions::temporal_from_hexwkb, null);
     }
-    // The same parse restricted to ONE temporal type, for an overload named after a
-    // concrete type: `code` is that type's MeosType value, which is the WKB type, so
-    // a value of a sibling type is refused here and answered by its own overload instead
-    // of reaching a C function that rejects it as the wrong type at run time.
-    static Pointer tFromOf(Object o, int code) {
-        return read(o, java.util.Set.of(code), GeneratedFunctions::temporal_from_wkb,
+    // The same parse restricted to the temporal types an overload takes, the one it is
+    // named after or those its SQL signatures declare: `codes` are their MeosType values,
+    // which the WKB states, so a value of a sibling type is refused here and answered by its
+    // own overload instead of reaching a C function that rejects it at run time.
+    static Pointer tFromOf(Object o, int... codes) {
+        return read(o, codeSet(codes), GeneratedFunctions::temporal_from_wkb,
             GeneratedFunctions::temporal_from_hexwkb, null);
+    }
+    // The MeosType values a typed reader admits.
+    static java.util.Set<Integer> codeSet(int... codes) {
+        return java.util.Arrays.stream(codes).boxed()
+            .collect(java.util.stream.Collectors.toUnmodifiableSet());
     }
     static Pointer spanFrom(Object o) {
         return read(o, SPAN_WKB, GeneratedFunctions::span_from_wkb,
@@ -1616,19 +1660,18 @@ __WKB_KINDS__
         return read(o, SET_WKB, GeneratedFunctions::set_from_wkb,
             GeneratedFunctions::set_from_hexwkb, null);
     }
-    // The same parses restricted to ONE span, span set or set type, for an overload named
-    // after a concrete type (intspan_out, tstzset_out): `code` is that type's MeosType value,
-    // which its WKB states, as tFromOf restricts a temporal value.
-    static Pointer spanFromOf(Object o, int code) {
-        return read(o, java.util.Set.of(code), GeneratedFunctions::span_from_wkb,
+    // The same parses restricted to the span, span set or set types an overload takes, as
+    // tFromOf restricts a temporal value.
+    static Pointer spanFromOf(Object o, int... codes) {
+        return read(o, codeSet(codes), GeneratedFunctions::span_from_wkb,
             GeneratedFunctions::span_from_hexwkb, null);
     }
-    static Pointer spansetFromOf(Object o, int code) {
-        return read(o, java.util.Set.of(code), GeneratedFunctions::spanset_from_wkb,
+    static Pointer spansetFromOf(Object o, int... codes) {
+        return read(o, codeSet(codes), GeneratedFunctions::spanset_from_wkb,
             GeneratedFunctions::spanset_from_hexwkb, null);
     }
-    static Pointer setFromOf(Object o, int code) {
-        return read(o, java.util.Set.of(code), GeneratedFunctions::set_from_wkb,
+    static Pointer setFromOf(Object o, int... codes) {
+        return read(o, codeSet(codes), GeneratedFunctions::set_from_wkb,
             GeneratedFunctions::set_from_hexwkb, null);
     }
 
@@ -2189,6 +2232,8 @@ def main():
         # nearestApproachDistance keeps just its tgeo_tgeo / tgeo_geo overloads while atStbox
         # keeps every temporal it restricts. A name left with no safe overload is skipped
         # (still reachable under its C names), never emitted as a fragile guess.
+        # Overloads sharing a receiver reader read the types each declares (#_declared_receivers)
+        group = _declared_receivers(group, sname)
         if len(group) > 1:
             group = _dispatchable(group)
         if not group:
