@@ -148,7 +148,6 @@ h3index_cell_to_parent	arg:uint32_t
 h3index_get_resolution	ret:uint32_t
 h3index_hash	ret:uint32_t
 h3indexset_make	array-or-out-param:values
-h3indexset_value_n	arg:uint64_t *
 index_result_create	no-encoder:MeosArray
 index_result_id	no-decoder:MeosArray; array-or-out-param:id
 int32_hash	ret:uint32_t
@@ -362,7 +361,6 @@ quadbin_hash	ret:uint32_t
 quadbin_point_to_cell	arg:uint32_t
 quadbin_tile_to_cell	arg:uint32_t
 quadbinset_make	array-or-out-param:values
-quadbinset_value_n	arg:uint64_t *
 raquet_hash	ret:uint32_t
 raquet_pixtype_size	internal
 raster_clip	array-or-out-param:bands; array-or-out-param:nodata
@@ -410,7 +408,6 @@ s2cell_get_resolution	ret:uint32_t
 s2cell_hash	ret:uint32_t
 s2cell_point_to_cell	arg:uint32_t
 s2cellset_make	array-or-out-param:values
-s2cellset_value_n	arg:uint64_t *
 same_tpcbox_tpcbox	arg:TPCBox *
 same_tpcbox_tpointcloud	arg:TPCBox *
 same_tpointcloud_tpcbox	arg:TPCBox *
@@ -538,8 +535,6 @@ tgeo_value_n	internal
 tgeo_values	internal
 tgt_text_ttext	internal
 tgt_ttext_text	internal
-th3index_value_at_timestamptz	arg:uint64_t *
-th3index_value_n	arg:uint64_t *
 th3indexseq_make	array-or-out-param:values
 th3indexseqset_make	internal
 time_cmp	arg:TimeADT
@@ -714,8 +709,6 @@ tposechaininst_make	arg:PoseChain *
 tposechainseq_from_base_tstzset	arg:PoseChain *
 tposechainseq_from_base_tstzspan	arg:PoseChain *
 tposechainseqset_from_base_tstzspanset	arg:PoseChain *
-tquadbin_value_at_timestamptz	arg:uint64_t *
-tquadbin_value_n	arg:uint64_t *
 tquadbinseq_make	array-or-out-param:values
 tquadbinseqset_make	internal
 trgeometry_instants	internal
@@ -734,8 +727,6 @@ trgeometry_values	internal
 trgeometryseq_make	internal
 trgeometryseqset_make	internal
 trgeometryseqset_make_gaps	internal
-ts2cell_value_at_timestamptz	arg:uint64_t *
-ts2cell_value_n	arg:uint64_t *
 ts2cellseq_make	array-or-out-param:values
 ts2cellseqset_make	internal
 tsequence_make	internal
