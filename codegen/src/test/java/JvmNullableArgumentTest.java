@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A pointer argument the catalog states MEOS takes NULL for (`shape.nullable`), on the Flink
- * and Spark SQL surfaces of tools/codegen_jvm.py (#_emit_eval there) and the Spark UDFs of
- * tools/codegen_spark_udfs.py (#emit_single there): a NULL argument is passed to MEOS as NULL,
+ * and Spark SQL surfaces of tools/codegen_jvm.py (#_emit_eval there): a NULL argument is passed
+ * to MEOS as NULL,
  * as MobilityDB's wrapper passes the value of jsonbSetLax, while any other NULL argument
  * answers NULL. The generators run over a catalog of two functions, as JvmPresenceFlagTest
  * runs them, so no jar and no libmeos.
@@ -46,13 +46,11 @@ class JvmNullableArgumentTest {
 
     private static final Path TOOLS = Path.of("..", "tools").toAbsolutePath().normalize();
 
-    /** shift(a int, d const Interval *) states d nullable, shiftnn the same function does not;
-     * the Spark UDFs read d as a temporal value, whose reader the catalog would state. */
+    /** shift(a int, d const Interval *) states d nullable, shiftnn the same function does not. */
     private static final String DRIVER = String.join("\n",
         "import json, sys",
         "sys.path.insert(0, sys.argv[1])",
         "import codegen_jvm as g",
-        "import codegen_spark_udfs as s",
         "from collections import defaultdict",
         "def fn(name, ptr, nullable):",
         "    return {'name': name, 'file': 'meos.h', 'api': 'public', 'sqlfn': name,",
@@ -73,9 +71,6 @@ class JvmNullableArgumentTest {
         "    out[engine] = {name: '\\n'.join(g._emit_eval(ov)) for name, sargs, sdef, ov, why,",
         "                   isset, arity in g._sql_overloads(m, cat, jar, m.layout,",
         "                   defaultdict(int), lambda f: True) if ov is not None}",
-        "s.PARSE['Temporal'] = ('UdfMarshal.read(%s)', 'K_TEMPORAL')",
-        "out['spark'] = {n: s.emit_single(n, fn(n, 'const Temporal *', nl))",
-        "                for n, nl in (('shift', True), ('shiftnn', False))}",
         "print(json.dumps(out))",
         "");
 
@@ -118,21 +113,5 @@ class JvmNullableArgumentTest {
             assertTrue(code.contains("Pointer _p0 = MeosSqlRuntime.interval(a1);"),
                 engine + "\n" + code);
         }
-    }
-
-    @Test
-    void aNullableArgumentIsPassedAsNullByTheSparkUdf() {
-        String code = results.get("spark").get("shift").asText();
-        assertTrue(code.contains("if (a == null) return null;"), code);
-        assertTrue(code.contains("jnr.ffi.Pointer p_d = d == null ? null : UdfMarshal.read(d);"), code);
-        // a value given and unreadable still answers NULL
-        assertTrue(code.contains("if (d != null && p_d == null) return null;"), code);
-    }
-
-    @Test
-    void anArgumentOfNoNullableParameterAnswersNullInTheSparkUdf() {
-        String code = results.get("spark").get("shiftnn").asText();
-        assertTrue(code.contains("if (a == null || d == null) return null;"), code);
-        assertTrue(code.contains("if (p_d == null) return null;"), code);
     }
 }

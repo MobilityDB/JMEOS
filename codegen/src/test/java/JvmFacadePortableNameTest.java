@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * signature, a name that is no reader or writer, or an internal function. A type support
  * function (#is_type_support) has no C-named method: its portable methods call MEOS under the
  * MEOS_AVAILABLE guard. Any other function keeps its C-named method, which its portable methods
- * forward to. The generator runs over hand-built rows, as #SparkTypedWkbReaderTest runs it, so
+ * forward to. The generator runs over hand-built rows, as #JvmNullableArgumentTest runs it, so
  * no jar and no libmeos.
  */
 class JvmFacadePortableNameTest {
