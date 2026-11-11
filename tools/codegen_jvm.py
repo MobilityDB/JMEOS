@@ -3057,6 +3057,73 @@ def run_flink_sql(args):
           f'({sum(len(v) for v in aggs.values())} overloads)')
     for why, n in sorted(agg_left.items()):
         print(f'  aggregate left out {n:3d}  {why}')
+    check_sql_gaps(args, cat, jmeos, keep, m)
+
+
+# ───────────────────────── the ledger of unreached SQL functions ─────────────────────────
+
+def check_sql_gaps(args, cat, jmeos, keep, m):
+    """The ledger of the public SQL functions a typed SQL surface does not reach, as #main of
+    codegen_spark_udfs.py keeps the one of its UDF surface. A function `keep` admits (a public
+    function with its SQL name) the jar exposes, with a signature that is no type support
+    function (#is_type_support), is reached when a class the engine wrote under --out calls it,
+    or when each of its signatures that is no type support function is an overload the engine
+    registers through another function (#_sql_overloads of model `m`): one SQL signature with two
+    C functions behind it, of which the surface needs one.
+    It is out of the surface by the catalog's own statement when its `network` reasons say it is
+    internal, lifecycle or index. Every other function not reached is a gap: --gaps names the
+    ledger of the known ones, and a gap missing from it fails the run, so a function a catalog
+    change drops is refused instead of disappearing. A ledger entry the surface reaches is a
+    notice: the ledger shrinks with --rebaseline."""
+    if not args.gaps:
+        return
+    reached = set()
+    for path in Path(args.out).rglob('*.java'):
+        reached.update(re.findall(r'GeneratedFunctions\.([a-z][A-Za-z0-9_]+)', path.read_text()))
+    registered = {(n, tuple(a)) for n, a, _, ov, _, _, _ in
+                  _sql_overloads(m, cat, jmeos, m.layout, defaultdict(int), keep) if ov is not None}
+    gaps = {}
+    for f in cat['functions']:
+        nm = f['name']
+        if not keep(f) or nm not in jmeos or nm in reached:
+            continue
+        sigs = [(n, tuple(a)) for s, (n, a, _, _, _) in
+                zip(f.get('sqlSignatures') or [], m.signatures(f)) if not s.get('typeSupport')]
+        if not sigs or all(key in registered for key in sigs):
+            continue
+        why = [r.strip() for r in ((f.get('network') or {}).get('reason') or '').split(';')
+               if r.strip()]
+        if any(r in ('internal', 'lifecycle', 'index') for r in why):
+            continue
+        gaps[nm] = '; '.join(why) or 'not emitted'
+    if args.rebaseline:
+        with open(args.gaps, 'w') as fh:
+            fh.write('# The public SQL functions the generated typed SQL surfaces (spark-sql,\n'
+                     '# flink-sql) do not reach, one per line with the reason the catalog\n'
+                     '# states. Written by codegen_jvm.py --rebaseline; a function missing from\n'
+                     '# it fails the run of either engine, and the two engines reach the same\n'
+                     '# functions. The ledger only shrinks, as types get their mappings.\n')
+            for nm in sorted(gaps):
+                fh.write(f'{nm}\t{gaps[nm]}\n')
+        print(f'  gaps ledger rewritten: {len(gaps)} functions')
+        return
+    known = set()
+    if Path(args.gaps).exists():
+        for line in open(args.gaps):
+            if line.strip() and not line.startswith('#'):
+                known.add(line.split('\t')[0].strip())
+    new = sorted(set(gaps) - known)
+    stale = sorted(known - set(gaps))
+    if stale:
+        print(f'  NOTICE: {len(stale)} ledger functions are reached or gone, shrink it with '
+              f'--rebaseline: {", ".join(stale[:20])}')
+    if new:
+        print(f'  ERROR: {len(new)} public SQL functions the surface does not reach and the '
+              'ledger does not list; map their types or record them with --rebaseline:')
+        for nm in new:
+            print(f'     {nm}\t{gaps[nm]}')
+        sys.exit(1)
+    print(f'  gaps ledger: {len(gaps)} functions, none new')
 
 
 # ───────────────────────── spark-sql: the typed Spark SQL surface ─────────────────────────
@@ -4472,6 +4539,7 @@ def run_spark_sql(args):
           f'({sum(len(v) for v in aggs.values())} overloads)')
     for why, n in sorted(agg_left.items()):
         print(f'  aggregate left out {n:3d}  {why}')
+    check_sql_gaps(args, cat, jmeos, keep, m)
 
 
 # ───────────────────────── entry point ─────────────────────────
@@ -4487,8 +4555,10 @@ def main():
     ap.add_argument('--package', default='org.mobilitydb.meos',
                     help='facade package (flink/kafka only)')
     ap.add_argument('--report', action='store_true', help='spark only')
-    ap.add_argument('--gaps', help='spark only: the ledger of unreached public functions')
-    ap.add_argument('--rebaseline', action='store_true', help='spark only: rewrite --gaps')
+    ap.add_argument('--gaps', help='spark, spark-sql and flink-sql: the ledger of unreached '
+                                   'public functions')
+    ap.add_argument('--rebaseline', action='store_true',
+                    help='spark, spark-sql and flink-sql: rewrite --gaps')
     args = ap.parse_args()
 
     if args.engine == 'spark':

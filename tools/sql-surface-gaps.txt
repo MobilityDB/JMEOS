@@ -1,0 +1,42 @@
+# The public SQL functions the generated typed SQL surfaces (spark-sql,
+# flink-sql) do not reach, one per line with the reason the catalog
+# states. Written by codegen_jvm.py --rebaseline; a function missing from
+# it fails the run of either engine, and the two engines reach the same
+# functions. The ledger only shrinks, as types get their mappings.
+raster_same_alignment_combinefn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
+raster_same_alignment_finalfn	no-decoder:RasterAlignState
+raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
+raster_union_combinefn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
+raster_union_finalfn	no-decoder:RasterUnionState
+rasteralignstate_deserialize	array-or-out-param:bytes; no-encoder:RasterAlignState
+rasteralignstate_serialize	no-decoder:RasterAlignState; array-or-out-param:size_out; unsupported-return:uint8_t *
+rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsState
+rasterstatsstate_serialize	no-decoder:RasterStatsState; array-or-out-param:size_out; unsupported-return:uint8_t *
+rasterunionstate_deserialize	array-or-out-param:bytes; no-encoder:RasterUnionState
+rasterunionstate_serialize	no-decoder:RasterUnionState; array-or-out-param:size_out; unsupported-return:uint8_t *
+set_union_combinefn	not emitted
+set_union_finalfn	not emitted
+setstate_deserialize	array-or-out-param:bytes
+setstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
+spanset_union_combinefn	not emitted
+spanset_union_finalfn	not emitted
+spansetstate_deserialize	array-or-out-param:bytes
+spansetstate_serialize	array-or-out-param:size_out; unsupported-return:uint8_t *
+taggstate_deserialize	array-or-out-param:bytes; no-encoder:SkipList
+taggstate_serialize	no-decoder:SkipList; array-or-out-param:size_out; unsupported-return:uint8_t *
+tbool_tand_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tbool_tor_combinefn	no-decoder:SkipList; no-encoder:SkipList
+temporal_append_finalfn	not emitted
+temporal_merge_combinefn	no-decoder:SkipList; no-encoder:SkipList
+temporal_reachability_filter_finalfn	no-decoder:ReachabilityState
+temporal_reachability_filter_transfn	no-decoder:ReachabilityState; no-encoder:ReachabilityState
+temporal_tagg_finalfn	no-decoder:SkipList
+temporal_tcount_combinefn	no-decoder:SkipList; no-encoder:SkipList
+temporal_tmax_combinefn	no-decoder:SkipList; no-encoder:SkipList
+temporal_tmin_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tnumber_tavg_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tnumber_tavg_finalfn	no-decoder:SkipList
+tnumber_tsum_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tpoint_as_mvtgeom	array-or-out-param:timesarr; array-or-out-param:count
+tpoint_tcentroid_combinefn	no-decoder:SkipList; no-encoder:SkipList
+tpoint_tcentroid_finalfn	no-decoder:SkipList
