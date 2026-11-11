@@ -36,11 +36,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The portable input and output names of the MeosOps* facades of tools/codegen_jvm.py
- * (#portable_io_names there): beside the C-named forwarder of a public function, a method under
- * each reader or writer name its catalog signatures state, the altSqlName where one is stated,
- * forwarding to the C-named method; none for a type support signature, a name that is no reader
- * or writer, or an internal function. The generator runs over hand-built rows, as
- * #SparkTypedWkbReaderTest runs it, so no jar and no libmeos.
+ * (#portable_io_names there): a method under each reader or writer name the catalog signatures
+ * of a public function state, the altSqlName where one is stated; none for a type support
+ * signature, a name that is no reader or writer, or an internal function. A type support
+ * function (#is_type_support) has no C-named method: its portable methods call MEOS under the
+ * MEOS_AVAILABLE guard. Any other function keeps its C-named method, which its portable methods
+ * forward to. The generator runs over hand-built rows, as #SparkTypedWkbReaderTest runs it, so
+ * no jar and no libmeos.
  */
 class JvmFacadePortableNameTest {
 
@@ -90,12 +92,24 @@ class JvmFacadePortableNameTest {
         }
     }
 
+    /** As #aTypeSupportSignatureTakesNoPortableName reads the row of `intset_out`. */
     @Test
-    void aWriterTakesItsPortableNameBesideItsCName() {
+    void aTypeSupportFunctionHasNoCNamedMethod() {
         String code = results.get("text").asText();
-        assertTrue(code.contains("public static String intset_out(Pointer arg0, int arg1) {"), code);
+        assertFalse(code.contains(" intset_out("), code);
         assertTrue(code.contains("public static String asText(Pointer arg0, int arg1) {\n"
-            + "        return intset_out(arg0, arg1);"), code);
+            + "        if (!MEOS_AVAILABLE) {"), code);
+        assertTrue(code.contains("return GeneratedFunctions.intset_out(arg0, arg1);"), code);
+    }
+
+    /** As #aNameTwoSignaturesShareIsEmittedOnce reads the row of `set_as_hexwkb`. */
+    @Test
+    void anyOtherFunctionKeepsItsCNamedMethodItsPortableNameForwardsTo() {
+        String code = results.get("hex").asText();
+        assertTrue(code.contains("public static String set_as_hexwkb(Pointer arg0, byte arg1) {"),
+            code);
+        assertTrue(code.contains("public static String asHexWKB(Pointer arg0, byte arg1) {\n"
+            + "        return set_as_hexwkb(arg0, arg1);"), code);
     }
 
     @Test

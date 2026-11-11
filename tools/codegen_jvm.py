@@ -346,9 +346,20 @@ def portable_io_names(f):
     return out
 
 
-def emit_portable(r):
-    """A method under each portable input or output name of the row's function (#portable_io_names),
-    forwarding to the C-named method beside it, whose guards it keeps."""
+def is_type_support(f):
+    """Whether catalog function `f` backs a type support function of a SQL type, `<type>_in`,
+    `<type>_out`, `<type>_recv` or `<type>_send` (a signature's typeSupport). Its C name
+    is plumbing the dialect never names (rule 3 of MobilityDB's
+    doc/contributing/io/00-INDEX.md): a binding reaches it through its portable reader or
+    writer alone."""
+    return any(s.get('typeSupport') for s in (f or {}).get('sqlSignatures') or [])
+
+
+def emit_portable(r, prop):
+    """A method under each portable input or output name of the row's function
+    (#portable_io_names). For a type support function (#is_type_support), which has no
+    C-named method, the method calls MEOS under the guards #emit_body writes; otherwise it
+    forwards to the C-named method beside it, whose guards it keeps."""
     args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
     call_args = ', '.join(n for (t, n) in r['java_params'])
     ret = short_type(r['java_ret'])
@@ -357,18 +368,43 @@ def emit_portable(r):
     for n in portable_io_names(r.get('cat')):
         L += ['    /**',
               f'     * {{@code {n}}}, the portable name of MEOS {{@code {r["name"]}}}.',
-              '     */',
-              f'    public static {ret} {n}({args}) {{',
-              f'        {ret_stmt}{r["name"]}({call_args});',
-              '    }', '']
+              '     */']
+        if is_type_support(r.get('cat')):
+            L += emit_body(r, prop, n)
+        else:
+            L += [f'    public static {ret} {n}({args}) {{',
+                  f'        {ret_stmt}{r["name"]}({call_args});',
+                  '    }', '']
     return L
 
 
-def emit_method(r, prop):
+def emit_body(r, prop, name):
+    """The method `name` calling MEOS function `r`, under the sequence-only guard of a
+    function building a whole sequence, else under the MEOS_AVAILABLE guard."""
     fname = r['name']
     args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
     call_args = ', '.join(n for (t, n) in r['java_params'])
     ret = short_type(r['java_ret'])
+    if r['seq']:
+        return [f'    public static {ret} {name}({args}) {{',
+                '        throw new UnsupportedOperationException(',
+                f'            "{fname} is sequence-only — not supported in a '
+                'streaming context");',
+                '    }', '']
+    ret_stmt = '' if ret == 'void' else 'return '
+    return [f'    public static {ret} {name}({args}) {{',
+            '        if (!MEOS_AVAILABLE) {',
+            '            throw new UnsupportedOperationException(',
+            f'                "{fname} requires libmeos — set -D{prop}=true");',
+            '        }',
+            f'        {ret_stmt}GeneratedFunctions.{fname}({call_args});',
+            '    }', '']
+
+
+def emit_method(r, prop):
+    fname = r['name']
+    if is_type_support(r.get('cat')):
+        return emit_portable(r, prop)
     L = ['    /**',
          f'     * MEOS {{@code {fname}}}.']
     if r.get('oo_class'):
@@ -381,27 +417,11 @@ def emit_method(r, prop):
         L.append('     * <p>Sequence-only: builds a whole sequence — '
                  'not supported in a streaming context.</p>')
     L.append('     */')
-    if r['seq']:
-        # sequence-only guard
-        L += [f'    public static {ret} {fname}({args}) {{',
-              '        throw new UnsupportedOperationException(',
-              f'            "{fname} is sequence-only — not supported in a '
-              'streaming context");',
-              '    }', '']
-    else:
-        # runtime MEOS_AVAILABLE guard
-        ret_stmt = '' if ret == 'void' else 'return '
-        L += [f'    public static {ret} {fname}({args}) {{',
-              '        if (!MEOS_AVAILABLE) {',
-              '            throw new UnsupportedOperationException(',
-              f'                "{fname} requires libmeos — set -D{prop}=true");',
-              '        }',
-              f'        {ret_stmt}GeneratedFunctions.{fname}({call_args});',
-              '    }', '']
+    L += emit_body(r, prop, fname)
     fold = folded_nxn(r)
     if fold:
         L += emit_folded(r, fold, prop)
-    L += emit_portable(r)
+    L += emit_portable(r, prop)
     return L
 
 
@@ -1660,6 +1680,10 @@ def _sql_overloads(m, cat, jmeos, layout, skipped, keep):
             continue
         for (sqlname, sargs, sret, sdef, sbound), sig in zip(m.signatures(f),
                                                              f.get('sqlSignatures') or []):
+            # A type support function is plumbing the dialect never names (#is_type_support):
+            # the engine reaches its MEOS function through the portable signatures beside it
+            if sig.get('typeSupport'):
+                continue
             ov, why, isset = _signature_overload(m, f, sig, sargs, sret, jsig, sbound, layout)
             yield sqlname, sargs, sdef, ov, why, isset, None
             # The shorter calls drop the left-out arguments from the order the SQL arguments
