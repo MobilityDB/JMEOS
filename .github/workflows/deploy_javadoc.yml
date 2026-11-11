@@ -23,14 +23,15 @@ jobs:
         run: mvn -B wrapper:wrapper
 
       # Derive the MEOS catalog from upstream MobilityDB master in CI — it is not
-      # committed. Catalog-only (build-libmeos: false): javadoc compiles the sources but
-      # never runs them, so the native libmeos is not needed here.
-      - name: Provision MEOS catalog
+      # committed. The catalog is derived with libmeos, as maven.yml derives it: the build
+      # keeps the functions libmeos exports, so the sources javadoc documents are the ones
+      # the build compiles, and no internal function the generator cannot bind reaches it.
+      - name: Provision MEOS catalog + libmeos
         id: provision
         uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
         with:
           mobilitydb-ref: master
-          build-libmeos: "false"
+          build-libmeos: "true"
 
       # Stage the derived catalog where FunctionsGenerator reads it at build time.
       # The catalog is gitignored — it only ever exists as a build artifact.
