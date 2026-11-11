@@ -25,15 +25,10 @@
 """Unified MEOS-surface code generator for the MobilityDB JVM bindings.
 
 ONE generator, its engines selected by ``--engine``. Every
-JVM binding (MobilitySpark, MobilityFlink, MobilityKafka) vendors this identical
-file plus its ``codegen_spark_udfs.py`` sibling, so the generated surface can never
-drift between engines — the North Star that MEOS is the single source of truth and
+JVM binding (MobilitySpark, MobilityFlink, MobilityKafka) stages this identical
+file, so the generated surface can never drift between engines — the North Star that MEOS is the single source of truth and
 all bindings are GENERATED from it.
 
-  * ``spark``        -> the MobilitySpark SQL-UDF surface. This path delegates
-                        VERBATIM to the sibling ``codegen_spark_udfs.py``: the same
-                        code runs, so the emitted files are byte-identical to what
-                        that generator produces on its own.
   * ``flink|kafka``  -> the thin ``MeosOps*`` Java static-forwarder facades.
                         Covers the FULL jar surface (every
                         functions.GeneratedFunctions symbol), grouped by the
@@ -54,18 +49,15 @@ all bindings are GENERATED from it.
 
 Shared front-end (facade back-end only): load the catalog, list the jar symbols,
 and derive each function's object-model class / role / header directly from the
-catalog's ``objectModel``. The spark back-end owns its own catalog+jar front-end
-(it needs jar arities the facade parse does not), so nothing about it changes.
+catalog's ``objectModel``.
 
 Usage:
-  codegen_jvm.py --engine spark --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine flink --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine kafka --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine flink-sql --catalog meos-idl.json --jar JMEOS.jar --out DIR
   codegen_jvm.py --engine spark-sql --catalog meos-idl.json --jar JMEOS.jar --out DIR
 """
 import argparse
-import importlib.util
 import json
 import re
 import subprocess
@@ -143,43 +135,6 @@ def object_model_index(cat):
         fn_seq[n] = seq_typed(f['returnType'].get('canonical',
                                                    f['returnType'].get('c', '')))
     return fn_class, fn_role, fn_header, fn_seq
-
-
-# ───────────────────────── spark back-end ─────────────────────────
-
-def _spark_module():
-    """The sibling codegen_spark_udfs.py as a module, loaded as #run_spark loaded it. Every
-    binding vendors it next to this file, so the import target is always the sibling."""
-    spark_path = Path(__file__).resolve().parent / 'codegen_spark_udfs.py'
-    spec = importlib.util.spec_from_file_location('codegen_spark_udfs', spark_path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def run_spark(args):
-    """Delegate to the sibling codegen_spark_udfs.py so output is byte-identical.
-
-    The reference generator owns the whole catalog+jar front-end and the SQL-UDF
-    emit; running its own code (rather than a re-implementation) is what makes the
-    output provably identical to today's. The module comes from #_spark_module."""
-    mod = _spark_module()
-    argv = ['codegen_spark_udfs',
-            '--catalog', args.catalog,
-            '--out', args.out,
-            '--jar', args.jar]
-    if args.report:
-        argv.append('--report')
-    if args.gaps:
-        argv += ['--gaps', args.gaps]
-    if args.rebaseline:
-        argv.append('--rebaseline')
-    saved = sys.argv
-    try:
-        sys.argv = argv
-        mod.main()
-    finally:
-        sys.argv = saved
 
 
 # ───────────────────────── facade back-end ─────────────────────────
@@ -792,7 +747,7 @@ class SqlModel:
                             for v in e.get('values') or []
                             if isinstance(v, dict) and isinstance(v.get('value'), int)})
         # The subtypes the object model's subtype axis lists (TInstant, TSequence, TSequenceSet),
-        # each a Temporal, as #derive_codecs of codegen_spark_udfs.py reads them.
+        # each a Temporal.
         axis = ((cat.get('objectModel') or {}).get('axes') or {}).get('subtype') or {}
         self.subtype_of = {v['class']: 'Temporal' for v in axis.get('values') or []
                            if v.get('class') and v['class'] != 'Temporal'}
@@ -943,8 +898,7 @@ class SqlModel:
         C type several SQL types share (geometry: geom_from_hexewkb, geography:
         geog_from_hexewkb), written by the C type's WKB encoder with the inputs the catalog
         states for it.  Text otherwise, and only for a C type a single SQL type stands for,
-        since a text decoder cannot tell those SQL types apart.  The Spark generator chooses
-        by the same rule (#derive_codecs in codegen_spark_udfs.py).
+        since a text decoder cannot tell those SQL types apart.
 
         The hex WKB is the catalog's `hexwkb` encoding, or its `hexewkb` where the C type
         states no `hexwkb` (geometry and geography); its `wkb` is the binary WKB, which a hex
@@ -1000,8 +954,7 @@ class SqlModel:
 
     def _enum_parsers(self):
         """For each C enum, the public catalog function reading it from its name, as a binding
-        calls the public API alone; the Spark arm reads the same (ENUM_PARSER in
-        codegen_spark_udfs.py)."""
+        calls the public API alone."""
         self.enum_parser = {}
         readers = defaultdict(list)
         for f in self.fns:
@@ -1179,8 +1132,7 @@ def _ret(m, sql, f, jt, outs):
                  'finally { MeosSqlRuntime.freeResult(_r, _in); }'])
     if sql in ('text', 'cstring') and jt == 'jnr.ffi.Pointer' and rc == 'text *' \
             and 'text_out' in m.jmeos:
-        # A text MEOS allocates, read into a String through text_out and freed after, as the
-        # Spark arm reads it (#ret_emit in codegen_spark_udfs.py).
+        # A text MEOS allocates, read into a String through text_out and freed after.
         return ('String',
                 ['if (_r == null) return null;',
                  'try { return GeneratedFunctions.text_out(_r); }',
@@ -1259,8 +1211,8 @@ def _array_arg(m, elem, a, p, jt, name, temps):
         temps.append((t, f'{name}, {cls}::decode', 'values'))
         return f'{cls}[]', t
     # A contiguous array of structs (spanset_make reads Span *spans): each element decodes as
-    # above and its bytes are copied into the C array, each the size #struct_layout of
-    # codegen_spark_udfs.py gives the catalog struct.
+    # above and its bytes are copied into the C array, each the size #struct_layout gives the
+    # catalog struct.
     lay = m.layout(_base(el['canonical'])) if c.count('*') == 1 else None
     if elem in m.value_class and lay is not None \
             and m.sql_cbase.get(elem) == _base(el['canonical']):
@@ -1465,8 +1417,7 @@ def _emit_eval(ov, defaults=None):
 # "return", an out-parameter or "ordinal" (the row's 1-based ordinality), `field` reads a
 # member of a struct element, and `element` with `offset` reads one member of a group of
 # shape.arrayReturn.groupSize values. The eval returns ARRAY<value> for a single unnamed
-# column and ARRAY<ROW<columns>> otherwise, which CROSS JOIN UNNEST unfolds into the rows, as
-# the Spark arm returns array<value> and array<struct> (#emit_setret in codegen_spark_udfs.py).
+# column and ARRAY<ROW<columns>> otherwise, which CROSS JOIN UNNEST unfolds into the rows.
 
 # Contiguous scalar elements, keyed by C element type and SQL column type: the Flink class and
 # the Java read of element {i} of the array at {p}.
@@ -1496,8 +1447,7 @@ SETRET_FIELD = {
 
 
 def _setret_column(m, f, col, layout):
-    """How to read one column of a returned row, as #row_column in codegen_spark_udfs.py reads
-    it for Spark: (Flink class, source array, Java read of row `_i` from the array `{a}`,
+    """How to read one column of a returned row: (Flink class, source array, Java read of row `_i` from the array `{a}`,
     whether each element is a MEOS allocation to free), or None when it cannot be read. The
     last is (stride, offset) for a pointer field of a struct element, each a MEOS allocation
     the wrapper frees before the array, as geomval_arr_free frees the geom of each GeomVal."""
@@ -3063,8 +3013,7 @@ def run_flink_sql(args):
 # ───────────────────────── the ledger of unreached SQL functions ─────────────────────────
 
 def check_sql_gaps(args, cat, jmeos, keep, m):
-    """The ledger of the public SQL functions a typed SQL surface does not reach, as #main of
-    codegen_spark_udfs.py keeps the one of its UDF surface. A function `keep` admits (a public
+    """The ledger of the public SQL functions a typed SQL surface does not reach. A function `keep` admits (a public
     function with its SQL name) the jar exposes, with a signature that is no type support
     function (#is_type_support), is reached when a class the engine wrote under --out calls it,
     or when each of its signatures that is no type support function is an overload the engine
@@ -3285,8 +3234,8 @@ def _spark_planning(arity):
      * they reach by widening a number, as PostgreSQL's implicit casts reach it. A name Spark
      * itself answers keeps a call no overload takes exactly as it stands for that built-in:
      * round(2.5) stays Spark's own, as PostgreSQL resolves it to its numeric round, not to
-     * MEOS's. A function held before that is not Spark's own, such as the one the UDF surface
-     * registers under the same name, comes after the widening: eDwithin(t1, t2, 300) over two
+     * MEOS's. A function held before that is not Spark's own, one another surface registers
+     * under the same name, comes after the widening: eDwithin(t1, t2, 300) over two
      * tgeompoint values reaches the overload taking a double distance. */
     static Expression resolve(String name, Overload[] overloads, Seq<Expression> args,
             Option<Function1<Seq<Expression>, Expression>> before, boolean builtin) {
@@ -4071,8 +4020,7 @@ def _flink_aggregate_src(sqlname, cls, ovs):
 
 # The aggregates of the typed Spark surface: each SQL name registered once with the builder that
 # chooses its overload from the type of its argument, as #_spark_planning's register chooses a
-# function's, a call over any other argument going to the function held before under the name,
-# the aggregate of the UDF surface over binary values.
+# function's, a call over any other argument going to the function held before under the name.
 _SPARK_AGGREGATES = '''package {pkg};
 
 import java.io.IOException;
@@ -4547,23 +4495,20 @@ def run_spark_sql(args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--engine', required=True, choices=['spark', 'flink', 'kafka', 'flink-sql', 'spark-sql'])
+    ap.add_argument('--engine', required=True, choices=['flink', 'kafka', 'flink-sql', 'spark-sql'])
     ap.add_argument('--catalog', required=True, help='MEOS-API meos-idl.json')
     ap.add_argument('--jar', required=True,
                     help='JMEOS jar with functions.GeneratedFunctions')
     ap.add_argument('--out', required=True, help='output directory')
     ap.add_argument('--package', default='org.mobilitydb.meos',
                     help='facade package (flink/kafka only)')
-    ap.add_argument('--report', action='store_true', help='spark only')
-    ap.add_argument('--gaps', help='spark, spark-sql and flink-sql: the ledger of unreached '
+    ap.add_argument('--gaps', help='spark-sql and flink-sql: the ledger of unreached '
                                    'public functions')
     ap.add_argument('--rebaseline', action='store_true',
-                    help='spark, spark-sql and flink-sql: rewrite --gaps')
+                    help='spark-sql and flink-sql: rewrite --gaps')
     args = ap.parse_args()
 
-    if args.engine == 'spark':
-        run_spark(args)
-    elif args.engine == 'flink-sql':
+    if args.engine == 'flink-sql':
         run_flink_sql(args)
     elif args.engine == 'spark-sql':
         run_spark_sql(args)

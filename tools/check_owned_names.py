@@ -32,11 +32,11 @@ the engine's own function in the session, on Flink it is shadowed by the built-i
 the parser. A name some signature states without one (scale over the number and time extents,
 beside geoScale over the geometries) stays registrable.
 
-The registrations are read from the Java the generators write, in the three forms
-codegen_jvm.py emits: `udf().register("<name>"` on the UDF surface, `register(spark,
-"<name>"` on the typed Spark SQL surface and `createTemporaryFunction("<name>"` on the Flink SQL
-surface. A finding fails the run and is listed, as the ledger of unreached functions in #main
-of codegen_spark_udfs.py fails the Spark gaps step on a function it does not list.
+The registrations are read from the Java the generators write, in the two forms
+codegen_jvm.py emits: `register(spark, "<name>"` on the typed Spark SQL surface and
+`createTemporaryFunction("<name>"` on the Flink SQL surface. A finding fails the run and is
+listed, as the ledger of unreached functions of codegen_jvm.py fails the generation on a
+function it does not list.
 
 Usage: check_owned_names.py <catalog> <generated-dir> [<generated-dir> ...]
 """
@@ -45,7 +45,7 @@ import re
 import sys
 from pathlib import Path
 
-_REGISTER = re.compile(r'(?:udf\(\)\.register\(|register\(spark, |create\w*Function\()"(\w+)"')
+_REGISTER = re.compile(r'(?:register\(spark, |create\w*Function\()"(\w+)"')
 
 
 def owned_names(catalog: dict) -> set[str]:
