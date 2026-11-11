@@ -683,6 +683,51 @@ def _single_pointer(t):
     return n.endswith('*') and n.count('*') == 1
 
 
+# The byte size of each scalar C type a catalog struct field takes, as
+# ObjectLayerGenerator#structSize sizes them for the 64-bit targets the bindings ship for.
+SCALAR_BYTES = {'bool': 1, 'char': 1, 'int8': 1, 'int8_t': 1, 'uint8': 1, 'uint8_t': 1,
+                'short': 2, 'int16': 2, 'int16_t': 2, 'uint16': 2, 'uint16_t': 2,
+                'int': 4, 'int32': 4, 'int32_t': 4, 'uint32': 4, 'uint32_t': 4, 'float': 4,
+                'Oid': 4, 'DateADT': 4,
+                'long': 8, 'int64': 8, 'int64_t': 8, 'uint64': 8, 'uint64_t': 8, 'double': 8,
+                'float8': 8, 'Datum': 8, 'Timestamp': 8, 'TimestampTz': 8, 'TimeADT': 8,
+                'size_t': 8, 'uintptr_t': 8}
+
+
+def _size_align(structs, ctype):
+    """(size, alignment) in bytes of a struct field's C type, or None when the catalog does
+    not state it: a scalar, a pointer, a fixed-size array or a nested catalog struct of
+    `structs`, the catalog's structs by name."""
+    c = _norm(ctype)
+    if c.endswith('*'):
+        return 8, 8
+    if '[' in c:
+        b = _size_align(structs, c[:c.index('[')])
+        return None if b is None else (b[0] * int(c[c.index('[') + 1:c.index(']')]), b[1])
+    if c in structs:
+        lay = struct_layout(structs, c)
+        return None if lay is None else (lay[0], lay[1])
+    n = SCALAR_BYTES.get(c)
+    return None if n is None else (n, n)
+
+
+def struct_layout(structs, name):
+    """(size, alignment, {field: (offset, ctype)}) of catalog struct `name` of `structs` under
+    the C layout rules of the 64-bit targets the bindings ship for, or None when a field's size
+    is unknown. The rows of a set-returning signature and a contiguous array of structs
+    (#_array_arg) read their fields at these offsets."""
+    offset, widest, fields = 0, 1, {}
+    for f in structs[name].get('fields') or []:
+        sa = _size_align(structs, f['cType'])
+        if sa is None:
+            return None
+        widest = max(widest, sa[1])
+        offset = (offset + sa[1] - 1) // sa[1] * sa[1]
+        fields[f['name']] = (offset, _norm(f['cType']))
+        offset += sa[0]
+    return (offset + widest - 1) // widest * widest, widest, fields
+
+
 def _deployed_type(t):
     """The SQL type `t` as PostgreSQL deploys a function over it: CREATE FUNCTION discards a
     parenthesized type modifier, so geometry(Point) is geometry and geography(Point)[] is
@@ -713,13 +758,11 @@ class SqlModel:
         self.jmeos = jmeos
         self.fns = cat['functions']
         self.by_name = {f['name']: f for f in self.fns}
-        # The catalog struct layouts, under #struct_layout of codegen_spark_udfs.py, the rule the
-        # Spark arm sizes them by: the rows of a set-returning signature and a contiguous array
-        # of structs (#_array_arg) read them, on both engines.
-        spark = _spark_module()
-        spark.STRUCTS.update({s['name']: s for s in cat.get('structs') or []})
-        self.layout = lambda name: (spark.struct_layout(name)  # noqa: E731
-                                    if name in spark.STRUCTS else None)
+        # The catalog struct layouts (#struct_layout): the rows of a set-returning signature and
+        # a contiguous array of structs (#_array_arg) read them, on both engines.
+        self.structs = {s['name']: s for s in cat.get('structs') or []}
+        self.layout = lambda name: (struct_layout(self.structs, name)  # noqa: E731
+                                    if name in self.structs else None)
         self.enc = cat.get('typeEncodings', {})
         self.enums = {e['name'] for e in cat.get('enums', [])}
         # The value of each macro and enum member a wrapper binds by name.
