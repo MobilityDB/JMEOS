@@ -292,7 +292,7 @@ public class TBoolTest {
         return Stream.of(
                 Arguments.of(new TBoolInst("True@2019-09-01"), new TBoolSeq("{True@2019-09-03}"), new TBoolSeq("{True@2019-09-01, True@2019-09-03}"), "TBoolInst"),
                 Arguments.of(new TBoolSeq("{True@2019-09-01, False@2019-09-02}"), new TBoolSeq("{True@2019-09-03}") , new TBoolSeq("{True@2019-09-01, False@2019-09-02, True@2019-09-03}"), "TBoolSeq"),
-                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), new TBoolSeq("{True@2019-09-06}"), new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05],[True@2019-09-06]}"), "TBoolSeqSet")
+                Arguments.of(new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-05]}"), new TBoolSeq("{True@2019-09-06}"), new TBoolSeqSet("{[True@2019-09-01, False@2019-09-02],[True@2019-09-03, True@2019-09-06]}"), "TBoolSeqSet")
         );
     }
 

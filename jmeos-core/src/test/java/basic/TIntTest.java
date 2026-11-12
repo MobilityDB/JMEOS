@@ -335,8 +335,8 @@ public class TIntTest {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TIntInst("1@2019-09-01"), "TIntInst", new TIntSeq("{1@2019-09-03}"), new TIntSeq("{1@2019-09-01, 1@2019-09-03}")),
-                Arguments.of(new TIntSeq("{[1@2019-09-01, 2@2019-09-02]}"), "TIntSeq", new TIntSeq("[1@2019-09-03]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02], [1@2019-09-03]}")),
-                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntSeq("[1@2019-09-06]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05],[1@2019-09-06]}"))
+                Arguments.of(new TIntSeq("{[1@2019-09-01, 2@2019-09-02]}"), "TIntSeq", new TIntSeq("[1@2019-09-03]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02, 1@2019-09-03]}")),
+                Arguments.of(new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-05]}"), "TIntSeqSet", new TIntSeq("[1@2019-09-06]"), new TIntSeqSet("{[1@2019-09-01, 2@2019-09-02],[1@2019-09-03, 1@2019-09-06]}"))
         );
     }
 
