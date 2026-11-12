@@ -97,7 +97,7 @@ public class GeneratedConcreteNumberParityTest {
         assertEquals(id(GeneratedFunctions.tint_shift_value(p, 5)), id(g.shiftValue(5)));
         assertEquals(id(GeneratedFunctions.tint_to_tfloat(p)), id(g.toTfloat()));
 
-        assertEquals(GeneratedFunctions.temporal_out(p, 0), g.out(0));
+        assertEquals(GeneratedFunctions.temporal_out(p, 0), g.asText(0));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class GeneratedConcreteNumberParityTest {
         assertEquals(id(GeneratedFunctions.tfloat_sin(p)), id(g.sin()));
         assertEquals(id(GeneratedFunctions.tfloat_to_tint(p)), id(g.toTint()));
 
-        assertEquals(GeneratedFunctions.temporal_out(p, 6), g.out(6));
+        assertEquals(GeneratedFunctions.temporal_out(p, 6), g.asText(6));
     }
 
     @Test

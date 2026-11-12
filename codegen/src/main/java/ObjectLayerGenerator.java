@@ -91,6 +91,15 @@ public class ObjectLayerGenerator {
     private static final Set<String> ROLES =
             Set.of("accessor", "conversion", "predicate", "restriction", "output", "constructor");
 
+    /**
+     * The names by which the object model calls a reader or writer by its role ({@code in},
+     * {@code out}, and {@code hexIn} and {@code hexOut}, the hex text of the point cloud types), names
+     * the object layer never gives (rule 1 of the bindings in the I/O plan, MobilityDB #3353), as
+     * MEOS.NET's {@code role_named}. The first two read, the last two write.
+     */
+    private static final Set<String> READER_ROLE_NAMES = Set.of("in", "hexIn");
+    private static final Set<String> WRITER_ROLE_NAMES = Set.of("out", "hexOut");
+
     /** Enum type names from the catalog; a param of one of these maps to a Java int in the surface. */
     private final Set<String> enumNames = new HashSet<>();
 
@@ -177,6 +186,7 @@ public class ObjectLayerGenerator {
         }
 
         List<Method> methods = new ArrayList<>();
+        List<Method> roleNamed = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (JsonNode m : classNode.path("methods")) {
             if (m.path("ooExclude").asBoolean(false)) {
@@ -189,7 +199,20 @@ public class ObjectLayerGenerator {
             if (method == null) {
                 continue; // deferred, already recorded
             }
+            if (isRoleNamed(method)) {
+                roleNamed.add(method);
+                continue;
+            }
             if (seen.add(method.ooName)) {
+                methods.add(method);
+            }
+        }
+        // A reader or writer the object model calls by its role takes the portable name of the format
+        // it serves once every other method holds its name, so one whose portable name the class
+        // already emits is left out as that method's duplicate.
+        for (Method role : roleNamed) {
+            Method method = portable(role, root);
+            if (method != null && seen.add(method.ooName)) {
                 methods.add(method);
             }
         }
@@ -211,6 +234,9 @@ public class ObjectLayerGenerator {
                     continue; // only the base-generic value-collection returns are specialised here
                 }
                 Method method = classify(m);
+                if (method != null && isRoleNamed(method)) {
+                    method = portable(method, root);
+                }
                 if (method != null && seen.add(method.ooName)) {
                     methods.add(method);
                 }
@@ -423,6 +449,45 @@ public class ObjectLayerGenerator {
      * {@code readerExpr} reads element {@code _i} of the bin array whose pointer is spelled {@code $arr}.
      */
     private record SplitKey(String fieldName, String javaType, String readerExpr) {}
+
+    /** Whether the object model calls the method by its role ({@link #READER_ROLE_NAMES}, {@link #WRITER_ROLE_NAMES}). */
+    private static boolean isRoleNamed(Method method) {
+        return READER_ROLE_NAMES.contains(method.ooName) || WRITER_ROLE_NAMES.contains(method.ooName);
+    }
+
+    /**
+     * The method under the portable name of the format the catalog's typeEncodings reads or writes
+     * with its function, for any type, in {@link ObjectClassGenerator#FORMAT_SPELLING}'s order, as
+     * MEOS.NET's {@code take_portable_names}: tint_in is {@code fromText} of {@code GeneratedTInt},
+     * temporal_out {@code asText} of {@code GeneratedTemporal}. A method whose function typeEncodings
+     * names for no format in the direction of its role leaves the object layer, and its function
+     * stays in {@code GeneratedFunctions}.
+     */
+    private Method portable(Method method, JsonNode root) {
+        boolean reader = READER_ROLE_NAMES.contains(method.ooName);
+        Set<String> formats = new HashSet<>();
+        for (JsonNode enc : root.path("typeEncodings")) {
+            enc.path(reader ? "readers" : "writers").properties().forEach(e ->
+                    e.getValue().properties().forEach(t -> {
+                        if (t.getValue().asText().equals(method.fnName)) {
+                            formats.add(e.getKey());
+                        }
+                    }));
+            enc.path(reader ? "decoders" : "encoders").properties().forEach(e -> {
+                if (e.getValue().asText().equals(method.fnName)) {
+                    formats.add(e.getKey());
+                }
+            });
+        }
+        for (Map.Entry<String, String> s : ObjectClassGenerator.FORMAT_SPELLING.entrySet()) {
+            if (formats.contains(s.getKey())) {
+                return new Method((reader ? "from" : "as") + s.getValue(), method.fnName, method.returnType,
+                        method.returnKind, method.returnSubtype, method.args, method.splitKeys);
+            }
+        }
+        defer(method.ooName, method.fnName + " serves no portable format");
+        return null;
+    }
 
     /**
      * Classifies one object-model method. Returns a {@link Method} the slice can emit, or {@code null}

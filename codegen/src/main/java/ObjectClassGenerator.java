@@ -61,7 +61,7 @@ public class ObjectClassGenerator {
     private static final String PACKAGE = "types.generated";
 
     /** The portable spelling of each encoding, as MEOS.NET's {@code FORMAT_SPELLING}. */
-    private static final Map<String, String> FORMAT_SPELLING = new LinkedHashMap<>();
+    static final Map<String, String> FORMAT_SPELLING = new LinkedHashMap<>();
     static {
         FORMAT_SPELLING.put("text", "Text");
         FORMAT_SPELLING.put("ewkt", "EWKT");
