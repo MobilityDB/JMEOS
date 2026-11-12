@@ -50,7 +50,9 @@ import java.util.stream.Stream;
  * helpers of the generator beside it, #ObjectLayerGenerator (#marshalArg, #isByteInput,
  * #isSizeOut, #scalarReturn), so the two layers cannot marshal one function two ways. A class whose
  * parent has a hand class, or none, extends the generated {@code MeosObject}, which holds the
- * pointer, as MEOS.NET's classes extend its {@code MEOSObject}.
+ * pointer, as MEOS.NET's classes extend its {@code MEOSObject}. A class the catalog marks
+ * {@code byValue} (a grid cell) is a record holding the value MEOS passes, its methods handing the
+ * value over at each call; a parameter or result of its C type elsewhere is that record.
  *
  * <p>Usage: {@code ObjectClassGenerator <meos-idl.json> <output dir> <hand types dir>}
  */
@@ -84,6 +86,14 @@ public class ObjectClassGenerator {
     private final Map<String, String> ctype = new HashMap<>();
     private final Map<String, String> meostype = new HashMap<>();
     private final Map<String, String> doc = new HashMap<>();
+    /**
+     * The class of each C type the catalog marks {@code byValue} ({@code classes.<Class>.byValue}): a
+     * value MEOS passes as itself, never as a pointer, so the class holds the value rather than the
+     * pointer #MeosObject holds. The by-value counterpart of #ctype, read the same way.
+     */
+    private final Map<String, String> valueClass = new HashMap<>();
+    /** The Java type of the value a by-value class holds: the type its wrappers take and answer. */
+    private final Map<String, String> valueJava = new HashMap<>();
     private final List<String> deferred = new ArrayList<>();
 
     ObjectClassGenerator(JsonNode root) {
@@ -147,8 +157,46 @@ public class ObjectClassGenerator {
         om.path("classes").fields().forEachRemaining(e -> {
             if (e.getValue().hasNonNull("cType")) {
                 ctype.put(e.getKey(), e.getValue().path("cType").asText());
+                if (e.getValue().path("byValue").asBoolean(false)) {
+                    valueClass.put(e.getValue().path("cType").asText(), e.getKey());
+                }
             }
         });
+        // A slot of a by-value C type states that type as its typedef and its width as its
+        // canonical (FunctionsGenerator#slotType), and the wrapper takes and answers the width.
+        // The record holds it in the one Java type every such slot maps to.
+        for (JsonNode f : root.path("functions")) {
+            List<JsonNode> slots = new ArrayList<>();
+            slots.add(f.path("returnType"));
+            f.path("params").forEach(slots::add);
+            for (JsonNode s : slots) {
+                String cls = valueClassOf(s);
+                if (cls == null) {
+                    continue;
+                }
+                String java = ObjectLayerGenerator.scalarReturn(
+                        ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(s)));
+                String known = valueJava.putIfAbsent(cls, java);
+                if (java == null || (known != null && !known.equals(java))) {
+                    throw new IllegalStateException("the by-value class " + cls + " has no single width: "
+                            + known + " and " + s);
+                }
+            }
+        }
+    }
+
+    /**
+     * The by-value class a catalog slot holds a value of, through its typedef, or {@code null}; a
+     * slot pointing at values of the type (an array of cells) holds none.
+     */
+    private String valueClassOf(JsonNode slot) {
+        String cls = valueClass.get(slot.path("typedef").asText(""));
+        return cls == null || slot.path("canonical").asText("").contains("*") ? null : cls;
+    }
+
+    /** Whether the class holds its value (#valueClass) rather than a pointer. */
+    private boolean isByValue(String cls) {
+        return valueJava.containsKey(cls);
     }
 
     /** The encoding of the class's C type in the catalog's typeEncodings, or a missing node. */
@@ -208,8 +256,9 @@ public class ObjectClassGenerator {
             return null;
         }
         String retC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(f.path("returnType")));
-        if (!retC.endsWith("*")) {
-            deferred.add(cls + "." + name + " — " + fn + " returns " + retC + ", no pointer");
+        if (isByValue(cls) ? !cls.equals(valueClassOf(f.path("returnType"))) : !retC.endsWith("*")) {
+            deferred.add(cls + "." + name + " — " + fn + " returns " + retC + ", no "
+                    + (isByValue(cls) ? ctype.get(cls) : "pointer"));
             return null;
         }
         List<ObjectLayerGenerator.Arg> args = marshal(f, 0, cls + "." + name);
@@ -224,9 +273,16 @@ public class ObjectClassGenerator {
             return null;
         }
         String retC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(f.path("returnType")));
-        String ret = retC.equals("uint8_t *") ? "byte[]" : ObjectLayerGenerator.scalarReturn(retC);
+        String ret = valueClassOf(f.path("returnType")) != null ? valueClassOf(f.path("returnType"))
+                : retC.equals("uint8_t *") ? "byte[]" : ObjectLayerGenerator.scalarReturn(retC);
         if (ret == null) {
             deferred.add(cls + "." + name + " — " + fn + " returns " + retC);
+            return null;
+        }
+        // The receiver of a by-value class is its value, which the first parameter must take.
+        JsonNode recv = f.path("params").path(0);
+        if (isByValue(cls) && !cls.equals(valueClassOf(recv))) {
+            deferred.add(cls + "." + name + " — " + fn + " takes no " + ctype.get(cls) + " first");
             return null;
         }
         List<ObjectLayerGenerator.Arg> args = marshal(f, 1, cls + "." + name);
@@ -254,6 +310,12 @@ public class ObjectClassGenerator {
                 continue;
             }
             String pC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(p));
+            String vc = valueClassOf(p);
+            if (vc != null && !outs.contains(pname)) {
+                // A value of a by-value class crosses as the value it holds.
+                args.add(new ObjectLayerGenerator.Arg(vc, name, name + ".value()"));
+                continue;
+            }
             ObjectLayerGenerator.Arg a = outs.contains(pname) ? null
                     : ObjectLayerGenerator.marshalArg(pC, name, f.path("name").asText());
             if (a == null || a.javaType().equals("Temporal") || a.javaType().startsWith("types.")) {
@@ -338,20 +400,35 @@ public class ObjectClassGenerator {
     private String classSource(String cls, String superClass, List<Method> methods, String toString) {
         StringBuilder sb = new StringBuilder(header());
         String d = doc.getOrDefault(cls, "The " + cls + " class of the MEOS object model.");
-        sb.append("/**\n * ").append(d.replace("*/", "* /")).append("\n */\n");
-        sb.append("public class ").append(cls).append(" extends ").append(superClass).append(" {\n\n");
-        sb.append("    public ").append(cls).append("(Pointer inner) {\n        super(inner);\n    }\n");
+        sb.append("/**\n * ").append(d.replace("*/", "* /")).append("\n");
+        if (isByValue(cls)) {
+            // A value MEOS passes by value is held as that value, with no pointer to wrap: a record
+            // over the type its wrappers take, whose methods hand the value over at each call.
+            sb.append(" *\n * <p>MEOS passes it by value, as its C type {@code ").append(ctype.get(cls))
+              .append("}: the record holds that value.\n */\n");
+            sb.append("public record ").append(cls).append('(').append(valueJava.get(cls))
+              .append(" value) {\n");
+        } else {
+            sb.append(" */\n");
+            sb.append("public class ").append(cls).append(" extends ").append(superClass).append(" {\n\n");
+            sb.append("    public ").append(cls).append("(Pointer inner) {\n        super(inner);\n    }\n");
+        }
         for (Method m : methods) {
             String params = String.join(", ", m.args().stream().map(a -> a.javaType() + " " + a.name()).toList());
             List<String> call = new ArrayList<>();
             if (!m.isStatic()) {
-                call.add("getInner()");
+                call.add(isByValue(cls) ? "value" : "getInner()");
             }
             m.args().forEach(a -> call.add(a.callExpr()));
             String invoke = "GeneratedFunctions." + m.fn() + "(" + String.join(", ", call) + ")";
             sb.append("\n    /** {@code ").append(m.name()).append("}, through MEOS {@code ").append(m.fn())
               .append("}. */\n");
-            if (m.isStatic()) {
+            if (isByValue(m.javaReturn())) {
+                // A by-value result is the value itself, which no absent result stands for.
+                sb.append("    public ").append(m.isStatic() ? "static " : "").append(m.javaReturn()).append(' ')
+                  .append(m.name()).append('(').append(params).append(") {\n        return new ")
+                  .append(m.javaReturn()).append('(').append(invoke).append(");\n    }\n");
+            } else if (m.isStatic()) {
                 sb.append("    public static ").append(cls).append(' ').append(m.name()).append('(').append(params)
                   .append(") {\n        Pointer _r = ").append(invoke).append(";\n")
                   .append("        return _r == null ? null : new ").append(cls).append("(_r);\n    }\n");

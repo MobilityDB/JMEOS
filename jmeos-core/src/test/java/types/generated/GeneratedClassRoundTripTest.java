@@ -83,6 +83,36 @@ public class GeneratedClassRoundTripTest {
         roundTrip(ps, BigIntSpanSet.fromHexWKB(ps.asHexWKB((byte) 0)).toString());
     }
 
+    /**
+     * A grid cell is held by value: its text is itself, its hex WKB is the one MobilityDB writes, and
+     * the value read back from its WKB and from its hex WKB equals the value written.
+     */
+    @Test
+    void quadbin() {
+        Quadbin v = Quadbin.fromText("48427fffffffffff");
+        assertEquals("48427fffffffffff", v.toString());
+        assertEquals("01470000FFFFFFFFFF7F4248", v.asHexWKB((byte) 0));
+        assertEquals(v, Quadbin.fromHexWKB(v.asHexWKB((byte) 0)));
+        assertEquals(v, Quadbin.fromWKB(v.asWKB((byte) 0)));
+    }
+
+    @Test
+    void s2cell() {
+        S2Cell v = S2Cell.fromText("47c3c444c");
+        assertEquals("47c3c444c", v.toString());
+        assertEquals("01550000000000C044C4C347", v.asHexWKB((byte) 0));
+        assertEquals(v, S2Cell.fromHexWKB(v.asHexWKB((byte) 0)));
+        assertEquals(v, S2Cell.fromWKB(v.asWKB((byte) 0)));
+    }
+
+    @Test
+    void h3index() {
+        H3Index v = H3Index.fromText("8a2a1072b59ffff");
+        assertEquals("8a2a1072b59ffff", v.toString());
+        assertEquals(v, H3Index.fromHexWKB(v.asHexWKB((byte) 0)));
+        assertEquals(v, H3Index.fromWKB(v.asWKB((byte) 0)));
+    }
+
     @Test
     void geometrySets() {
         GeomSet s = GeomSet.fromText("{Point(1 1), Point(2 2)}");
