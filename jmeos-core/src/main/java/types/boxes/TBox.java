@@ -928,12 +928,7 @@ public class TBox implements Box {
 	public float nearest_approach_distance(Object other) {
 		float result = 0.0f;
 		if(other instanceof TBox){
-			if (this.is_float()){
-				return (float) GeneratedFunctions.nad_tboxfloat_tboxfloat(this._inner, ((TBox) other)._inner);
-			}
-			else{
-				return (float) GeneratedFunctions.nad_tboxint_tboxint(this._inner, ((TBox) other)._inner);
-			}
+			return (float) GeneratedFunctions.nad_tbox_tbox(this._inner, ((TBox) other)._inner);
 		}
 		else if(other instanceof TInt){
 			result = (float) GeneratedFunctions.nad_tint_tbox(((TInt) other).getNumberInner(), this._inner);
