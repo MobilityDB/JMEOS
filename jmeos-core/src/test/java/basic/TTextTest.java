@@ -300,7 +300,7 @@ public class TTextTest {
         return Stream.of(
                 Arguments.of(new TTextInst("AAA@2019-09-01"), new TTextSeq("{AAA@2019-09-03}"), new TTextSeq("{AAA@2019-09-01, AAA@2019-09-03}"), "TTextInst"),
                 Arguments.of(new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02}"), new TTextSeq("{AAA@2019-09-03}"), new TTextSeq("{AAA@2019-09-01, BBB@2019-09-02, AAA@2019-09-03}"), "TTextSeq"),
-                Arguments.of(new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05]}"), new TTextSeq("{AAA@2019-09-06}"), new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05],[AAA@2019-09-06]}"), "TTextSeqSet")
+                Arguments.of(new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-05]}"), new TTextSeq("{AAA@2019-09-06}"), new TTextSeqSet("{[AAA@2019-09-01, BBB@2019-09-02],[AAA@2019-09-03, AAA@2019-09-06]}"), "TTextSeqSet")
         );
     }
 

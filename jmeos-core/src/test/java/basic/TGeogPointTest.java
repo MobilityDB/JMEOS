@@ -620,7 +620,7 @@ public class TGeogPointTest {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
                 Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), "TGeogPointSeq",new TGeogPointSeq("{Point(1 1)@2019-09-03}"), new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02, Point(1 1)@2019-09-03}")  ),
-                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-05],[Point(1 1)@2019-09-06]}"))
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), "TGeogPointSeqSet", new TGeogPointSeq("[Point(1 1)@2019-09-06]"), new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02],[Point(1 1)@2019-09-03, Point(1 1)@2019-09-06]}"))
         );
     }
 
