@@ -25,59 +25,65 @@
 
 package utils;
 
+import functions.GeneratedFunctions;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Bridges MEOS {@code TimestampTz} values and {@code java.time} types.
+ * Casts MEOS {@code TimestampTz} and {@code Timestamp} values to and from {@code java.time} types.
  *
- * <p>A MEOS {@code TimestampTz} is a signed 64-bit count of microseconds since the
- * PostgreSQL epoch. This class converts that count to and from {@link OffsetDateTime}
- * and {@link LocalDateTime}, applying both the epoch offset and the microsecond unit.
- *
- * <p>Timezone resolution stays in MEOS: a timestamp string is parsed by
- * {@code timestamptz_in}; this class only converts the numeric {@code TimestampTz}.
+ * <p>A cast converts through MEOS and is exact or an error (MobilityDB
+ * {@code doc/specs/meos-bindings-algebra.md}, section 5): Java states an instant as the
+ * microseconds from the Unix epoch, which MEOS converts to and from its own count with
+ * {@code unix_us_to_timestamptz} and {@code timestamptz_to_unix_us}, a {@code Timestamp} with
+ * {@code unix_us_to_timestamp} and {@code timestamp_to_unix_us}. An instant MEOS cannot state
+ * raises the MEOS error of the function; an instant with a fraction of a microsecond, which no
+ * MEOS value holds, raises an {@link IllegalArgumentException}.
  */
 public final class TimestampTzConverter {
 
-    /** Unix seconds at the PostgreSQL epoch. */
-    private static final long EPOCH_UNIX_SECONDS = 946684800L;
     private static final long MICROS_PER_SECOND = 1_000_000L;
     private static final long NANOS_PER_MICRO = 1_000L;
 
     private TimestampTzConverter() {
     }
 
-    /** Converts an {@link OffsetDateTime} to a MEOS {@code TimestampTz} (microseconds since the PostgreSQL epoch). */
+    /** Casts an {@link OffsetDateTime} to a MEOS {@code TimestampTz}. */
     public static long toTimestampTz(OffsetDateTime t) {
-        return (t.toEpochSecond() - EPOCH_UNIX_SECONDS) * MICROS_PER_SECOND
-                + t.getNano() / NANOS_PER_MICRO;
+        return GeneratedFunctions.unixUsToTimestamptz(unixMicros(t.toInstant()));
     }
 
-    /** Converts a {@link LocalDateTime}, taken as UTC, to a MEOS {@code TimestampTz}. */
+    /** Casts a {@link LocalDateTime} to a MEOS {@code Timestamp}. */
     public static long toTimestampTz(LocalDateTime t) {
-        return (t.toEpochSecond(ZoneOffset.UTC) - EPOCH_UNIX_SECONDS) * MICROS_PER_SECOND
-                + t.getNano() / NANOS_PER_MICRO;
+        return GeneratedFunctions.unixUsToTimestamp(unixMicros(t.toInstant(ZoneOffset.UTC)));
     }
 
-    /** Converts a MEOS {@code TimestampTz} to an {@link OffsetDateTime} in UTC. */
+    /** Casts a MEOS {@code TimestampTz} to an {@link OffsetDateTime} in UTC. */
     public static OffsetDateTime toOffsetDateTime(long ts) {
-        return toInstant(ts).atOffset(ZoneOffset.UTC);
+        return instant(GeneratedFunctions.timestamptzToUnixUs(ts)).atOffset(ZoneOffset.UTC);
     }
 
-    /** Converts a MEOS {@code TimestampTz} to a {@link LocalDateTime} in UTC. */
+    /** Casts a MEOS {@code Timestamp} to a {@link LocalDateTime}. */
     public static LocalDateTime toLocalDateTime(long ts) {
-        return LocalDateTime.ofInstant(toInstant(ts), ZoneOffset.UTC);
+        return LocalDateTime.ofInstant(instant(GeneratedFunctions.timestampToUnixUs(ts)),
+                ZoneOffset.UTC);
     }
 
-    private static Instant toInstant(long ts) {
-        // Split the count into seconds and microseconds at the PostgreSQL epoch, then
-        // shift the origin to the Unix epoch. floorDiv/floorMod keep the sub-second
-        // part in [0, MICROS_PER_SECOND) for values before the epoch (negative ts).
-        long second = Math.floorDiv(ts, MICROS_PER_SECOND) + EPOCH_UNIX_SECONDS;
-        long micro = Math.floorMod(ts, MICROS_PER_SECOND);
-        return Instant.ofEpochSecond(second, micro * NANOS_PER_MICRO);
+    /** The microseconds from the Unix epoch of an instant, which must be a whole number of them. */
+    private static long unixMicros(Instant t) {
+        if (t.getNano() % NANOS_PER_MICRO != 0) {
+            throw new IllegalArgumentException("A MEOS timestamp holds whole microseconds: " + t);
+        }
+        return Math.addExact(Math.multiplyExact(t.getEpochSecond(), MICROS_PER_SECOND),
+                t.getNano() / NANOS_PER_MICRO);
+    }
+
+    /** The instant of a count of microseconds from the Unix epoch. */
+    private static Instant instant(long us) {
+        return Instant.ofEpochSecond(Math.floorDiv(us, MICROS_PER_SECOND),
+                Math.floorMod(us, MICROS_PER_SECOND) * NANOS_PER_MICRO);
     }
 }

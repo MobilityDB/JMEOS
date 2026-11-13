@@ -28,7 +28,9 @@ package utils;
 import com.google.common.collect.BoundType;
 import functions.error_handler;
 import functions.GeneratedFunctions;
+import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import com.google.common.collect.Range;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -55,58 +57,113 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConversionUtils {
 	
+	/*
+	 * The casts of the time types convert through MEOS and are exact or an error (MobilityDB
+	 * doc/specs/meos-bindings-algebra.md, section 5): each is a generated wrapper of a MEOS
+	 * conversion and a constructor of the host type. A value MEOS cannot state raises the MEOS
+	 * error of its function, one the host type cannot state the exception of its constructor, and
+	 * a value with a fraction of a microsecond, which no MEOS value holds, an
+	 * IllegalArgumentException.
+	 */
+
+	private static final long NANOS_PER_MICRO = 1_000L;
+
+	/** The whole microseconds of a count of nanoseconds, which must hold no fraction of one. */
+	private static long wholeMicros(long nanos, Object value) {
+		if (nanos % NANOS_PER_MICRO != 0) {
+			throw new IllegalArgumentException("A MEOS value holds whole microseconds: " + value);
+		}
+		return nanos / NANOS_PER_MICRO;
+	}
+
 	/**
-	 * Take a {@link LocalDateTime} and convert it to an {@link OffsetDateTime}.
-	 *
-	 * @param dt localDateTime
-	 * @return offsetDateTime
+	 * Casts a {@link LocalDateTime}, taken in UTC, to the {@link OffsetDateTime} of the MEOS
+	 * {@code TimestampTz} it states.
 	 */
 	public static OffsetDateTime datetimeToTimestampTz(LocalDateTime dt) {
-		String formattedDt = dt.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		return GeneratedFunctions.timestamptz_in(formattedDt, -1);
+		return TimestampTzConverter.toOffsetDateTime(
+				TimestampTzConverter.toTimestampTz(dt.atOffset(ZoneOffset.UTC)));
 	}
 
-	
 	/**
-	 * Take a {@link OffsetDateTime} and convert it to an {@link LocalDateTime}.
-	 *
-	 * @param ts offsetDateTime
-	 * @return localDateTime
+	 * Casts an {@link OffsetDateTime} to the MEOS {@code TimestampTz} it states and answers that
+	 * instant as a {@link LocalDateTime} in UTC.
 	 */
 	public static LocalDateTime timestamptz_to_datetime(OffsetDateTime ts) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
-		// Parse the string to LocalDateTime
-		return LocalDateTime.parse(GeneratedFunctions.timestamptz_out(ts), formatter);
+		return TimestampTzConverter.toOffsetDateTime(TimestampTzConverter.toTimestampTz(ts))
+				.toLocalDateTime();
 	}
 
-
+	/**
+	 * Casts a {@link Duration} to a MEOS {@code Interval} through {@code interval_from_parts}: no
+	 * months, its whole days as days and the rest of it as microseconds, both of its sign.
+	 */
 	public static Pointer timedelta_to_interval(Duration td){
-		// Build the interval from a canonical, locale-independent text form parsed by MEOS. Each
-		// component carries only its own part of the duration (whole days, then the hours, minutes
-		// and seconds remaining within the last day). This avoids interval_make, whose trailing
-		// double seconds argument mis-marshals across the FFI and yields a corrupt interval.
-		long days = td.toDaysPart();
-		int hours = td.toHoursPart();
-		int minutes = td.toMinutesPart();
-		int seconds = td.toSecondsPart();
-		int micros = td.toNanosPart() / 1000;
-		String text = String.format("%d days %d hours %d minutes %d.%06d seconds",
-				days, hours, minutes, seconds, micros);
-		return GeneratedFunctions.interval_in(text, -1);
+		long days = td.toDays();
+		return GeneratedFunctions.interval_from_parts(0, Math.toIntExact(days),
+				wholeMicros(td.minusDays(days).toNanos(), td));
 	}
 
+	/**
+	 * Casts a MEOS {@code Interval} to a {@link Duration} through {@code interval_to_parts}, a day
+	 * being 24 hours. A month has no fixed length, so an interval holding one has no Duration.
+	 */
 	public static Duration interval_to_timedelta(Pointer p){
-		// The fields of MEOS's Interval, laid out as the catalog states it: the microseconds
-		// `time` at byte 0, `day` at byte 8 and `month` at byte 12. A month has no fixed length,
-		// so an interval holding one has no Duration.
-		long time = p.getLongLong(0);
-		int day = p.getInt(8);
-		int month = p.getInt(12);
-		if (month != 0) {
-			throw new IllegalArgumentException("an interval of " + month
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer months = Memory.allocate(runtime, Integer.BYTES);
+		Pointer days = Memory.allocate(runtime, Integer.BYTES);
+		Pointer us = Memory.allocate(runtime, Long.BYTES);
+		GeneratedFunctions.interval_to_parts(p, months, days, us);
+		if (months.getInt(0) != 0) {
+			throw new IllegalArgumentException("an interval of " + months.getInt(0)
 				+ " month(s) has no fixed duration");
 		}
-		return Duration.ofDays(day).plus(Duration.of(time, java.time.temporal.ChronoUnit.MICROS));
+		return Duration.ofDays(days.getInt(0))
+				.plus(Duration.of(us.getLongLong(0), java.time.temporal.ChronoUnit.MICROS));
+	}
+
+	/** Casts a {@link LocalDate} to a MEOS {@code DateADT} through {@code unix_days_to_date}. */
+	public static int date_to_date_adt(LocalDate date) {
+		return GeneratedFunctions.unix_days_to_date(Math.toIntExact(date.toEpochDay()));
+	}
+
+	/** Casts a MEOS {@code DateADT} to a {@link LocalDate} through {@code date_to_unix_days}. */
+	public static LocalDate date_adt_to_date(int date) {
+		return LocalDate.ofEpochDay(GeneratedFunctions.date_to_unix_days(date));
+	}
+
+	/** Casts a {@link LocalTime} to a MEOS {@code TimeADT} through {@code time_from_parts}. */
+	public static long time_to_time_adt(LocalTime time) {
+		return GeneratedFunctions.time_from_parts(wholeMicros(time.toNanoOfDay(), time));
+	}
+
+	/**
+	 * Casts a MEOS {@code TimeADT} to a {@link LocalTime} through {@code time_to_parts}. A
+	 * {@link LocalTime} ends its day before {@code 24:00:00}, which it cannot state.
+	 */
+	public static LocalTime time_adt_to_time(long time) {
+		return LocalTime.ofNanoOfDay(
+				GeneratedFunctions.time_to_parts(time).getLongLong(0) * NANOS_PER_MICRO);
+	}
+
+	/** Casts an {@link OffsetTime} to a MEOS {@code TimeTzADT} through {@code timetz_from_parts}. */
+	public static Pointer timetz_to_timetz_adt(OffsetTime timetz) {
+		return GeneratedFunctions.timetz_from_parts(
+				wholeMicros(timetz.toLocalTime().toNanoOfDay(), timetz),
+				timetz.getOffset().getTotalSeconds());
+	}
+
+	/**
+	 * Casts a MEOS {@code TimeTzADT} to an {@link OffsetTime} through {@code timetz_to_parts}. An
+	 * {@link OffsetTime} ends its day before {@code 24:00:00}, which it cannot state.
+	 */
+	public static OffsetTime timetz_adt_to_timetz(Pointer timetz) {
+		Runtime runtime = Runtime.getSystemRuntime();
+		Pointer us = Memory.allocate(runtime, Long.BYTES);
+		Pointer offset = Memory.allocate(runtime, Integer.BYTES);
+		GeneratedFunctions.timetz_to_parts(timetz, us, offset);
+		return OffsetTime.of(LocalTime.ofNanoOfDay(us.getLongLong(0) * NANOS_PER_MICRO),
+				ZoneOffset.ofTotalSeconds(offset.getInt(0)));
 	}
 
 	public static Pointer intrange_to_intspan(Range<Integer> intrange) throws SQLException {

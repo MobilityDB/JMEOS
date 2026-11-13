@@ -34,12 +34,15 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import functions.MeosException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Verifies the {@link TimestampTzConverter} arithmetic against known MEOS
- * {@code TimestampTz} values (microseconds since the PostgreSQL epoch). Runs
- * offline: no libmeos, no FFI.
+ * Verifies the {@link TimestampTzConverter} casts against known MEOS {@code TimestampTz} values
+ * (microseconds since the PostgreSQL epoch), which MEOS converts from and to the microseconds
+ * since the Unix epoch, and the values a cast refuses.
  */
 @DisplayName("TimestampTzConverter")
 class TimestampTzConverterTest {
@@ -90,5 +93,31 @@ class TimestampTzConverterTest {
     @ValueSource(longs = {0L, 31622400000000L, -946684800000000L, -1000000L, 123456L, 1718455000000000L})
     void roundTrip(long ts) {
         assertEquals(ts, TimestampTzConverter.toTimestampTz(TimestampTzConverter.toOffsetDateTime(ts)));
+    }
+
+    @Test
+    @DisplayName("A fraction of a microsecond is refused, never truncated")
+    void subMicrosecondIsRefused() {
+        assertThrows(IllegalArgumentException.class,
+                () -> TimestampTzConverter.toTimestampTz(utc(2001, 1, 1, 0, 0, 0, 500)));
+        assertThrows(IllegalArgumentException.class,
+                () -> TimestampTzConverter.toTimestampTz(utc(2001, 1, 1, 0, 0, 0, 1999)));
+        assertThrows(IllegalArgumentException.class,
+                () -> TimestampTzConverter.toTimestampTz(LocalDateTime.of(2001, 1, 1, 0, 0, 0, 1)));
+        assertEquals(31622400000001L, TimestampTzConverter.toTimestampTz(utc(2001, 1, 1, 0, 0, 0, 1000)));
+    }
+
+    @Test
+    @DisplayName("A value the other side cannot state raises the MEOS error")
+    void outOfRangeIsRefused() {
+        // infinity, which no instant states
+        assertThrows(MeosException.class, () -> TimestampTzConverter.toOffsetDateTime(Long.MAX_VALUE));
+        assertThrows(MeosException.class, () -> TimestampTzConverter.toLocalDateTime(Long.MIN_VALUE));
+        // an instant before the first timestamp MEOS states, 4714-11-24 BC
+        assertThrows(MeosException.class,
+                () -> TimestampTzConverter.toTimestampTz(utc(-5000, 1, 1, 0, 0, 0, 0)));
+        // an instant whose microseconds from the Unix epoch no long holds
+        assertThrows(ArithmeticException.class,
+                () -> TimestampTzConverter.toTimestampTz(utc(294277, 1, 1, 0, 0, 0, 0)));
     }
 }
