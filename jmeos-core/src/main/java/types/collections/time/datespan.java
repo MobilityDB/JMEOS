@@ -34,7 +34,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import functions.GeneratedFunctions;
@@ -215,14 +214,9 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
         return GeneratedFunctions.span_out(this.get_inner(), 0);
     }
 
-/**
-Function to convert the integer timestamp to LocalDate format so that it can be used by other libraries
-*/
-
+    /** Casts a MEOS {@code DateADT} to a {@link LocalDate}, see {@link utils.ConversionUtils#date_adt_to_date}. */
     public LocalDate date_adt_to_date(int ts){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStr= GeneratedFunctions.date_out(ts);
-        return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        return utils.ConversionUtils.date_adt_to_date(ts);
     }
 
     /**
@@ -343,7 +337,7 @@ Function to convert the integer timestamp to LocalDate format so that it can be 
             contains_span_span, contains_span_spanset, contains_span_date
 */
     public int dateToTimestamp(LocalDate date){
-        return GeneratedFunctions.date_in(date.toString());
+        return utils.ConversionUtils.date_to_date_adt(date);
     }
 
     public boolean contains(Object other) throws Exception {

@@ -981,6 +981,7 @@ public class FunctionsGenerator {
         sb.append(generateThreadGuard());
         sb.append(generateStructClasses());
         sb.append(generateAllInterfaces(functions, partSize));
+        sb.append(generateTimeCasts(functions, partSize));
         sb.append("\n\n");
 
         for (int i = 0; i < functions.size(); i++) {
@@ -1057,6 +1058,51 @@ public class FunctionsGenerator {
         }
         sb.append("\t}\n\n");
 
+        return sb.toString();
+    }
+
+    /**
+     * The MEOS functions the casts of a timestamp and a timestamptz convert through, each a count
+     * of microseconds from the Unix epoch (MobilityDB doc/specs/meos-bindings-algebra.md, 5.1 and
+     * 5.2). Each takes and answers a raw count, so its cast calls the native function itself: the
+     * public wrapper of one takes the host type and would convert it through the cast again.
+     */
+    private static final String[][] TIME_CASTS = {
+            {"timestamptzToUnixUs", "timestamptz_to_unix_us"},
+            {"unixUsToTimestamptz", "unix_us_to_timestamptz"},
+            {"timestampToUnixUs", "timestamp_to_unix_us"},
+            {"unixUsToTimestamp", "unix_us_to_timestamp"},
+    };
+
+    /**
+     * Generates the native calls of the time casts {@code utils.TimestampTzConverter} makes, each
+     * raising the MEOS error of its function. A cast whose function the catalog lacks is not
+     * generated, and the converter calling it does not compile: a binding converts its time types
+     * only through MEOS.
+     */
+    private String generateTimeCasts(List<FunctionDef> functions, int partSize) {
+        StringBuilder sb = new StringBuilder();
+        for (String[] cast : TIME_CASTS) {
+            int index = -1;
+            for (int i = 0; i < functions.size(); i++) {
+                if (functions.get(i).name.equals(cast[1])) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index < 0) {
+                continue;
+            }
+            char part = (char) ('a' + Math.min(index / partSize, PART_COUNT - 1));
+            sb.append("\t/** The count ").append(cast[1]).append(" answers, or its MEOS error */\n");
+            sb.append("\tpublic static long ").append(cast[0]).append("(long _value) {\n");
+            sb.append("\t\t").append(GUARD_CALL).append("\n");
+            sb.append("\t\tlong _result = _meos_").append(part).append(".").append(cast[1])
+                    .append("(_value);\n");
+            sb.append("\t\tMeosErrorHandler.checkError();\n");
+            sb.append("\t\treturn _result;\n");
+            sb.append("\t}\n\n");
+        }
         return sb.toString();
     }
 

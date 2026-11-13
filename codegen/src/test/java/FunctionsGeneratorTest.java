@@ -1072,6 +1072,33 @@ class FunctionsGeneratorTest {
             assertFalse(out.contains("Instant.ofEpochSecond"));
         }
 
+        /** Mirrors #timestampTzReturnType: a fixture catalog, the generated text asserted. */
+        @Test
+        @DisplayName("a time cast calls its MEOS function natively, and only when the catalog has it")
+        void timeCastCallsItsMeosFunction() throws Exception {
+            String json = """
+                {
+                  "typedefs": [{"name": "TimestampTz", "canonical": "int64_t"}],
+                  "functions": [{
+                    "name": "timestamptz_to_unix_us",
+                    "returnType": {"c": "int64", "canonical": "int64_t"},
+                    "params": [
+                      {"name": "t", "cType": "TimestampTz", "canonical": "TimestampTz"}
+                    ]
+                  }]
+                }
+                """;
+            String out = generateFromJson(json);
+            // the raw count reaches MEOS, never the public wrapper converting it through the cast
+            assertTrue(out.contains("public static long timestamptzToUnixUs(long _value) {\n"
+                    + "\t\tensureReady();\n"
+                    + "\t\tlong _result = _meos_a.timestamptz_to_unix_us(_value);\n"
+                    + "\t\tMeosErrorHandler.checkError();\n"));
+            // the casts whose functions the catalog lacks are not generated
+            assertFalse(out.contains("unixUsToTimestamptz"));
+            assertFalse(out.contains("timestampToUnixUs"));
+        }
+
         @Test
         @DisplayName("a float4 slot passes a float, the width its canonical states")
         void float4SlotPassesAFloat() throws Exception {
