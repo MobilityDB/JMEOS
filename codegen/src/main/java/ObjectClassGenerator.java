@@ -102,6 +102,29 @@ public class ObjectClassGenerator {
             functions.put(f.path("name").asText(), f);
         }
         build();
+        checkBindingScope();
+    }
+
+    /**
+     * Refuse a class over a type the catalog marks {@code bindingScope} ({@code host}: the time
+     * types a binding casts to its language's own; {@code none}: a type no binding carries), as
+     * {@code check_scope_classes} of MEOS-API refuses one in the model, so a class over one stops
+     * the generation rather than reaching the object layer.
+     */
+    private void checkBindingScope() {
+        JsonNode encodings = root.path("typeEncodings");
+        List<String> scoped = new ArrayList<>();
+        for (String cls : new java.util.TreeSet<>(parent.keySet())) {
+            String ct = ctype.get(cls);
+            if (ct != null && encodings.path(ct).hasNonNull("bindingScope")) {
+                scoped.add(cls + " (" + ct + ", bindingScope "
+                        + encodings.path(ct).path("bindingScope").asText() + ")");
+            }
+        }
+        if (!scoped.isEmpty()) {
+            throw new IllegalStateException(
+                    "classes over types out of the object layer: " + String.join("; ", scoped));
+        }
     }
 
     /** The class hierarchy and types of the object model, as MEOS.NET's {@code Model._build}. */
