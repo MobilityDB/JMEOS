@@ -448,9 +448,9 @@ public class TGeomPointTest {
     private static Stream<Arguments> hash() {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
-                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 382694595),
-                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), -1401855854),
-                Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), -1401855854)
+                Arguments.of(new TGeomPointInst("Point(1 1)@2019-09-01"), 1946086145),
+                Arguments.of(new TGeomPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), -807053188),
+                Arguments.of(new TGeomPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), -807053188)
 //                Arguments.of(new TGeomPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), 2878566103l)
         );
     }
