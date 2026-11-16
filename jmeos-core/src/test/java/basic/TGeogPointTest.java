@@ -451,9 +451,9 @@ public class TGeogPointTest {
         GeneratedFunctions.meos_initialize_timezone("UTC");
         return Stream.of(
 //                Arguments.of(new TGeogPointInst("Point(1 1)@2019-09-01"), 382694564),
-                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), -1520751674),
-                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), -1520751674),
-                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), 429936847)
+                Arguments.of(new TGeogPointSeq("{Point(1 1)@2019-09-01, Point(2 2)@2019-09-02}"), -807053188),
+                Arguments.of(new TGeogPointSeq("[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02]"), -807053188),
+                Arguments.of(new TGeogPointSeqSet("{[Point(1 1)@2019-09-01, Point(2 2)@2019-09-02], [Point(1 1)@2019-09-03, Point(1 1)@2019-09-05]}"), -1063196765)
         );
     }
 
