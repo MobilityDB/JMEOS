@@ -1300,7 +1300,7 @@ def _inputs(m, f, args, jtypes, bound=None, order=None):
     names, which the eval passes as the length of the Flink array, and that a parameter
     the signature's wrapper binds (`bound`, from boundArgs) takes that literal: a count
     takes it with its array (raster_clip's first signature binds bands to NULL and nbands
-    to 0)."""
+    to 0), and a count whose array alone is bound takes 0."""
     vis, _ = m.visible(f)
     jsig = {'arg_types': jtypes}
     nullable = set((f.get('shape') or {}).get('nullable') or ())
@@ -1362,7 +1362,10 @@ def _inputs(m, f, args, jtypes, bound=None, order=None):
         if p['name'] in counts and p['name'] not in bound:
             if jsig['arg_types'][i] not in ('int', 'long'):
                 return None, f'arraycount:{jsig["arg_types"][i]}'
-            call[i] = f'{passed[counts[p["name"]]]}.length'
+            # An array the signature binds alone passes the count of no array, as the wrapper
+            # does (Raster_as_gdal passes count 0 with options NULL)
+            call[i] = ('0' if counts[p['name']] in bound
+                       else f'{passed[counts[p["name"]]]}.length')
     return (params, call, temps), None
 
 
