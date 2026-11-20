@@ -459,6 +459,28 @@ public class ObjectClassGenerator {
         return cls != null && generated.contains(cls) && !isByValue(cls) ? cls : null;
     }
 
+    /**
+     * How an element of an array of structs crosses, its value written as {@code _e}, or {@code null}
+     * when the element is no struct of the catalog or has no class: a value of a generated class
+     * through its pointer, else as #ObjectLayerGenerator#marshalArg passes one such struct.
+     */
+    private ObjectLayerGenerator.Arg structElement(String elem, String fn, Set<String> generated) {
+        String t = ObjectLayerGenerator.cleanType(elem);
+        boolean struct = false;
+        for (JsonNode s : root.path("structs")) {
+            struct |= s.path("name").asText().equals(t) && !s.path("fields").isEmpty();
+        }
+        if (t.contains("*") || !struct) {
+            return null;
+        }
+        String held = heldClass(t + " *", generated);
+        if (held != null) {
+            return new ObjectLayerGenerator.Arg(held, "_e", "_e.getInner()");
+        }
+        ObjectLayerGenerator.Arg a = ObjectLayerGenerator.marshalArg(t + " *", "_e", fn);
+        return a == null || a.javaType().equals("Temporal") ? null : a;
+    }
+
     /** The parameter names of the out-parameters the catalog states for f. */
     private static Set<String> outParams(JsonNode f) {
         Set<String> outs = new HashSet<>();
@@ -564,6 +586,28 @@ public class ObjectClassGenerator {
                            .append(".length) * ").append(width).append(");\n")
                            .append("            ").append(buf).append(".put(0, ").append(name).append(", 0, ")
                            .append(name).append(".length);\n        }\n");
+                    call.add(buf);
+                    continue;
+                } else if (structElement(elem, f.path("name").asText(), generated) != null) {
+                    // An array of structs (the validity periods of a raster series) holds each
+                    // element's bytes at the stride the catalog's layout gives, as
+                    // ObjectLayerGenerator#structSize reads an array of spans back.
+                    ObjectLayerGenerator.Arg e = structElement(elem, f.path("name").asText(), generated);
+                    int stride = ObjectLayerGenerator.structSize(root, elem);
+                    String expr = e.callExpr().replace("_e", name + ".get(_i)");
+                    args.add(new ObjectLayerGenerator.Arg("java.util.List<? extends " + e.javaType() + ">",
+                            name, buf));
+                    prelude.append("        Pointer ").append(buf).append(" = null;\n")
+                           .append("        if (").append(name).append(" != null) {\n")
+                           .append("            ").append(buf).append(" = jnr.ffi.Memory.allocateDirect(")
+                           .append("jnr.ffi.Runtime.getSystemRuntime(), Math.max(1, ").append(name)
+                           .append(".size()) * ").append(stride).append(");\n")
+                           .append("            byte[] _bytes = new byte[").append(stride).append("];\n")
+                           .append("            for (int _i = 0; _i < ").append(name).append(".size(); _i++) {\n")
+                           .append("                ").append(expr).append(".get(0, _bytes, 0, ").append(stride)
+                           .append(");\n")
+                           .append("                ").append(buf).append(".put((long) _i * ").append(stride)
+                           .append(", _bytes, 0, ").append(stride).append(");\n            }\n        }\n");
                     call.add(buf);
                     continue;
                 } else if (elem.equals("bool")) {

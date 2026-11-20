@@ -65,6 +65,10 @@ class ObjectClassMembersTest {
                  "{\"inputArrays\": [{\"param\": \"tags\", \"lengthFrom\": {\"kind\": \"param\", \"name\": \"count\"},"
                  + " \"element\": {\"c\": \"text *\", \"canonical\": \"text *\"}}]}",
                  param("w", "const struct Widget *"), param("tags", "text **"), param("count", "int")) + ", "
+            + fn("widget_over", "struct Widget *",
+                 "{\"inputArrays\": [{\"param\": \"spans\", \"lengthFrom\": {\"kind\": \"param\", \"name\": \"count\"},"
+                 + " \"element\": {\"c\": \"Span\", \"canonical\": \"Span\"}}]}",
+                 param("w", "const struct Widget *"), param("spans", "const Span *"), param("count", "int")) + ", "
             + fn("widget_union_transfn", "WidgetState *", "{}", param("state", "WidgetState *"),
                  param("w", "const struct Widget *"), param("band", "int")) + ", "
             + fn("widget_union_finalfn", "struct Widget *", "{}", param("state", "WidgetState *")) + ", "
@@ -75,13 +79,16 @@ class ObjectClassMembersTest {
             + " {\"sqlName\": \"widgetMerge\", \"altSqlName\": \"widgetMergeAgg\", \"args\": [\"widget\"],"
             + " \"transition\": {\"meos\": \"widget_union_transfn\"}, \"final\": {\"meos\": \"widget_union_finalfn\"}}],"
             + " \"typeEncodings\": {}, \"enums\": [], \"macros\": [],"
+            + " \"structs\": [{\"name\": \"Span\", \"fields\": [" + param("lower", "double") + ", "
+            + param("upper", "double") + "]}],"
             + " \"objectModel\": {\"lattice\": {}, \"companions\": {\"Value\": {\"nodes\": {"
             + "\"Widget\": {\"parent\": null, \"conditional\": \"FAM\"},"
             + " \"Gadget\": {\"parent\": null, \"conditional\": \"OTHER\"}}}},"
             + " \"classes\": {\"Widget\": {\"cType\": \"Widget\", \"methods\": ["
             + "{\"function\": \"widget_scale\", \"ooName\": \"scale\"},"
             + " {\"function\": \"widget_sum\", \"ooName\": \"sum\"},"
-            + " {\"function\": \"widget_tag\", \"ooName\": \"tag\"}], \"operators\": ["
+            + " {\"function\": \"widget_tag\", \"ooName\": \"tag\"},"
+            + " {\"function\": \"widget_over\", \"ooName\": \"over\"}], \"operators\": ["
             + "{\"function\": \"add_widget_widget\", \"ooName\": \"add\", \"receiver\": \"left\"},"
             + " {\"function\": \"sub_float_widget\", \"ooName\": \"rsub\", \"receiver\": \"right\"}]},"
             + " \"Gadget\": {\"cType\": \"Gadget\", \"methods\": ["
@@ -131,6 +138,15 @@ class ObjectClassMembersTest {
         assertTrue(widget.contains("public Widget tag(java.util.List<String> tags) {"), widget);
         assertTrue(widget.contains("GeneratedFunctions.cstring_to_text(tags.get(_i))"), widget);
         assertTrue(widget.contains("(tags == null ? 0 : tags.size())"), widget);
+    }
+
+    @Test
+    void anArrayOfStructsCopiesEachElementAtItsStride() {
+        // As #anArrayTheCatalogStatesIsAListWhoseSizeIsItsCount, over a struct of two doubles.
+        assertTrue(widget.contains(
+                "public Widget over(java.util.List<? extends types.collections.base.Span<?>> spans) {"), widget);
+        assertTrue(widget.contains("spans.get(_i).get_inner().get(0, _bytes, 0, 16);"), widget);
+        assertTrue(widget.contains("_spans.put((long) _i * 16, _bytes, 0, 16);"), widget);
     }
 
     @Test
