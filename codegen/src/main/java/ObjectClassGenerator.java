@@ -54,7 +54,12 @@ import java.util.stream.Stream;
  * {@code byValue} (a grid cell) is a record holding the value MEOS passes, its methods handing the
  * value over at each call; a parameter or result of its C type elsewhere is that record.
  *
- * <p>Usage: {@code ObjectClassGenerator <meos-idl.json> <output dir> <hand types dir>}
+ * <p>The classes of the families named as the fourth argument also carry the methods and operators
+ * the object model gives them ({@code classes.<Class>.methods}/{@code operators}) and the aggregates
+ * of the catalog over their values ({@code aggregates}), as PyMEOS's
+ * {@code tools/oo_codegen/classgen.py} writes the classes of a family: #member, #aggregates.
+ *
+ * <p>Usage: {@code ObjectClassGenerator <meos-idl.json> <output dir> <hand types dir> [<family>,...]}
  */
 public class ObjectClassGenerator {
 
@@ -78,7 +83,12 @@ public class ObjectClassGenerator {
 
     /** One method of a generated class. */
     private record Method(String name, String fn, String javaReturn, boolean isStatic,
-                          List<ObjectLayerGenerator.Arg> args) {}
+                          List<ObjectLayerGenerator.Arg> args, String body) {
+        Method(String name, String fn, String javaReturn, boolean isStatic,
+               List<ObjectLayerGenerator.Arg> args) {
+            this(name, fn, javaReturn, isStatic, args, null);
+        }
+    }
 
     private final JsonNode root;
     private final Map<String, JsonNode> functions = new HashMap<>();
@@ -100,6 +110,9 @@ public class ObjectClassGenerator {
         this.root = root;
         for (JsonNode f : root.path("functions")) {
             functions.put(f.path("name").asText(), f);
+        }
+        for (JsonNode e : root.path("enums")) {
+            enumNames.add(e.path("name").asText());
         }
         build();
         checkBindingScope();
@@ -387,6 +400,395 @@ public class ObjectClassGenerator {
         return null;
     }
 
+    /**
+     * The families whose classes carry the members of the object model, as PyMEOS's
+     * {@code tools/oo_codegen/classgen.py} takes the family it writes.
+     */
+    final Set<String> memberFamilies = new HashSet<>();
+
+    /** The enums of the catalog, which the wrappers take and answer as an {@code int}. */
+    private final Set<String> enumNames = new HashSet<>();
+
+    /** The C types of the temporal values the hand {@code types.temporal.Temporal} holds. */
+    private static final Set<String> TEMPORAL_C = Set.of("Temporal", "TInstant", "TSequence", "TSequenceSet");
+
+    /** The parameters, the call and the statements before it of one member, as #member builds them. */
+    private record Call(List<ObjectLayerGenerator.Arg> args, List<String> call, String prelude) {}
+
+    /**
+     * The classes of the member families, read off the catalog as {@code classgen.py}'s
+     * {@code family_classes} reads them: the {@code Value} companion nodes the family conditions.
+     */
+    private Set<String> memberClasses() {
+        Set<String> out = new TreeSet<>();
+        root.path("objectModel").path("companions").path("Value").path("nodes").fields().forEachRemaining(e -> {
+            if (memberFamilies.contains(e.getValue().path("conditional").asText(""))) {
+                out.add(e.getKey());
+            }
+        });
+        return out;
+    }
+
+    /** The C type a single pointer points at ({@code struct Raster *} gives {@code Raster}), or {@code null}. */
+    private static String pointee(String c) {
+        String t = ObjectLayerGenerator.cleanType(c);
+        if (!t.endsWith("*") || t.endsWith("**")) {
+            return null;
+        }
+        return t.substring(0, t.length() - 1).replace("struct ", "").trim();
+    }
+
+    /**
+     * The generated class holding a pointer of the C type, as {@code classgen.py}'s {@code held}: the
+     * class named as the C type, else the one class of that C type.
+     */
+    private String heldClass(String c, Set<String> generated) {
+        String t = pointee(c);
+        if (t == null) {
+            return null;
+        }
+        // Over every class of the C type, hand or generated: a C type several classes share (a Span)
+        // is held by the class of its own name only.
+        List<String> of = new ArrayList<>();
+        for (Map.Entry<String, String> e : ctype.entrySet()) {
+            if (e.getValue().equals(t)) {
+                of.add(e.getKey());
+            }
+        }
+        String cls = of.contains(t) ? t : of.size() == 1 ? of.get(0) : null;
+        return cls != null && generated.contains(cls) && !isByValue(cls) ? cls : null;
+    }
+
+    /** The parameter names of the out-parameters the catalog states for f. */
+    private static Set<String> outParams(JsonNode f) {
+        Set<String> outs = new HashSet<>();
+        for (JsonNode o : f.path("shape").path("outParams")) {
+            outs.add(o.asText());
+        }
+        return outs;
+    }
+
+    /**
+     * The single value out-parameter a {@code bool} function folds to, as #ObjectLayerGenerator folds
+     * the bool+result pattern, or {@code null}.
+     */
+    private static String resultOut(JsonNode f) {
+        JsonNode params = f.path("params");
+        List<String> unfolded = new ArrayList<>();
+        for (String o : outParams(f)) {
+            if (!ObjectLayerGenerator.isSizeOut(params, o)) {
+                unfolded.add(o);
+            }
+        }
+        String retC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(f.path("returnType")));
+        return retC.equals("bool") && unfolded.size() == 1 ? unfolded.get(0) : null;
+    }
+
+    /**
+     * The Java parameters and the wrapper call of f, the parameters before {@code from} and the one at
+     * {@code receiver} being the call expressions given, as {@code classgen.py}'s {@code argument}
+     * unwraps each one: a value of a generated class or of a hand class crosses as its pointer, an
+     * array the catalog states ({@code shape.inputArrays}) as a list whose size is its count, a byte
+     * buffer as a {@code byte[]}; {@code null} with the member deferred when one cannot cross.
+     */
+    private Call call(JsonNode f, List<String> given, int receiver, String self, Set<String> generated,
+                      String where) {
+        JsonNode params = f.path("params");
+        Set<String> outs = outParams(f);
+        String result = resultOut(f);
+        Map<String, JsonNode> arrays = new HashMap<>();
+        Map<String, String> countOf = new HashMap<>();
+        for (JsonNode a : f.path("shape").path("inputArrays")) {
+            arrays.put(a.path("param").asText(), a);
+            String n = a.path("lengthFrom").path("name").asText(null);
+            if (n == null) {
+                deferred.add(where + " — array " + a.path("param").asText() + " of no count");
+                return null;
+            }
+            // Arrays sharing a count (the values and their nodata flags) have the length of the first.
+            countOf.putIfAbsent(n, a.path("param").asText());
+        }
+        List<ObjectLayerGenerator.Arg> args = new ArrayList<>();
+        List<String> call = new ArrayList<>(given);
+        StringBuilder prelude = new StringBuilder();
+        for (int i = given.size(); i < params.size(); i++) {
+            JsonNode p = params.get(i);
+            String pname = p.path("name").asText();
+            String name = ObjectLayerGenerator.sanitize(pname);
+            String pC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(p));
+            if (i == receiver) {
+                call.add(self);
+                continue;
+            }
+            if (outs.contains(pname)) {
+                if (ObjectLayerGenerator.isSizeOut(params, pname) || pname.equals(result)) {
+                    continue;
+                }
+                deferred.add(where + " — out-parameter " + pname + " of type " + pC);
+                return null;
+            }
+            if (countOf.containsKey(pname)) {
+                String arr = ObjectLayerGenerator.sanitize(countOf.get(pname));
+                boolean list = !arrays.get(countOf.get(pname)).path("element").path("canonical").asText()
+                        .matches("int|int32_t|double|bool");
+                call.add(list ? "(" + arr + " == null ? 0 : " + arr + ".size())"
+                        : "(" + arr + " == null ? 0 : " + arr + ".length)");
+                continue;
+            }
+            if (ObjectLayerGenerator.isByteInput(params, i)) {
+                args.add(new ObjectLayerGenerator.Arg("byte[]", name, name));
+                call.add(name);
+                i++;
+                continue;
+            }
+            if (arrays.containsKey(pname)) {
+                String elem = arrays.get(pname).path("element").path("canonical").asText();
+                String held = heldClass(elem, generated);
+                String buf = "_" + name;
+                String fill;
+                if (elem.replace("const ", "").trim().equals("text *")) {
+                    args.add(new ObjectLayerGenerator.Arg("java.util.List<String>", name, buf));
+                    fill = buf + ".putPointer((long) _i * Long.BYTES, GeneratedFunctions.cstring_to_text("
+                            + name + ".get(_i)));";
+                } else if (held != null) {
+                    args.add(new ObjectLayerGenerator.Arg("java.util.List<" + held + ">", name, buf));
+                    fill = buf + ".putPointer((long) _i * Long.BYTES, " + name + ".get(_i).getInner());";
+                } else if (elem.matches("int|int32_t|double")) {
+                    String jt = elem.equals("double") ? "double" : "int";
+                    String width = elem.equals("double") ? "Double.BYTES" : "Integer.BYTES";
+                    args.add(new ObjectLayerGenerator.Arg(jt + "[]", name, buf));
+                    prelude.append("        Pointer ").append(buf).append(" = null;\n")
+                           .append("        if (").append(name).append(" != null) {\n")
+                           .append("            ").append(buf).append(" = jnr.ffi.Memory.allocateDirect(")
+                           .append("jnr.ffi.Runtime.getSystemRuntime(), Math.max(1, ").append(name)
+                           .append(".length) * ").append(width).append(");\n")
+                           .append("            ").append(buf).append(".put(0, ").append(name).append(", 0, ")
+                           .append(name).append(".length);\n        }\n");
+                    call.add(buf);
+                    continue;
+                } else if (elem.equals("bool")) {
+                    // A C bool is one byte.
+                    args.add(new ObjectLayerGenerator.Arg("boolean[]", name, buf));
+                    prelude.append("        Pointer ").append(buf).append(" = null;\n")
+                           .append("        if (").append(name).append(" != null) {\n")
+                           .append("            ").append(buf).append(" = jnr.ffi.Memory.allocateDirect(")
+                           .append("jnr.ffi.Runtime.getSystemRuntime(), Math.max(1, ").append(name)
+                           .append(".length));\n")
+                           .append("            for (int _i = 0; _i < ").append(name).append(".length; _i++) {\n")
+                           .append("                ").append(buf).append(".putByte(_i, (byte) (").append(name)
+                           .append("[_i] ? 1 : 0));\n            }\n        }\n");
+                    call.add(buf);
+                    continue;
+                } else {
+                    deferred.add(where + " — array " + pname + " of " + elem);
+                    return null;
+                }
+                prelude.append("        Pointer ").append(buf).append(" = null;\n")
+                       .append("        if (").append(name).append(" != null) {\n")
+                       .append("            ").append(buf).append(" = jnr.ffi.Memory.allocateDirect(")
+                       .append("jnr.ffi.Runtime.getSystemRuntime(), Math.max(1, ").append(name)
+                       .append(".size()) * Long.BYTES);\n")
+                       .append("            for (int _i = 0; _i < ").append(name).append(".size(); _i++) {\n")
+                       .append("                ").append(fill).append("\n            }\n        }\n");
+                call.add(buf);
+                continue;
+            }
+            String vc = valueClassOf(p);
+            String held = heldClass(pC, generated);
+            String t = pointee(pC);
+            ObjectLayerGenerator.Arg a;
+            if (vc != null) {
+                a = new ObjectLayerGenerator.Arg(vc, name, name + ".value()");
+            } else if (held != null) {
+                a = new ObjectLayerGenerator.Arg(held, name, name + ".getInner()");
+            } else if (t != null && TEMPORAL_C.contains(t)) {
+                a = new ObjectLayerGenerator.Arg("types.temporal.Temporal", name, name + ".getInner()");
+            } else if ("STBox".equals(t)) {
+                a = new ObjectLayerGenerator.Arg("types.boxes.STBox", name, name + ".get_inner()");
+            } else if (enumNames.contains(pC)) {
+                a = new ObjectLayerGenerator.Arg("int", name, name);
+            } else {
+                a = ObjectLayerGenerator.marshalArg(pC, name, f.path("name").asText());
+                if (a != null && a.javaType().equals("Temporal")) {
+                    a = null;
+                }
+            }
+            if (a == null) {
+                deferred.add(where + " — argument " + name + " of type " + pC);
+                return null;
+            }
+            args.add(a);
+            call.add(a.callExpr());
+        }
+        return new Call(args, call, prelude.toString());
+    }
+
+    /**
+     * The Java type and the statements answering what the wrapper call {@code invoke} of f returns, as
+     * {@code classgen.py}'s {@code answer}: a pointer of a generated class in that class, a temporal
+     * value through the hand {@code Factory}, an {@code STBox} in the hand box, the value of a single
+     * out-parameter boxed ({@code null} when the function finds none); {@code null} when none fits.
+     * With {@code boxed}, a primitive answer is boxed so an absent value can be stated.
+     */
+    private String[] answer(JsonNode f, String invoke, Set<String> generated, boolean boxed) {
+        String retC = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(f.path("returnType")));
+        String result = resultOut(f);
+        if (result != null) {
+            String outT = "";
+            for (JsonNode p : f.path("params")) {
+                if (p.path("name").asText().equals(result)) {
+                    outT = ObjectLayerGenerator.cleanType(FunctionsGenerator.slotType(p));
+                }
+            }
+            String[] r = switch (outT) {
+                case "int *", "int32_t *" -> new String[] {"Integer", "_r.getInt(0)"};
+                case "double *" -> new String[] {"Double", "_r.getDouble(0)"};
+                case "int64_t *", "uint64_t *" -> new String[] {"Long", "_r.getLong(0)"};
+                default -> null;
+            };
+            return r == null ? null : new String[] {r[0],
+                    "        Pointer _r = " + invoke + ";\n        return _r == null ? null : " + r[1] + ";\n"};
+        }
+        String vc = valueClassOf(f.path("returnType"));
+        if (vc != null) {
+            return new String[] {vc, "        return new " + vc + "(" + invoke + ");\n"};
+        }
+        String held = heldClass(retC, generated);
+        String t = pointee(retC);
+        if (held != null || "STBox".equals(t)) {
+            String cls = held != null ? held : "types.boxes.STBox";
+            return new String[] {cls, "        Pointer _r = " + invoke + ";\n        return _r == null ? null : new "
+                    + cls + "(_r);\n"};
+        }
+        if (t != null && TEMPORAL_C.contains(t)) {
+            return new String[] {"types.temporal.Temporal",
+                    "        return types.temporal.Factory.create_temporal(" + invoke + ");\n"};
+        }
+        if (retC.equals("void")) {
+            return new String[] {"void", "        " + invoke + ";\n"};
+        }
+        String java = retC.equals("uint8_t *") && !outParams(f).isEmpty() ? "byte[]"
+                : retC.equals("size_t") ? "long"
+                : enumNames.contains(retC) ? "int"
+                : ObjectLayerGenerator.scalarReturn(retC);
+        if (java == null) {
+            return null;
+        }
+        String box = boxed ? switch (java) {
+            case "boolean" -> "Boolean";
+            case "int" -> "Integer";
+            case "long" -> "Long";
+            case "double" -> "Double";
+            case "float" -> "Float";
+            default -> java;
+        } : java;
+        return new String[] {box, "        return " + invoke + ";\n"};
+    }
+
+    /**
+     * One method or operator of the object model, as {@code classgen.py}'s {@code member}: the
+     * receiver is the parameter of the class's own type, the second one for an operator the model
+     * reflects onto its right operand ({@code receiver: right}); a member with none is static.
+     */
+    private Method member(String cls, JsonNode entry, Set<String> generated) {
+        String fn = entry.path("function").asText();
+        String name = entry.path("ooName").asText();
+        String where = cls + "." + name;
+        JsonNode f = functions.get(fn);
+        if (f == null || !f.path("api").asText().equals("public")) {
+            deferred.add(where + " — " + fn + " is no public function");
+            return null;
+        }
+        if (!ObjectLayerGenerator.sanitize(name).equals(name)) {
+            deferred.add(where + " — a Java keyword");
+            return null;
+        }
+        JsonNode params = f.path("params");
+        int at = entry.path("receiver").asText("").equals("right") ? 1 : 0;
+        JsonNode r = params.path(at);
+        boolean own = !r.isMissingNode() && (isByValue(cls) ? cls.equals(valueClassOf(r))
+                : cls.equals(heldClass(FunctionsGenerator.slotType(r), generated)));
+        Call c = call(f, List.of(), own ? at : -1, isByValue(cls) ? "value" : "getInner()", generated, where);
+        if (c == null) {
+            return null;
+        }
+        String[] ans = answer(f, "GeneratedFunctions." + fn + "(" + String.join(", ", c.call()) + ")",
+                generated, false);
+        if (ans == null) {
+            deferred.add(where + " — answer of " + fn);
+            return null;
+        }
+        return new Method(name, fn, ans[0], !own, c.args(), c.prelude() + ans[1]);
+    }
+
+    /**
+     * Every aggregate of the catalog over the values of the class, as {@code classgen.py}'s
+     * {@code aggregates}: a static method named as the catalog names the aggregate ({@code altSqlName},
+     * else {@code sqlName}) that threads the transition over the values from a {@code NULL} state into
+     * the final function, which frees the state; {@code null} for no values.
+     */
+    private List<Method> aggregates(String cls, Set<String> generated) {
+        List<Method> out = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (JsonNode agg : root.path("aggregates")) {
+            JsonNode f = functions.get(agg.path("transition").path("meos").asText(""));
+            JsonNode fin = functions.get(agg.path("final").path("meos").asText(""));
+            if (f == null || fin == null || f.path("params").size() < 2) {
+                continue;
+            }
+            if (!cls.equals(aggregateClass(agg, f.path("params").get(1), generated))) {
+                continue;
+            }
+            String name = agg.path("altSqlName").asText(agg.path("sqlName").asText());
+            if (!seen.add(name)) {
+                continue;
+            }
+            String where = cls + "." + name;
+            String v = isByValue(cls) ? "_v.value()" : "_v.getInner()";
+            Call c = call(f, List.of("_state", v), -1, null, generated, where);
+            String[] ans = c == null ? null : answer(fin, "GeneratedFunctions." + fin.path("name").asText()
+                    + "(_state)", generated, true);
+            if (c == null || ans == null) {
+                deferred.add(where + " — aggregate " + f.path("name").asText());
+                continue;
+            }
+            List<ObjectLayerGenerator.Arg> args = new ArrayList<>();
+            args.add(new ObjectLayerGenerator.Arg("java.util.List<" + cls + ">", "values", "values"));
+            args.addAll(c.args());
+            String body = c.prelude()
+                    + "        Pointer _state = null;\n"
+                    + "        for (" + cls + " _v : values) {\n"
+                    + "            _state = GeneratedFunctions." + f.path("name").asText() + "("
+                    + String.join(", ", c.call()) + ");\n"
+                    + "        }\n"
+                    + "        if (_state == null) {\n            return null;\n        }\n"
+                    + ans[1];
+            out.add(new Method(name, f.path("name").asText(), ans[0], true, args, body));
+        }
+        return out;
+    }
+
+    /**
+     * The class of an aggregate, as {@code classgen.py}'s {@code aggregate_class}: the leaf whose
+     * prefix is the SQL type of its values, else the class of the C type its transition takes them as.
+     */
+    private String aggregateClass(JsonNode agg, JsonNode valueSlot, Set<String> generated) {
+        String sql = agg.path("args").path(0).asText(null);
+        Iterator<Map.Entry<String, JsonNode>> it = root.path("objectModel").path("lattice").fields();
+        while (it.hasNext()) {
+            Map.Entry<String, JsonNode> e = it.next();
+            if (e.getValue().path("kind").asText().equals("leaf")) {
+                for (JsonNode p : e.getValue().path("prefixes")) {
+                    if (p.asText().equals(sql)) {
+                        return e.getKey();
+                    }
+                }
+            }
+        }
+        String vc = valueClassOf(valueSlot);
+        return vc != null ? vc : heldClass(FunctionsGenerator.slotType(valueSlot), generated);
+    }
+
     private static String header() {
         return """
             /* AUTO-GENERATED by codegen/src/main/java/ObjectClassGenerator.java from the MEOS object
@@ -437,6 +839,15 @@ public class ObjectClassGenerator {
             sb.append("    public ").append(cls).append("(Pointer inner) {\n        super(inner);\n    }\n");
         }
         for (Method m : methods) {
+            if (m.body() != null) {
+                // A member of the object model carries the body #member or #aggregate wrote for it.
+                String params = String.join(", ", m.args().stream().map(a -> a.javaType() + " " + a.name()).toList());
+                sb.append("\n    /** {@code ").append(m.name()).append("}, through MEOS {@code ").append(m.fn())
+                  .append("}. */\n    public ").append(m.isStatic() ? "static " : "").append(m.javaReturn())
+                  .append(' ').append(m.name()).append('(').append(params).append(") {\n")
+                  .append(m.body()).append("    }\n");
+                continue;
+            }
             String params = String.join(", ", m.args().stream().map(a -> a.javaType() + " " + a.name()).toList());
             List<String> call = new ArrayList<>();
             if (!m.isStatic()) {
@@ -496,6 +907,11 @@ public class ObjectClassGenerator {
         return out;
     }
 
+    /** The name and the Java parameter types of a method, which no two methods of a class share. */
+    private static String signature(Method m) {
+        return m.name() + m.args().stream().map(ObjectLayerGenerator.Arg::javaType).toList();
+    }
+
     void run(Path outDir, Path handDir) throws IOException {
         Set<String> hand = handClasses(handDir);
         Set<String> generated = new TreeSet<>();
@@ -511,6 +927,8 @@ public class ObjectClassGenerator {
             }
         }
         Files.writeString(outDir.resolve("MeosObject.java"), base());
+        Set<String> members = memberClasses();
+        members.retainAll(generated);
 
         // Ancestors first, so a class sees the names its ancestors already carry.
         Map<String, Set<String>> names = new HashMap<>();
@@ -523,6 +941,35 @@ public class ObjectClassGenerator {
             String superClass = anc.isEmpty() ? "MeosObject" : anc.get(0);
             Set<String> taken = new HashSet<>(anc.isEmpty() ? Set.of() : names.get(anc.get(0)));
             List<Method> methods = portableMethods(cls, taken);
+            if (members.contains(cls)) {
+                // The methods, operators and aggregates of the object model, one per Java signature.
+                Set<String> signatures = new HashSet<>();
+                for (Method m : methods) {
+                    signatures.add(signature(m));
+                }
+                List<Method> more = new ArrayList<>();
+                JsonNode spec = root.path("objectModel").path("classes").path(cls);
+                for (String kind : new String[] {"methods", "operators"}) {
+                    for (JsonNode entry : spec.path(kind)) {
+                        if (entry.path("ooExclude").asBoolean(false)) {
+                            continue;
+                        }
+                        Method m = member(cls, entry, generated);
+                        if (m != null) {
+                            more.add(m);
+                        }
+                    }
+                }
+                more.addAll(aggregates(cls, generated));
+                for (Method m : more) {
+                    if (signatures.add(signature(m))) {
+                        methods.add(m);
+                        taken.add(m.name());
+                    } else if (methods.stream().noneMatch(o -> o.fn().equals(m.fn()))) {
+                        deferred.add(cls + "." + m.name() + " — " + m.fn() + " has the Java signature of another member");
+                    }
+                }
+            }
             names.put(cls, taken);
             methodCount += methods.size();
 
@@ -548,7 +995,7 @@ public class ObjectClassGenerator {
             Files.writeString(outDir.resolve(cls + ".java"), classSource(cls, superClass, methods, toString));
         }
         System.out.println("ObjectClassGenerator: " + generated.size() + " classes, " + methodCount
-                + " readers and writers, " + deferred.size() + " deferred");
+                + " methods, " + deferred.size() + " deferred");
         for (String d : deferred) {
             System.out.println("  deferred: " + d);
         }
@@ -556,10 +1003,15 @@ public class ObjectClassGenerator {
 
     public static void main(String[] args) throws IOException {
         if (args.length < 3) {
-            System.err.println("usage: ObjectClassGenerator <meos-idl.json> <output dir> <hand types dir>");
+            System.err.println("usage: ObjectClassGenerator <meos-idl.json> <output dir> <hand types dir>"
+                    + " [<family>,...]");
             System.exit(2);
         }
         JsonNode root = new ObjectMapper().readTree(new File(args[0]));
-        new ObjectClassGenerator(root).run(Paths.get(args[1]), Paths.get(args[2]));
+        ObjectClassGenerator g = new ObjectClassGenerator(root);
+        if (args.length > 3) {
+            g.memberFamilies.addAll(Arrays.asList(args[3].split(",")));
+        }
+        g.run(Paths.get(args[1]), Paths.get(args[2]));
     }
 }

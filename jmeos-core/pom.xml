@@ -297,6 +297,8 @@
                                 <argument>${project.basedir}/../codegen/input/meos-idl.json</argument>
                                 <argument>${project.build.directory}/generated-sources/jmeos/types/generated</argument>
                                 <argument>${project.basedir}/src/main/java/types</argument>
+                                <!-- The families whose classes carry the members of the object model. -->
+                                <argument>RASTER</argument>
                             </arguments>
                         </configuration>
                     </execution>
