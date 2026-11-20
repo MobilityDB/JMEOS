@@ -600,9 +600,10 @@ SQL_DATATYPE = {
 # The WKB variant the WKB writers take: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
 # The catalog encodings that carry a value as its hex WKB, in the order a codec takes them: the
-# plain form where the C type states it, else the extended one (geometry and geography state
-# only `hexewkb`). The catalog's `wkb` and `ewkb` are the binary forms.
-HEX_WKB_ENCODINGS = ('hexwkb', 'hexewkb')
+# extended form where the C type states it, since it keeps the SRID as WKB_VARIANT does for the
+# writers (geometry and geography state both, geo_as_hexewkb and geo_as_hexwkb), else the plain
+# one. The catalog's `wkb` and `ewkb` are the binary forms.
+HEX_WKB_ENCODINGS = ('hexewkb', 'hexwkb')
 
 # A SQL array MEOS reads as a contiguous C array of scalars, keyed by the SQL element type
 # and the C element type together: the Flink-side element class and the MeosSqlRuntime
@@ -900,9 +901,9 @@ class SqlModel:
         states for it.  Text otherwise, and only for a C type a single SQL type stands for,
         since a text decoder cannot tell those SQL types apart.
 
-        The hex WKB is the catalog's `hexwkb` encoding, or its `hexewkb` where the C type
-        states no `hexwkb` (geometry and geography); its `wkb` is the binary WKB, which a hex
-        string cannot be read with (HEX_WKB_ENCODINGS)."""
+        The hex WKB is the catalog's `hexewkb` encoding, which keeps the SRID, or its `hexwkb`
+        where the C type states no `hexewkb`; its `wkb` is the binary WKB, which a hex string
+        cannot be read with (HEX_WKB_ENCODINGS)."""
         hexwkb = {}
         for f in self.fns:
             if f.get('sqlfn') == 'asHexWKB' and f['params'] and f['name'] in self.jmeos:
