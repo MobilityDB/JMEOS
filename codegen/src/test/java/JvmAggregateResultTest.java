@@ -62,6 +62,8 @@ class JvmAggregateResultTest {
         + fin("same_finalfn", "bool") + ", "
         + fin("stats_finalfn", "BandStats *") + ", "
         + fin("odd_finalfn", "Odd *") + "],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"tint\": {\"byValue\": false, \"cType\": \"Temporal\", \"codec\": {\"decoder\": \"temporal_from_wkb\", \"decoderAux\": [], \"encoder\": \"temporal_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}},"
         + " \"typeEncodings\": {"
         + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}}},"
         + " \"structs\": ["

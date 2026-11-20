@@ -61,6 +61,8 @@ class JvmValueFormTest {
         + fn("spanWidth", "Span", "tstzspan") + ", "
         + fn("boxArea", "GBOX", "box2d") + ", "
         + fn("setCount", "Set", "intset") + "],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"box2d\": {\"byValue\": false, \"cType\": \"GBOX\", \"codec\": {\"decoder\": \"gbox_in\", \"decoderAux\": [], \"encoder\": \"gbox_out\", \"encoderAux\": [], \"kind\": \"text\"}}, \"intset\": {\"byValue\": false, \"cType\": \"Set\", \"codec\": {\"decoder\": \"set_from_wkb\", \"decoderAux\": [], \"encoder\": \"set_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}, \"image\": {\"copy\": \"set_copy_absent\", \"size\": \"set_mem_size\"}}, \"tgeompoint\": {\"byValue\": false, \"cType\": \"Temporal\", \"codec\": {\"decoder\": \"temporal_from_wkb\", \"decoderAux\": [], \"encoder\": \"temporal_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}, \"image\": {\"copy\": \"temporal_copy\", \"size\": \"temporal_mem_size\"}}, \"tstzspan\": {\"byValue\": false, \"cType\": \"Span\", \"codec\": {\"decoder\": \"span_from_wkb\", \"decoderAux\": [], \"encoder\": \"span_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}, \"image\": {\"copy\": \"span_copy\", \"sizeBytes\": 24}}},"
         + " \"typeEncodings\": {"
         + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"},"
         + "    \"image\": {\"copy\": \"temporal_copy\", \"size\": \"temporal_mem_size\"}},"

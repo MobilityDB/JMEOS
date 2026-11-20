@@ -59,6 +59,8 @@ class JvmStructRowTest {
         + fn("summary", "const Temporal *", "BandStats *", "tint", "summarystats") + ", "
         + fn("stats_count", "const BandStats *", "int64_t", "summarystats", "bigint") + ", "
         + fn("odd_count", "const Odd *", "int64_t", "oddstats", "bigint") + "],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"oddstats\": {\"byValue\": false, \"cType\": \"Odd\"}, \"summarystats\": {\"byValue\": false, \"cType\": \"BandStats\"}, \"tint\": {\"byValue\": false, \"cType\": \"Temporal\", \"codec\": {\"decoder\": \"temporal_from_wkb\", \"decoderAux\": [], \"encoder\": \"temporal_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}},"
         + " \"typeEncodings\": {"
         + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}}},"
         + " \"structs\": ["
