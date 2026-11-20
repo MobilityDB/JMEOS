@@ -80,6 +80,8 @@ class JvmStructFieldColumnTest {
         + " \"returnType\": {\"c\": \"GSERIALIZED *\", \"canonical\": \"GSERIALIZED *\"},"
         + " \"params\": [{\"name\": \"g\", \"cType\": \"const GSERIALIZED *\", \"canonical\": \"const GSERIALIZED *\"}],"
         + " \"sqlSignatures\": [{\"args\": [\"geometry\"], \"ret\": \"geometry\"}]}],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"geometry\": {\"byValue\": false, \"cType\": \"GSERIALIZED\", \"codec\": {\"decoder\": \"geo_from_wkb\", \"decoderAux\": [], \"encoder\": \"geo_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}, \"tint\": {\"byValue\": false, \"cType\": \"Temporal\", \"codec\": {\"decoder\": \"temporal_from_wkb\", \"decoderAux\": [], \"encoder\": \"temporal_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}},"
         + " \"typeEncodings\": {"
         + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}},"
         + "  \"GSERIALIZED\": {\"bytes\": {\"decoder\": \"geo_from_wkb\", \"encoder\": \"geo_as_wkb\"}}},"

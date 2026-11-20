@@ -599,11 +599,6 @@ SQL_DATATYPE = {
 
 # The WKB variant the WKB writers take: the extended form, which keeps the SRID.
 WKB_VARIANT = 4
-# The catalog encodings that carry a value as its hex WKB, in the order a codec takes them: the
-# extended form where the C type states it, since it keeps the SRID as WKB_VARIANT does for the
-# writers (geometry and geography state both, geo_as_hexewkb and geo_as_hexwkb), else the plain
-# one. The catalog's `wkb` and `ewkb` are the binary forms.
-HEX_WKB_ENCODINGS = ('hexewkb', 'hexwkb')
 
 # A SQL array MEOS reads as a contiguous C array of scalars, keyed by the SQL element type
 # and the C element type together: the Flink-side element class and the MeosSqlRuntime
@@ -844,103 +839,32 @@ class SqlModel:
                    {**fbound, **(s.get('boundArgs') or {}), **present})
 
     def _align(self):
-        """The C base type each SQL type stands for, read off the signatures that
-        pair it with a single C value: a parameter that is one pointer, or the return
-        of a function with no out-parameters.  A pointer to pointers, or a return that
-        an out-parameter counts, is an array, and the SQL type opposite it is an array
-        or a record, not a value.
-
-        The SQL arguments pair with the visible C parameters as #_inputs pairs them:
-        a parameter the signature's wrapper binds, and the count of an input array,
-        stand for no SQL argument, and the catalog's sqlArgParams, where stated, gives
-        the order the wrapper reads them in."""
-        seen = defaultdict(lambda: defaultdict(int))
-        byvalue = set()
-        for f in self.fns:
-            if not f.get('sqlfn'):
-                continue
-            vis, outs = self.visible(f)
-            counts = {(a.get('lengthFrom') or {}).get('name')
-                      for a in (f.get('shape') or {}).get('inputArrays') or []}
-            for (_, args, ret, _, bound), sig in zip(self.signatures(f),
-                                                     f.get('sqlSignatures') or []):
-                walk = [p for p in vis if p['name'] not in bound and p['name'] not in counts]
-                order = sig.get('sqlArgParams') or (f.get('shape') or {}).get('sqlArgParams')
-                at = {p['name']: p for p in walk}
-                if order and set(order) == set(at):
-                    walk = [at[n] for n in order]
-                if len(args) == len(walk):
-                    for a, p in zip(args, walk):
-                        if _single_pointer(p['canonical']):
-                            seen[a][_base(p['canonical'])] += 1
-                        elif p.get('typedef') in self.enc:
-                            seen[a][p['typedef']] += 1
-                            byvalue.add(p['typedef'])
-                rt = f['returnType']
-                rc = rt['canonical']
-                if ret and not outs and _single_pointer(rc) and _norm(rc) != 'char *':
-                    seen[ret][_base(rc)] += 1
-                elif ret and not outs and rt.get('typedef') in self.enc:
-                    seen[ret][rt['typedef']] += 1
-                    byvalue.add(rt['typedef'])
-        self.sql_cbase = {s: max(c, key=c.get) for s, c in seen.items()
-                          if re.fullmatch(r'\w+', s)}
-        # The SQL types whose C value travels by value, a typedef the catalog encodes (the
-        # H3Index, Quadbin and S2CellId cells), which the jar passes as the integer it is.
-        self.sql_byvalue = {s for s, cb in self.sql_cbase.items() if cb in byvalue}
+        """The C base type each SQL type stands for, and the SQL types whose C value travels by
+        value (the H3Index, Quadbin and S2CellId cells, which the jar passes as the integer it
+        is), as the catalog's sqlTypes states them (MEOS-API parser/sqltypes.py): read off the
+        signatures that pair each SQL type with a single C value. A SQL type the catalog states no C
+        type for (a scalar stating only the element of its arrays) is no value type."""
+        st = self.cat.get('sqlTypes') or {}
+        self.sql_cbase = {s: e['cType'] for s, e in st.items() if 'cType' in e}
+        self.sql_byvalue = {s for s, e in st.items() if e.get('byValue')}
 
     def _codecs(self):
-        """Value types and the codec each crosses Flink with.
-
-        The WKB bytes where the catalog states the byte codec of the C type, and its
-        hex WKB where it states a WKB decoder and an asHexWKB encoder: a C type has one
-        WKB reader, so one codec serves every SQL type the C type stands for.  The hex
-        WKB of a SQL type where the catalog keys a WKB reader by it among the readers of a
-        C type several SQL types share (geometry: geom_from_hexewkb, geography:
-        geog_from_hexewkb), written by the C type's WKB encoder with the inputs the catalog
-        states for it.  Text otherwise, and only for a C type a single SQL type stands for,
-        since a text decoder cannot tell those SQL types apart.
-
-        The hex WKB is the catalog's `hexewkb` encoding, which keeps the SRID, or its `hexwkb`
-        where the C type states no `hexewkb`; its `wkb` is the binary WKB, which a hex string
-        cannot be read with (HEX_WKB_ENCODINGS)."""
-        hexwkb = {}
-        for f in self.fns:
-            if f.get('sqlfn') == 'asHexWKB' and f['params'] and f['name'] in self.jmeos:
-                hexwkb.setdefault(_base(f['params'][0]['canonical']), f['name'])
-        by_cbase = defaultdict(set)
-        for s, cb in self.sql_cbase.items():
-            by_cbase[cb].add(s)
+        """Value types, the codec each crosses Flink with and the memory image each carries in
+        the place of its codec's form, as the catalog's sqlTypes states them (MEOS-API
+        parser/sqltypes.py): the byte codec of the C type, else its hex WKB, the extended one
+        where the C type states it, which keeps the SRID, else its text where its C type stands
+        for no other SQL type. A codec or an image naming a function the jar does not bind is
+        none the surface may call."""
         self.codec = {}
-        for sql, cb in self.sql_cbase.items():
-            if sql in SQL_SCALAR or sql == 'internal':
-                continue
-            e = self.enc.get(cb) or {}
-            dec = (e.get('decoders') or {})
-            encd = (e.get('encoders') or {})
-            byt = (e.get('bytes') or {})
-            if byt.get('decoder') in self.jmeos and byt.get('encoder') in self.jmeos:
-                self.codec[sql] = ('bytes', byt['decoder'], byt['encoder'], [], [])
-            elif dec.get('hexwkb') in self.jmeos and cb in hexwkb:
-                self.codec[sql] = ('wkb', dec['hexwkb'], hexwkb[cb], [], [])
-            elif (k := next((k for k in HEX_WKB_ENCODINGS
-                             if ((e.get('readers') or {}).get(k) or {}).get(sql) in self.jmeos
-                             and encd.get(k) in self.jmeos), None)):
-                self.codec[sql] = ('wkb', e['readers'][k][sql], encd[k],
-                                   e['readerAux'][k][sql], e['encoderAux'][k])
-            elif len(by_cbase[cb]) == 1 and dec.get('text') in self.jmeos \
-                    and encd.get('text') in self.jmeos:
-                self.codec[sql] = ('text', dec['text'], encd['text'],
-                                   e.get('in_aux') or [], e.get('out_aux') or [])
-        # The memory image a value type carries in the place of its codec's form, where the
-        # catalog states one for its C type (typeEncodings[C].image): the function copying a
-        # value from its image, and the function answering the image's length or, for a
-        # fixed-size structure, the bytes it is laid out in. A cell travels by value and a C
-        # type stating no image keeps its codec, so the codec keeps the user-facing forms.
         self.image = {}
-        for sql in self.codec:
-            im = (self.enc.get(self.sql_cbase[sql]) or {}).get('image') or {}
-            if sql not in self.sql_byvalue and im.get('copy') in self.jmeos \
+        for sql, e in (self.cat.get('sqlTypes') or {}).items():
+            c = e.get('codec')
+            if not c or c['decoder'] not in self.jmeos or c['encoder'] not in self.jmeos:
+                continue
+            self.codec[sql] = (c['kind'], c['decoder'], c['encoder'],
+                               c['decoderAux'], c['encoderAux'])
+            im = e.get('image') or {}
+            if im.get('copy') in self.jmeos \
                     and (im.get('size') in self.jmeos or isinstance(im.get('sizeBytes'), int)):
                 self.image[sql] = im
         om = {k.lower(): k for k in (self.cat.get('objectModel') or {}).get('classes', {})}

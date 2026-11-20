@@ -72,6 +72,8 @@ class JvmInputShapeTest {
         // An element type the surfaces do not lay out
         + fn("settexts", "text[]")
         + "],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"raster\": {\"byValue\": false, \"cType\": \"Raster\", \"codec\": {\"decoder\": \"raster_from_wkb\", \"decoderAux\": [], \"encoder\": \"raster_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}},"
         + " \"typeEncodings\": {"
         + "  \"Raster\": {\"bytes\": {\"decoder\": \"raster_from_wkb\", \"encoder\": \"raster_as_wkb\"}}},"
         + " \"structs\": [], \"objectModel\": {\"classes\": {}}, \"enums\": [], \"macros\": []}";

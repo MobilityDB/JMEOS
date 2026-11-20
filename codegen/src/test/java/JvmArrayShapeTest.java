@@ -67,6 +67,8 @@ class JvmArrayShapeTest {
         + " \"returnType\": {\"c\": \"int\", \"canonical\": \"int\"},"
         + " \"params\": [{\"name\": \"v\", \"cType\": \"const Temporal *\", \"canonical\": \"const Temporal *\"}],"
         + " \"sqlSignatures\": [{\"args\": [\"tint\"], \"ret\": \"integer\"}]}],"
+        // the sqlTypes the catalog states (MEOS-API parser/sqltypes.py)
+        + " \"sqlTypes\": {\"tint\": {\"byValue\": false, \"cType\": \"Temporal\", \"codec\": {\"decoder\": \"temporal_from_wkb\", \"decoderAux\": [], \"encoder\": \"temporal_as_wkb\", \"encoderAux\": [], \"kind\": \"bytes\"}}},"
         + " \"typeEncodings\": {"
         + "  \"Temporal\": {\"bytes\": {\"decoder\": \"temporal_from_wkb\", \"encoder\": \"temporal_as_wkb\"}}},"
         + " \"structs\": [], \"objectModel\": {\"classes\": {}}, \"enums\": [], \"macros\": []}";
