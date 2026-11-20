@@ -281,7 +281,7 @@ public class ObjectLayerGenerator {
      * for: each field sits at a multiple of its own alignment, and the whole is padded to a multiple of
      * its widest field. This is the stride of an array of that struct.
      */
-    private static int structSize(JsonNode root, String name) {
+    static int structSize(JsonNode root, String name) {
         int offset = 0;
         int widest = 1;
         for (JsonNode f : structOf(root, name).path("fields")) {

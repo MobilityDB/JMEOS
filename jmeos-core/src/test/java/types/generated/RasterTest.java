@@ -87,6 +87,25 @@ public class RasterTest {
     }
 
     @Test
+    void aSeriesReadsEachRasterOverItsPeriod() {
+        // MobilityDB's 500_raster test: a step point held across two adjacent periods of a raster
+        // series reads each period's raster over its part, the January part open at February.
+        List<Raster> rasts = List.of(
+                Raster.makeEmpty(2, 2, 0, 2, 1, -1, 0, 0, 4326).addBand(1, "8BUI", 1, 0, false),
+                Raster.makeEmpty(2, 2, 0, 2, 1, -1, 0, 0, 4326).addBand(1, "8BUI", 5, 0, false));
+        List<types.collections.time.tstzspan> spans = List.of(
+                new types.collections.time.tstzspan("[2024-01-01 00:00:00+00, 2024-02-01 00:00:00+00)"),
+                new types.collections.time.tstzspan("[2024-02-01 00:00:00+00, 2024-03-01 00:00:00+00)"));
+        // Built from its text, as WkbEwkbTest builds its trip.
+        types.temporal.Temporal traj = new types.basic.tpoint.tgeom.TGeomPointSeq(
+                "SRID=4326;Interp=Step;[POINT(0.5 1)@2024-01-15 00:00:00+00, "
+                        + "POINT(0.5 1)@2024-02-15 00:00:00+00]");
+        types.temporal.Temporal v = Raster.valueSeries(traj, rasts, spans, 1);
+        assertEquals("Interp=Step;[1@2024-01-15 00:00:00+00, 5@2024-02-01 00:00:00+00, "
+                + "5@2024-02-15 00:00:00+00]", functions.GeneratedFunctions.temporal_out(v.getInner(), 15));
+    }
+
+    @Test
     void aWriterTakesItsOptions() {
         // GTiff is the writer every GDAL MEOS links carries; a TIFF opens with II or MM.
         Raster tile = Raster.makeEmpty(2, 2, 0, 2, 1, -1, 0, 0, 3857).addBand(1, "8BUI", 7, 0, false);
