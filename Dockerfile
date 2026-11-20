@@ -3,16 +3,17 @@ FROM ubuntu:24.04
 LABEL maintainer=nidhalmareghni8@gmail.com
 
 # The MEOS build dependencies are the set MobilityDB's own MEOS workflow installs
-# (.github/workflows/meos.yml), on the distribution it installs them on: `libh3-dev`
-# is what -DALL=ON needs for the H3 family and Debian bookworm has no such package,
-# while Ubuntu 24.04 carries it. A -DMEOS=ON build of 1.4 needs neither the
-# PostgreSQL server headers nor GSL nor GEOS nor PostGIS, so none of the four is
-# installed.
+# (.github/workflows/meos.yml), on the distribution it installs them on. H3 is not
+# among the packages: MobilityDB supports one H3 release, H3_REQUIRED_VERSION of
+# its CMakeLists.txt, refuses any other at configure, and builds that release from
+# its tag with its own .github/scripts/install-h3.sh, run below on the cloned tree.
+# A -DMEOS=ON build of 1.4 needs neither the PostgreSQL server headers nor GSL nor
+# GEOS nor PostGIS, so none of the four is installed.
 #
 # Corretto is installed after verifying that the key is the one we expect.
 RUN apt-get update \
   && apt-get install -y git curl gnupg build-essential cmake \
-       libproj-dev libjson-c-dev libgdal-dev libh3-dev libxml2-dev zlib1g-dev \
+       libproj-dev libjson-c-dev libgdal-dev libxml2-dev zlib1g-dev \
   && export GNUPGHOME="$(mktemp -d)" \
   && curl -fL https://apt.corretto.aws/corretto.key | gpg --batch --import \
   && gpg --batch --export '6DC3636DAE534049C8B94623A122542AB04F24E3' > /usr/share/keyrings/corretto.gpg \
@@ -27,6 +28,7 @@ RUN apt-get update \
 # -DALL=ON is the flag CMakeLists.txt turns into the family list, and without it
 # the jar names symbols libmeos does not carry.
 RUN git clone --depth 1 https://github.com/MobilityDB/MobilityDB.git -b master /usr/local/src/MobilityDB
+RUN /usr/local/src/MobilityDB/.github/scripts/install-h3.sh /usr/local
 RUN mkdir -p /usr/local/src/MobilityDB/build
 RUN cd /usr/local/src/MobilityDB/build && \
     cmake -DMEOS=ON -DALL=ON .. && \
