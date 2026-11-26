@@ -313,7 +313,7 @@ public class datespan extends Span<LocalDate> implements Time, TimeCollection{
 */
 
     public datespan shift_scale(Integer shift, Integer duration){
-        return new datespan(GeneratedFunctions.datespan_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
+        return new datespan((shift != 0 && duration != 0 ? GeneratedFunctions.datespan_shift_scale(this._inner, shift, duration) : duration != 0 ? GeneratedFunctions.datespan_scale(this._inner, duration) : GeneratedFunctions.datespan_shift(this._inner, shift)));
     }
 
 /**

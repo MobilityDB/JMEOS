@@ -324,7 +324,7 @@ public class datespanset extends SpanSet<LocalDate> implements Time, TimeCollect
 */
 
     public datespanset shift_scale(Integer shift, Integer duration){
-        return new datespanset(GeneratedFunctions.datespanset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
+        return new datespanset((shift != 0 && duration != 0 ? GeneratedFunctions.datespanset_shift_scale(this._inner, shift, duration) : duration != 0 ? GeneratedFunctions.datespanset_scale(this._inner, duration) : GeneratedFunctions.datespanset_shift(this._inner, shift)));
     }
 
     /**

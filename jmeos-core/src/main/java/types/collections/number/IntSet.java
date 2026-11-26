@@ -250,7 +250,7 @@ public class IntSet extends Set<Integer> implements Number{
      * @return A new {@link IntSet} instance
      */
     public IntSet shift_scale(int delta, int width){
-        return new IntSet(GeneratedFunctions.intset_shift_scale(this._inner, delta,width,delta != 0, width != 0));
+        return new IntSet((delta != 0 && width != 0 ? GeneratedFunctions.intset_shift_scale(this._inner, delta, width) : width != 0 ? GeneratedFunctions.intset_scale(this._inner, width) : GeneratedFunctions.intset_shift(this._inner, delta)));
     }
 
 

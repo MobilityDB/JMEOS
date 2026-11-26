@@ -274,7 +274,7 @@ public class IntSpanSet extends SpanSet<Integer> implements Number{
      */
 
     public IntSpanSet shift_scale(int delta, int width){
-        return new IntSpanSet(GeneratedFunctions.intspanset_shift_scale(this._inner,delta,width,delta != 0,width!=0));
+        return new IntSpanSet((delta != 0 && width != 0 ? GeneratedFunctions.intspanset_shift_scale(this._inner, delta, width) : width != 0 ? GeneratedFunctions.intspanset_scale(this._inner, width) : GeneratedFunctions.intspanset_shift(this._inner, delta)));
     }
 
 

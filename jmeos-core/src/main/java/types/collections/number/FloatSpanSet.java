@@ -267,7 +267,7 @@ public class FloatSpanSet extends SpanSet<Float> implements Number{
      * @return a new {@link FloatSpanSet} instance
      */
     public FloatSpanSet shift_scale(int delta, int width){
-        return new FloatSpanSet(GeneratedFunctions.floatspanset_shift_scale(this._inner,delta,width,delta != 0, width != 0));
+        return new FloatSpanSet((delta != 0 && width != 0 ? GeneratedFunctions.floatspanset_shift_scale(this._inner, delta, width) : width != 0 ? GeneratedFunctions.floatspanset_scale(this._inner, width) : GeneratedFunctions.floatspanset_shift(this._inner, delta)));
     }
 
 

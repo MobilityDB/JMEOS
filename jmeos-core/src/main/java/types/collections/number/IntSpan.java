@@ -328,7 +328,7 @@ public class IntSpan extends Span<Integer> implements Number{
      */
 
     public IntSpan shift_scale(int delta, int width){
-        return new IntSpan(GeneratedFunctions.intspanset_shift_scale(this._inner,delta,width,delta != 0,width!=0));
+        return new IntSpan((delta != 0 && width != 0 ? GeneratedFunctions.intspan_shift_scale(this._inner, delta, width) : width != 0 ? GeneratedFunctions.intspan_scale(this._inner, width) : GeneratedFunctions.intspan_shift(this._inner, delta)));
     }
 
 
