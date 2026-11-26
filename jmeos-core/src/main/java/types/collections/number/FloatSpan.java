@@ -293,7 +293,7 @@ public class FloatSpan extends Span<Float> implements Number{
      * @return a new {@link FloatSpan} instance
      */
     public FloatSpan shift_scale(int delta, int width){
-        return new FloatSpan(GeneratedFunctions.floatspan_shift_scale(this._inner,delta,width,delta != 0, width != 0));
+        return new FloatSpan((delta != 0 && width != 0 ? GeneratedFunctions.floatspan_shift_scale(this._inner, delta, width) : width != 0 ? GeneratedFunctions.floatspan_scale(this._inner, width) : GeneratedFunctions.floatspan_shift(this._inner, delta)));
     }
 
 

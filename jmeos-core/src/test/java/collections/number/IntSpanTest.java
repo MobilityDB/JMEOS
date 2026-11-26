@@ -254,4 +254,14 @@ public class IntSpanTest {
         assertFalse(intspan2.greaterThanOrEqual(other));
     }
 
+    @Test
+    public void testShiftScale() {
+        // [7, 10) shifted by 2 and scaled to a width of 5, measured on the integers it holds, 9 to 14
+        assert_intspan_equality(intspan.shift_scale(2, 5), 9, 15, true, false);
+        assertTrue(intspan.shift_scale(2, 5).eq(intspan.shift(2).scale(5)));
+        // A zero delta scales only, a zero width shifts only
+        assertTrue(intspan.shift_scale(0, 5).eq(intspan.scale(5)));
+        assertTrue(intspan.shift_scale(2, 0).eq(intspan.shift(2)));
+    }
+
 }

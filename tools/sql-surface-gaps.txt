@@ -3,21 +3,12 @@
 # states. Written by codegen_jvm.py --rebaseline; a function missing from
 # it fails the run of either engine, and the two engines reach the same
 # functions. The ledger only shrinks, as types get their mappings.
-araster_tile_value_series	array-or-out-param:rqarr
-araster_value_series	array-or-out-param:rasts
-eraster_tile_value_series	array-or-out-param:rqarr
-eraster_value_series	array-or-out-param:rasts
-raster_at_value_series	array-or-out-param:rasts
-raster_minus_value_series	array-or-out-param:rasts
 raster_same_alignment_combinefn	no-decoder:RasterAlignState; no-encoder:RasterAlignState
 raster_same_alignment_finalfn	no-decoder:RasterAlignState
 raster_summary_stats_combinefn	no-decoder:RasterStatsState; no-encoder:RasterStatsState
-raster_tile_at_value_series	array-or-out-param:rqarr
-raster_tile_minus_value_series	array-or-out-param:rqarr
-raster_tile_value_series	array-or-out-param:rqarr
+raster_summary_stats_finalfn	no-decoder:RasterStatsState
 raster_union_combinefn	no-decoder:RasterUnionState; no-encoder:RasterUnionState
 raster_union_finalfn	no-decoder:RasterUnionState
-raster_value_series	array-or-out-param:rasts
 rasteralignstate_deserialize	array-or-out-param:bytes; no-encoder:RasterAlignState
 rasteralignstate_serialize	no-decoder:RasterAlignState; array-or-out-param:size_out; unsupported-return:uint8_t *
 rasterstatsstate_deserialize	array-or-out-param:bytes; no-encoder:RasterStatsState

@@ -257,7 +257,7 @@ public class FloatSet extends Set<Float> implements Number{
      */
 
     public FloatSet shift_scale(float delta, float new_width){
-        return new FloatSet(GeneratedFunctions.floatset_shift_scale(this._inner,delta,new_width,delta != 0, new_width != 0));
+        return new FloatSet((delta != 0 && new_width != 0 ? GeneratedFunctions.floatset_shift_scale(this._inner, delta, new_width) : new_width != 0 ? GeneratedFunctions.floatset_scale(this._inner, new_width) : GeneratedFunctions.floatset_shift(this._inner, delta)));
     }
 
 

@@ -262,7 +262,7 @@ public class dateset extends Set<LocalDate> implements Time, TimeCollection{
     */
 
     public dateset shift_scale(Integer shift, Integer duration){
-        return new dateset(GeneratedFunctions.dateset_shift_scale(this._inner, shift, duration, shift!=0, duration!=0));
+        return new dateset((shift != 0 && duration != 0 ? GeneratedFunctions.dateset_shift_scale(this._inner, shift, duration) : duration != 0 ? GeneratedFunctions.dateset_scale(this._inner, duration) : GeneratedFunctions.dateset_shift(this._inner, shift)));
     }
 
     /**
