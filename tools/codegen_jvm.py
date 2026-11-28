@@ -310,17 +310,40 @@ def is_type_support(f):
     return any(s.get('typeSupport') for s in (f or {}).get('sqlSignatures') or [])
 
 
-def emit_portable(r, prop):
+def portable_key(r, n):
+    """The Java signature of the method under portable name `n` of row `r`: the name and the
+    Java types of its parameters, which is what one class may hold once."""
+    return n, tuple(t for (t, _) in r['java_params'])
+
+
+def ambiguous_portable(rows):
+    """The portable methods (#portable_key) more than one function of a class's `rows` would
+    carry. A pointer of every C type is a jnr.ffi.Pointer in Java, so geoarr_as_text(GSERIALIZED
+    **, int, int) and tspatialarr_as_text(Temporal **, int, int) would both be asText(Pointer,
+    int, int): such a name cannot say which function it calls, so it is emitted for neither, and
+    each is reached under its C name (#emit_method), as the SQL surfaces register one overload
+    per argument types (#run_flink_sql's `seen`), whose types, unlike these, keep the C type."""
+    held = defaultdict(set)
+    for r in rows:
+        for n in portable_io_names(r.get('cat')):
+            held[portable_key(r, n)].add(r['name'])
+    return {k for k, names in held.items() if len(names) > 1}
+
+
+def emit_portable(r, prop, ambiguous=frozenset()):
     """A method under each portable input or output name of the row's function
-    (#portable_io_names). For a type support function (#is_type_support), which has no
-    C-named method, the method calls MEOS under the guards #emit_body writes; otherwise it
-    forwards to the C-named method beside it, whose guards it keeps."""
+    (#portable_io_names) but those the class cannot hold once (#ambiguous_portable). For a
+    type support function (#is_type_support), which has no C-named method, the method calls
+    MEOS under the guards #emit_body writes; otherwise it forwards to the C-named method beside
+    it, whose guards it keeps."""
     args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
     call_args = ', '.join(n for (t, n) in r['java_params'])
     ret = short_type(r['java_ret'])
     ret_stmt = '' if ret == 'void' else 'return '
     L = []
     for n in portable_io_names(r.get('cat')):
+        if portable_key(r, n) in ambiguous:
+            continue
         L += ['    /**',
               f'     * {{@code {n}}}, the portable name of MEOS {{@code {r["name"]}}}.',
               '     */']
@@ -356,10 +379,10 @@ def emit_body(r, prop, name):
             '    }', '']
 
 
-def emit_method(r, prop):
+def emit_method(r, prop, ambiguous=frozenset()):
     fname = r['name']
     if is_type_support(r.get('cat')):
-        return emit_portable(r, prop)
+        return emit_portable(r, prop, ambiguous)
     L = ['    /**',
          f'     * MEOS {{@code {fname}}}.']
     if r.get('oo_class'):
@@ -376,7 +399,7 @@ def emit_method(r, prop):
     fold = folded_nxn(r)
     if fold:
         L += emit_folded(r, fold, prop)
-    L += emit_portable(r, prop)
+    L += emit_portable(r, prop, ambiguous)
     return L
 
 
@@ -399,10 +422,53 @@ def emit_class(cls, rows, pkg, prop, banner):
           f'    private {cls}() {{ /* utility */ }}', '']
     if any((folded_nxn(r) or {}).get('periods') for r in rows):
         L += PAIRS_HOLDER
+    ambiguous = ambiguous_portable(rows)
     for r in sorted(rows, key=lambda r: r['name']):
-        L += emit_method(r, prop)
+        L += emit_method(r, prop, ambiguous)
     L.append('}')
     return '\n'.join(L) + '\n'
+
+
+# The doc comment #emit_portable writes above each method under a portable name, which names the
+# MEOS function the method calls.
+PORTABLE_DOC = re.compile(r'\{@code (\w+)\}, the portable name of MEOS \{@code (\w+)\}\.')
+
+# The header of the ledger of #check_facade_gaps.
+FACADE_GAPS_HEADER = ('# The portable input and output names of the catalog\'s functions the MeosOps*\n'
+                      '# facades (flink, kafka) do not carry, one per line, class.name(Java\n'
+                      '# parameters), with the reason and the functions the name stands for.\n'
+                      '# Written by codegen_jvm.py --engine flink --rebaseline; a name missing\n'
+                      '# from it fails the run of either engine, and so does a name it lists\n'
+                      '# that the facades carry again. Each function stays reached by its C name.\n')
+
+
+def check_facade_gaps(args, by_class, out_dir):
+    """The ledger of the portable names the facades do not carry, an outcome invariant as
+    #check_sql_gaps states one for the SQL surfaces, through the same #check_ledger. The names
+    each class should carry are those of #portable_io_names for each function it forwards; the
+    names it carries are read off the sources written to `out_dir` (#PORTABLE_DOC), so a name
+    lost by any cause is seen, not only one #ambiguous_portable leaves out. A name a class does
+    not carry for a function is an entry `Class.name(Java parameters)`, its reason
+    `java-signature: <functions>` where two functions of the class would take it with one Java
+    signature, else `not emitted: <functions>`. A stale entry fails the run as a new one does."""
+    gaps = {}
+    for cls, crows in sorted(by_class.items()):
+        src = (out_dir / f'{cls}.java').read_text()
+        carried = set(PORTABLE_DOC.findall(src))
+        ambiguous = ambiguous_portable(crows)
+        missing = defaultdict(list)
+        for r in crows:
+            for n in portable_io_names(r.get('cat')):
+                if (n, r['name']) not in carried:
+                    missing[portable_key(r, n)].append(r['name'])
+        for (n, params), names in missing.items():
+            why = 'java-signature' if (n, params) in ambiguous else 'not emitted'
+            sig = ', '.join(short_type(t) for t in params)
+            gaps[f'{cls}.{n}({sig})'] = f'{why}: {", ".join(sorted(names))}'
+    check_ledger(args.gaps, args.rebaseline, gaps, FACADE_GAPS_HEADER, 'portable names',
+                 'portable names the facades do not carry and the ledger does not list; '
+                 'give each its own Java signature or record it with --rebaseline:',
+                 'ledger portable names are carried or gone', stale_fails=True)
 
 
 def runtime_src(pkg, prop):
@@ -559,6 +625,9 @@ def run_facades(args):
             banner = 'MEOS object-model class: ' + cls[len('MeosOps'):]
         (out_dir / f'{cls}.java').write_text(
             emit_class(cls, crows, args.package, prop, banner))
+
+    if args.gaps:
+        check_facade_gaps(args, by_class, out_dir)
 
     n_seq = sum(1 for r in rows if r['seq'])
     n_oo = sum(1 for c in by_class if c not in class_headers)
@@ -1384,12 +1453,14 @@ def _setret_column(m, f, col, layout):
         return {'integer': ('Integer', None, '(_i + 1)', False),
                 'bigint': ('Long', None, '((long) _i + 1L)', False)}.get(sql)
     if src == 'return':
-        arr = _norm(f['returnType']['canonical'])
+        raw = f['returnType']['canonical']
+        arr = _norm(raw)
     else:
         p = next((p for p in f['params'] if p['name'] == src), None)
         if p is None or not _norm(p['canonical']).endswith('**'):
             return None
-        arr = _norm(p['canonical'])[:-1].strip()
+        raw = p['canonical']
+        arr = _norm(raw)[:-1].strip()
     if not arr.endswith('*'):
         return None
     elem = arr[:-1].strip()
@@ -1436,6 +1507,13 @@ def _setret_column(m, f, col, layout):
                     f'{m.pkg}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
         if b == 'text' and sql == 'text' and 'text_out' in m.jmeos:
             return ('String', src, 'GeneratedFunctions.text_out(MeosSqlRuntime.at({a}, _i))', True)
+        if b == 'char' and sql in ('text', 'cstring'):
+            # A C string each, as a writer of an array answers one per value it reads
+            # (temparr_out, geoarr_as_text): read as the text it holds, NULL for a null
+            # pointer, and each freed after, as MobilityDuck frees them; a constant string
+            # (const char **) is MEOS's own and freed by nobody
+            return ('String', src, 'MeosSqlRuntime.cstring(MeosSqlRuntime.at({a}, _i))',
+                    not raw.lstrip().startswith('const '))
         return None
     hit = SETRET_SCALAR.get((elem, sql))
     if hit:
@@ -2962,34 +3040,53 @@ def check_sql_gaps(args, cat, jmeos, keep, m):
         if any(r in ('internal', 'lifecycle', 'index') for r in why):
             continue
         gaps[nm] = '; '.join(why) or 'not emitted'
-    if args.rebaseline:
-        with open(args.gaps, 'w') as fh:
-            fh.write('# The public SQL functions the generated typed SQL surfaces (spark-sql,\n'
-                     '# flink-sql) do not reach, one per line with the reason the catalog\n'
-                     '# states. Written by codegen_jvm.py --rebaseline; a function missing from\n'
-                     '# it fails the run of either engine, and the two engines reach the same\n'
-                     '# functions. The ledger only shrinks, as types get their mappings.\n')
+    check_ledger(args.gaps, args.rebaseline, gaps, SQL_GAPS_HEADER, 'functions',
+                 'public SQL functions the surface does not reach and the ledger does not list; '
+                 'map their types or record them with --rebaseline:',
+                 'ledger functions are reached or gone')
+
+
+# The header of the ledger of #check_sql_gaps.
+SQL_GAPS_HEADER = ('# The public SQL functions the generated typed SQL surfaces (spark-sql,\n'
+                   '# flink-sql) do not reach, one per line with the reason the catalog\n'
+                   '# states. Written by codegen_jvm.py --rebaseline; a function missing from\n'
+                   '# it fails the run of either engine, and the two engines reach the same\n'
+                   '# functions. The ledger only shrinks, as types get their mappings.\n')
+
+
+def check_ledger(path, rebaseline, gaps, header, noun, new_msg, stale_msg, stale_fails=False):
+    """The outcome invariant of a generated surface: `gaps` ({entry: reason}) is what the
+    surface leaves out, and the ledger at `path` (a `header` of comment lines, then one
+    `entry<TAB>reason` line each) is what it is known to leave out. --rebaseline (`rebaseline`)
+    rewrites the ledger from `gaps`. Otherwise an entry of `gaps` the ledger does not list fails
+    the run, and a ledger entry `gaps` no longer holds is stale: a notice, or with `stale_fails`
+    a failure, so a ledger that stops describing the surface is refused as a new gap is. It
+    serves the ledger of the SQL surfaces (#check_sql_gaps) and that of the facades' portable
+    names (#check_facade_gaps)."""
+    if rebaseline:
+        with open(path, 'w') as fh:
+            fh.write(header)
             for nm in sorted(gaps):
                 fh.write(f'{nm}\t{gaps[nm]}\n')
-        print(f'  gaps ledger rewritten: {len(gaps)} functions')
+        print(f'  gaps ledger rewritten: {len(gaps)} {noun}')
         return
     known = set()
-    if Path(args.gaps).exists():
-        for line in open(args.gaps):
+    if Path(path).exists():
+        for line in open(path):
             if line.strip() and not line.startswith('#'):
                 known.add(line.split('\t')[0].strip())
     new = sorted(set(gaps) - known)
     stale = sorted(known - set(gaps))
     if stale:
-        print(f'  NOTICE: {len(stale)} ledger functions are reached or gone, shrink it with '
-              f'--rebaseline: {", ".join(stale[:20])}')
+        print(f'  {"ERROR" if stale_fails else "NOTICE"}: {len(stale)} {stale_msg}, shrink it '
+              f'with --rebaseline: {", ".join(stale[:20])}')
     if new:
-        print(f'  ERROR: {len(new)} public SQL functions the surface does not reach and the '
-              'ledger does not list; map their types or record them with --rebaseline:')
+        print(f'  ERROR: {len(new)} {new_msg}')
         for nm in new:
             print(f'     {nm}\t{gaps[nm]}')
+    if new or (stale and stale_fails):
         sys.exit(1)
-    print(f'  gaps ledger: {len(gaps)} functions, none new')
+    print(f'  gaps ledger: {len(gaps)} {noun}, none new')
 
 
 # ───────────────────────── spark-sql: the typed Spark SQL surface ─────────────────────────
@@ -4420,9 +4517,9 @@ def main():
     ap.add_argument('--package', default='org.mobilitydb.meos',
                     help='facade package (flink/kafka only)')
     ap.add_argument('--gaps', help='spark-sql and flink-sql: the ledger of unreached '
-                                   'public functions')
-    ap.add_argument('--rebaseline', action='store_true',
-                    help='spark-sql and flink-sql: rewrite --gaps')
+                                   'public functions; flink and kafka: the ledger of the '
+                                   'portable names the facades do not carry')
+    ap.add_argument('--rebaseline', action='store_true', help='rewrite --gaps')
     args = ap.parse_args()
 
     if args.engine == 'flink-sql':

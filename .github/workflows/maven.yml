@@ -124,6 +124,16 @@ jobs:
           python3 tools/check_owned_names.py codegen/input/meos-idl.json \
             "$RUNNER_TEMP/spark-sql" "$RUNNER_TEMP/flink-sql"
 
+      # Each MeosOps* facade (flink, kafka) carries every portable input and output name of the
+      # functions it forwards except those tools/facade-portable-gaps.txt lists: a name it drops
+      # that the ledger does not list fails the generation, and so does an entry it carries again.
+      - name: Refuse a portable name the facades drop and the ledger does not list
+        run: |
+          for engine in flink kafka; do
+            python3 tools/codegen_jvm.py --engine "$engine" --catalog codegen/input/meos-idl.json \
+              --jar jar/JMEOS.jar --out "$RUNNER_TEMP/facades-$engine" --gaps tools/facade-portable-gaps.txt
+          done
+
       # The build's own summary states two things this job's conclusion does
       # not: a test reported SKIPPED asserts nothing while the job still reads
       # success, and a test the run never collects appears in no count at all,

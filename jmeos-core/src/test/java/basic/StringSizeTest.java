@@ -26,11 +26,13 @@
 package basic;
 
 import functions.GeneratedFunctions;
+import functions.JmeosVersion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import utils.TestLogger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -55,6 +57,18 @@ public class StringSizeTest {
 
     @Test
     public void aFunctionWhoseOnlyParameterIsTheSizeTakesNoArgument() {
-        assertTrue(GeneratedFunctions.meos_version().startsWith("MobilityDB"));
+        assertTrue(GeneratedFunctions.meos_version().startsWith("MEOS "));
+    }
+
+    @Test
+    public void jmeosAnswersItsOwnVersionUnderItsOwnName() {
+        assertTrue(JmeosVersion.jmeos_version().startsWith("JMEOS "));
+        assertFalse(JmeosVersion.jmeos_version().contains("${"));
+    }
+
+    @Test
+    public void theFullVersionOfJmeosNamesTheMeosItLinks() {
+        assertEquals(JmeosVersion.jmeos_version() + ", " + GeneratedFunctions.meos_full_version(),
+            JmeosVersion.jmeos_full_version());
     }
 }
