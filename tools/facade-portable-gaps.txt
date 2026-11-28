@@ -1,0 +1,10 @@
+# The portable input and output names of the catalog's functions the MeosOps*
+# facades (flink, kafka) do not carry, one per line, class.name(Java
+# parameters), with the reason and the functions the name stands for.
+# Written by codegen_jvm.py --engine flink --rebaseline; a name missing
+# from it fails the run of either engine, and so does a name it lists
+# that the facades carry again. Each function stays reached by its C name.
+MeosOpsFreeGeo.asEWKT(Pointer, int, int)	java-signature: geoarr_as_ewkt, tspatialarr_as_ewkt
+MeosOpsFreeGeo.asText(Pointer, int, int)	java-signature: geoarr_as_text, tspatialarr_as_text
+MeosOpsFreePose.asEWKT(Pointer, int, int)	java-signature: posearr_as_ewkt, posechainarr_as_ewkt
+MeosOpsFreePose.asText(Pointer, int, int)	java-signature: posearr_as_text, posechainarr_as_text

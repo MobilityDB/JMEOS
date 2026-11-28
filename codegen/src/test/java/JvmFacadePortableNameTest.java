@@ -78,6 +78,33 @@ class JvmFacadePortableNameTest {
         "        dict(row('tspatialarr_as_text', 'jnr.ffi.Pointer', ['jnr.ffi.Pointer', 'int', 'int'], tsp), oo_class=None),",
         "        dict(row('geo_as_text', 'java.lang.String', ['jnr.ffi.Pointer', 'int'], one), oo_class=None)]",
         "out['erased'] = j.emit_class('MeosOpsFreeGeo', free, 'org.mobilitydb.meos', 'mobilitykafka.meos.enabled', 'b')",
+        // the ledger of the names the facades do not carry (#check_facade_gaps), over the class
+        // just emitted: rewritten, checked as written, then with its one line removed, with an
+        // entry the facades carry, and over a class one of whose names is lost otherwise
+        "import io, os, pathlib, contextlib, tempfile",
+        "d = pathlib.Path(tempfile.mkdtemp())",
+        "(d / 'MeosOpsFreeGeo.java').write_text(out['erased'])",
+        "class A: pass",
+        "def run(rebaseline, classes=None):",
+        "    a = A(); a.gaps = str(d / 'gaps.txt'); a.rebaseline = rebaseline",
+        "    buf = io.StringIO()",
+        "    with contextlib.redirect_stdout(buf):",
+        "        try:",
+        "            j.check_facade_gaps(a, classes or {'MeosOpsFreeGeo': free}, d); code = 0",
+        "        except SystemExit as e:",
+        "            code = e.code",
+        "    return {'exit': code, 'out': buf.getvalue()}",
+        "res = {'rebaseline': run(True)}",
+        "res['ledger'] = (d / 'gaps.txt').read_text()",
+        "res['listed'] = run(False)",
+        "(d / 'gaps.txt').write_text(j.FACADE_GAPS_HEADER)",
+        "res['unlisted'] = run(False)",
+        "(d / 'gaps.txt').write_text(res['ledger'] + 'MeosOpsFreeGeo.asText(Pointer, int)\\tnot emitted: geo_as_text\\n')",
+        "res['stale'] = run(False)",
+        "(d / 'gaps.txt').write_text(res['ledger'])",
+        "(d / 'MeosOpsFreeGeo.java').write_text(out['erased'].replace('{@code asText}, the portable name of MEOS {@code geo_as_text}.', ''))",
+        "res['lost'] = run(False)",
+        "out['ledger'] = json.dumps(res)",
         "print(json.dumps(out))",
         "");
 
@@ -153,6 +180,44 @@ class JvmFacadePortableNameTest {
         assertTrue(code.contains("public static Pointer tspatialarr_as_text(Pointer arg0, int arg1, int arg2) {"), code);
         assertTrue(code.contains("public static String asText(Pointer arg0, int arg1) {\n"
             + "        return geo_as_text(arg0, arg1);"), code);
+    }
+
+    /** The runs of #check_facade_gaps over the class of the test above. */
+    private static JsonNode ledger() throws Exception {
+        return new ObjectMapper().readTree(results.get("ledger").asText());
+    }
+
+    /** The ledger states the name the facade does not carry, its Java signature and the two
+     * functions it stands for, and a run over the class as emitted passes. */
+    @Test
+    void theLedgerRecordsEachPortableNameTheFacadeDoesNotCarry() throws Exception {
+        JsonNode l = ledger();
+        assertEquals(0, l.get("rebaseline").get("exit").asInt(), l.toString());
+        String ledger = l.get("ledger").asText();
+        assertTrue(ledger.startsWith("# "), ledger);
+        assertEquals(java.util.List.of(
+                "MeosOpsFreeGeo.asText(Pointer, int, int)\tjava-signature: geoarr_as_text, tspatialarr_as_text"),
+            ledger.lines().filter(s -> !s.startsWith("#")).toList(), ledger);
+        assertEquals(0, l.get("listed").get("exit").asInt(), l.toString());
+        assertTrue(l.get("listed").get("out").asText().contains("gaps ledger: 1 portable names, none new"),
+            l.toString());
+    }
+
+    /** A name the facade does not carry and the ledger does not list fails the run, whatever
+     * lost it, and so does a ledger entry the facade carries. */
+    @Test
+    void anUnlistedDropAndAStaleEntryEachFailTheRun() throws Exception {
+        JsonNode l = ledger();
+        assertEquals(1, l.get("unlisted").get("exit").asInt(), l.toString());
+        assertTrue(l.get("unlisted").get("out").asText().contains(
+            "MeosOpsFreeGeo.asText(Pointer, int, int)\tjava-signature: geoarr_as_text, tspatialarr_as_text"),
+            l.toString());
+        assertEquals(1, l.get("stale").get("exit").asInt(), l.toString());
+        assertTrue(l.get("stale").get("out").asText().contains("ERROR: 1 ledger portable names are carried or gone"),
+            l.toString());
+        assertEquals(1, l.get("lost").get("exit").asInt(), l.toString());
+        assertTrue(l.get("lost").get("out").asText().contains(
+            "MeosOpsFreeGeo.asText(Pointer, int)\tnot emitted: geo_as_text"), l.toString());
     }
 
     @Test
