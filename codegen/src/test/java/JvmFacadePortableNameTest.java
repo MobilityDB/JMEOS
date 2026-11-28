@@ -68,8 +68,17 @@ class JvmFacadePortableNameTest {
         "        'alt': row('tbox_as_text', 'java.lang.String', ['jnr.ffi.Pointer', 'int'], alt),",
         "        'other': row('set_num_values', 'int', ['jnr.ffi.Pointer'], other),",
         "        'inner': row('set_out_internal', 'java.lang.String', ['jnr.ffi.Pointer'], inner)}",
-        "print(json.dumps({k: '\\n'.join(j.emit_method(r, 'mobilitykafka.meos.enabled'))",
-        "                  for k, r in rows.items()}))",
+        "out = {k: '\\n'.join(j.emit_method(r, 'mobilitykafka.meos.enabled')) for k, r in rows.items()}",
+        // two writers of an array whose C pointers both erase to Pointer, and one taking other
+        // Java parameters, in one class
+        "geo = fn('geoarr_as_text', [{'sqlName': 'asText'}])",
+        "tsp = fn('tspatialarr_as_text', [{'sqlName': 'asText'}])",
+        "one = fn('geo_as_text', [{'sqlName': 'asText'}])",
+        "free = [dict(row('geoarr_as_text', 'jnr.ffi.Pointer', ['jnr.ffi.Pointer', 'int', 'int'], geo), oo_class=None),",
+        "        dict(row('tspatialarr_as_text', 'jnr.ffi.Pointer', ['jnr.ffi.Pointer', 'int', 'int'], tsp), oo_class=None),",
+        "        dict(row('geo_as_text', 'java.lang.String', ['jnr.ffi.Pointer', 'int'], one), oo_class=None)]",
+        "out['erased'] = j.emit_class('MeosOpsFreeGeo', free, 'org.mobilitydb.meos', 'mobilitykafka.meos.enabled', 'b')",
+        "print(json.dumps(out))",
         "");
 
     private static JsonNode results;
@@ -131,6 +140,19 @@ class JvmFacadePortableNameTest {
         String code = results.get("alt").asText();
         assertFalse(code.contains(" asText("), code);
         assertFalse(code.contains(" boxAsText("), code);
+    }
+
+    /** A pointer of every C type is a Pointer in Java, so a portable name two functions of one
+     * class carry with the same Java parameters cannot say which it calls (#ambiguous_portable):
+     * it is emitted for neither, and each keeps its C-named method. */
+    @Test
+    void aPortableNameTwoFunctionsWouldTakeWithOneJavaSignatureIsEmittedForNeither() {
+        String code = results.get("erased").asText();
+        assertFalse(code.contains(" asText(Pointer arg0, int arg1, int arg2)"), code);
+        assertTrue(code.contains("public static Pointer geoarr_as_text(Pointer arg0, int arg1, int arg2) {"), code);
+        assertTrue(code.contains("public static Pointer tspatialarr_as_text(Pointer arg0, int arg1, int arg2) {"), code);
+        assertTrue(code.contains("public static String asText(Pointer arg0, int arg1) {\n"
+            + "        return geo_as_text(arg0, arg1);"), code);
     }
 
     @Test

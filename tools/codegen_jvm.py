@@ -310,17 +310,40 @@ def is_type_support(f):
     return any(s.get('typeSupport') for s in (f or {}).get('sqlSignatures') or [])
 
 
-def emit_portable(r, prop):
+def portable_key(r, n):
+    """The Java signature of the method under portable name `n` of row `r`: the name and the
+    Java types of its parameters, which is what one class may hold once."""
+    return n, tuple(t for (t, _) in r['java_params'])
+
+
+def ambiguous_portable(rows):
+    """The portable methods (#portable_key) more than one function of a class's `rows` would
+    carry. A pointer of every C type is a jnr.ffi.Pointer in Java, so geoarr_as_text(GSERIALIZED
+    **, int, int) and tspatialarr_as_text(Temporal **, int, int) would both be asText(Pointer,
+    int, int): such a name cannot say which function it calls, so it is emitted for neither, and
+    each is reached under its C name (#emit_method), as the SQL surfaces register one overload
+    per argument types (#run_flink_sql's `seen`), whose types, unlike these, keep the C type."""
+    held = defaultdict(set)
+    for r in rows:
+        for n in portable_io_names(r.get('cat')):
+            held[portable_key(r, n)].add(r['name'])
+    return {k for k, names in held.items() if len(names) > 1}
+
+
+def emit_portable(r, prop, ambiguous=frozenset()):
     """A method under each portable input or output name of the row's function
-    (#portable_io_names). For a type support function (#is_type_support), which has no
-    C-named method, the method calls MEOS under the guards #emit_body writes; otherwise it
-    forwards to the C-named method beside it, whose guards it keeps."""
+    (#portable_io_names) but those the class cannot hold once (#ambiguous_portable). For a
+    type support function (#is_type_support), which has no C-named method, the method calls
+    MEOS under the guards #emit_body writes; otherwise it forwards to the C-named method beside
+    it, whose guards it keeps."""
     args = ', '.join(f'{short_type(t)} {n}' for (t, n) in r['java_params'])
     call_args = ', '.join(n for (t, n) in r['java_params'])
     ret = short_type(r['java_ret'])
     ret_stmt = '' if ret == 'void' else 'return '
     L = []
     for n in portable_io_names(r.get('cat')):
+        if portable_key(r, n) in ambiguous:
+            continue
         L += ['    /**',
               f'     * {{@code {n}}}, the portable name of MEOS {{@code {r["name"]}}}.',
               '     */']
@@ -356,10 +379,10 @@ def emit_body(r, prop, name):
             '    }', '']
 
 
-def emit_method(r, prop):
+def emit_method(r, prop, ambiguous=frozenset()):
     fname = r['name']
     if is_type_support(r.get('cat')):
-        return emit_portable(r, prop)
+        return emit_portable(r, prop, ambiguous)
     L = ['    /**',
          f'     * MEOS {{@code {fname}}}.']
     if r.get('oo_class'):
@@ -376,7 +399,7 @@ def emit_method(r, prop):
     fold = folded_nxn(r)
     if fold:
         L += emit_folded(r, fold, prop)
-    L += emit_portable(r, prop)
+    L += emit_portable(r, prop, ambiguous)
     return L
 
 
@@ -399,8 +422,9 @@ def emit_class(cls, rows, pkg, prop, banner):
           f'    private {cls}() {{ /* utility */ }}', '']
     if any((folded_nxn(r) or {}).get('periods') for r in rows):
         L += PAIRS_HOLDER
+    ambiguous = ambiguous_portable(rows)
     for r in sorted(rows, key=lambda r: r['name']):
-        L += emit_method(r, prop)
+        L += emit_method(r, prop, ambiguous)
     L.append('}')
     return '\n'.join(L) + '\n'
 
