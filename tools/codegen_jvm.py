@@ -1384,12 +1384,14 @@ def _setret_column(m, f, col, layout):
         return {'integer': ('Integer', None, '(_i + 1)', False),
                 'bigint': ('Long', None, '((long) _i + 1L)', False)}.get(sql)
     if src == 'return':
-        arr = _norm(f['returnType']['canonical'])
+        raw = f['returnType']['canonical']
+        arr = _norm(raw)
     else:
         p = next((p for p in f['params'] if p['name'] == src), None)
         if p is None or not _norm(p['canonical']).endswith('**'):
             return None
-        arr = _norm(p['canonical'])[:-1].strip()
+        raw = p['canonical']
+        arr = _norm(raw)[:-1].strip()
     if not arr.endswith('*'):
         return None
     elem = arr[:-1].strip()
@@ -1436,6 +1438,13 @@ def _setret_column(m, f, col, layout):
                     f'{m.pkg}.types.{vc}.encode(MeosSqlRuntime.at({{a}}, _i))', True)
         if b == 'text' and sql == 'text' and 'text_out' in m.jmeos:
             return ('String', src, 'GeneratedFunctions.text_out(MeosSqlRuntime.at({a}, _i))', True)
+        if b == 'char' and sql in ('text', 'cstring'):
+            # A C string each, as a writer of an array answers one per value it reads
+            # (temparr_out, geoarr_as_text): read as the text it holds, NULL for a null
+            # pointer, and each freed after, as MobilityDuck frees them; a constant string
+            # (const char **) is MEOS's own and freed by nobody
+            return ('String', src, 'MeosSqlRuntime.cstring(MeosSqlRuntime.at({a}, _i))',
+                    not raw.lstrip().startswith('const '))
         return None
     hit = SETRET_SCALAR.get((elem, sql))
     if hit:
