@@ -21,7 +21,7 @@ jobs:
       - name: Name git's default branch
         run: git config --global init.defaultBranch main
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Refuse tracked build output, skipped suites and stale pins
         uses: MobilityDB/MEOS-API/.github/actions/check-tree-hygiene@master
@@ -34,10 +34,10 @@ jobs:
         run: git config --global init.defaultBranch main
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '21'

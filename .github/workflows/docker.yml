@@ -26,7 +26,10 @@ jobs:
     timeout-minutes: 90
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Name git's default branch
+        run: git config --global init.defaultBranch main
+
+      - uses: actions/checkout@v7
 
       - name: Build the image
         run: docker build --progress=plain -t jmeos-ci:${{ github.sha }} .
