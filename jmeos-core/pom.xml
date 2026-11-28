@@ -79,6 +79,13 @@
 
     <build>
         <finalName>JMEOS</finalName>
+        <resources>
+            <!-- The project version, read by functions.JmeosVersion -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!-- For the version of the plugins, see https://mvnrepository.com/ -->
             <plugin>
