@@ -55,6 +55,6 @@ public class StringSizeTest {
 
     @Test
     public void aFunctionWhoseOnlyParameterIsTheSizeTakesNoArgument() {
-        assertTrue(GeneratedFunctions.meos_version().startsWith("MobilityDB"));
+        assertTrue(GeneratedFunctions.meos_version().startsWith("MEOS "));
     }
 }
